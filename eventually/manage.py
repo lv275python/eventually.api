@@ -1,8 +1,11 @@
 #!/usr/bin/env python
-import os
+# importing base packages to add apps to the field of view
+import os 
 import sys
 
-if __name__ == "__main__":
+# base file name, not to run any functionul from imports
+if __name__ == "__main__": 
+    #import django settings (ports, etc.)
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "eventually.settings")
     try:
         from django.core.management import execute_from_command_line
