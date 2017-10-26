@@ -3,7 +3,7 @@
 import os 
 import sys
 
-# base file name, not to run any functionul from imports
+# base file name, not to run any functional from imports
 if __name__ == "__main__": 
     #import django settings (ports, etc.)
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "eventually.settings")
