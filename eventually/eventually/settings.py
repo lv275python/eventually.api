@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'authentication'
 ]
 
 # Functional that works duirng diferent stages when hte apps are running. E.G. run smth before the app launches.
