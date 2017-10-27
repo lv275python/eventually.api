@@ -25,9 +25,7 @@ class Comment(models.Model):
     def __str__(self):
         """
         This is a magic method to return string value of model's parametrs in
-         understandible format
-
-        :param self: description
+         understandible format.
 
         :return: id, text, create date, update date
 
@@ -40,29 +38,24 @@ class Comment(models.Model):
 
     def get_created_at(self):
         """
-        This is a method to show date in Unix date format
-
-        :param self: description
+        This is a method to show date in Unix date format.
 
         :return: date in Unix date format
 
         """
-
         date = format(self.created_at, u'U')
 
         return date
 
     def to_dict(self):
         """
-        This is a method to show date in Unix date format
+        Return dictionary with comment's info
 
-        :param self: description
-
-        :return: date in Unix date format
+        :return: dictionary with comment's info
 
         """
 
-         return {'id': self.id,
+        return {'id': self.id,
             'text': self.text,
             'created_at': self.created_at,
             'updated_at': self.updated_at
@@ -71,11 +64,10 @@ class Comment(models.Model):
     @staticmethod
     def get_by_id(comment_id):
         """
-        This is a method to show date in Unix date format
+        Return comment, found by id.
 
-        :param self: description
-
-        :return: date in Unix date format
+        :param comment_id: comment's id
+        :return: tuple with comment's info
 
         """
         try:
@@ -87,23 +79,19 @@ class Comment(models.Model):
     @staticmethod
     def create(text='simple comment'):
         """
-        This is a method to show date in Unix date format
+        Create comment.
 
-        :param self: description
-
-        :return: date in Unix date format
+        :param text: - text of comment
 
         """
-        comment = Comment.objects.create(text)
+        comment = Comment.objects.create(text=text)
         comment.save()
 
     def update(self, text=None):
         """
-        This is a method to show date in Unix date format
+        Update comment's text.
 
-        :param self: description
-
-        :return: date in Unix date format
+        :param text: - text of comment
 
         """
         if text:
@@ -112,15 +100,11 @@ class Comment(models.Model):
         self.save()
 
     @staticmethod
-    def delete_by_id(id):
+    def delete_by_id(comment_id):
         """
-        This is a method to show date in Unix date format
+        Delete comment, found by id.
 
-        :param self: description
-
-        :return: date in Unix date format
+        :param comment_id: - comment's id
 
         """
-        comment = Comment.objects.get(id=comment_id)
-        comment.delete()
-        comment.save()
+        comment = Comment.objects.filter(id=comment_id).delete()
