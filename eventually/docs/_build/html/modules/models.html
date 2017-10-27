@@ -47,14 +47,35 @@
 <dd><p>Comment model that describes comment entity.</p>
 <p>The main idea is to document
 the class with</p>
-<dl class="docutils">
-<dt>fields:</dt>
-<dd><ul class="first last simple">
-<li>text : CharField with max_length = 1024 symbols</li>
-<li>create_date : TextField that contains UnixDate in string format</li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>text</strong> – text of comment using CharField with max_length = 1024 symbols</li>
+<li><strong>created_at</strong> – date of comment’s create using datetime format</li>
+<li><strong>updated_at</strong> – date of comment’s update using datetime format</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="comment.models.Comment.get_created_at">
+<code class="descname">get_created_at</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#comment.models.Comment.get_created_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a method to show date in Unix date format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>self</strong> – description</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">date in Unix date format</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
