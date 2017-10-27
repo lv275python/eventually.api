@@ -53,6 +53,15 @@ class Comment(models.Model):
         return date
 
     def to_dict(self):
+        """
+        This is a method to show date in Unix date format
+
+        :param self: description
+
+        :return: date in Unix date format
+
+        """
+
          return {'id': self.id,
             'text': self.text,
             'created_at': self.created_at,
@@ -61,6 +70,14 @@ class Comment(models.Model):
 
     @staticmethod
     def get_by_id(comment_id):
+        """
+        This is a method to show date in Unix date format
+
+        :param self: description
+
+        :return: date in Unix date format
+
+        """
         try:
             comment = Comment.objects.get(id=comment_id)
             return comment
@@ -69,10 +86,26 @@ class Comment(models.Model):
 
     @staticmethod
     def create(text='simple comment'):
+        """
+        This is a method to show date in Unix date format
+
+        :param self: description
+
+        :return: date in Unix date format
+
+        """
         comment = Comment.objects.create(text)
         comment.save()
 
     def update(self, text=None):
+        """
+        This is a method to show date in Unix date format
+
+        :param self: description
+
+        :return: date in Unix date format
+
+        """
         if text:
             self.text = text
 
@@ -80,6 +113,14 @@ class Comment(models.Model):
 
     @staticmethod
     def delete_by_id(id):
+        """
+        This is a method to show date in Unix date format
+
+        :param self: description
+
+        :return: date in Unix date format
+
+        """
         comment = Comment.objects.get(id=comment_id)
         comment.delete()
         comment.save()
