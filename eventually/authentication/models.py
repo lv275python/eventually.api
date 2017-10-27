@@ -15,3 +15,15 @@ class customUser(AbstractBaseUser):
     password = models.CharField(('password'), max_length = 128)
     update_date = models.DateTimeField(default = datetime.now())
     #create_date - already exists
+
+    def __str__(self):
+        return self.first_name + ' - ' + self.second_name
+
+    def get_full_name(self):
+        return ('% %') % (self.first_name, self.last_name)
+
+    def get_email(self):
+        return self.email
+
+    def get_last_update_date(self):
+        return self.update_date
