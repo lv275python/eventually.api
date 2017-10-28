@@ -13,8 +13,8 @@ class customUser(AbstractBaseUser):
     middle_name = models.CharField(('middle name'), max_length = 20)
     email = models.EmailField(('email address'), max_length = 40, unique = True)
     password = models.CharField(('password'), max_length = 128)
-    update_date = models.DateTimeField(default = datetime.now())
-    #create_date - already exists
+    updated_at = models.DateTimeField(auto_now_add = True, editable = False)
+    created_at = models.DateTimeField(auto_now_add = True, editable = False)
 
     def __str__(self):
         return self.first_name + ' - ' + self.second_name
@@ -27,3 +27,9 @@ class customUser(AbstractBaseUser):
 
     def get_last_update_date(self):
         return self.update_date
+
+    def get_updated_at(self):
+        return format(self.updated_at, u'U')
+
+    def get_created_at(self):
+        return format(self.created_at, u'U')
