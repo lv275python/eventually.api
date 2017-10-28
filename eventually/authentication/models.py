@@ -9,7 +9,7 @@ from datetime import datetime
 class customUser(AbstractBaseUser):
     #id - already exists
     first_name = models.CharField(('first name'), max_length = 20)
-    second_name = models.CharField(('second name'), max_length=20)
+    last_name = models.CharField(('second name'), max_length=20)
     middle_name = models.CharField(('middle name'), max_length = 20)
     email = models.EmailField(('email address'), max_length = 40, unique = True)
     password = models.CharField(('password'), max_length = 128)
@@ -17,10 +17,10 @@ class customUser(AbstractBaseUser):
     created_at = models.DateTimeField(auto_now_add = True, editable = False)
 
     def __str__(self):
-        return self.first_name + ' - ' + self.second_name
+        return self.first_name + ' - ' + self.last_name
 
     def get_full_name(self):
-        return ('% %') % (self.first_name, self.last_name)
+        return ('% % %') % (self.first_name, self.middle_name, self.last_name)
 
     def get_email(self):
         return self.email
