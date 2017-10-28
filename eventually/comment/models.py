@@ -1,8 +1,12 @@
+"""
+Model for describe Comment entity
+"""
 from __future__ import unicode_literals
 
 from django.db import models
 from django.utils import timezone
 from django.utils.dateformat import format
+
 # Create your models here.
 
 class Comment(models.Model):
@@ -18,7 +22,7 @@ class Comment(models.Model):
 
     """
 
-    text = models.CharField(max_length = 1024)
+    text = models.CharField(max_length=1024)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -31,10 +35,10 @@ class Comment(models.Model):
 
         """
 
-        return "{} {} {}".format(self.id,
-                                 self.text,
-                                 self.created_at,
-                                 self.updated_at)
+        return "{} {} {} {}".format(self.id,
+                                    self.text,
+                                    self.created_at,
+                                    self.updated_at)
 
     def get_created_at(self):
         """
@@ -56,10 +60,10 @@ class Comment(models.Model):
         """
 
         return {'id': self.id,
-            'text': self.text,
-            'created_at': self.created_at,
-            'updated_at': self.updated_at
-            }
+                'text': self.text,
+                'created_at': self.created_at,
+                'updated_at': self.updated_at
+               }
 
     @staticmethod
     def get_by_id(comment_id):
@@ -107,4 +111,4 @@ class Comment(models.Model):
         :param comment_id: - comment's id
 
         """
-        comment = Comment.objects.filter(id=comment_id).delete()
+        comment = Comment.objects.get(id=comment_id).delete()
