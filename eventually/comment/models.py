@@ -114,4 +114,4 @@ class Comment(models.Model):
         try:
             comment = Comment.objects.get(id=comment_id).delete()
         except Comment.DoesNotExist:
-            pass
+            return "There is no comment with that id"
