@@ -111,4 +111,7 @@ class Comment(models.Model):
         :param comment_id: - comment's id
 
         """
-        comment = Comment.objects.get(id=comment_id).delete()
+        try:
+            comment = Comment.objects.get(id=comment_id).delete()
+        except Comment.DoesNotExist:
+            pass
