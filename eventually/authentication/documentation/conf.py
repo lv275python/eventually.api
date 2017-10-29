@@ -20,7 +20,7 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../../'))
-# Lines below are important for Sphinx to properly work with Django
+# Lines below are IMPORTANT for Sphinx to properly work with Django
 import django
 os.environ['DJANGO_SETTINGS_MODULE'] = 'eventually.settings'
 django.setup()

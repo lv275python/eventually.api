@@ -93,7 +93,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">General</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-authentication.models">models.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-authentication.models">Authentication User</a></li>
 </ul>
 </li>
 </ul>
@@ -161,9 +161,9 @@
             
   <div class="section" id="general">
 <h1>General<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h1>
-<p>This project aims to create a flexible and easy-to-use web app to help you organize your events and parties.</p>
+<p>This project aims to create a flexible and easy-to-use web app to help you organize your events and whatever you may come up with.</p>
 <div class="section" id="module-authentication.models">
-<span id="models-py"></span><h2>models.py<a class="headerlink" href="#module-authentication.models" title="Permalink to this headline">¶</a></h2>
+<span id="authentication-user"></span><h2>Authentication User<a class="headerlink" href="#module-authentication.models" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="authentication.models.customUser">
 <em class="property">class </em><code class="descclassname">authentication.models.</code><code class="descname">customUser</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#authentication.models.customUser" title="Permalink to this definition">¶</a></dt>
@@ -172,12 +172,66 @@
 <li>first, last and middle names: all Char with maximum length of 20 chars.</li>
 <li>email: email field of max length 20 chars</li>
 <li>password: charfield of max length 128 symbols</li>
-<li>updated_at &amp; created_at fields: DateTimeField. created_at can’t be changed once created</li>
+<li>updated_at &amp; created_at fields: DateTimeField.
+created_at can’t be changed once created</li>
 </ol>
 <dl class="method">
 <dt id="authentication.models.customUser.__str__">
 <code class="descname">__str__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#authentication.models.customUser.__str__" title="Permalink to this definition">¶</a></dt>
 <dd><p>This magic method is redefined to show first and last name of the customUser object.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="authentication.models.customUser.create">
+<em class="property">static </em><code class="descname">create</code><span class="sig-paren">(</span><em>first_name</em>, <em>middle_name</em>, <em>last_name</em>, <em>email</em>, <em>password</em><span class="sig-paren">)</span><a class="headerlink" href="#authentication.models.customUser.create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>first_name</strong> – first name of a user</li>
+<li><strong>middle_name</strong> – middle name of a user</li>
+<li><strong>last_name</strong> – last name of a user</li>
+<li><strong>email</strong> – email of a user</li>
+<li><strong>password</strong> – password of a user</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a new user object which is also written into the DB</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="authentication.models.customUser.delete_by_id">
+<em class="property">static </em><code class="descname">delete_by_id</code><span class="sig-paren">(</span><em>user_id</em><span class="sig-paren">)</span><a class="headerlink" href="#authentication.models.customUser.delete_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>user_id</strong> – an id of a user to be deleted</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">user object if it existed in the db or Error message</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="authentication.models.customUser.get_by_id">
+<em class="property">static </em><code class="descname">get_by_id</code><span class="sig-paren">(</span><em>user_id</em><span class="sig-paren">)</span><a class="headerlink" href="#authentication.models.customUser.get_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>user_id</strong> – the id of a user which should be found in the DB</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">user object or None if a user with such ID does not exist</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -187,7 +241,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">creation date in form of a timestamp</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">creation date of a user record in form of a timestamp</td>
 </tr>
 </tbody>
 </table>
@@ -227,6 +281,48 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">returns last update date in form of a timestamp</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="authentication.models.customUser.myattr_to_dict">
+<code class="descname">myattr_to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#authentication.models.customUser.myattr_to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">manually-defined attributes of the object. Inherited attributes aren’t shown.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="authentication.models.customUser.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#authentication.models.customUser.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Returns an object in form of a dictionary. Methods inherited from the parent object are also shown</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="authentication.models.customUser.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#authentication.models.customUser.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates user profile in the database with the specified parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> – takes a list of parameters to be changed but no more than 5.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">returns an updated object</td>
 </tr>
 </tbody>
 </table>

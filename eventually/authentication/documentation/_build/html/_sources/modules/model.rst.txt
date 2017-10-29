@@ -1,12 +1,12 @@
 General
 ==================
 
-This project aims to create a flexible and easy-to-use web app to help you organize your events and parties.
+This project aims to create a flexible and easy-to-use web app to help you organize your events and whatever you may come up with.
 
 
 
-models.py
----------
+Authentication User
+-------------------
 
 .. automodule:: authentication.models
    :members:
