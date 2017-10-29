@@ -77,7 +77,7 @@ class Comment(models.Model):
         try:
             comment = Comment.objects.get(id=comment_id)
             return comment
-        except:
+    except Comment.DoesNotExist:
             return None
 
     @staticmethod
