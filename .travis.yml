@@ -1,0 +1,16 @@
+language: python
+python:
+  - 3.6.3
+
+install:
+  - pip install -r requirements.txt
+  - pip install pylint
+  - pip install pylint-django
+  - pip install coveralls
+
+script:
+  - cd eventually/
+  - pylint --rcfile=.pylintrc *
+
+after_success:
+  - coveralls
