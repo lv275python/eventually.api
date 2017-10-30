@@ -77,7 +77,7 @@ class Comment(models.Model):
         try:
             comment = Comment.objects.get(id=comment_id)
             return comment
-    except Comment.DoesNotExist:
+        except Comment.DoesNotExist:
             return None
 
     @staticmethod
@@ -101,6 +101,7 @@ class Comment(models.Model):
         if text:
             self.text = text
 
+        updated_at =
         self.save()
 
     @staticmethod
