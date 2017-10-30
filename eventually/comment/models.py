@@ -71,7 +71,7 @@ class Comment(models.Model):
         Return comment, found by id.
 
         :param comment_id: comment's id
-        :return: tuple with comment's info
+        :return: Comment object instance or None if object does not exist
 
         """
         try:
@@ -86,10 +86,12 @@ class Comment(models.Model):
         Create comment.
 
         :param text: - text of comment
+        :return: Comment object instance
 
         """
         comment = Comment.objects.create(text=text)
         comment.save()
+        return comment
 
     def update(self, text=None):
         """
@@ -101,7 +103,6 @@ class Comment(models.Model):
         if text:
             self.text = text
 
-        updated_at =
         self.save()
 
     @staticmethod
@@ -110,9 +111,11 @@ class Comment(models.Model):
         Delete comment, found by id.
 
         :param comment_id: - comment's id
+        :return: True if comment seccessfully deleted or None if object does not exist
 
         """
         try:
             comment = Comment.objects.get(id=comment_id).delete()
+            return True
         except Comment.DoesNotExist:
-            return "There is no comment with that id"
+            return None
