@@ -15,7 +15,7 @@
 
 ### Second Level Review
 
-- [ ] @ToDo
+- [ ] @ssOleg
 - [ ] @lhalam
 
 ## Summary of issue
