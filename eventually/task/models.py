@@ -5,7 +5,6 @@ Task module.
 This module implements class that represents the task entity.
 """
 from django.db import models
-from django.db import IntegrityError
 
 
 class Task(models.Model):
