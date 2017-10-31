@@ -46,6 +46,7 @@ class Task(models.Model):
         """
         Magic method that returns string representation of
         event instance object.
+
         :return: task title, task description, task status
         """
 
@@ -56,7 +57,6 @@ class Task(models.Model):
         Method that converts task object to dictionary.
 
         :return: dictionary with task's information
-
         """
 
         return {
@@ -79,10 +79,9 @@ class Task(models.Model):
         """
 
         try:
-            task = Task.objects.get(id=task_id)
-            return task
+           return Task.objects.get(id=task_id)
         except Task.DoesNotExist:
-            return None
+            pass
 
     @staticmethod
     def create(title=None, description=None, status=0):
@@ -110,8 +109,8 @@ class Task(models.Model):
         try:
             task.save()
             return task
-        except IntegrityError:
-            return None
+        except ValueError:
+            pass
 
     def update(self, title=None, description=None, status=None,):
         """
