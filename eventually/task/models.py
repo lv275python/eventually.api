@@ -36,15 +36,27 @@ class Task(models.Model):
         (2, 'Done')
     )
 
-    title = models.CharField(max_length=255, null=True)
+    title = models.CharField(max_length=255)
     description = models.TextField()
     status = models.IntegerField(default=0, choices=STATUS_TYPE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        """
+        Magic method that returns string representation of
+        event instance object.
+        :return: task title, task description, task status
+        """
+
+        return "{} {} {}".format(self.title, self.description, self.status)
+
     def to_dict(self):
         """
-        :param:
+        Method that converts task object to dictionary.
+
+        :return: dictionary with task's information
+
         """
 
         return {
@@ -58,19 +70,36 @@ class Task(models.Model):
     @staticmethod
     def get_by_id(task_id):
         """
-        :param
+        Static method that returns task objects according to the accepted id.
+
+        :param task_id: Unique identificator of task.
+        :type task_id: integer
+
+        :return: task object or None if task does not exist
         """
 
         try:
             task = Task.objects.get(id=task_id)
             return task
-        except DoesNotExist:
+        except Task.DoesNotExist:
             return None
 
     @staticmethod
     def create(title=None, description=None, status=0):
         """
-        :param
+        Static method that creates instance of Task class and creates database
+        row with the accepted info.
+
+        :param title: Title of the certain task.
+        :type title: string
+
+        :param description: Describing goals for successful event performance
+        :type description: string
+
+        :param status: Stage of the task.
+        :type status: integer
+
+        :return: task object or None if task have not created
         """
 
         task = Task()
@@ -86,7 +115,18 @@ class Task(models.Model):
 
     def update(self, title=None, description=None, status=None,):
         """
-        :param
+        Method that updates task object according to the accepted info.
+
+        :param title: Title of the certain task.
+        :type title: string
+
+        :param description: Describing goals for successful event performance
+        :type description: string
+
+        :param status: Stage of the task.
+        :type status: integer
+
+        :return: None
         """
 
         if title:
@@ -101,10 +141,16 @@ class Task(models.Model):
     @staticmethod
     def delete_by_id(task_id):
         """
-        :param
+        Static method that removes task object according to the accepted id.
+
+        :param task_id: Unique identificator of task.
+        :type task_id: integer
+
+        :return: task object or None if task does not exist
         """
         try:
             task = Task.objects.get(id=task_id)
             task.delete()
-        except Task.DoesNotExist:
+            return True
+        except (Task.DoesNotExist, AttributeError):
             pass
