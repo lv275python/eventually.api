@@ -8,7 +8,7 @@ from django.db import models
 from django.db import IntegrityError
 
 
-class Team(models.Model):
+class Task(models.Model):
     """
      Describing of task entity.
 
