@@ -37,7 +37,7 @@ class Task(models.Model):
     )
 
     title = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.CharField(max_length=1024)
     status = models.IntegerField(default=0, choices=STATUS_TYPE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
@@ -79,7 +79,7 @@ class Task(models.Model):
         """
 
         try:
-           return Task.objects.get(id=task_id)
+            return Task.objects.get(id=task_id)
         except Task.DoesNotExist:
             pass
 
@@ -109,7 +109,7 @@ class Task(models.Model):
         try:
             task.save()
             return task
-        except ValueError:
+        except (ValueError, IntegrityError):
             pass
 
     def update(self, title=None, description=None, status=None,):
