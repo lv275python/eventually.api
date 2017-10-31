@@ -8,11 +8,9 @@ from django.db import models
 from django.db import IntegrityError
 
 
-class Task(models.Model):
+class Team(models.Model):
     """
-        ..class:: Task.
-
-        Describing of task entity.
+     Describing of task entity.
 
         Attributes:
             :param title: Title of the certain task.
