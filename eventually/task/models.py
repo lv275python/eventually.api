@@ -57,9 +57,22 @@ class Task(models.Model):
         Method that converts task object to dictionary.
 
         :return: dictionary with task's information
+
+        :Example:
+        {
+            'id': 11,
+            'title': 'My awesome title',
+            'description': 'My awesome description',
+            'status': 1,
+            'created_at': datetime.datetime
+                            (2017, 10, 31, 17, 37, 55, 605085, tzinfo=<UTC>),
+            'updated_at': datetime.datetime
+                            (2017, 10, 31, 17, 37, 55, 605113, tzinfo=<UTC>)
+        }
         """
 
         return {
+            'id':self.id,
             'title': self.title,
             'description': self.description,
             'status': self.status,
@@ -112,7 +125,7 @@ class Task(models.Model):
         except (ValueError, IntegrityError):
             pass
 
-    def update(self, title=None, description=None, status=None,):
+    def update(self, title=None, description=None, status=None):
         """
         Method that updates task object according to the accepted info.
 
