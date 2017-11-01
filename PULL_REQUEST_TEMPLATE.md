@@ -5,7 +5,7 @@
 
 ## Code reviewers
 
-- [ ] @Ashiato
+- [ ] @dmytrorevak
 - [ ] @IvanAndrukh
 - [ ] @JjuliaP
 - [ ] @makarman
