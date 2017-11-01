@@ -11,8 +11,6 @@ from django.db import IntegrityError
 
 class Event(models.Model):
     """
-    .. class:: Event
-
     Describing of event entity.
 
     Attributes:
@@ -56,7 +54,7 @@ class Event(models.Model):
         :type status: integer
     """
 
-    STATUS_CHOISES = (
+    STATUS_CHOICES = (
         (0, 'draft'),
         (1, 'published'),
         (2, 'going'),
@@ -72,7 +70,7 @@ class Event(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     budget = models.IntegerField(null=True)
-    status = models.IntegerField(default=0, choices=STATUS_CHOISES)
+    status = models.IntegerField(default=0, choices=STATUS_CHOICES)
 
     def __str__(self):
         """
@@ -89,14 +87,30 @@ class Event(models.Model):
         Method that converts event object to dictionary.
 
         :return: dictionary with event's information
+
+        :Example:
+
+        | {
+        |    'id': 4,
+        |    'name': 'example',
+        |    'description': 'decsp',
+        |    'start_at': 1509539867,
+        |    'created_at': 1509539867,
+        |    'updated_at': 1509539867,
+        |    'longitude': 7.03125,
+        |    'latitude': 21.105,
+        |    'budget': 100,
+        |    'status': 0
+        | }
         """
 
         return {
+            'id': self.id,
             'name': self.name,
             'description': self.description,
-            'start_at': self.start_at,
-            'created_at': self.created_at,
-            'updated_at': self.updated_at,
+            'start_at': int(self.start_at.timestamp()),
+            'created_at': int(self.created_at.timestamp()),
+            'updated_at': int(self.updated_at.timestamp()),
             'duration': self.duration,
             'longitude': self.longitude,
             'latitude': self.latitude,
@@ -116,14 +130,13 @@ class Event(models.Model):
         """
 
         try:
-            event = Event.objects.get(id=event_id)
-            return event
+            return Event.objects.get(id=event_id)
         except Event.DoesNotExist:
-            return None
+            pass
 
     @staticmethod
     def create(name=None, description='', start_at=None, duration=None,
-               longitude=None, latitude=None, budget=None, status=None):
+               longitude=None, latitude=None, budget=None, status=0):
         """
         Static method that creates instance of Event class and creates database
         row with the accepted info.
@@ -168,13 +181,12 @@ class Event(models.Model):
         event.longitude = longitude
         event.latitude = latitude
         event.budget = budget
-        if status:
-            event.status = status
+        event.status = status
 
         try:
             event.save()
             return event
-        except IntegrityError:
+        except (ValueError, IntegrityError):
             pass
 
     def update(self, name=None, description=None, start_at=None, duration=None,
