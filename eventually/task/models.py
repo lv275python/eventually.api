@@ -61,12 +61,12 @@ class Task(models.Model):
 
         :Example:
         {
-            'id': 15,
+            'id': 17,
             'title': 'My awesome title',
             'description': 'My awesome description',
             'status': 1,
-            'created_at': 1509529406409,
-            'updated_at': 1509529406409,
+            'created_at': 1509540116,
+            'updated_at': 1509540116,
         }
         """
 
@@ -75,8 +75,8 @@ class Task(models.Model):
             'title': self.title,
             'description': self.description,
             'status': self.status,
-            'created_at': int(self.created_at.timestamp()*1000),
-            'updated_at': int(self.updated_at.timestamp()*1000),
+            'created_at': int(self.created_at.timestamp()),
+            'updated_at': int(self.updated_at.timestamp()),
         }
 
     @staticmethod
