@@ -4,6 +4,7 @@ Task module.
 
 This module implements class that represents the task entity.
 """
+import calendar
 from django.db import models
 from django.db import IntegrityError
 
@@ -61,14 +62,12 @@ class Task(models.Model):
 
         :Example:
         {
-            'id': 11,
+            'id': 15,
             'title': 'My awesome title',
             'description': 'My awesome description',
             'status': 1,
-            'created_at': datetime.datetime
-                            (2017, 10, 31, 17, 37, 55, 605085, tzinfo=<UTC>),
-            'updated_at': datetime.datetime
-                            (2017, 10, 31, 17, 37, 55, 605113, tzinfo=<UTC>)
+            'created_at': 1509527769,
+            'updated_at': 1509527769
         }
         """
 
@@ -77,8 +76,8 @@ class Task(models.Model):
             'title': self.title,
             'description': self.description,
             'status': self.status,
-            'created_at': self.created_at,
-            'updated_at': self.updated_at,
+            'created_at': calendar.timegm(self.created_at.utctimetuple()),
+            'updated_at': calendar.timegm(self.updated_at.utctimetuple()),
         }
 
     @staticmethod
