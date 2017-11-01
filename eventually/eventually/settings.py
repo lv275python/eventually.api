@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'event',
-    'task'
+    'task',
+    'team',
 ]
 
 MIDDLEWARE = [
