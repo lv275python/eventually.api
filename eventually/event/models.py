@@ -7,6 +7,8 @@ This module implements class that represents the event entity.
 
 from django.db import models
 from django.db import IntegrityError
+from team.models import Team
+from authentication.models import CustomUser
 
 
 class Event(models.Model):
@@ -51,7 +53,12 @@ class Event(models.Model):
 
         :param status: The number that points to the certain.
                        stage of the event processing.
-        :type status: integer
+
+        :param team: Foreign key on the certain Team model.
+        :type team: integer
+
+        :param owner: Foreign key on the certain CustomUser model.
+        :type owner: integer
     """
 
     STATUS_CHOICES = (
@@ -71,6 +78,8 @@ class Event(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     budget = models.IntegerField(null=True)
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
+    owner = models.ForeignKey(CustomUser, null=True)
 
     def __str__(self):
         """
@@ -100,7 +109,9 @@ class Event(models.Model):
         |    'longitude': 7.03125,
         |    'latitude': 21.105,
         |    'budget': 100,
-        |    'status': 0
+        |    'status': 0,
+        |    'team': 23,
+        |    'owner': 12
         | }
         """
 
@@ -115,7 +126,9 @@ class Event(models.Model):
             'longitude': self.longitude,
             'latitude': self.latitude,
             'budget': self.budget,
-            'status': self.status
+            'status': self.status,
+            'team': self.team.id,
+            'owner': self.owner.id
         }
 
     @staticmethod
@@ -135,11 +148,18 @@ class Event(models.Model):
             pass
 
     @staticmethod
-    def create(name=None, description='', start_at=None, duration=None,
-               longitude=None, latitude=None, budget=None, status=0):
+    def create(team, owner, name=None, description='', start_at=None,
+               duration=None, longitude=None, latitude=None, budget=None,
+               status=0):
         """
         Static method that creates instance of Event class and creates database
         row with the accepted info.
+
+        :param team: Certain Team's object. Is required.
+        :type team: Team model
+
+        :param owner: Certain CustomUser's object. Is required.
+        :type owner: CustomUser model
 
         :param name: Name of the certain event.
         :type name: string
@@ -182,6 +202,8 @@ class Event(models.Model):
         event.latitude = latitude
         event.budget = budget
         event.status = status
+        event.team = team
+        event.owner = owner
 
         try:
             event.save()
@@ -189,13 +211,17 @@ class Event(models.Model):
         except (ValueError, IntegrityError):
             pass
 
-    def update(self, name=None, description=None, start_at=None, duration=None,
-               longitude=None, latitude=None, budget=None, status=None):
+    def update(self, owner=None, name=None, description=None, start_at=None,
+               duration=None, longitude=None, latitude=None, budget=None,
+               status=None):
         """
         Method that updates event object according to the accepted info.
 
         :param name: Name of the certain event.
         :type name: string
+
+        :param owner: Certain CustomUser's object. Is required.
+        :type owner: CustomUser model
 
         :param description: Describing core concepts and
                             goals of the event.
@@ -242,6 +268,8 @@ class Event(models.Model):
             self.budget = budget
         if status:
             self.status = status
+        if owner:
+            self.owner = owner
 
         self.save()
 
