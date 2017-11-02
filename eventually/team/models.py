@@ -6,6 +6,7 @@ This module implements class that represents the team entity.
 """
 from django.db import models
 from django.db import IntegrityError
+from authentication.models import CustomUser
 
 
 class Team(models.Model):
@@ -31,12 +32,21 @@ class Team(models.Model):
         :param update_date: The date when
                     the certain team was last time edited.
         :type: create_date: datetime
+
+        :param owner: Describing relation between team and owner of team.
+        :type owner: int
+
+        :param members: Describing 
+                            relations between team and members of team.
+        :type members: int
     """
     name = models.CharField(max_length=30)
     description = models.CharField(max_length=1024, blank=True)
     image = models.CharField(max_length=300, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(CustomUser, null=True)#, on_delete=models.CASCADE)
+    #members = models.ManyToManyField(CustomUser)
 
     def __str__(self):
         """
@@ -61,7 +71,9 @@ class Team(models.Model):
         'description': 'desc',
         'image': 'img',
         'created_at': 1509539536196,
-        'updated_at': 1509539536196
+        'updated_at': 1509539536196,
+        'owner': 2,
+        'members': 1
         }
         """
 
@@ -72,6 +84,8 @@ class Team(models.Model):
             'image': self.image,
             'created_at': int(self.created_at.timestamp()),
             'updated_at': int(self.updated_at.timestamp()),
+            'owner_id': self.owner.id,
+            #'members_id': self.members.id
         }
 
     @staticmethod
@@ -92,7 +106,7 @@ class Team(models.Model):
             pass
 
     @staticmethod
-    def create(name=None, description='', image=''):
+    def create(owner, name=None, description='', image=''):
         """
         Static method that creates instance of Team class and creates databes
         row with the accepted info.
@@ -113,13 +127,15 @@ class Team(models.Model):
         team.name = name
         team.description = description
         team.image = image
+        team.owner = owner
+        #team.members = members
         try:
             team.save()
             return team
         except (ValueError, IntegrityError):
             pass
 
-    def update(self, name=None, description=None, image=None):
+    def update(self, owner=None, name=None, description=None, image=None):
         """
         Method that updates team object according to the accepted info.
 
@@ -134,7 +150,10 @@ class Team(models.Model):
 
         :return: None
         """
-
+        if owner:
+            self.owner = owner
+        #if members:
+        #    self.members = members
         if name:
             self.name = name
         if description:
