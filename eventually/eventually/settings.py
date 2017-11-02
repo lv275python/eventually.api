@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'task',
     'vote',
     'comment',
+    'authentication'
 ]
 
 MIDDLEWARE = [
