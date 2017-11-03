@@ -4,8 +4,9 @@ Task module.
 
 This module implements class that represents the task entity.
 """
-from django.db import models
-from django.db import IntegrityError
+from django.db import models, IntegrityError
+from event.models import Event
+from authentication.models import CustomUser
 
 
 class Task(models.Model):
@@ -29,6 +30,12 @@ class Task(models.Model):
             :param updated_at: The date when the certain
             task was last time edited.
             :type updeted_at: datatime
+
+            :param event: Foreign key on the certain Event model
+            :type event: integer
+
+            :param users: Foreign key on the certain CustomUser model
+            :type users: integer
         """
 
     STATUS_TYPE_CHOICES = (
@@ -42,16 +49,42 @@ class Task(models.Model):
     status = models.IntegerField(default=0, choices=STATUS_TYPE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True)
+    users = models.ManyToManyField(CustomUser)
+
+    def __repr__(self):
+        """
+        Magic method that returns representation of
+        task instance object.
+
+        :return: task title, task description, task status, created , updated, event id, users id
+        """
+
+        return "id:{} title:{} {} {} {} {} {} {}".format(self.id,
+                                                         self.title,
+                                                         self.description,
+                                                         self.status,
+                                                         self.created_at,
+                                                         self.updated_at,
+                                                         self.event.id,
+                                                         [user.id for user in self.users.all()])
 
     def __str__(self):
         """
         Magic method that returns string representation of
-        event instance object.
+        task instance object.
 
-        :return: task title, task description, task status
+        :return: task title, task description, task status, created , updated, event id, users id
         """
 
-        return "{} {} {}".format(self.title, self.description, self.status)
+        return "{} {} {} {} {} {} {} {}".format(self.id,
+                                                self.title,
+                                                self.description,
+                                                self.status,
+                                                self.created_at,
+                                                self.updated_at,
+                                                self.event.id,
+                                                [user.id for user in self.users.all()])
 
     def to_dict(self):
         """
@@ -60,24 +93,27 @@ class Task(models.Model):
         :return: dictionary with task's information
 
         :Example:
-        {
-            'id': 17,
-            'title': 'My awesome title',
-            'description': 'My awesome description',
-            'status': 1,
-            'created_at': 1509540116,
-            'updated_at': 1509540116,
-        }
+
+        | {
+        |    'id': 17,
+        |    'title': 'My awesome title',
+        |    'description': 'My awesome description',
+        |    'status': 1,
+        |    'created_at': 1509540116,
+        |    'updated_at': 1509540116,
+        |    'event' : 13,
+        |    'users' : [21, 33]
+        | }
         """
 
-        return {
-            'id':self.id,
-            'title': self.title,
-            'description': self.description,
-            'status': self.status,
-            'created_at': int(self.created_at.timestamp()),
-            'updated_at': int(self.updated_at.timestamp()),
-        }
+        return {'id': self.id,
+                'title': self.title,
+                'description': self.description,
+                'status': self.status,
+                'created_at': int(self.created_at.timestamp()),
+                'updated_at': int(self.updated_at.timestamp()),
+                'event': self.event.id,
+                'users': [user.id for user in self.users.all()]}
 
     @staticmethod
     def get_by_id(task_id):
@@ -96,10 +132,16 @@ class Task(models.Model):
             pass
 
     @staticmethod
-    def create(title=None, description=None, status=0):
+    def create(event, users, title=None, description=None, status=0):
         """
         Static method that creates instance of Task class and creates database
         row with the accepted info.
+
+        :param: event: Certain Event's object. Is required.
+        :type event: Event model.
+
+        :param: users: Certain tuple CustomUser's objects. Is required.
+        :type tuple<users>: CustomUser model.
 
         :param title: Title of the certain task.
         :type title: string
@@ -114,19 +156,27 @@ class Task(models.Model):
         """
 
         task = Task()
+        task.event = event
         task.title = title
         task.description = description
         task.status = status
 
         try:
             task.save()
+            task.users.add(*users)
             return task
         except (ValueError, IntegrityError):
             pass
 
-    def update(self, title=None, description=None, status=None):
+    def update(self, event=None, users=None, title=None, description=None, status=None):
         """
         Method that updates task object according to the accepted info.
+
+        :param: event: Certain Event's object.
+        :type event: Event model.
+
+        :param: users: Certain tuple CustomUser's objects.
+        :type <tuple>users: CustomUser model.
 
         :param title: Title of the certain task.
         :type title: string
@@ -139,7 +189,10 @@ class Task(models.Model):
 
         :return: None
         """
-
+        if event:
+            self.event = event
+        if users:
+            self.users = users
         if title:
             self.title = title
         if description:
