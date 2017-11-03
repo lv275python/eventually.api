@@ -45,8 +45,8 @@ class Team(models.Model):
     image = models.CharField(max_length=300, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
-    owner = models.ForeignKey(CustomUser, null=True)#, on_delete=models.CASCADE)
-    #members = models.ManyToManyField(CustomUser)
+    owner = models.ForeignKey(CustomUser, null=True)
+    members = models.ManyToManyField(CustomUser, related_name='+')
 
     def __str__(self):
         """
@@ -85,7 +85,7 @@ class Team(models.Model):
             'created_at': int(self.created_at.timestamp()),
             'updated_at': int(self.updated_at.timestamp()),
             'owner_id': self.owner.id,
-            #'members_id': self.members.id
+            'members_id': self.members.id
         }
 
     @staticmethod
@@ -106,7 +106,7 @@ class Team(models.Model):
             pass
 
     @staticmethod
-    def create(owner, name=None, description='', image=''):
+    def create(owner, members, name=None, description='', image=''):
         """
         Static method that creates instance of Team class and creates databes
         row with the accepted info.
@@ -128,14 +128,14 @@ class Team(models.Model):
         team.description = description
         team.image = image
         team.owner = owner
-        #team.members = members
         try:
             team.save()
+            team.members.add(members)
             return team
         except (ValueError, IntegrityError):
             pass
 
-    def update(self, owner=None, name=None, description=None, image=None):
+    def update(self, members=None, owner=None, name=None, description=None, image=None):
         """
         Method that updates team object according to the accepted info.
 
@@ -152,8 +152,8 @@ class Team(models.Model):
         """
         if owner:
             self.owner = owner
-        #if members:
-        #    self.members = members
+        if members:
+            self.members = members
         if name:
             self.name = name
         if description:
@@ -179,3 +179,8 @@ class Team(models.Model):
             return True
         except (Team.DoesNotExist, AttributeError):
             pass
+    
+    @staticmethod
+    def get_all(start, end):
+        pass
+        #return team.object.
