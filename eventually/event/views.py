@@ -1,8 +1,11 @@
 """
 Views module
-===========
+============
 """
 
-# from django.shortcuts import render
+from django.views.generic.base import View
 
-# Create your views here.
+
+class EventView(View):
+    """Event view handles GET, POST, PUT, DELETE requests."""
+    pass
