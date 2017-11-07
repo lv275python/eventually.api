@@ -5,47 +5,87 @@ Vote & Answer models
 This module implements class that represents the vote and answer models
 """
 from django.db import models, IntegrityError
+from authentication.models import CustomUser
+from event.models import Event
 
 
 class Vote(models.Model):
     """
-        ..class::Vote
-
         Create Vote model
 
         Attributes:
         ===========
 
-            :param is_active: active vote or end
-            :type is_active: BooleanField
+            :param event: foreign key on model Event
+            :type event:integer
 
-            :param is_extended:
-            :type is_extended: BooleanField
+            :param is_active: active vote or end
+            :type is_active: boolean
+
+            :param is_extended: opportunity write your own variant
+            :type is_extended: boolean
 
             :param title: title of vote
-            :type title: CharField
+            :type title: string
 
             :param vote_type: type of vote - we can choose one answer or many
-            :type vote_type: CharField
+            :type vote_type: string
 
-            :param create_at:
-            :type create_at: TimeField
+            :param create_at: The date when the ertain event was created
+            :type create_at: datetime
 
-            :param update_at:
-            :type update_at: TimeField
+            :param update_at: The date when the certain event was last time edited
+            :type update_at: datetime
     """
 
     MULTI_CHOICES = (
-        ('O', 'One'),
-        ('M', 'Multi'),
+        (0, 'One'),
+        (1, 'Multi'),
     )
 
+    event = models.ForeignKey(Event, null=True)
     is_active = models.BooleanField(default=True)
     is_extended = models.BooleanField(default=True)
-    title = models.TextField(max_length=100)
-    vote_type = models.CharField(max_length=2, choices=MULTI_CHOICES)
+    title = models.CharField(max_length=100)
+    vote_type = models.IntegerField(choices=MULTI_CHOICES)
     create_at = models.DateTimeField(auto_now_add=True, editable=False)
     update_at = models.DateTimeField(auto_now=True)
+
+    def __repr__(self):
+        """
+        Magic method that returns string representation of
+        vote instance object.
+
+        :return: vote id, event id, vote is_active, vote is_extended,
+                 vote title, vote vote_type
+        """
+
+        return "id:{} event:{} is_active:{} is_extended:{} title:{} \
+        vote_type:{}".format(self.id,
+                             self.event.id if self.event
+                             else None,
+                             self.is_active,
+                             self.is_extended,
+                             self.title,
+                             self.vote_type)
+
+    def __str__(self):
+        """
+        Magic method that returns string representation of
+        vote instance object.
+
+        :return: vote id, event id, vote is_active, vote is_extended,
+                 vote title, vote vote_type
+        """
+
+        return "id:{} event:{} is_active:{} is_extended:{} title:{} \
+                vote_type:{}".format(self.id,
+                                     self.event.id if self.event
+                                     else None,
+                                     self.is_active,
+                                     self.is_extended,
+                                     self.title,
+                                     self.vote_type)
 
     def to_dict(self):
         """
@@ -54,18 +94,20 @@ class Vote(models.Model):
         :return:models-fields in dictionary
 
         :Example:
-         {
-             'id': 13,
-             'is_active': True,
-             'is_extended': True,
-             'title': 'Title of vote',
-             'type': 'M',
-             'created_at': 1509540116,
-             'updated_at': 1509540116,
-         }
+         | {
+         |     'id': 13,
+         |     'event':1,
+         |     'is_active': True,
+         |     'is_extended': True,
+         |     'title': 'Title of vote',
+         |     'type': 0,
+         |     'created_at': 1509540116,
+         |     'updated_at': 1509540116,
+         | }
         """
         return {
-            'id':self.id,
+            'id': self.id,
+            'event': self.event.id,
             'is_active': self.is_active,
             'is_extended': self.is_extended,
             'title': self.title,
@@ -80,7 +122,7 @@ class Vote(models.Model):
         Static method that return Vote object by id
 
         :param vote_id: id of element in model
-        :type id: IntegerField
+        :type vote_id: integer
 
         :return: object with element, searched by id
         """
@@ -90,25 +132,29 @@ class Vote(models.Model):
             pass
 
     @staticmethod
-    def create(is_active=True, is_extended=True, title="", vote_type='O'):
+    def create(event, is_active=True, is_extended=True, title="", vote_type=1):
         """
         Static method that create new Vote object
 
-        :param is_active: active vote or end
-        :type is_active:BooleanField
+        :param event: foreign key on model Event. Is required
+        :type event: integer
 
-        :param is_extended:
-        :type is_extended: BooleanField
+        :param is_active: active vote or end
+        :type is_active: boolean
+
+        :param is_extended: opportunity write your own variant
+        :type is_extended: boolean
 
         :param title: title of vote
-        :type title: CharField
+        :type title: string
 
         :param vote_type: type of vote - we can choose one answer or many
-        :type title: CharField
+        :type vote_type: integer
 
         :return: new created object or None
         """
-        vote = Vote(is_active=is_active,
+        vote = Vote(event=event,
+                    is_active=is_active,
                     is_extended=is_extended,
                     title=title,
                     vote_type=vote_type)
@@ -124,19 +170,20 @@ class Vote(models.Model):
         Method that update existed Vote object
 
         :param is_active: active vote or end
-        :type is_active: BooleanField
+        :type is_active: boolean
 
         :param is_extended:
-        :type is_extended: BooleanField
+        :type is_extended: boolean
 
         :param title: title of vote
-        :type title: CharField
+        :type title: string
 
         :param vote_type: type of vote - we can choose one answer or many
-        :type vote_type: CharField
+        :type vote_type: string
 
         :return: none
         """
+
         if is_active:
             self.is_active = is_active
         if is_extended:
@@ -154,7 +201,7 @@ class Vote(models.Model):
         Method delete existed Vote object by id
 
         :param vote_id: id of object
-        :type vote_id: IntegerField
+        :type vote_id: integer
 
         :return:deleted Vote object
         """
@@ -168,29 +215,59 @@ class Vote(models.Model):
 
 class Answer(models.Model):
     """
-        ..class::Answer
-
         Create Answer model, that has variants to choose in Vote
 
         Attributes:
         ===========
 
         :param vote: foreign key of vote
-        :type vote: ForeignKey
+        :type vote: integer
 
         :param text: variant to choose in vote
-        :type text: TextField
+        :type text: string
 
-        :param create_at:
-        :type create_at: TimeField
+        :param members: Describing relations between team and members of team.
+        :type members: integer
 
-        :param update_at:
-        :type update_at: TimeField
+        :param create_at: The date when the ertain event was created
+        :type create_at: datetime
+
+        :param update_at: The date when the certain event was last time edited
+        :type update_at: datetime
     """
-    vote = models.ForeignKey(Vote)
-    text = models.TextField(max_length=100)
+    vote = models.ForeignKey(Vote, null=True)
+    text = models.CharField(max_length=100)
+    members = models.ManyToManyField(CustomUser)
     create_at = models.DateTimeField(auto_now_add=True, editable=False)
     update_at = models.DateTimeField(auto_now=True)
+
+    def __repr__(self):
+        """
+        Magic method that returns string representation of
+        answer instance object.
+
+        :return: answer id, vote id, answer text, members.id
+        """
+
+        return "{} {} {} {}".format(self.id,
+                                    self.vote.id if self.vote else None,
+                                    self.text,
+                                    [user.id for user in self.members] if self.members else None)
+
+    def __str__(self):
+        """
+        Magic method that returns string representation of
+        answer instance object.
+
+        :return: answer id, vote id, answer text, members.id
+        """
+
+        members = [user.id for user in self.members] if self.members else None
+
+        return "id:{} vote:{} text:{} members:{} ".format(self.id,
+                                                          self.vote.id if self.vote else None,
+                                                          self.text,
+                                                          members)
 
     def to_dict(self):
         """
@@ -199,18 +276,20 @@ class Answer(models.Model):
         :return:models-fields in dictionary
 
         :Example:
-         {
-             'id': 12,
-             'vote': 13,
-             'text': 'My text',
-             'created_at': 1509540116,
-             'updated_at': 1509540116,
-         }
+         | {
+         |     'id': 12,
+         |     'vote': 13,
+         |     'text': 'My text',
+         |     'members' : [1, 3],
+         |     'created_at': 1509540116,
+         |     'updated_at': 1509540116,
+         | }
         """
         return {
             'id': self.id,
             'vote': self.vote,
             'text': self.text,
+            'members': [members.id for members in self.members] if self.members else [],
             'create_at': self.create_at,
             'update_at': self.update_at
         }
@@ -221,7 +300,7 @@ class Answer(models.Model):
         Static method that return Answer object by id
 
         :param answer_id: id of element in model
-        :type answer_id: IntegerField
+        :type answer_id: integer
 
         :return: object with element, searched by id
         """
@@ -231,39 +310,43 @@ class Answer(models.Model):
             pass
 
     @staticmethod
-    def create(my_vote=None, my_text=''):
+    def create(members, vote, text=''):
         """
         Static method that create new Answer object
 
-        :param my_vote: foreign key of vote
-        :type my_vote: IntegerField
+        :param vote: foreign key of vote
+        :type vote: integer
 
-        :param my_text: variant to choose in vote
-        :type my_text: CharField
+        :param text: variant to choose in vote
+        :type text: string
 
         :return: new created object or None
         """
-        answer = Answer(vote=my_vote,
-                        text=my_text)
+        answer = Answer()
+        answer.vote = vote
+        answer.text = text
 
         try:
             answer.save()
+            answer.members.add(*members)
             return answer
         except (ValueError, IntegrityError):
             pass
 
-    def update(self, vote=None, text=None):
+    def update(self, members=None, vote=None, text=None):
         """
         Method that update existed Answer object
 
         :param vote: foreign key of vote
-        :type vote: IntegerField
+        :type vote: integer
 
         :param text: variant to choose in vote
-        :type text: CharField
+        :type text: string
 
         :return: none
         """
+        if members:
+            self.members = members
         if vote:
             self.vote = vote
         if text:
