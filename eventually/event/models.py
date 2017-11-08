@@ -5,10 +5,9 @@ Event model
 This module implements class that represents the event entity.
 """
 
-from django.db import models
-from django.db import IntegrityError
-from team.models import Team
+from django.db import models, IntegrityError
 from authentication.models import CustomUser
+from team.models import Team
 
 
 class Event(models.Model):
@@ -17,6 +16,12 @@ class Event(models.Model):
 
     Attributes:
     ===========
+
+        :param team: Foreign key on the certain Team model.
+        :type team: integer
+
+        :param owner: Foreign key on the certain CustomUser model.
+        :type owner: integer
 
         :param name: Name of the certain event.
         :type name: string
@@ -42,23 +47,17 @@ class Event(models.Model):
 
         :param longitude: The longitude coordinates
                           of event's location.
-        :type longitude: decimal
+        :type longitude: float
 
         :param latitude: The latitude coordinates
                          of event's location.
-        :type latitude: decimal
+        :type latitude: float
 
         :param budget: The money amount required for the event.
         :type budget: integer
 
         :param status: The number that points to the certain.
                        stage of the event processing.
-
-        :param team: Foreign key on the certain Team model.
-        :type team: integer
-
-        :param owner: Foreign key on the certain CustomUser model.
-        :type owner: integer
     """
 
     STATUS_CHOICES = (
@@ -69,6 +68,8 @@ class Event(models.Model):
     )
 
     name = models.CharField(max_length=255)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
+    owner = models.ForeignKey(CustomUser, null=True, on_delete=models.SET_NULL)
     description = models.TextField(blank=True)
     start_at = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
@@ -78,18 +79,40 @@ class Event(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     budget = models.IntegerField(null=True)
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
-    owner = models.ForeignKey(CustomUser, null=True)
+
+    def __repr__(self):
+        """
+        Magic method that returns string representation of
+        event instance object.
+
+        :return: event id, event team, event owner, event name, event status
+        """
+
+        return "id:{} team:{} owner:{} name:{} status:{}".format(self.id,
+                                                                 self.team.id,
+                                                                 self.owner.id if self.owner
+                                                                 else None,
+                                                                 self.name,
+                                                                 self.status)
 
     def __str__(self):
         """
         Magic method that returns string representation of
         event instance object.
 
-        :return: event name, event description, event status
+        :return: event id, event team, event owner, event name,
+                 event description, event duration, event status
         """
 
-        return "{} {} {}".format(self.name, self.description, self.status)
+        return "id:{} team:{} owner:{} name:{} description:{} start_at:{}\
+                duration:{} status:{}".format(self.id,
+                                              self.team.id,
+                                              self.owner.id if self.owner else None,
+                                              self.name,
+                                              self.description,
+                                              self.start_at,
+                                              self.duration,
+                                              self.status)
 
     def to_dict(self):
         """
@@ -101,8 +124,10 @@ class Event(models.Model):
 
         | {
         |    'id': 4,
+        |    'team': 23,
+        |    'owner': 12
         |    'name': 'example',
-        |    'description': 'decsp',
+        |    'description': 'description',
         |    'start_at': 1509539867,
         |    'created_at': 1509539867,
         |    'updated_at': 1509539867,
@@ -110,25 +135,23 @@ class Event(models.Model):
         |    'latitude': 21.105,
         |    'budget': 100,
         |    'status': 0,
-        |    'team': 23,
-        |    'owner': 12
         | }
         """
 
         return {
             'id': self.id,
+            'team': self.team.id,
             'name': self.name,
+            'owner': self.owner.id if self.owner else None,
             'description': self.description,
-            'start_at': int(self.start_at.timestamp()),
+            'start_at': int(self.start_at.timestamp()) if self.start_at else None,
             'created_at': int(self.created_at.timestamp()),
             'updated_at': int(self.updated_at.timestamp()),
             'duration': self.duration,
             'longitude': self.longitude,
             'latitude': self.latitude,
             'budget': self.budget,
-            'status': self.status,
-            'team': self.team.id,
-            'owner': self.owner.id
+            'status': self.status
         }
 
     @staticmethod
@@ -177,11 +200,11 @@ class Event(models.Model):
 
         :param longitude: The longitude coordinates
                           of event's location.
-        :type longitude: decimal
+        :type longitude: float
 
         :param latitude: The latitude coordinates
                          of event's location.
-        :type latitude: decimal
+        :type latitude: float
 
         :param budget: The money amount required for the event.
         :type budget: integer
@@ -194,6 +217,8 @@ class Event(models.Model):
         """
 
         event = Event()
+        event.team = team
+        event.owner = owner
         event.name = name
         event.description = description
         event.start_at = start_at
@@ -236,11 +261,11 @@ class Event(models.Model):
 
         :param longitude: The longitude coordinates
                           of event's location.
-        :type longitude: decimal
+        :type longitude: float
 
         :param latitude: The latitude coordinates
                          of event's location.
-        :type latitude: decimal
+        :type latitude: float
 
         :param budget: The money amount required for the event.
         :type budget: integer
@@ -252,6 +277,8 @@ class Event(models.Model):
         :return: None
         """
 
+        if owner:
+            self.owner = owner
         if name:
             self.name = name
         if description:
