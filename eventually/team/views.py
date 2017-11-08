@@ -1,8 +1,11 @@
 """
-views model
-=======================
-
+Views module
+============
 """
-# from django.shortcuts import render
 
-# Create your views here.
+from django.views.generic.base import View
+
+
+class TeamView(View):
+    """Team view handles GET, POST, PUT, DELETE requests.
+    """
