@@ -2,5 +2,8 @@
 Views module
 ===========
 """
+from django.views import View
 
-# from django.shortcuts import render
+class TaskView(View):
+    """Task view handles GET, POST, PUT, DELETE requests"""
+    pass
