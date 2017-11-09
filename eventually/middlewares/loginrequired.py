@@ -6,10 +6,10 @@ The module that provides custom application's middlewares.
 
 from django.http import HttpResponse
 
-ANONYMOUS_USERS_PATHS = ['/api/v1/login/',
-                         '/api/v1/registration/',
-                         '/api/v1/activate/',
-                         '/api/v1/forget_password/']
+ANONYMOUS_USERS_PATHS = ['/api/v1/user/login/',
+                         '/api/v1/user/register/',
+                         '/api/v1/user/activate/',
+                         '/api/v1/user/forget_password/']
 
 
 class LoginRequiredMiddleware(): # pylint: disable=too-few-public-methods

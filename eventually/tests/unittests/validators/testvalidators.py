@@ -227,3 +227,79 @@ class ValidatorsTestCase(TestCase):
         is_valid = reset_password_validate(data, requred_key)
 
         self.assertIsNone(is_valid)
+
+class EmailValidatorsTestCase(TestCase):
+    """TestCase for email validator"""
+
+    def test_email_valid(self):
+        """Method that tests registration email validation"""
+
+        email = 'john.smith@mail.com'
+
+        is_valid = email_validator(email)
+
+        self.assertTrue(is_valid)
+
+    def test_email_invalid(self):
+        """Method that tests registration email validation"""
+
+        email = 'John.Smithmail.com'
+
+        is_valid = email_validator(email)
+
+        self.assertIsNone(is_valid)
+
+class RegistrationValidatorsTestCase(TestCase):
+    """TestCase for registration validator"""
+
+    def test_registration_valid(self):
+        """Method that tests registration validation"""
+
+        data = {'email': 'somemail@mail.com',
+                'password': 'mypaDssw1223'}
+
+        is_valid = registration_validate(data)
+
+        self.assertTrue(is_valid)
+
+    def test_registration_invalid_required_keys(self):
+        """Method that tests registration required keys validation"""
+
+        data = {'email': 'somemail@mail.com'}
+        is_valid = registration_validate(data)
+        self.assertFalse(is_valid, "not password")
+
+        data = {'password': 'mypaDssw1223',
+                'email': 111}
+        is_valid = registration_validate(data)
+        self.assertFalse(is_valid, "email is not string")
+
+        data = {'password': 'mypaDssw1223'}
+        is_valid = registration_validate(data)
+        self.assertFalse(is_valid, "not email")
+
+        data = {'email': 'somemail@mail.com',
+                'password': 111}
+        is_valid = registration_validate(data)
+        self.assertFalse(is_valid, 'password is not string')
+
+        data = {}
+        is_valid = registration_validate(data)
+        self.assertFalse(is_valid, 'empty data')
+
+
+    def test_registration_invalid_not_string(self):
+        """Method that tests registration string validation"""
+
+        data = {'first_name': 124,
+                'password': 'mypaDssw1223',
+                'email': 'somemail@mail.com'
+                }
+        is_valid = registration_validate(data)
+        self.assertFalse(is_valid, "not password")
+
+        data = {'last_name': 2451,
+                'password': 'mypaDssw1223',
+                'email': 'alkdasdj@mail.com'}
+        is_valid = registration_validate(data)
+        self.assertFalse(is_valid, "email is not string")

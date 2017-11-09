@@ -122,7 +122,7 @@ class CustomUser(AbstractBaseUser):
             pass
 
     @staticmethod
-    def create(email, password, first_name='', middle_name='', last_name=''):
+    def create(email, password, first_name=None, middle_name=None, last_name=None):
         """
         :param first_name: first name of a user
         :type first_name: str
@@ -142,10 +142,12 @@ class CustomUser(AbstractBaseUser):
         :return: a new user object which is also written into the DB
         """
 
-        user = CustomUser(first_name=first_name,
-                          last_name=last_name,
-                          middle_name=middle_name,
-                          email=email)
+        data = {}
+        data['first_name'] = first_name if first_name else ''
+        data['last_name'] = last_name if last_name else ''
+        data['middle_name'] = middle_name if middle_name else ''
+        data['email'] = email
+        user = CustomUser(**data)
         user.set_password(password)
         try:
             user.save()
@@ -180,7 +182,13 @@ class CustomUser(AbstractBaseUser):
             'is_active': self.is_active
             }
 
-    def update(self, first_name=None, last_name=None, middle_name=None, email=None, password=None):
+    def update(self,
+               first_name=None,
+               last_name=None,
+               middle_name=None,
+               email=None,
+               password=None,
+               is_active=None):
         """
         Updates user profile in the database with the specified parameters.\n
         :param first_name: first name of a user
@@ -211,5 +219,7 @@ class CustomUser(AbstractBaseUser):
             self.email = email
         if password:
             self.set_password(password)
+        if is_active:
+            self.is_active = is_active
 
         self.save()
