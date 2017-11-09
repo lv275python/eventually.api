@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('event', '0002_add_foreing_key'),
+        ('event', '0001_initial'),
         ('authentication', '0001_initial'),
         ('task', '0001_initial'),
     ]
