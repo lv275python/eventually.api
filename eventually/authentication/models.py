@@ -53,22 +53,22 @@ class CustomUser(AbstractBaseUser):
         :return: id, first_name, middle_name, last_name, email, password, updated_at, created_at
         """
 
-        return "id: {}, first name:{}, last name:{}, middle name:{}, " \
-               "email:{}, password:{}, updated:{}, created:{}".format(self.id,
-                                                                      self.first_name,
-                                                                      self.middle_name,
-                                                                      self.last_name,
-                                                                      self.email,
-                                                                      self.password,
-                                                                      self.updated_at,
-                                                                      self.created_at)
+        return "id: {}, first name:{}, middle name:{}, last name:{},"\
+        " email:{}, updated:{}, created:{}".format(self.id,
+                                                   self.first_name,
+                                                   self.middle_name,
+                                                   self.last_name,
+                                                   self.email,
+                                                   self.updated_at,
+                                                   self.created_at)
 
     def __repr__(self):
         """
         This magic method is redefined to show first, last name and id of the CustomUser object.
         :return: id, first_name, last_name
         """
-        return '{} {} {}'.format(self.id, self.first_name, self.last_name)
+        return 'id: {} first name: {} last name: {}'.format(
+            self.id, self.first_name, self.last_name)
 
     @staticmethod
     def get_by_id(user_id):
@@ -103,7 +103,7 @@ class CustomUser(AbstractBaseUser):
         :return: True if object existed in the db and was removed or False if it didn't exist
         """
         try:
-            user = CustomUser.objects.get(_id)
+            user = CustomUser.objects.get(id=_id)
             user.delete()
             return True
         except CustomUser.DoesNotExist:
