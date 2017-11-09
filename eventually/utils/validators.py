@@ -134,7 +134,6 @@ def email_validator(email):
     :return: `True` if email if valid and `False` if it is not.
     """
 
-
     try:
         email = email.lower().strip()
         validate_email(email)
@@ -203,3 +202,51 @@ def reset_password_validate(data, requred_key):
             string = data.get(requred_key)
             if string_validator(string, 4):
                 return True
+
+
+def event_data_validate(data, required_keys):
+    """
+    Function that provides complete event model data validation
+
+    :param data: the data that is received by event view.
+    :type data: dict
+
+    :param required_keys: the list of necessary keys of event data schema.
+    :type required_keys: `list`
+
+    :return: `True' if all data is valid or `False` if some fields are invalid.
+    :rtype `bool`
+    """
+
+    errors = []
+    if not required_keys_validator(data=data, keys_required=required_keys, strict=False):
+        errors.append('required keys error')
+
+    event_model_fields = ['name',
+                          'owner',
+                          'description',
+                          'start_at',
+                          'duration',
+                          'longitude',
+                          'latitude',
+                          'budget',
+                          'status']
+
+    filtered_data = {key: data.get(key) for key in event_model_fields}
+    validation_rules = {'name': lambda val: string_validator(val, min_length=1, max_length=255),
+                        'owner': lambda val: isinstance(val, int) and val > 0,
+                        'description': string_validator,
+                        'start_at': timestamp_validator,
+                        'duration': duration_validator,
+                        'longitude': lambda val: isinstance(val, float),
+                        'latitude': lambda val: isinstance(val, float),
+                        'budget': lambda val: isinstance(val, int) and val >= 0,
+                        'status': lambda val: isinstance(val, int) and val in range(0, 4)}
+
+    for key, value in filtered_data.items():
+        if value is not None:
+            if not validation_rules[key](value):
+                errors.append(key + ' field error')
+
+    is_data_valid = len(errors) == 0
+    return is_data_valid
