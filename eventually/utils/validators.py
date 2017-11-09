@@ -7,8 +7,8 @@ Module that provides validation functions for all kinds of project's data.
 import datetime
 import re
 
-from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
 PASSWORD_REG_EXP = r'^(?=.*?\d)(?=.*?[A-Z])(?=.*?[a-z])[A-Za-z\d]*$'
 
@@ -268,4 +268,23 @@ def login_validate(data):
         return False
     if not email_validator(data['email']):
         return False
+    return True
+
+def comment_data_validator(data):
+    """
+    Function that validation incoming request.body
+
+    :param request_body: data that need to validate.
+    :type data: HttpRequest
+
+    :return: data if data is valid and `None` if it is not.
+    """
+
+    requred_keys = ["text"]
+    if not required_keys_validator(data, requred_keys):
+        return
+
+    if not string_validator(data.get("text")):
+        return
+
     return True
