@@ -1,5 +1,9 @@
-"""Model for describe Comment entity."""
+"""
+Comment model
+===========
 
+This module implements class that represents the comment entity.
+"""
 
 from django.db import models, IntegrityError
 from authentication.models import CustomUser

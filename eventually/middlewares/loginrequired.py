@@ -9,7 +9,8 @@ from django.http import HttpResponse
 ANONYMOUS_USERS_PATHS = ['/api/v1/login/',
                          '/api/v1/registration/',
                          '/api/v1/activate/',
-                         '/api/v1/forget_password/']
+                         '/api/v1/forget_password/',
+                         '/api/v1/team/']
 
 
 class LoginRequiredMiddleware(): # pylint: disable=too-few-public-methods
