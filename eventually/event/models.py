@@ -58,6 +58,7 @@ class Event(models.Model):
 
         :param status: The number that points to the certain.
                        stage of the event processing.
+        :type status: integer
     """
 
     STATUS_CHOICES = (
@@ -227,8 +228,6 @@ class Event(models.Model):
         event.latitude = latitude
         event.budget = budget
         event.status = status
-        event.team = team
-        event.owner = owner
 
         try:
             event.save()
@@ -295,8 +294,6 @@ class Event(models.Model):
             self.budget = budget
         if status:
             self.status = status
-        if owner:
-            self.owner = owner
 
         self.save()
 
