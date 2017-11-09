@@ -186,7 +186,6 @@ class CustomUser(AbstractBaseUser):
                first_name=None,
                last_name=None,
                middle_name=None,
-               email=None,
                password=None,
                is_active=None):
         """
@@ -200,13 +199,13 @@ class CustomUser(AbstractBaseUser):
         :param last_name: last name of a user
         :type last_name: str
 
-        :param email: email of a user
-        :type email: str
-
         :param password: password of a user
         :type password: str
 
-        :return: returns True if object updated, False if parameters were incorrect
+        :param is_active: activation state
+        :type is_active: bool
+
+        :return: None
         """
 
         if first_name:
@@ -215,8 +214,6 @@ class CustomUser(AbstractBaseUser):
             self.last_name = last_name
         if middle_name:
             self.middle_name = middle_name
-        if email:
-            self.email = email
         if password:
             self.set_password(password)
         if is_active:
