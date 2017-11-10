@@ -128,7 +128,7 @@ class Comment(models.Model):
             pass
 
     @staticmethod
-    def create(team, author, event=None, text=None, task=None, vote=None):
+    def create(team, author, text=None, event=None, task=None, vote=None):
         """
         Create comment.
 
