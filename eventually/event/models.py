@@ -148,9 +148,9 @@ class Event(models.Model):
             'start_at': int(self.start_at.timestamp()) if self.start_at else None,
             'created_at': int(self.created_at.timestamp()),
             'updated_at': int(self.updated_at.timestamp()),
-            'duration': self.duration,
-            'longitude': self.longitude,
-            'latitude': self.latitude,
+            'duration': self.duration.seconds if self.duration else None,
+            'longitude': float(self.longitude) if self.longitude else None,
+            'latitude': float(self.latitude) if self.latitude else None,
             'budget': self.budget,
             'status': self.status
         }
