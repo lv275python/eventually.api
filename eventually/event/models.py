@@ -58,6 +58,7 @@ class Event(models.Model):
 
         :param status: The number that points to the certain.
                        stage of the event processing.
+        :type status: integer
     """
 
     STATUS_CHOICES = (
@@ -147,9 +148,9 @@ class Event(models.Model):
             'start_at': int(self.start_at.timestamp()) if self.start_at else None,
             'created_at': int(self.created_at.timestamp()),
             'updated_at': int(self.updated_at.timestamp()),
-            'duration': self.duration,
-            'longitude': self.longitude,
-            'latitude': self.latitude,
+            'duration': self.duration.seconds if self.duration else None,
+            'longitude': float(self.longitude) if self.longitude else None,
+            'latitude': float(self.latitude) if self.latitude else None,
             'budget': self.budget,
             'status': self.status
         }
@@ -227,8 +228,6 @@ class Event(models.Model):
         event.latitude = latitude
         event.budget = budget
         event.status = status
-        event.team = team
-        event.owner = owner
 
         try:
             event.save()
@@ -295,8 +294,6 @@ class Event(models.Model):
             self.budget = budget
         if status:
             self.status = status
-        if owner:
-            self.owner = owner
 
         self.save()
 
