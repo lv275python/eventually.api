@@ -75,6 +75,7 @@ def timestamp_validator(value):
     except (OverflowError, ValueError, OSError, TypeError):
         pass
 
+
 def required_keys_validator(data, keys_required, strict=True):
     """
     Provide required keys validation.
@@ -99,4 +100,21 @@ def required_keys_validator(data, keys_required, strict=True):
     for key in keys_required:
         if key not in keys:
             return False
+
+
+def list_of_int_validator(value):
+    """
+    Function that provides list validation
+
+    :param value: list with integer items
+    :type value: list
+
+    :return: `True` if value if valid and `False` if it is not.
+    """
+    if not isinstance(value, (list, tuple)):
+        return False
+    if not value:
+        return False
+    if not all(isinstance(item, int) for item in value):
+        return False
     return True
