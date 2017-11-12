@@ -60,14 +60,14 @@ class Vote(models.Model):
                  vote title, vote vote_type
         """
 
-        return "id:{} event:{} is_active:{} is_extended:{} title:{} \
-        vote_type:{}".format(self.id,
-                             self.event.id if self.event
-                             else None,
-                             self.is_active,
-                             self.is_extended,
-                             self.title,
-                             self.vote_type)
+        return "id:{} event:{} is_active:{} is_extended:{} title:{} vote_type:{}". \
+            format(self.id,
+                   self.event.id if self.event
+                   else None,
+                   self.is_active,
+                   self.is_extended,
+                   self.title,
+                   self.vote_type)
 
     def __str__(self):
         """
@@ -78,14 +78,14 @@ class Vote(models.Model):
                  vote title, vote vote_type
         """
 
-        return "id:{} event:{} is_active:{} is_extended:{} title:{} \
-                vote_type:{}".format(self.id,
-                                     self.event.id if self.event
-                                     else None,
-                                     self.is_active,
-                                     self.is_extended,
-                                     self.title,
-                                     self.vote_type)
+        return "id:{} event:{} is_active:{} is_extended:{} title:{} vote_type:{}". \
+            format(self.id,
+                   self.event.id if self.event
+                   else None,
+                   self.is_active,
+                   self.is_extended,
+                   self.title,
+                   self.vote_type)
 
     def to_dict(self):
         """
@@ -111,7 +111,7 @@ class Vote(models.Model):
             'is_active': self.is_active,
             'is_extended': self.is_extended,
             'title': self.title,
-            'type': self.vote_type,
+            'vote_type': self.vote_type,
             'create_at': int(self.create_at.timestamp()),
             'update_at': int(self.update_at.timestamp()),
         }
@@ -248,11 +248,13 @@ class Answer(models.Model):
 
         :return: answer id, vote id, answer text, members.id
         """
+        members = [user.id for user in self.members.all()]
+        # [user.id for user in self.members] if self.members else None
 
         return "{} {} {} {}".format(self.id,
                                     self.vote.id if self.vote else None,
                                     self.text,
-                                    [user.id for user in self.members] if self.members else None)
+                                    members)
 
     def __str__(self):
         """
@@ -262,12 +264,13 @@ class Answer(models.Model):
         :return: answer id, vote id, answer text, members.id
         """
 
-        members = [user.id for user in self.members] if self.members else None
+        members = [user.id for user in self.members.all()]
+        # [user.id for user in self.members] if self.members else None
 
-        return "id:{} vote:{} text:{} members:{} ".format(self.id,
-                                                          self.vote.id if self.vote else None,
-                                                          self.text,
-                                                          members)
+        return "id:{} vote:{} text:{} members:{}".format(self.id,
+                                                         self.vote.id if self.vote else None,
+                                                         self.text,
+                                                         members)
 
     def to_dict(self):
         """
@@ -287,11 +290,11 @@ class Answer(models.Model):
         """
         return {
             'id': self.id,
-            'vote': self.vote,
+            'vote': self.vote.id,
             'text': self.text,
-            'members': [members.id for members in self.members] if self.members else [],
-            'create_at': self.create_at,
-            'update_at': self.update_at
+            'members': [members.id for members in self.members.all()] if self.members else [],
+            'create_at': int(self.create_at.timestamp()),
+            'update_at': int(self.create_at.timestamp()),
         }
 
     @staticmethod
@@ -330,10 +333,10 @@ class Answer(models.Model):
             answer.save()
             answer.members.add(*members)
             return answer
-        except (ValueError, IntegrityError):
+        except (ValueError, IntegrityError, TypeError):
             pass
 
-    def update(self, members=None, vote=None, text=None):
+    def update(self, text=None):
         """
         Method that update existed Answer object
 
@@ -345,10 +348,6 @@ class Answer(models.Model):
 
         :return: none
         """
-        if members:
-            self.members = members
-        if vote:
-            self.vote = vote
         if text:
             self.text = text
         self.save()
