@@ -45,12 +45,12 @@ class CustomProfile(models.Model):
         """
 
         return "id:{} hobby:{} photo:{} birthday:{}\
-                created_at:{} update_date:{}".format(self.id,
-                                                     self.hobby[:30],
-                                                     self.photo,
-                                                     self.birthday,
-                                                     self.created_at,
-                                                     self.updated_at)
+                created_at:{} update_at:{}".format(self.id,
+                                                   self.hobby[:30],
+                                                   self.photo,
+                                                   self.birthday,
+                                                   self.created_at,
+                                                   self.updated_at)
 
     def __repr__(self):
         """
@@ -60,15 +60,13 @@ class CustomProfile(models.Model):
         :return: profile hobby, profile photo, profile birthday
         """
 
-        return "{} {} {} {} {} {}".format(self.id,
-                                          self.hobby[:30],
-                                          self.photo,
-                                          self.birthday,
-                                          self.created_at,
-                                          self.updated_at)
+        return "{} {} {} {}".format(self.id,
+                                    self.hobby[:30],
+                                    self.photo,
+                                    self.birthday)
 
     @staticmethod
-    def create(user, hobby='', photo='', birthday=''):
+    def create(user, hobby='', photo='', birthday=None):
         '''
         Static method that create new CustomProfile object
 
@@ -142,22 +140,22 @@ class CustomProfile(models.Model):
         :Example:
         | {
         |    'id': 3,
+        |    'user': 3,
         |    'hobby': 'boxing',
         |    'photo': 'i am',
         |    'birthday': 2010-7-6,
         |    'created_at': 1509539867,
         |    'updated_at': 1509539867,
-        |    'user': 3,
         | }
         """
 
         return {'id': self.id,
+                'user': self.user.id,
                 'hobby': self.hobby[:30],
                 'photo': self.photo,
                 'birthday': self.birthday,
                 'created_at': int(self.created_at.timestamp()),
-                'updated_at': int(self.updated_at.timestamp()),
-                'user': self.user.id}
+                'updated_at': int(self.updated_at.timestamp())}
 
     def update(self, hobby=None, photo=None, birthday=None):
         '''
