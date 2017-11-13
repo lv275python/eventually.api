@@ -45,7 +45,8 @@ class TestCustomUserModel(TestCase):
                          "last name:lname, " \
                          "email:email@mail.com, " \
                          "updated:2017-04-10 12:00:00+00:00, " \
-                         "created:2017-04-10 12:00:00+00:00"
+                         "created:2017-04-10 12:00:00+00:00, " \
+                         "is_active: False"
         self.assertEqual(user_returned, user_to_expect)
 
 
@@ -53,9 +54,9 @@ class TestCustomUserModel(TestCase):
         """Test of the CustomUser.__repr__() method"""
 
         user_returned = repr(CustomUser.objects.get(id=111))
-        user_to_expect = "id: 111 first name: fname last name: lname"
+        user_to_expect = "id: 111, first name: fname, last name: lname, active: False"
 
-        self.assertEqual(user_returned, user_to_expect, 'PASSED')
+        self.assertEqual(user_returned, user_to_expect)
 
 
     def test_get_by_id_positive(self):
@@ -72,6 +73,8 @@ class TestCustomUserModel(TestCase):
         self.assertEqual(user_returned.last_name, 'lname')
         self.assertEqual(user_returned.created_at, date)
         self.assertEqual(user_returned.updated_at, date)
+        self.assertEqual(user_returned.is_active, False)
+
 
 
     def test_get_by_id_negative(self):
@@ -95,6 +98,7 @@ class TestCustomUserModel(TestCase):
         self.assertEqual(user_returned.last_name, 'lname')
         self.assertEqual(user_returned.created_at, date)
         self.assertEqual(user_returned.updated_at, date)
+        self.assertEqual(user_returned.is_active, False)
 
 
     def test_get_by_email_negative(self):
@@ -117,7 +121,7 @@ class TestCustomUserModel(TestCase):
         CustomUser.delete_by_id(89)
         self.assertIsNone(CustomUser.delete_by_id(41))
 
-    def test_1_create_positive(self):
+    def test_create_positive(self):
         """ Positive Test of the CustomUser.create method """
 
         time_mock = datetime.datetime(2017, 4, 10, 12, 00, tzinfo=pytz.utc)
@@ -135,6 +139,7 @@ class TestCustomUserModel(TestCase):
             self.assertEqual(user_returned.last_name, 'lname')
             self.assertEqual(user_returned.created_at, date)
             self.assertEqual(user_returned.updated_at, date)
+            self.assertEqual(user_returned.is_active, False)
 
 
     def test_create_negative(self):
@@ -157,7 +162,8 @@ class TestCustomUserModel(TestCase):
                           'last_name': 'lname',
                           'email': 'email@mail.com',
                           'created_at': 1491825600,
-                          'updated_at': 1491825600}
+                          'updated_at': 1491825600,
+                          'is_active': False}
 
         self.assertEqual(user_returned.to_dict(), user_to_expect)
 
