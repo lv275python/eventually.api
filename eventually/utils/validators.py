@@ -74,3 +74,29 @@ def timestamp_validator(value):
         return True
     except (OverflowError, ValueError, OSError, TypeError):
         pass
+
+def required_keys_validator(data, keys_required, strict=True):
+    """
+    Provide required keys validation.
+
+    :param data: data from request.
+    :type data: dictionary
+
+    :param keys_required: list of requied keys for method.
+    :type keys_required: list
+
+    :param strict: shows the status of strict method of comparing keys
+                   in input data with requred keys in method.
+    :type strict: Bool
+
+    :return: `True` if data is valid and `False` if it is not valid.
+    """
+    keys = data.keys()
+
+    if strict:
+        return keys.sort() == keys_required.sort()
+
+    for key in keys_required:
+        if key not in keys:
+            return False
+    return True
