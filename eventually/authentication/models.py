@@ -8,7 +8,9 @@ This file contains models for the postgresql database.
 #but is not overridden (abstract-method)
 
 from django.db import models, IntegrityError
-from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+
+#pylint: disable=arguments-differ
 
 
 class CustomUser(AbstractBaseUser):
@@ -46,6 +48,11 @@ class CustomUser(AbstractBaseUser):
     password = models.CharField(max_length=128)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    is_active = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'email'
+    objects = BaseUserManager()
+
 
     def __str__(self):
         """
