@@ -35,9 +35,9 @@ class LoginRequiredMiddleware(): # pylint: disable=too-few-public-methods
 
                 if request.user.is_authenticated():
                     return HttpResponse(status=400)
-                else:
-                    response = self.get_response(request)
-                    return response
+
+                response = self.get_response(request)
+                return response
 
         if not request.user.is_authenticated():
             return HttpResponse(status=403)
