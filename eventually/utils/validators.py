@@ -92,7 +92,7 @@ def required_keys_validator(data, keys_required, strict=True):
 
     :return: `True` if data is valid and `False` if it is not valid.
     """
-    keys = data.keys()
+    keys = list(data.keys())
 
     if strict:
         return keys.sort() == keys_required.sort()
@@ -100,6 +100,8 @@ def required_keys_validator(data, keys_required, strict=True):
     for key in keys_required:
         if key not in keys:
             return False
+
+    return True
 
 
 def list_of_int_validator(value):
