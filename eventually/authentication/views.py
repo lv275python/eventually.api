@@ -8,9 +8,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from authentication.models import CustomUser
 from utils.utils import json_loads
-from utils.send_mail import send_email
 from utils.passwordreseting import send_reseting_letter, reset_pasword
-from utils.validators import password_validator, email_validator, forget_password_validator
+from utils.validators import password_validator, email_validator, data_validator
 from utils.jwttoken import handle_token
 
 
@@ -59,23 +58,23 @@ class ForgetPassword(View):
     def post(self, request):
         """Handles POST request."""
         data = json_loads(data=request.body)
-        if forget_password_validator(data, 'email'):
-                email = data.get('email')
-                if email_validator(email):
-                    user = CustomUser.get_by_email(email=email)
-                    if user:
-                        return send_reseting_letter(user)
+        if data_validator(data, 'email'):
+            email = data.get('email')
+            if email_validator(email):
+                user = CustomUser.get_by_email(email=email)
+                if user:
+                    return send_reseting_letter(user)
         return HttpResponse(status=404)
 
     def put(self, request, token=None):
         """Handles PUT request."""
         if token:
-            data = handle_token(token)
-            if data:
-                user = CustomUser.get_by_id(data['user_id'])
+            identifier = handle_token(token)
+            if identifier:
+                user = CustomUser.get_by_id(identifier['user_id'])
                 if user:
                     data = json_loads(data=request.body)
-                    if forget_password_validator(data, 'new_password'):
+                    if data_validator(data, 'new_password'):
                         new_password = data.get('new_password')
                         passwor_valid = password_validator(new_password)
                         if passwor_valid:

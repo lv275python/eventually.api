@@ -1,3 +1,10 @@
+"""
+Password reseting
+=========
+
+The module that provides functions for sending reset password letter to user and reseting password.
+"""
+
 from django.http import HttpResponse
 from eventually.settings import FRONT_HOST
 from utils.jwttoken import create_token
@@ -13,6 +20,7 @@ def send_reseting_letter(user):
 
     :return: HttpResponse with status 200.
     """
+
     arg = {'user_id': user.id}
     token = create_token(data=arg, expiration_time=60 * 60)
     ctx = {'first_name': user.first_name,
@@ -38,6 +46,7 @@ def reset_pasword(user, new_password):
 
     :return: HttpResponse with status 200.
     """
+
     user.password = new_password
     user.save()
     ctx = {'first_name': user.first_name}

@@ -54,7 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-#   'middlewares.loginrequired.LoginRequiredMiddleware',
+    'middlewares.loginrequired.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'eventually.urls'
@@ -136,7 +136,7 @@ EMAIL_HOST_PASSWORD = 'EMAIL_HOST_PASSWORD'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'DEFAULT_FROM_EMAIL'
 JWT_TOKEN_KEY = 'any secret word'
-JWT_ALGORITHM = 'HS256'
+JWT_ALGORITHM = 'HS384'
 FRONT_HOST = 'localhost:8000'
 try:
     from .local_settings import *
