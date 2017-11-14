@@ -8,7 +8,9 @@ This file contains models for the postgresql database.
 #but is not overridden (abstract-method)
 
 from django.db import models, IntegrityError
-from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+
+#pylint: disable=arguments-differ
 
 
 class CustomUser(AbstractBaseUser):
@@ -46,29 +48,37 @@ class CustomUser(AbstractBaseUser):
     password = models.CharField(max_length=128)
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    is_active = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'email'
+    objects = BaseUserManager()
+
 
     def __str__(self):
         """
         Magic method is redefined to show all information about CustomUser.
-        :return: id, first_name, middle_name, last_name, email, password, updated_at, created_at
+        :return: id, first_name, middle_name, last_name,
+        email, password, updated_at, created_at, is_active
         """
 
-        return "id: {}, first name:{}, last name:{}, middle name:{}, " \
-               "email:{}, password:{}, updated:{}, created:{}".format(self.id,
-                                                                      self.first_name,
-                                                                      self.middle_name,
-                                                                      self.last_name,
-                                                                      self.email,
-                                                                      self.password,
-                                                                      self.updated_at,
-                                                                      self.created_at)
+        return "id: {}, first name:{}, middle name:{}, last name:{},"\
+        " email:{}, updated:{}, created:{}, is_active: {}".format(self.id,
+                                                                  self.first_name,
+                                                                  self.middle_name,
+                                                                  self.last_name,
+                                                                  self.email,
+                                                                  self.updated_at,
+                                                                  self.created_at,
+                                                                  self.is_active)
 
     def __repr__(self):
         """
         This magic method is redefined to show first, last name and id of the CustomUser object.
-        :return: id, first_name, last_name
+        :return: id, first_name, last_name, is_active
         """
-        return '{} {} {}'.format(self.id, self.first_name, self.last_name)
+
+        return 'id: {}, first name: {}, last name: {}, active: {}'.format(
+            self.id, self.first_name, self.last_name, self.is_active)
 
     @staticmethod
     def get_by_id(user_id):
@@ -76,6 +86,7 @@ class CustomUser(AbstractBaseUser):
         :param user_id: SERIAL: the id of a user to be found in the DB
         :return: user object or None if a user with such ID does not exist
         """
+
         try:
             return CustomUser.objects.get(id=user_id)
         except CustomUser.DoesNotExist:
@@ -90,6 +101,7 @@ class CustomUser(AbstractBaseUser):
 
         :return: user object or None if a user with such ID does not exist
         """
+
         try:
             return CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist:
@@ -102,8 +114,9 @@ class CustomUser(AbstractBaseUser):
         :type user_id: int
         :return: True if object existed in the db and was removed or False if it didn't exist
         """
+
         try:
-            user = CustomUser.objects.get(_id)
+            user = CustomUser.objects.get(id=_id)
             user.delete()
             return True
         except CustomUser.DoesNotExist:
@@ -129,6 +142,7 @@ class CustomUser(AbstractBaseUser):
 
         :return: a new user object which is also written into the DB
         """
+
         user = CustomUser(first_name=first_name,
                           last_name=last_name,
                           middle_name=middle_name,
@@ -151,7 +165,8 @@ class CustomUser(AbstractBaseUser):
         |   'last_name': 'ln',
         |   'email': 'ln@mail.com',
         |   'created_at': 1509393504,
-        |   'updated_at': 1509402866
+        |   'updated_at': 1509402866,
+        |   'is_active:' True
         | }
         """
 
@@ -162,7 +177,8 @@ class CustomUser(AbstractBaseUser):
             'last_name': self.last_name,
             'email': self.email,
             'created_at': int(self.created_at.timestamp()),
-            'updated_at': int(self.updated_at.timestamp())
+            'updated_at': int(self.updated_at.timestamp()),
+            'is_active': self.is_active
             }
 
     def update(self, first_name=None, last_name=None, middle_name=None, email=None, password=None):
