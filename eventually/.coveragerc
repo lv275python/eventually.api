@@ -1,0 +1,19 @@
+# .coveragerc to control coverage.py
+
+[run]
+
+source =
+    authentication
+    comment
+    customprofile
+    event
+    task
+    team
+    utils
+    vote
+
+omit =
+    *migrations*
+    *apps.py*
+    *urls.py*
+    *__init__.py*

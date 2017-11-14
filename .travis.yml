@@ -8,9 +8,15 @@ install:
   - pip install pylint-django
   - pip install coveralls
 
+services:
+  - postgresql
+before_script:
+  - psql -c "CREATE DATABASE travis_db;" -U postgres
+
 script:
   - cd eventually/
   - pylint --rcfile=.pylintrc *
+  - coverage run manage.py test
 
 after_success:
   - coveralls
