@@ -30,7 +30,7 @@ class LoginRequiredMiddleware(): # pylint: disable=too-few-public-methods
         """
 
         for current_path in ANONYMOUS_USERS_PATHS:
-            if request.path_info.startswitch(current_path):
+            if request.path_info.startswith(current_path):
 
                 if request.user.is_authenticated():
                     return HttpResponse(status=400)
