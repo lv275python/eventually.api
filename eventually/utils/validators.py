@@ -108,8 +108,8 @@ def list_of_int_validator(value):
     """
     Function that provides list validation
 
-    :param value: list with integer items
-    :type value: list
+    :param value: list or tuple with integer items
+    :type value: list or tuple
 
     :return: `True` if value if valid and `False` if it is not.
     """
