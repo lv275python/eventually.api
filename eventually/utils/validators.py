@@ -95,10 +95,12 @@ def required_keys_validator(data, keys_required, strict=True):
 
     :return: `True` if data is valid and `False` if it is not valid.
     """
-    keys = list(data.keys())
+    keys = data.keys()
 
     if strict:
-        return keys.sort() == keys_required.sort()
+        keys.sort()
+        keys_required.sort()
+        return keys == keys_required
 
     for key in keys_required:
         if key not in keys:
@@ -140,3 +142,17 @@ def password_validator(password):
     template = re.compile(PASSWORD_REG_EXP)
     if template.match(password):
         return True
+
+
+def email_validator(email):
+    """Function that provides email validation"""
+    if email:
+        return True
+
+
+def forget_password_validator(data, requred_key):
+    if data:
+        if required_keys_validator(data, [requred_key], False):
+            data = data.get(requred_key)
+            if string_validator(data, 4):
+                return True

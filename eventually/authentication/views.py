@@ -3,10 +3,15 @@ Views module
 ============
 """
 
-from utils.utils import json_loads
 from django.views.generic.base import View
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
+from authentication.models import CustomUser
+from utils.utils import json_loads
+from utils.send_mail import send_email
+from utils.passwordreseting import send_reseting_letter, reset_pasword
+from utils.validators import password_validator, email_validator, forget_password_validator
+from utils.jwttoken import handle_token
 
 
 class UserView(View):
@@ -15,6 +20,7 @@ class UserView(View):
 
 def registration_user():
     """Registration CustomUser"""
+
 
 def login_user(request):
     """
@@ -45,3 +51,33 @@ def logout_user(request):
         logout(request)
         return HttpResponse(status=200)
     return HttpResponse(status=400)
+
+
+class ForgetPassword(View):
+    """changing password for current CustomUser"""
+
+    def post(self, request):
+        """Handles POST request."""
+        data = json_loads(data=request.body)
+        if forget_password_validator(data, 'email'):
+                email = data.get('email')
+                if email_validator(email):
+                    user = CustomUser.get_by_email(email=email)
+                    if user:
+                        return send_reseting_letter(user)
+        return HttpResponse(status=404)
+
+    def put(self, request, token=None):
+        """Handles PUT request."""
+        if token:
+            data = handle_token(token)
+            if data:
+                user = CustomUser.get_by_id(data['user_id'])
+                if user:
+                    data = json_loads(data=request.body)
+                    if forget_password_validator(data, 'new_password'):
+                        new_password = data.get('new_password')
+                        passwor_valid = password_validator(new_password)
+                        if passwor_valid:
+                            return reset_pasword(user, new_password)
+        return HttpResponse(status=404)
