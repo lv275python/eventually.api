@@ -1,7 +1,6 @@
 """
 Middleware
 ==========
-
 The module that provides custom application's middlewares.
 """
 

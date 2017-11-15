@@ -135,7 +135,9 @@ EMAIL_HOST_USER = 'EMAIL_HOST_USER@gmail.com'
 EMAIL_HOST_PASSWORD = 'EMAIL_HOST_PASSWORD'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'DEFAULT_FROM_EMAIL'
-
+JWT_TOKEN_KEY = 'any secret word'
+JWT_ALGORITHM = 'HS384'
+FRONT_HOST = 'localhost:8000'
 try:
     from .local_settings import *
 except ImportError:

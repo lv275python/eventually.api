@@ -142,3 +142,29 @@ def password_validator(password):
     template = re.compile(PASSWORD_REG_EXP)
     if template.match(password):
         return True
+
+
+def email_validator(email):
+    """Function that provides email validation"""
+    if email:
+        return True
+
+
+def data_validator(data, requred_key):
+    """
+    Function that validation for ForgetPassword class
+
+    :param data: dict that we need to validate.
+    :type data: dict
+
+    :param requred_key: requred_key for required_keys_validator
+    :type requred_key: str
+
+    :return: `True` if data is valid and `None` if it is not.
+    """
+
+    if data:
+        if required_keys_validator(data, [requred_key], False):
+            string = data.get(requred_key)
+            if string_validator(string, 4):
+                return True
