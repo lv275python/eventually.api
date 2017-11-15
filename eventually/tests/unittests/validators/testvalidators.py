@@ -1,3 +1,8 @@
+"""
+Validator tests
+===============
+"""
+
 import datetime
 from django.test import TestCase
 from utils.validators import *
@@ -104,3 +109,91 @@ class ValidatorsTestCase(TestCase):
 
         self.assertIsNone(is_valid)
 
+    def test_duration_validator_success(self):
+        """Method that tests `duration_validator`."""
+        value = 25
+
+        is_valid = duration_validator(value)
+
+        self.assertTrue(is_valid)
+
+    def test_duration_validator_fail_string(self):
+        """Method that tests `duration_validator`."""
+        value = "some_text"
+
+        is_valid = duration_validator(value)
+
+        self.assertIsNone(is_valid)
+
+    def test_duration_validator_fail_not_positive(self):
+        """Method that tests `duration_validator`."""
+        value = -25
+
+        is_valid = duration_validator(value)
+
+        self.assertIsNone(is_valid)
+
+    def test_duration_validator_fail_overflow(self):
+        """Method that tests `duration_validator`."""
+        value = 250000000000000000
+
+        is_valid = duration_validator(value)
+
+        self.assertIsNone(is_valid)
+
+    def test_timestamp_validator_success(self):
+        """Method that tests `timestamp_validator`."""
+        value = 255
+
+        is_valid = timestamp_validator(value)
+
+        self.assertTrue(is_valid)
+
+    def test_timestamp_validator_fail(self):
+        """Method that tests `timestamp_validator`."""
+        value = 'some_text'
+
+        is_valid = timestamp_validator(value)
+
+        self.assertIsNone(is_valid)
+
+    def test_required_keys_validator_strict_success(self):
+        """Method that tests `required_keys_validator`."""
+        data = {"name": "Some_name", "email": "some_email"}
+        keys_required = ["name", "email"]
+
+        is_valid = required_keys_validator(data, keys_required)
+
+        self.assertTrue(is_valid)
+
+    def test_required_keys_validator_strict_fail(self):
+        """Method that tests `required_keys_validator`."""
+        data = {
+            "name": "Some_name",
+            "email": "some_email",
+            "adress": "some_city",
+            "status": "some_status"
+        }
+        keys_required = ["name", "email"]
+
+        is_valid = required_keys_validator(data, keys_required)
+
+        self.assertFalse(is_valid)
+
+    def test_required_keys_validator_not_strict_success(self):
+        """Method that tests `required_keys_validator`."""
+        data = {"name": "some_name", "email": "some_email", "adress": "some_city"}
+        keys_required = ["name", "email"]
+
+        is_valid = required_keys_validator(data, keys_required, strict=False)
+
+        self.assertTrue(is_valid)
+
+    def test_required_keys_validator_not_strict_fail(self):
+        """Method that tests `required_keys_validator`."""
+        data = {"name": "some_name", "email": "some_email", "adress": "some_city"}
+        keys_required = ["name", "hobby"]
+
+        is_valid = required_keys_validator(data, keys_required, strict=False)
+
+        self.assertFalse(is_valid)

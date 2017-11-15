@@ -98,7 +98,9 @@ def required_keys_validator(data, keys_required, strict=True):
     keys = list(data.keys())
 
     if strict:
-        return keys.sort() == keys_required.sort()
+        keys.sort()
+        keys_required.sort()
+        return keys == keys_required
 
     for key in keys_required:
         if key not in keys:
