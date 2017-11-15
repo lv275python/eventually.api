@@ -5,6 +5,9 @@ Project validators
 Module that provides validation functions for all kinds of project's data.
 """
 import datetime
+import re
+
+PASSWORD_REG_EXP = r'^(?=.*?\d)(?=.*?[A-Z])(?=.*?[a-z])[A-Za-z\d]*$'
 
 
 def string_validator(value, min_length=0, max_length=None):
@@ -120,3 +123,20 @@ def list_of_int_validator(value):
     if not all(isinstance(item, int) for item in value):
         return False
     return True
+
+
+def password_validator(password):
+    """
+    Function that provides password validation.
+
+    Password should consist of: uppercase letters: A-Z, lowercase letters: a-z, numbers: 0-9
+
+    :param password: the password itself.
+    :type password: string
+
+    :return: `True` if password if valid and `None` if it is not.
+    """
+
+    template = re.compile(PASSWORD_REG_EXP)
+    if template.match(password):
+        return True

@@ -87,3 +87,20 @@ class ValidatorsTestCase(TestCase):
         """Method that unsuccessful test json_loads method"""
         actual_json = json_loads(b'{\n\t"email": "m"\n\t"password":"1"\n}')
         self.assertIsNone(actual_json)
+
+    def test_password_validator_success(self):
+        """Method that tests `password_validator`."""
+        password = 'fgh1DFvd2'
+
+        is_valid = password_validator(password)
+
+        self.assertTrue(is_valid)
+
+    def test_password_validator_fail(self):
+        """Method that tests `password_validator`."""
+        password = 'fghDFvd'
+
+        is_valid = password_validator(password)
+
+        self.assertIsNone(is_valid)
+
