@@ -8,8 +8,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from authentication.models import CustomUser
 from utils.utils import json_loads
-from utils.passwordreseting import send_reseting_letter, reset_pasword
-from utils.validators import password_validator, email_validator, data_validator
+from utils.passwordreseting import send_password_update_letter, send_successful_update_letter
+from utils.validators import password_validator, email_validator, reset_password_validate
 from utils.jwttoken import handle_token
 
 
@@ -58,13 +58,14 @@ class ForgetPassword(View):
     def post(self, request):
         """Handles POST request."""
         data = json_loads(data=request.body)
-        if data_validator(data, 'email'):
+        if reset_password_validate(data, 'email'):
             email = data.get('email')
             if email_validator(email):
                 user = CustomUser.get_by_email(email=email)
                 if user:
-                    return send_reseting_letter(user)
-        return HttpResponse(status=404)
+                    send_password_update_letter(user)
+                    return HttpResponse(status=200)
+        return HttpResponse(status=400)
 
     def put(self, request, token=None):
         """Handles PUT request."""
@@ -74,9 +75,11 @@ class ForgetPassword(View):
                 user = CustomUser.get_by_id(identifier['user_id'])
                 if user:
                     data = json_loads(data=request.body)
-                    if data_validator(data, 'new_password'):
+                    if reset_password_validate(data, 'new_password'):
                         new_password = data.get('new_password')
-                        passwor_valid = password_validator(new_password)
-                        if passwor_valid:
-                            return reset_pasword(user, new_password)
-        return HttpResponse(status=404)
+                        if password_validator(new_password):
+                            user.set_password(new_password)
+                            send_successful_update_letter(user)
+                            return HttpResponse(status=200)
+            return HttpResponse(status=400)
+        return HttpResponse(status=498)
