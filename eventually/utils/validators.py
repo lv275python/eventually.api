@@ -312,3 +312,79 @@ def comment_data_validator(data):
         return
 
     return True
+
+
+def vote_data_validator(data, required_keys):
+    """
+    Function that validation incoming request.body
+
+    :param data: data
+    :type data: HttpRequest
+
+    :param required_keys: data that need to validate.
+    :type required_keys: HttpRequest
+
+    :return: data if data is valid and `None` if it is not.
+    """
+
+    if not data:
+        return False
+
+    errors = []
+    if not required_keys_validator(data=data, keys_required=required_keys, strict=False):
+        errors.append('required keys error')
+
+    vote_fields = ["event", "is_active", "is_extended", "title", "vote_type"]
+
+    filtered_data = {key: data.get(key) for key in vote_fields}
+
+    validation_rules = {'event': lambda val: isinstance(val, int),
+                        'is_active': lambda val: isinstance(val, bool),
+                        'is_extended': lambda val: isinstance(val, bool),
+                        'title': lambda val: string_validator(val, min_length=1, max_length=100),
+                        'vote_type': lambda val: isinstance(val, int) and val in range(0, 2)}
+
+    for key, value in filtered_data.items():
+        if value is not None:
+            if not validation_rules[key](value):
+                errors.append(key + ' field error')
+
+    is_data_valid = len(errors) == 0
+    return is_data_valid
+
+
+def answer_data_validator(data, required_keys):
+    """
+    Function that validation incoming request.body
+
+    :param data: data
+    :type data: HttpRequest
+
+    :param required_keys: data that need to validate.
+    :type required_keys: HttpRequest
+
+    :return: data if data is valid and `None` if it is not.
+    """
+
+    if not data:
+        return False
+
+    errors = []
+    if not required_keys_validator(data=data, keys_required=required_keys, strict=False):
+        errors.append('required keys error')
+
+    vote_fields = ["vote", "text", "members"]
+
+    filtered_data = {key: data.get(key) for key in vote_fields}
+
+    validation_rules = {'vote': lambda val: isinstance(val, int),
+                        'text': lambda val: string_validator(val, min_length=1, max_length=100),
+                        'members': list_of_int_validator}
+
+    for key, value in filtered_data.items():
+        if value is not None:
+            if not validation_rules[key](value):
+                errors.append(key + ' field error')
+
+    is_data_valid = len(errors) == 0
+    return is_data_valid
