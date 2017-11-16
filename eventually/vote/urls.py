@@ -1,7 +1,8 @@
-from django.conf.urls import url
-from . import views
+from django.conf.urls import url, include
+from .views import VoteView
 
 urlpatterns = [
-    url(r'^$', views.VoteView.as_view()),
-    url(r'^(?P<vote_id>\d+)/$', views.VoteView.as_view()),
+    url(r'^$', VoteView.as_view()),
+    url(r'^(?P<vote_id>\d+)/$', VoteView.as_view()),
+    url(r'^(?P<vote_id>\d+)/comment/', include('comment.urls')),
 ]
