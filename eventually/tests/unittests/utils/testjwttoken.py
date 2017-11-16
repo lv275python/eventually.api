@@ -84,9 +84,9 @@ class JWTTokenTestCase(TestCase):
     def test_error_handle_token(self):
         """Method that tests unsucceeded `handle_token` method."""
 
-        data = {1: 'some text', 'some filed': 2, 'exp': int(timezone.now().timestamp()) + 5}
+        data = {1: 'some text', 'some filed': 2, 'exp': int(timezone.now().timestamp()) + 1}
         token = jwt.encode(data, jwttoken.SECRET_KEY, jwttoken.ALGORITHM)
-        time.sleep(6)
+        time.sleep(2)
         handled_result = jwttoken.handle_token(token)
 
         self.assertIsNone(handled_result)

@@ -7,6 +7,9 @@ Module that provides validation functions for all kinds of project's data.
 import datetime
 import re
 
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
 PASSWORD_REG_EXP = r'^(?=.*?\d)(?=.*?[A-Z])(?=.*?[a-z])[A-Za-z\d]*$'
 
 
@@ -127,6 +130,47 @@ def list_of_int_validator(value):
     return True
 
 
+def email_validator(email):
+    """
+    Function that provides string validation.
+
+    :param email: String with email data
+    :type email: str
+
+    :return: `True` if email if valid and `False` if it is not.
+    """
+
+
+    try:
+        email = email.lower().strip()
+        validate_email(email)
+        return True
+    except (ValidationError, AttributeError):
+        pass
+
+
+def registration_validate(data):
+    """Validation data from registration request.
+
+    :param data: registration data
+    :type data: dict
+
+    :return: `True` if data is valid and `None` if it is not.
+    """
+
+    required_keys = ['email', 'password']
+    if not required_keys_validator(data, required_keys, strict=False):
+        return False
+    for key in ('first_name', 'middle_name', 'last_name'):
+        if data.get(key) and not string_validator(data[key], 0, 20):
+            return False
+    if not string_validator(data['email']) and not email_validator(data['email']):
+        return False
+    if not string_validator(data['password']) and not password_validator(data['password']):
+        return False
+    return True
+
+
 def password_validator(password):
     """
     Function that provides password validation.
@@ -139,15 +183,12 @@ def password_validator(password):
     :return: `True` if password if valid and `None` if it is not.
     """
 
-    template = re.compile(PASSWORD_REG_EXP)
-    if template.match(password):
-        return True
-
-
-def email_validator(email):
-    """Function that provides email validation"""
-    if email:
-        return True
+    try:
+        template = re.compile(PASSWORD_REG_EXP)
+        if template.match(password):
+            return True
+    except (TypeError, AttributeError):
+        pass
 
 
 def reset_password_validate(data, requred_key):
