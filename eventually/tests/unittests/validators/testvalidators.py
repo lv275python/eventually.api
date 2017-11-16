@@ -197,3 +197,33 @@ class ValidatorsTestCase(TestCase):
         is_valid = required_keys_validator(data, keys_required, strict=False)
 
         self.assertFalse(is_valid)
+
+    def test_reset_password_validate_success(self):
+        """Method that tests `reset_password_validate`."""
+        data = {
+            "name": "Some_name",
+            "email": "some_email",
+            "adress": "some_city",
+            "status": "some_status"
+        }
+
+        requred_key = "name"
+
+        is_valid = reset_password_validate(data, requred_key)
+
+        self.assertTrue(is_valid)
+
+    def test_reset_password_validate_fail(self):
+        """Method that tests `reset_password_validate`."""
+        data = {
+            "name": 123,
+            "email": "some_email",
+            "adress": "some_city",
+            "status": "some_status"
+        }
+
+        requred_key = "name"
+
+        is_valid = reset_password_validate(data, requred_key)
+
+        self.assertIsNone(is_valid)

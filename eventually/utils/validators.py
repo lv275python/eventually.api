@@ -150,7 +150,7 @@ def email_validator(email):
         return True
 
 
-def data_validator(data, requred_key):
+def reset_password_validate(data, requred_key):
     """
     Function that validation for ForgetPassword class
 
