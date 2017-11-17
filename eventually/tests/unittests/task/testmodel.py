@@ -145,8 +145,8 @@ class TaskModelTestCase(TestCase):
         title = 'Some new title'
         description='hello, it`s me'
         status = 1
-        actual_task.update(event=new_event,
-                           users=new_users,
+        actual_task.update(add_users=new_users,
+                           remove_users= [11],
                            title=title,
                            description=description,
                            status=status)
@@ -178,7 +178,7 @@ class TaskModelTestCase(TestCase):
 
         self.assertEqual(actual_repr, 'id:11 title:Potato thing My awesome task, give me potato 0 '
                                       '2017-02-02 10:00:12+00:00 '
-                                      '2017-02-02 10:00:12+00:00 11 [11, 12]')
+                                      '2017-02-02 10:00:12+00:00 11')
 
     def test_task_str(self):
         """Method that test `__str__` magic method of Task instance object."""

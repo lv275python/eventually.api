@@ -132,7 +132,7 @@ class Task(models.Model):
             pass
 
     @staticmethod
-    def create(event, users, title=None, description=None, status=0):
+    def create(event, users=None, title=None, description=None, status=0):
         """
         Static method that creates instance of Task class and creates database
         row with the accepted info.
@@ -168,7 +168,7 @@ class Task(models.Model):
         except (ValueError, IntegrityError):
             pass
 
-    def update(self, event=None, users=None, title=None, description=None, status=None):
+    def update(self, add_users=None, remove_users=None, title=None, description=None, status=None):
         """
         Method that updates task object according to the accepted info.
 
@@ -189,16 +189,17 @@ class Task(models.Model):
 
         :return: None
         """
-        if event:
-            self.event = event
-        if users:
-            self.users = users
+
         if title:
             self.title = title
         if description:
             self.description = description
         if status:
             self.status = status
+        if add_users:
+            self.add_users(add_users)
+        if remove_users:
+            self.remove_users(remove_users)
 
         self.save()
 
@@ -218,3 +219,15 @@ class Task(models.Model):
             return True
         except (Task.DoesNotExist, AttributeError):
             pass
+
+
+    def add_users(self, users_list):
+        """hello"""
+        if users_list:
+            self.users.add(*users_list)
+
+
+    def remove_users(self, users_list):
+        """hello"""
+        if users_list:
+            self.users.remove(*users_list)
