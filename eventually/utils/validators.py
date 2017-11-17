@@ -304,8 +304,8 @@ def comment_data_validator(data):
     :return: data if data is valid and `None` if it is not.
     """
 
-    requred_keys = ["text"]
-    if not required_keys_validator(data, requred_keys):
+    required_keys = ["text"]
+    if not required_keys_validator(data, required_keys):
         return
 
     if not string_validator(data.get("text")):
@@ -380,6 +380,63 @@ def answer_data_validator(data, required_keys):
     validation_rules = {'vote': lambda val: isinstance(val, int),
                         'text': lambda val: string_validator(val, min_length=1, max_length=100),
                         'members': list_of_int_validator}
+
+    for key, value in filtered_data.items():
+        if value is not None:
+            if not validation_rules[key](value):
+                errors.append(key + ' field error')
+
+    is_data_valid = len(errors) == 0
+    return is_data_valid
+
+def task_data_validate_create(data):
+    """
+    Function that provides complete task model data validation
+
+    :param data: the data that is received by task view.
+    :type data: dict
+
+    :return: `True' if all data is valid or `False` if some fields are invalid.
+    :rtype `bool`
+    """
+    status = data.get('status')
+    status_range = range(0, 3)
+    required_keys = ['title', 'description', 'status']
+
+    if not required_keys_validator(data, required_keys, False):
+        return False
+    if not string_validator(data.get('title'), max_length=255):
+        return False
+    if not string_validator(data.get('description'), max_length=1024):
+        return False
+    if data.get('users'):
+        if not list_of_int_validator(data.get('users')):
+            return False
+    if not(isinstance(status, int) and status in status_range):
+        return False
+    return True
+
+
+def task_data_validate_update(data):
+    """
+    Function that provides complete task model data validation
+
+    :param data: the data that is received by task view.
+    :type data: dict
+
+    :return: `True' if all data is valid or `False` if some fields are invalid.
+    :rtype `bool`
+    """
+
+    errors = []
+    task_model_fields = ['title', 'description', 'status', 'add_users', 'remove_users']
+
+    filtered_data = {key: data.get(key) for key in task_model_fields}
+    validation_rules = {'title': lambda val: string_validator(val, max_length=255),
+                        'description': lambda val: string_validator(val, max_length=1024),
+                        'add_users': list_of_int_validator,
+                        'remove_users': list_of_int_validator,
+                        'status': lambda val: isinstance(val, int) and val in range(0, 3)}
 
     for key, value in filtered_data.items():
         if value is not None:

@@ -140,19 +140,13 @@ class TaskModelTestCase(TestCase):
         """
 
         actual_task = Task.objects.get(id=12)
-        new_users = [CustomUser.objects.get(id=12)]
-        new_event = Event.objects.get(id=12)
         title = 'Some new title'
         description='hello, it`s me'
         status = 1
-        actual_task.update(event=new_event,
-                           users=new_users,
-                           title=title,
+        actual_task.update(title=title,
                            description=description,
                            status=status)
 
-        self.assertEqual(actual_task.event, new_event)
-        self.assertEqual(list(actual_task.users.all()), new_users)
         self.assertEqual(actual_task.title, title)
         self.assertEqual(actual_task.description, description)
         self.assertEqual(actual_task.status, status)
