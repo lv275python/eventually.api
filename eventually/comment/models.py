@@ -45,7 +45,7 @@ class Comment(models.Model):
     text = models.CharField(max_length=1024)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
-    team = models.ForeignKey(Team, null=True, on_delete=models.SET_NULL)
+    team = models.ForeignKey(Team, null=True)
     event = models.ForeignKey(Event, null=True)
     task = models.ForeignKey(Task, null=True)
     vote = models.ForeignKey(Vote, null=True)
@@ -64,7 +64,7 @@ class Comment(models.Model):
                                       self.text,
                                       self.created_at,
                                       self.updated_at,
-                                      self.team.id,
+                                      self.team.id if self.team else None,
                                       self.event.id if self.event else None,
                                       self.task.id if self.task else None,
                                       self.vote.id if self.vote else None,
@@ -103,7 +103,7 @@ class Comment(models.Model):
             "text": self.text,
             "created_at": int(self.created_at.timestamp()),
             "updated_at": int(self.updated_at.timestamp()),
-            "team": self.team.id,
+            "team": self.team.id if self.team else None,
             "event": self.event.id if self.event else None,
             "task": self.task.id if self.task else None,
             "vote": self.vote.id if self.vote else None,
@@ -128,11 +128,11 @@ class Comment(models.Model):
             pass
 
     @staticmethod
-    def create(team, author, text=None, event=None, task=None, vote=None):
+    def create(author, text=None, team=None, event=None, task=None, vote=None):
         """
         Create comment.
 
-        :param team: Certain's Team's object. Is required.
+        :param team: Certain's Team's object.
         :type team: Team object
 
         :param event: Certain's Event's object.
