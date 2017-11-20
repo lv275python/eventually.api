@@ -89,8 +89,8 @@ def required_keys_validator(data, keys_required, strict=True):
     :param data: data from request.
     :type data: dictionary
 
-    :param keys_required: list of requied keys for method.
-    :type keys_required: list
+    :param keys_required: set or list or tuple of requied keys for method.
+    :type keys_required: set or list or tuple
 
     :param strict: shows the status of strict method of comparing keys
                    in input data with requred keys in method.
@@ -98,18 +98,12 @@ def required_keys_validator(data, keys_required, strict=True):
 
     :return: `True` if data is valid and `False` if it is not valid.
     """
-    keys = list(data.keys())
-
+    keys = set(data.keys())
+    keys_required = set(keys_required)
     if strict:
-        keys.sort()
-        keys_required.sort()
-        return keys == keys_required
+        return not keys.symmetric_difference(keys_required)
 
-    for key in keys_required:
-        if key not in keys:
-            return False
-
-    return True
+    return not keys_required.difference(keys)
 
 
 def list_of_int_validator(value):
