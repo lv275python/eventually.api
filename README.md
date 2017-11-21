@@ -37,6 +37,13 @@ DATABASES = {
 
 ```
 
+* Create file `eventually.log` in `/var/log/` directory, And add user permissions to that file.
+```
+sudo touch /var/log/eventually.log
+
+sudo chown -R $USER:$USER /var/log/eventually.log
+```
+
 * Go to the folder with manage.py file and run eventually.api
 ```
 python manage.py runserver
