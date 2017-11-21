@@ -32,11 +32,12 @@ class LoginRequiredMiddleware():  # pylint: disable=too-few-public-methods
         verification and provides custom JSON check.
         """
 
-        try:
-            request._body = json.loads(request.body.decode(ENCODING))  # pylint: disable=W0212
-        except (SyntaxError, JSONDecodeError):
-            return HttpResponse('invalid JSON', status=400)
-            # dont forget about loger
+        if request.method == 'POST' or request.method == 'PUT':
+            try:
+                request._body = json.loads(request.body.decode(ENCODING))  # pylint: disable=W0212
+            except (SyntaxError, JSONDecodeError):
+                return HttpResponse('invalid JSON', status=400)
+                # dont forget about loger
         for current_path in ANONYMOUS_USERS_PATHS:
             if request.path_info.startswith(current_path):
 
