@@ -1,21 +1,24 @@
 """
 Middleware
 ==========
-The module that provides custom application's middlewares.
+The module that provides custom application's middlewares and and provides custom JSON check.
 """
 
+import json
+from json.decoder import JSONDecodeError
 from django.http import HttpResponse
 
 ANONYMOUS_USERS_PATHS = ['/api/v1/user/login/',
                          '/api/v1/user/register/',
                          '/api/v1/user/activate/',
                          '/api/v1/user/forget_password/']
+ENCODING = "utf-8"
 
 
-class LoginRequiredMiddleware(): # pylint: disable=too-few-public-methods
+class LoginRequiredMiddleware():  # pylint: disable=too-few-public-methods
     """
     The class that represents the middleware that permits only a few available paths
-    for anonymous users.
+    for anonymous users and provides custom JSON check.
     """
 
     def __init__(self, get_response):
@@ -26,9 +29,14 @@ class LoginRequiredMiddleware(): # pylint: disable=too-few-public-methods
     def __call__(self, request):
         """
         Method that makes the middleware instance callable and implements authentication
-        verification.
+        verification and provides custom JSON check.
         """
 
+        try:
+            request._body = json.loads(request.body.decode(ENCODING))  # pylint: disable=W0212
+        except (SyntaxError, JSONDecodeError):
+            return HttpResponse('invalid JSON', status=400)
+            # dont forget about loger
         for current_path in ANONYMOUS_USERS_PATHS:
             if request.path_info.startswith(current_path):
 

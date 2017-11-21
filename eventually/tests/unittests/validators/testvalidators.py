@@ -6,7 +6,6 @@ Validator tests
 import datetime
 from django.test import TestCase
 from utils.validators import *
-from utils.utils import *
 
 
 class ValidatorsTestCase(TestCase):
@@ -81,17 +80,6 @@ class ValidatorsTestCase(TestCase):
         """Method that tests string_validator method with str and error max_length enter parameters"""
         my_str = string_validator('word', 1, 3)
         self.assertFalse(my_str)
-
-    def test_json_loads_success(self):
-        """Method that success test json_loads method"""
-        actual_json=json_loads(b'{\n\t"email": "m",\n\t"password":"1"\n}')
-        expected_json = {'email': 'm', 'password': '1'}
-        self.assertEqual(actual_json, expected_json)
-
-    def test_json_loads_unsuccessful(self):
-        """Method that unsuccessful test json_loads method"""
-        actual_json = json_loads(b'{\n\t"email": "m"\n\t"password":"1"\n}')
-        self.assertIsNone(actual_json)
 
     def test_password_validator_success(self):
         """Method that tests `password_validator`."""
