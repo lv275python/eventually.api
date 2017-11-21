@@ -8,7 +8,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from authentication.models import CustomUser
 from eventually.settings import FRONT_HOST
-from utils.utils import json_loads
 from utils.jwttoken import create_token, handle_token
 from utils.passwordreseting import send_password_update_letter, send_successful_update_letter
 from utils.send_mail import send_email
@@ -27,7 +26,7 @@ def registration(request):
     """Registration CustomUser"""
 
     if request.method == 'POST':
-        data = json_loads(request.body)
+        data = request.body
         if not data:
             return HttpResponse(status=400)
         if not registration_validate(data):
@@ -77,7 +76,7 @@ def login_user(request):
     """
 
     if request.method == "POST":
-        data = json_loads(request.body)
+        data = request.body
         if data:
             user = authenticate(email=data['email'], password=data['password'])
             if user and user.is_active:
@@ -104,7 +103,7 @@ class ForgetPassword(View):
 
     def post(self, request):
         """Handles POST request."""
-        data = json_loads(data=request.body)
+        data = request.body
         if reset_password_validate(data, 'email'):
             email = data.get('email')
             if email_validator(email):
@@ -121,7 +120,7 @@ class ForgetPassword(View):
             if identifier:
                 user = CustomUser.get_by_id(identifier['user_id'])
                 if user:
-                    data = json_loads(data=request.body)
+                    data = request.body
                     if reset_password_validate(data, 'new_password'):
                         new_password = data.get('new_password')
                         if password_validator(new_password):
