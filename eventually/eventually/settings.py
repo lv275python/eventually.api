@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'task',
     'vote',
     'comment',
-    'authentication'
+    'authentication',
+    'literature'
 ]
 
 AUTH_USER_MODEL = 'authentication.CustomUser'
