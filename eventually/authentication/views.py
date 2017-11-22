@@ -14,7 +14,8 @@ from utils.send_mail import send_email
 from utils.validators import (password_validator,
                               email_validator,
                               reset_password_validate,
-                              registration_validate)
+                              registration_validate,
+                              login_validate)
 
 
 
@@ -72,16 +73,19 @@ def login_user(request):
     Login of the existing user. Handles post and get requests.
 
     :param request: request from the website
-    :return: status 302 if login was successful, status 401 if unsuccessful
+    :return: status 200 if login was successful, status 400 if unsuccessful
     """
 
     if request.method == "POST":
         data = request.body
-        if data:
-            user = authenticate(email=data['email'], password=data['password'])
-            if user and user.is_active:
-                login(request, user)
-                return HttpResponse(status=200)
+        if not login_validate(data):
+            return HttpResponse(status=400)
+        email = data['email'].strip().lower()
+        user = authenticate(email=email, password=data['password'])
+        if user and user.is_active:
+            login(request, user)
+            return HttpResponse(status=200)
+
     return HttpResponse(status=400)
 
 
