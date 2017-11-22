@@ -105,3 +105,8 @@ ENV/
 
 # VSCode
 .vscode/
+
+# Node.js
+/node_modules/
+/package-lock.json
+/eventually/static/public/bundle.js

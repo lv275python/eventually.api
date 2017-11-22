@@ -44,6 +44,13 @@ sudo touch /var/log/eventually.log
 sudo chown -R $USER:$USER /var/log/eventually.log
 ```
 
+* For installing new npm packages in terminal and run WebPack you should be in the directory where webpack.config.js is located and type:
+```
+npm install
+
+npm start
+```
+
 * Go to the folder with manage.py file and run eventually.api
 ```
 python manage.py runserver
