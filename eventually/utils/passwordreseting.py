@@ -9,6 +9,7 @@ from eventually.settings import FRONT_HOST
 from utils.jwttoken import create_token
 from utils.send_mail import send_email
 
+TTL_SEND_PASSWORD_TOKEN = 60 * 60
 
 def send_password_update_letter(user):
     """
@@ -21,7 +22,7 @@ def send_password_update_letter(user):
     """
 
     arg = {'user_id': user.id}
-    token = create_token(data=arg, expiration_time=60 * 60)
+    token = create_token(data=arg, expiration_time=TTL_SEND_PASSWORD_TOKEN)
     ctx = {'first_name': user.first_name,
            'token': token,
            'domain': FRONT_HOST}
