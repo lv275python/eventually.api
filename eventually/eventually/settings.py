@@ -92,24 +92,6 @@ DATABASES = {
     }
 }
 
-# Password validation
-# https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
-
-# AUTH_PASSWORD_VALIDATORS = [
-#     {
-#         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-#     },
-#     {
-#         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-#     },
-#     {
-#         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-#     },
-#     {
-#         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-#     },
-# ]
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -128,16 +110,50 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# """This module contains required settings for sending email."""
+# Required settings for sending email.
+
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'EMAIL_HOST_USER@gmail.com'
 EMAIL_HOST_PASSWORD = 'EMAIL_HOST_PASSWORD'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'DEFAULT_FROM_EMAIL'
+
+# JWT Token required settings.
+
 JWT_TOKEN_KEY = 'any secret word'
 JWT_ALGORITHM = 'HS384'
+
 FRONT_HOST = 'localhost:8000'
+
+# Logger required settings.
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'class': 'logging.FileHandler',
+            'formatter': 'default',
+            'filename': os.path.join('/var/log/', 'eventually.log'),
+        },
+    },
+    'loggers': {
+        'eventually': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+    'formatters': {
+        'default': {
+            'format': '%(levelname)s %(asctime)s %(pathname)s line: %(lineno)d '
+                      'message: %(message)s',
+            'datefmt': '%d/%m/%Y %I:%M:%S'
+        },
+    },
+}
+
 try:
     from .local_settings import *
 except ImportError:
