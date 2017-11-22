@@ -270,3 +270,22 @@ def login_validate(data):
     if not email_validator(data['email']):
         return False
     return True
+
+def comment_data_validator(data):
+    """
+    Function that validation incoming request.body
+
+    :param request_body: data that need to validate.
+    :type data: HttpRequest
+
+    :return: data if data is valid and `None` if it is not.
+    """
+
+    requred_keys = ["text"]
+    if not required_keys_validator(data, requred_keys):
+        return
+
+    if not string_validator(data.get("text")):
+        return
+
+    return True
