@@ -7,13 +7,14 @@ Module that provides validation functions for all kinds of project's data.
 import datetime
 import re
 
-from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
 PASSWORD_REG_EXP = r'^(?=.*?\d)(?=.*?[A-Z])(?=.*?[a-z])[A-Za-z\d]*$'
+STR_MIN_LENGTH = 0
+STR_MAX_LENGTH = None
 
-
-def string_validator(value, min_length=0, max_length=None):
+def string_validator(value, min_length=STR_MIN_LENGTH, max_length=STR_MAX_LENGTH):
     """
     Function that provides string validation.
 
