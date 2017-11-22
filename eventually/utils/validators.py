@@ -250,3 +250,22 @@ def event_data_validate(data, required_keys):
 
     is_data_valid = len(errors) == 0
     return is_data_valid
+
+def login_validate(data):
+    """
+    Function that provides login data validation.
+
+    :param data: dict that we need to validate.
+    :type data: dict
+
+    :return: `True` if data is valid and `None` if it is not.
+    :rtype: bool
+    """
+
+    if not data:
+        return False
+    if not required_keys_validator(data, ['email', 'password']):
+        return False
+    if not email_validator(data['email']):
+        return False
+    return True
