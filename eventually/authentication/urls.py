@@ -9,5 +9,4 @@ urlpatterns = [
     url(r'^logout/$', logout_user),
     url(r'^forget_password/$', ForgetPassword.as_view()),
     url(r'^forget_password/(?P<token>.+)$', ForgetPassword.as_view())
-
 ]

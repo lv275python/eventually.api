@@ -216,6 +216,7 @@ class ValidatorsTestCase(TestCase):
 
         self.assertIsNone(is_valid)
 
+
 class EmailValidatorsTestCase(TestCase):
     """TestCase for email validator"""
 
@@ -236,6 +237,7 @@ class EmailValidatorsTestCase(TestCase):
         is_valid = email_validator(email)
 
         self.assertIsNone(is_valid)
+
 
 class RegistrationValidatorsTestCase(TestCase):
     """TestCase for registration validator"""
@@ -291,3 +293,107 @@ class RegistrationValidatorsTestCase(TestCase):
                 'email': 'alkdasdj@mail.com'}
         is_valid = registration_validate(data)
         self.assertFalse(is_valid, "email is not string")
+
+
+class EventDataValidateTestCase(TestCase):
+    """Class that provides test cases for the event data validate function."""
+
+    def test_success_data_validation(self):
+        """Test success data validate."""
+
+        valid_data = {'name': 'some name',
+                      'owner': 12,
+                      'description': '',
+                      'start_at': 12345645,
+                      'duration': 7200,
+                      'longitude': 345.343,
+                      'budget': 100,
+                      'status': 3}
+
+        self.assertTrue(event_data_validate(valid_data, required_keys=[]))
+
+    def test_error_required_keys(self):
+        """Test requires key validation error."""
+
+        invalid_data = {'owner': 12,
+                        'description': 'some text',
+                        'start_at': 12345645,
+                        'duration': 7200,
+                        'longitude': 345.343,
+                        'latitude': 23.34223,
+                        'budget': 100,
+                        'status': 3}
+
+        self.assertFalse(event_data_validate(invalid_data, required_keys=['name']))
+
+    def test_error_name_filed(self):
+        """Test invalid cases of name field."""
+
+        invalid_empty_name_data = {'name': ''}
+        invalid_non_string_name_data = {'name': []}
+        invalid_long_name_data = {'name': 'some name'*30}
+
+        self.assertFalse(event_data_validate(invalid_empty_name_data, required_keys=[]))
+        self.assertFalse(event_data_validate(invalid_non_string_name_data, required_keys=[]))
+        self.assertFalse(event_data_validate(invalid_long_name_data, required_keys=[]))
+
+    def test_error_owner_field(self):
+        """Test invalid cases of owner field."""
+
+        invalid_non_int_owner_data = {'owner': ''}
+        invalid_negative_int_owner_data = {'owner': -2}
+
+        self.assertFalse(event_data_validate(invalid_non_int_owner_data, required_keys=[]))
+        self.assertFalse(event_data_validate(invalid_negative_int_owner_data, required_keys=[]))
+
+    def test_error_description_field(self):
+        """Test invalid cases of description field."""
+
+        invalid_non_string_description_data = {'description': {}}
+
+        self.assertFalse(event_data_validate(invalid_non_string_description_data, required_keys=[]))
+
+    def test_error_start_at_field(self):
+        """Test invalid cases of start_at field."""
+
+        invalid_non_int_start_at_data = {'start_at': ''}
+        invalid_big_int_start_at_data = {'start_at': 156464848646846468846464}
+
+        self.assertFalse(event_data_validate(invalid_non_int_start_at_data, required_keys=[]))
+        self.assertFalse(event_data_validate(invalid_big_int_start_at_data, required_keys=[]))
+
+    def test_error_duration_field(self):
+        """Test invalid cases of duration field."""
+
+        invalid_non_int_duration_data = {'duration': 'text'}
+        invalid_big_int_duration_data = {'duration': 345345245234523452345234524}
+
+        self.assertFalse(event_data_validate(invalid_non_int_duration_data, required_keys=[]))
+        self.assertFalse(event_data_validate(invalid_big_int_duration_data, required_keys=[]))
+
+    def test_error_longitude_latitude_fields(self):
+        """Test invalid cases of longitude and latitude fields."""
+
+        invalid_non_float_longitude_data = {'longitude': 456465, 'latitude': 345.5}
+
+        self.assertFalse(event_data_validate(invalid_non_float_longitude_data, required_keys=[]))
+
+    def test_error_budget_field(self):
+        """Test invalid cases of budget field."""
+
+        invalid_non_int_budget_data = {'budget': []}
+        invalid_negative_budget_data = {'budget': -322}
+
+        self.assertFalse(event_data_validate(invalid_non_int_budget_data, required_keys=[]))
+        self.assertFalse(event_data_validate(invalid_negative_budget_data, required_keys=[]))
+
+    def test_error_status_field(self):
+        """Test invalid cases of status field."""
+
+        invalid_non_int_status_data = {'status': 'txt'}
+        invalid_negative_status_data = {'status': -1}
+        invalid_big_status_data = {'status': 4}
+
+        self.assertFalse(event_data_validate(invalid_non_int_status_data, required_keys=[]))
+        self.assertFalse(event_data_validate(invalid_negative_status_data, required_keys=[]))
+        self.assertFalse(event_data_validate(invalid_big_status_data, required_keys=[]))
