@@ -1,9 +1,9 @@
 """Route rls."""
 
 from django.conf.urls import url
-from . import views
+from .views import CommentView
 
 urlpatterns = [
-    url(r'^$', views.CommentView.as_view()),
-    url(r'^(?P<comment_id>[0-9]+)$', views.CommentView.as_view()),
+    url(r'^$', CommentView.as_view(), name='index'),
+    url(r'^(?P<comment_id>\d+)$', CommentView.as_view(), name='detail'),
 ]
