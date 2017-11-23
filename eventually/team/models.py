@@ -42,7 +42,7 @@ class Team(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(CustomUser, null=True, on_delete=models.SET_NULL)
-    members = models.ManyToManyField(CustomUser, related_name='members')
+    members = models.ManyToManyField(CustomUser, related_name='teams')
 
     def __str__(self):
         """
@@ -163,7 +163,22 @@ class Team(models.Model):
         except (ValueError, IntegrityError):
             pass
 
-    def update(self, owner=None, members=None, name=None, description=None, image=None):
+    def add_users(self, members_add):
+        """Method that adds members to team"""
+        if members_add:
+            self.members.add(*members_add)
+
+    def del_users(self, members_del):
+        """Method that removes members from team"""
+        if members_del:
+            self.members.remove(*members_del)
+
+    def update(self, owner=None,
+               members_del=None,
+               members_add=None,
+               name=None,
+               description=None,
+               image=None):
         """
         Method that updates team object according to the accepted info.
 
@@ -181,13 +196,14 @@ class Team(models.Model):
 
         :param image: team's image
         :type image: str
-
         :return: None
         """
         if owner:
             self.owner = owner
-        if members:
-            self.members = members
+        if members_add:
+            self.add_users(members_add)
+        if members_del:
+            self.del_users(members_del)
         if name:
             self.name = name
         if description:

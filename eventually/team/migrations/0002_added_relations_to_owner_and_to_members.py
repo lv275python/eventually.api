@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='team',
             name='members',
-            field=models.ManyToManyField(related_name='members', to='authentication.CustomUser'),
+            field=models.ManyToManyField(related_name='teams', to='authentication.CustomUser'),
         ),
         migrations.AddField(
             model_name='team',
