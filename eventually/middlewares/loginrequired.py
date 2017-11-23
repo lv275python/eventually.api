@@ -32,6 +32,10 @@ class LoginRequiredMiddleware():  # pylint: disable=too-few-public-methods
         verification and provides custom JSON check.
         """
 
+        if not request.path_info.startswith('/api'):
+            response = self.get_response(request)
+            return response
+
         if request.method == 'POST' or request.method == 'PUT':
             try:
                 request._body = json.loads(request.body.decode(ENCODING))  # pylint: disable=W0212
