@@ -7,6 +7,6 @@ urlpatterns = [
     url(r'^activate/(?P<token>.+)$', activate),
     url(r'^login/$', login_user, name="login_user"),
     url(r'^logout/$', logout_user, name="logout_user"),
-    url(r'^forget_password/$', ForgetPassword.as_view()),
-    url(r'^forget_password/(?P<token>.+)$', ForgetPassword.as_view())
+    url(r'^forget_password/$', ForgetPassword.as_view(), name="forget_password"),
+    url(r'^forget_password/(?P<token>.+)$', ForgetPassword.as_view(), name="forget_password_token")
 ]
