@@ -116,7 +116,7 @@ class CommentModelTestCase(TestCase):
 
     def test_fail_create(self):
         """Method that tests `create` method of Comment class object."""
-        team = Team.objects.get(id=1000)
+        team = Team()
         author = CustomUser.objects.get(id=2000)
         comment = Comment.create(team=team, author=author)
 
