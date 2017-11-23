@@ -186,7 +186,22 @@ class ValidatorsTestCase(TestCase):
 
         self.assertFalse(is_valid)
 
-    def test_reset_password_validate_success(self):
+    def test_updating_email_validate_success(self):
+        """Method that tests `reset_password_validate`."""
+        data = {
+            "name": "Some_name",
+            "email": "example@gmail.com",
+            "adress": "some_city",
+            "status": "some_status"
+        }
+
+        requred_key = "email"
+
+        is_valid = updating_email_validate(data, requred_key)
+
+        self.assertTrue(is_valid)
+
+    def test_updating_email_validate_fail(self):
         """Method that tests `reset_password_validate`."""
         data = {
             "name": "Some_name",
@@ -195,24 +210,39 @@ class ValidatorsTestCase(TestCase):
             "status": "some_status"
         }
 
-        requred_key = "name"
+        requred_key = "email"
 
-        is_valid = reset_password_validate(data, requred_key)
+        is_valid = updating_email_validate(data, requred_key)
+
+        self.assertIsNone(is_valid)
+
+    def test_updating_password_validate_success(self):
+        """Method that tests `reset_password_validate`."""
+        data = {
+            "name": "Some_name",
+            "email": "example@gmail.com",
+            "adress": "some_city",
+            "password": "aaaA1"
+        }
+
+        requred_key = "password"
+
+        is_valid = updating_password_validate(data, requred_key)
 
         self.assertTrue(is_valid)
 
-    def test_reset_password_validate_fail(self):
+    def test_updating_password_validate_fail(self):
         """Method that tests `reset_password_validate`."""
         data = {
-            "name": 123,
+            "name": "Some_name",
             "email": "some_email",
             "adress": "some_city",
-            "status": "some_status"
+            "password": "somepassword"
         }
 
-        requred_key = "name"
+        requred_key = "password"
 
-        is_valid = reset_password_validate(data, requred_key)
+        is_valid = updating_password_validate(data, requred_key)
 
         self.assertIsNone(is_valid)
 

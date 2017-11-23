@@ -11,12 +11,11 @@ from eventually.settings import FRONT_HOST
 from utils.jwttoken import create_token, handle_token
 from utils.passwordreseting import send_password_update_letter, send_successful_update_letter
 from utils.send_mail import send_email
-from utils.validators import (password_validator,
-                              email_validator,
-                              reset_password_validate,
+from utils.validators import (updating_password_validate,
+                              updating_email_validate,
                               registration_validate,
                               login_validate)
-
+TTL_SEND_PASSWORD_TOKEN = 60 * 60
 
 
 class UserView(View):
@@ -44,7 +43,8 @@ def registration(request):
         ctx = {
             'first_name': user.first_name,
             'domain': FRONT_HOST,
-            'token': create_token(data={'email': user.email}, expiration_time=60*60),
+            'token': create_token(data={'email': user.email},
+                                  expiration_time=TTL_SEND_PASSWORD_TOKEN),
         }
         message = 'registration'
         mail_subject = 'Activate account'
@@ -67,6 +67,7 @@ def activate(request, token):
             return HttpResponse(status=200)
         return HttpResponse(status=400)
     return HttpResponse(status=404)
+
 
 def login_user(request):
     """
@@ -108,28 +109,30 @@ class ForgetPassword(View):
     def post(self, request):
         """Handles POST request."""
         data = request.body
-        if reset_password_validate(data, 'email'):
+        if updating_email_validate(data, 'email'):
             email = data.get('email')
-            if email_validator(email):
-                user = CustomUser.get_by_email(email=email)
-                if user:
-                    send_password_update_letter(user)
-                    return HttpResponse(status=200)
+            user = CustomUser.get_by_email(email=email)
+            if user:
+                arg = {'user_id': user.id}
+                token = create_token(data=arg, expiration_time=TTL_SEND_PASSWORD_TOKEN)
+                send_password_update_letter(user, token)
+                return HttpResponse(status=200)
         return HttpResponse(status=400)
 
     def put(self, request, token=None):
         """Handles PUT request."""
         if token:
             identifier = handle_token(token)
-            if identifier:
-                user = CustomUser.get_by_id(identifier['user_id'])
-                if user:
-                    data = request.body
-                    if reset_password_validate(data, 'new_password'):
-                        new_password = data.get('new_password')
-                        if password_validator(new_password):
-                            user.set_password(new_password)
-                            send_successful_update_letter(user)
-                            return HttpResponse(status=200)
+            if not identifier:
+                return HttpResponse(status=400)
+            user = CustomUser.get_by_id(identifier['user_id'])
+            if not user:
+                return HttpResponse(status=400)
+            data = request.body
+            if updating_password_validate(data, 'new_password'):
+                new_password = data.get('new_password')
+                user.set_password(new_password)
+                send_successful_update_letter(user)
+                return HttpResponse(status=200)
             return HttpResponse(status=400)
         return HttpResponse(status=498)
