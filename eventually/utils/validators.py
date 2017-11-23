@@ -185,7 +185,7 @@ def password_validator(password):
         pass
 
 
-def reset_password_validate(data, requred_key):
+def updating_password_validate(data, new_password):
     """
     Function that validation for ForgetPassword class
 
@@ -199,11 +199,34 @@ def reset_password_validate(data, requred_key):
     """
 
     if data:
-        if required_keys_validator(data, [requred_key], False):
-            string = data.get(requred_key)
-            if string_validator(string, 4):
-                return True
+        if not required_keys_validator(data, [new_password], False):
+            return None
+        string = data.get(new_password)
+        if not string_validator(string, 4):
+            return None
+        if password_validator(string):
+            return True
 
+
+def updating_email_validate(data, email):
+    """
+    Function that validation for ForgetPassword class
+
+    :param data: dict that we need to validate.
+    :type data: dict
+
+    :param requred_key: requred_key for required_keys_validator
+    :type requred_key: str
+
+    :return: `True` if data is valid and `None` if it is not.
+    """
+    if data:
+        if not required_keys_validator(data, [email], False):
+            return None
+        if not string_validator(data.get(email), 4):
+            return None
+        if email_validator(data.get(email)):
+            return True
 
 def event_data_validate(data, required_keys):
     """

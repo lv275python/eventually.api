@@ -6,12 +6,10 @@ The module that provides functions for sending reset password letter to user and
 """
 
 from eventually.settings import FRONT_HOST
-from utils.jwttoken import create_token
 from utils.send_mail import send_email
 
-TTL_SEND_PASSWORD_TOKEN = 60 * 60
 
-def send_password_update_letter(user):
+def send_password_update_letter(user, token):
     """
     Function that provides sending update password letter to user.
 
@@ -21,8 +19,6 @@ def send_password_update_letter(user):
     :return: True if letter was send else None.
     """
 
-    arg = {'user_id': user.id}
-    token = create_token(data=arg, expiration_time=TTL_SEND_PASSWORD_TOKEN)
     ctx = {'first_name': user.first_name,
            'token': token,
            'domain': FRONT_HOST}
