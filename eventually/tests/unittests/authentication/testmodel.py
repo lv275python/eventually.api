@@ -172,13 +172,13 @@ class TestCustomUserModel(TestCase):
         """ Test of the CustomUser.create(args) method """
 
         user_to_update = CustomUser.objects.get(id=4)
-        user_to_update.update('John', 'Smith', 'Jr.', 'email-new@mail.com', '123456')
+        user_to_update.update('John', 'Smith', 'Jr.', '123456', True)
 
         user_to_expect = CustomUser(id=4,
-                                    email='email-new@mail.com',
                                     password='123456',
                                     first_name='John',
                                     middle_name='mnSmithame',
-                                    last_name='Jr.')
+                                    last_name='Jr.',
+                                    is_active=True)
 
         self.assertEqual(user_to_update, user_to_expect)
