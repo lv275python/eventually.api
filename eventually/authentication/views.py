@@ -124,7 +124,6 @@ class UserView(View):
 
 def registration(request):
     """Registration CustomUser"""
-
     if request.method == 'POST':
         data = request.body
         if not data:
@@ -197,7 +196,7 @@ def logout_user(request):
     :return: status 200
     """
 
-    if request.method == "POST":
+    if request.method == "GET":
         logout(request)
         return HttpResponse(status=200)
     return HttpResponse(status=400)
