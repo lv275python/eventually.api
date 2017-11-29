@@ -147,7 +147,7 @@ class TeamModelTestCase(TestCase):
                                               password='123')
         new_members = [CustomUser.objects.get(id=101), new_owner]
         actual_team.update(owner=new_owner,
-                           members=new_members,
+                           members_add=[new_owner],
                            name='tennis',
                            description='very fun game',
                            image='link11')
