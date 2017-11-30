@@ -5,15 +5,16 @@ Authentication view tests
 This module provides complete testing for all Authentication's views functions.
 """
 
-import json
-from json import dumps
 import datetime
+import json
+import pytz
+from json import dumps
 from unittest import mock
-from authentication.models import CustomUser
 from django.http import JsonResponse
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
-import pytz
+from authentication.models import CustomUser
+from customprofile.models import CustomProfile
 
 
 class AuthenticationViewTest(TestCase):
@@ -87,7 +88,6 @@ class AuthenticationViewTest(TestCase):
                                   content_type='application/json')
         self.assertEqual(request.status_code, 400)
 
-
     def test_activation_success(self):
         """Test success activation via email."""
 
@@ -95,6 +95,20 @@ class AuthenticationViewTest(TestCase):
             handle_token.return_value = {'email': 'someemail@gmail.com'}
             url = reverse('activate', args=["gndhntgid"])
             request = self.client.get(url)
+            self.assertEqual(request.status_code, 200)
+
+    def test_activation_create_profile_success(self):
+        """Test success activation via email with empty profile creating."""
+
+        with mock.patch('authentication.views.handle_token') as handle_token:
+            handle_token.return_value = {'email': 'someemail@gmail.com'}
+            url = reverse('activate', args=["gndhntgid"])
+            request = self.client.get(url)
+            actual_profile = CustomProfile.objects.get(user_id=12).to_dict()
+            self.assertEqual(actual_profile['user'], 12)
+            self.assertEqual(actual_profile['hobby'], '')
+            self.assertEqual(actual_profile['photo'], '')
+            self.assertIsNone(actual_profile['birthday'])
             self.assertEqual(request.status_code, 200)
 
     def test_activation_email_not_exist(self):

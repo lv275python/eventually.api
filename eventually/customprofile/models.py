@@ -30,10 +30,10 @@ class CustomProfile(models.Model):
         :param update_date: The date when the certain profile was last time edited.
         :type update_date: Date
     """
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True)
+    user = models.OneToOneField(CustomUser, null=True)
     hobby = models.CharField(max_length=1024, blank=True)
     photo = models.CharField(max_length=30, blank=True)
-    birthday = models.DateField()
+    birthday = models.DateField(null=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 

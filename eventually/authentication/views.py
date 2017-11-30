@@ -7,6 +7,7 @@ from django.views.generic.base import View
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
 from authentication.models import CustomUser
+from customprofile.models import CustomProfile
 from eventually.settings import FRONT_HOST
 from utils.jwttoken import create_token, handle_token
 from utils.passwordreseting import send_password_update_letter, send_successful_update_letter
@@ -17,6 +18,7 @@ from utils.validators import (updating_password_validate,
                               login_validate,
                               string_validator,
                               password_validator)
+
 TTL_SEND_PASSWORD_TOKEN = 60 * 60
 
 
@@ -102,7 +104,6 @@ class UserView(View):
 
 
     def delete(self, request, user_id):
-
         """
         Handles delete request
 
@@ -163,6 +164,7 @@ def activate(request, token):
         user = CustomUser.get_by_email(email=data['email'])
         if user:
             user.update(is_active=True)
+            CustomProfile.create(user)
             return HttpResponse(status=200)
         return HttpResponse(status=400)
     return HttpResponse(status=404)
