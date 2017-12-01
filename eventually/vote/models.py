@@ -317,6 +317,9 @@ class Answer(models.Model):
         """
         Static method that create new Answer object
 
+        :param members: id of members
+        :type members: list of integers
+
         :param vote: foreign key of vote
         :type vote: integer
 
@@ -336,18 +339,20 @@ class Answer(models.Model):
         except (ValueError, IntegrityError, TypeError):
             pass
 
-    def update(self, text=None):
+    def update(self, members=None, text=None):
         """
         Method that update existed Answer object
 
-        :param vote: foreign key of vote
-        :type vote: integer
+        :param members: id of members
+        :type members: list of integers
 
         :param text: variant to choose in vote
         :type text: string
 
         :return: none
         """
+        if members:
+            self.members = members
         if text:
             self.text = text
         self.save()
@@ -356,6 +361,9 @@ class Answer(models.Model):
     def delete_by_id(answer_id):
         """
         Method delete existed Answer object by id
+
+        :param answer_id: id of element in model
+        :type answer_id: integer
 
         :return:deleted Answer object
         """
