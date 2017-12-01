@@ -1,4 +1,5 @@
 import React from 'react';
+import {withRouter} from 'react-router-dom'
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import {forgetPasswordService} from './registrationService.js'
@@ -6,8 +7,7 @@ import {forgetPasswordService} from './registrationService.js'
 const style = {
   margin: 12,
 };
-
-export default class Forget extends React.Component {
+class Forget extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -40,3 +40,5 @@ export default class Forget extends React.Component {
     );
   };
 };
+
+export default withRouter(Forget)

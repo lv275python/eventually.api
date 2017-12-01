@@ -11,7 +11,7 @@ const registerService = (email, password) => {
 }
 
 const loginService = (email, password) => {
-  return axios.post(loginUrl, {email, password} );
+  return axios.post(loginUrl, {email, password});
 }
 
 const logoutService = () => {
@@ -19,7 +19,7 @@ const logoutService = () => {
 }
 
 const forgetPasswordService = email =>  {
-  return axios.post(forgetPasswordUrl, {email} );
+  return axios.post(forgetPasswordUrl, {email});
 }
 
 export { loginService, forgetPasswordService, registerService, logoutService }
