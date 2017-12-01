@@ -1,16 +1,42 @@
 import React from "react";
-
-import MainRoute from './router';
+import {Route, Switch} from "react-router-dom";
+import MainRouter from './mainRouter';
 import Header from './components/header/header';
 
+import { isLogged } from './utils'
+import Sign from './containers/register_login/sign'
+import SignRouter from './signRouter'
+import Paper from 'material-ui/Paper';
+
+const style = {
+  height: 300,
+  width: '60%',
+  margin: 'auto',
+  'margin-left': '20%',
+  'min-width': 300,
+  position: 'relative',
+  textAlign: 'center',
+  display: 'inline-block',
+};
+
 export default class Layout extends React.Component {
+  constructor(props) {
+    super(props);
+  }
     render() {
         return (
+          isLogged()?
             <div>
-                <Header />
-                <MainRoute />
+              <Header />
+              <MainRouter />
+            </div>:
+            <div>
+              <Sign />
+              <Paper style={style} zDepth={5}>
+                    <SignRouter />
+              </Paper>
+
             </div>
         )
     }
 };
-

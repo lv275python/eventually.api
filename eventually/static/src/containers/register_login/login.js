@@ -1,13 +1,18 @@
 import React from 'react';
+import {withRouter} from 'react-router-dom'
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import {loginService} from './registrationService.js'
+import { isLogged } from '../../utils';
+
 
 const style = {
   margin: 12,
 };
 
-export default class Login extends React.Component {
+
+
+ class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -25,7 +30,10 @@ export default class Login extends React.Component {
   handleSubmit = event => {
      const email = this.state.email;
      const password = this.state.password;
-     loginService(email, password)
+     loginService(email, password).then((response) => {
+       this.props.history.push("/home");}
+     );
+     event.preventDefault();
    }
   render() {
     return(
@@ -43,7 +51,10 @@ export default class Login extends React.Component {
                       primary={true}
                       onClick={this.handleSubmit}
         />
+
       </div>
     );
   };
 };
+
+export default withRouter(Login)

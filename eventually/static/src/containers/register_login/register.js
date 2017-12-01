@@ -1,4 +1,5 @@
 import React from 'react';
+import {withRouter} from 'react-router-dom'
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import {registerService} from './registrationService.js'
@@ -7,7 +8,7 @@ const style = {
   margin: 12,
 };
 
-export default class Register extends React.Component {
+class Register extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -25,7 +26,10 @@ export default class Register extends React.Component {
   handleSubmit = event => {
      const email = this.state.email;
      const password = this.state.password;
-     registerService(email, password)
+     registerService(email, password).then((response) => {
+       this.props.history.push("/login");}
+     );
+     event.preventDefault();
    }
   render() {
     return(
@@ -47,3 +51,5 @@ export default class Register extends React.Component {
     );
   };
 };
+
+export default withRouter(Register)

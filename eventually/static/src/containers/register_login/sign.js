@@ -1,30 +1,38 @@
 import React from 'react';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import {Link} from "react-router-dom";
 import {Tabs, Tab} from 'material-ui/Tabs';
 import Login from './login.js';
-import Logout from './logout.js';
 import Register from './register.js';
 import Forget from './forget.js';
+import {withRouter} from 'react-router-dom'
 
-export default class Sign extends React.Component {
+
+class Sign extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  toRegister = () => {
+    this.props.history.push('/register')
+  }
+  toLogin = () => {
+    this.props.history.push('/login')
+  }
+  toForgetPassword= () => {
+    this.props.history.push('/forget')
+  }
   render() {
     return (
-      <MuiThemeProvider>
-        <Tabs>
-          <Tab label="Register" >
-            <Register />
-          </Tab>
-          <Tab label="Login" >
-            <Login />
-          </Tab>
-          <Tab label="Forget password">
-            <Forget />
-          </Tab>
-          <Tab label="Logout">
-            <Logout />
-          </Tab>
-        </Tabs>
-      </MuiThemeProvider>
-    );
+      <Tabs>
+        <Tab label="Register"  onActive={this.toRegister}>
+        </Tab>
+        <Tab label="Login" onActive={this.toLogin}>
+        </Tab>
+        <Tab label="Forget password" onActive={this.toForgetPassword}>
+        </Tab>
+      </Tabs>
+
+    )
   }
 }
+export default withRouter(Sign)

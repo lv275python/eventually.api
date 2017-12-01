@@ -2,17 +2,18 @@ import React from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import {logoutService} from './registrationService.js'
+import {withRouter} from "react-router-dom";
 
 const style = {
   margin: 12,
 };
 
-export default class Logout extends React.Component {
+class Logout extends React.Component {
   constructor(props) {
     super(props);
   }
   handleSubmit = event => {
-     logoutService()
+     logoutService().then(response =>  this.props.history.push("/home"))
    }
   render() {
     return(
@@ -25,3 +26,4 @@ export default class Logout extends React.Component {
     );
   };
 };
+export default withRouter(Logout)
