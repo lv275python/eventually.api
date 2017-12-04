@@ -6,13 +6,14 @@ Module that provides validation functions for all kinds of project's data.
 """
 import datetime
 import re
-
+import imghdr
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 
 PASSWORD_REG_EXP = r'^(?=.*?\d)(?=.*?[A-Z])(?=.*?[a-z])[A-Za-z\d]*$'
 STR_MIN_LENGTH = 0
 STR_MAX_LENGTH = None
+MAX_IMAGE_FILESIZE = 8 * 1024 * 1024
 
 def string_validator(value, min_length=STR_MIN_LENGTH, max_length=STR_MAX_LENGTH):
     """
@@ -445,3 +446,26 @@ def task_data_validate_update(data):
 
     is_data_valid = len(errors) == 0
     return is_data_valid
+
+def image_validator(image_file):
+    """
+    Checks if the uploaded file is a valid image file.
+    A valid image file has to be of gif, png, jpg/jpeg or bmp file type.
+    Maximum file size allowed is 8 MB.
+
+    :param image_file: image file
+    :type image_file: UploadedFile object
+
+    :return: string image extension or False
+    """
+
+    valid_extensions = ('gif', 'png', 'jpg', 'jpeg', 'bmp')
+
+    if image_file.size > MAX_IMAGE_FILESIZE:
+        return False
+
+    file_extension = imghdr.what(image_file)
+    if not file_extension in valid_extensions:
+        return False
+
+    return file_extension
