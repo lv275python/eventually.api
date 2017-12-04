@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'literature',
     'home',
     'assignment',
-    'item'
+    'item',
+    'amazons3'
 ]
 
 AUTH_USER_MODEL = 'authentication.CustomUser'
@@ -82,6 +83,11 @@ WSGI_APPLICATION = 'eventually.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+
+# AmazonS3
+AWS_S3_ACCESS_KEY_ID = 'AWS_S3_ACCESS_KEY_ID'
+AWS_S3_SECRET_ACCESS_KEY = 'AWS_S3_SECRET_ACCESS_KEY'
+AWS_STORAGE_BUCKET_NAME = 'AWS_STORAGE_BUCKET_NAME'
 
 
 DATABASES = {
