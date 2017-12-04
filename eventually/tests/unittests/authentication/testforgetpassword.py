@@ -60,7 +60,7 @@ class TestForgetPassword(TestCase):
 
 
     def test_put_badidentifier(self):
-        """ Test for forget password PUT function """
+        """ Test PUT function with bad identifier """
 
         new_password_valid = json.dumps({"new_password": "QwErTy1234"})
         expect_400 = self.client.put(URL_WITH_TOKEN,
@@ -69,7 +69,7 @@ class TestForgetPassword(TestCase):
 
 
     def test_put_baduser(self):
-        """ Test for forget password PUT function """
+        """ Test PUT function with no user specified"""
 
         new_password_valid = json.dumps({"new_password": "QwErTy1234"})
         expect_400 = self.client.put(URL_WITH_TOKEN,
@@ -77,17 +77,30 @@ class TestForgetPassword(TestCase):
         self.assertEqual(expect_400.status_code, 400)
 
 
-    def test_put_badpassword(self):
-        """ Test for forget password PUT function """
+    def test_put_nouser(self):
+        """ Test PUT method with inexisting user"""
 
-        new_password_invalid = json.dumps({"password": "QwErTy1234"})
-        expect_400 = self.client.put(URL_WITH_TOKEN,
-                                     new_password_invalid, content_type='application/json')
-        self.assertEqual(expect_400.status_code, 400)
+        with mock.patch('authentication.views.handle_token') as handle_token:
+            handle_token.return_value = {"user_id": 100500, 'email': 'john@email.com'}
+            new_password_valid = json.dumps({"new_password": "QwErTy1234"})
+            expect_400 = self.client.put(URL_WITH_TOKEN,
+                                         new_password_valid, content_type='application/json')
+            self.assertEqual(expect_400.status_code, 400)
+
+
+    def test_put_badpassword(self):
+        """ Test PUT function with invalid password"""
+
+        with mock.patch('authentication.views.handle_token') as handle_token:
+            handle_token.return_value = {"user_id": 100, 'email': 'john@email.com'}
+            new_password_invalid = json.dumps({"password": "1"})
+            expect_400 = self.client.put(URL_WITH_TOKEN,
+                                         new_password_invalid, content_type='application/json')
+            self.assertEqual(expect_400.status_code, 400)
 
 
     def test_put_notoken(self):
-        """ Test for forget password PUT function """
+        """ Test PUT method with invalid token """
 
         expect_498 = self.client.put(URL_WITHOUT_TOKEN, {}, content_type='application/json')
         self.assertEqual(expect_498.status_code, 498)
