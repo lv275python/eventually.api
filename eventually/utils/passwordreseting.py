@@ -8,8 +8,12 @@ The module that provides functions for sending reset password letter to user and
 from eventually.settings import FRONT_HOST
 from utils.send_mail import send_email
 
+TTL_SEND_PASSWORD_TOKEN = 60 * 60
+USER_TTL_NOTIFICATOR = TTL_SEND_PASSWORD_TOKEN / 60
+
 
 def send_password_update_letter(user, token):
+
     """
     Function that provides sending update password letter to user.
 
@@ -21,7 +25,8 @@ def send_password_update_letter(user, token):
 
     ctx = {'first_name': user.first_name,
            'token': token,
-           'domain': FRONT_HOST}
+           'domain': FRONT_HOST,
+           'time_left': USER_TTL_NOTIFICATOR}
     subject = 'Pasword reset'
     message = 'You tried to change your password.'
     recipient_list = [user.email]

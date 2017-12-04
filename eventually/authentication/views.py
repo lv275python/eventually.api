@@ -20,7 +20,7 @@ from utils.validators import (updating_password_validate,
                               password_validator)
 
 TTL_SEND_PASSWORD_TOKEN = 60 * 60
-
+USER_TTL_NOTIFICATOR = TTL_SEND_PASSWORD_TOKEN / 60
 
 class UserView(View):
     """    A class to handle GET, PUT and DELETE operations    """
@@ -52,7 +52,6 @@ class UserView(View):
             user = user.to_dict()
             return JsonResponse(user, status=200)
         return HttpResponse(status=404)
-
 
     def put(self, request, user_id):
         """
@@ -101,8 +100,6 @@ class UserView(View):
                     password=new_password)
         return HttpResponse(status=200)
 
-
-
     def delete(self, request, user_id):
         """
         Handles delete request
@@ -145,6 +142,7 @@ def registration(request):
             'domain': FRONT_HOST,
             'token': create_token(data={'email': user.email},
                                   expiration_time=TTL_SEND_PASSWORD_TOKEN),
+            'time_left': USER_TTL_NOTIFICATOR,
         }
         message = 'registration'
         mail_subject = 'Activate account'

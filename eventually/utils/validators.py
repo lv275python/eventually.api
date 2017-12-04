@@ -315,6 +315,29 @@ def comment_data_validator(data):
     return True
 
 
+def profile_data_validator(data):
+    """
+    Function that validation incoming request.body
+    :param request_body: data that need to validate.
+    :type data: HttpRequest
+    :return: return True not data.
+    """
+
+    is_hobby_valid = string_validator(data.get("hobby")) if data.get('hobby') else True
+    if not is_hobby_valid:
+        return
+
+    is_photo_valid = string_validator(data.get("photo")) if data.get('photo') else True
+    if not is_photo_valid:
+        return
+
+    is_birthday_valid = timestamp_validator(data.get("birthday")) if data.get('birthday') else True
+    if not is_birthday_valid:
+        return
+
+    return True
+
+
 def vote_data_validator(data, required_keys):
     """
     Function that validation incoming request.body
