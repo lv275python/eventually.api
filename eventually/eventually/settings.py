@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'authentication',
     'literature',
     'home',
-    'assignment'
+    'assignment',
+    'item'
 ]
 
 AUTH_USER_MODEL = 'authentication.CustomUser'
