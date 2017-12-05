@@ -181,7 +181,7 @@ class TeamModelTestCase(TestCase):
 
         team = Team.objects.get(id=101)
         actual_repr = team.__repr__()
-        expected_str = '101 somename somedescription link1 101 [101]'
+        expected_str = 'Team(id=101)'
         self.assertEqual(actual_repr, expected_str)
 
     def test_team_str(self):
@@ -189,6 +189,12 @@ class TeamModelTestCase(TestCase):
 
         team = Team.objects.get(id=101)
         actual_str = team.__str__()
-        expected_str = '101 somename somedescription link1 \
-2017-10-15 05:15:12+00:00 2017-10-15 05:15:12+00:00 101 [101]'
+        expected_str = "'id': 101, " \
+                       "'name': 'somename', " \
+                       "'description': 'somedescription', " \
+                       "'image': 'link1', " \
+                       "'created_at': 1508044512, " \
+                       "'updated_at': 1508044512, "\
+                       "'owner_id': 101, " \
+                       "'members_id': [101]"
         self.assertMultiLineEqual(actual_str, expected_str)

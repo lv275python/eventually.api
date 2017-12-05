@@ -52,32 +52,20 @@ class CustomUser(AbstractBaseUser):
     USERNAME_FIELD = 'email'
     objects = BaseUserManager()
 
-
     def __str__(self):
         """
         Magic method is redefined to show all information about CustomUser.
         :return: id, first_name, middle_name, last_name,
         email, password, updated_at, created_at, is_active
         """
-
-        return "id: {}, first name:{}, middle name:{}, last name:{},"\
-        " email:{}, updated:{}, created:{}, is_active: {}".format(self.id,
-                                                                  self.first_name,
-                                                                  self.middle_name,
-                                                                  self.last_name,
-                                                                  self.email,
-                                                                  self.updated_at,
-                                                                  self.created_at,
-                                                                  self.is_active)
+        return str(self.to_dict())[1:-1]
 
     def __repr__(self):
         """
         This magic method is redefined to show first, last name and id of the CustomUser object.
         :return: id, first_name, last_name, is_active
         """
-
-        return 'id: {}, first name: {}, last name: {}, active: {}'.format(
-            self.id, self.first_name, self.last_name, self.is_active)
+        return f'{self.__class__.__name__}(id={self.id})'
 
     @staticmethod
     def get_by_id(user_id):

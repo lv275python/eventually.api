@@ -89,12 +89,7 @@ class Event(models.Model):
         :return: event id, event team, event owner, event name, event status
         """
 
-        return "id:{} team:{} owner:{} name:{} status:{}".format(self.id,
-                                                                 self.team.id,
-                                                                 self.owner.id if self.owner
-                                                                 else None,
-                                                                 self.name,
-                                                                 self.status)
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def __str__(self):
         """
@@ -105,15 +100,7 @@ class Event(models.Model):
                  event description, event duration, event status
         """
 
-        return "id:{} team:{} owner:{} name:{} description:{} start_at:{}\
-                duration:{} status:{}".format(self.id,
-                                              self.team.id,
-                                              self.owner.id if self.owner else None,
-                                              self.name,
-                                              self.description,
-                                              self.start_at,
-                                              self.duration,
-                                              self.status)
+        return str(self.to_dict())[1:-1]
 
     def to_dict(self):
         """

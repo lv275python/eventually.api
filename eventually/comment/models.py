@@ -62,17 +62,7 @@ class Comment(models.Model):
         :return: id, text, create date, update date
 
         """
-        return "id: {}, text: {}, created_at: {}, updated_at: {}, " \
-               "team_id: {}, event_id: {}, task_id: {}, vote_id: {}, " \
-               "author_id: {}".format(self.id,
-                                      self.text,
-                                      self.created_at,
-                                      self.updated_at,
-                                      self.team.id if self.team else None,
-                                      self.event.id if self.event else None,
-                                      self.task.id if self.task else None,
-                                      self.vote.id if self.vote else None,
-                                      self.author.id)
+        return str(self.to_dict())[1:-1]
 
     def __repr__(self):
         """
@@ -81,7 +71,7 @@ class Comment(models.Model):
         :return: id, text, create date, update date
 
         """
-        return "{} {}".format(self.id, self.text)
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def to_dict(self):
         """
