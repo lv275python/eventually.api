@@ -60,14 +60,7 @@ class Vote(models.Model):
                  vote title, vote vote_type
         """
 
-        return "id:{} event:{} is_active:{} is_extended:{} title:{} vote_type:{}". \
-            format(self.id,
-                   self.event.id if self.event
-                   else None,
-                   self.is_active,
-                   self.is_extended,
-                   self.title,
-                   self.vote_type)
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def __str__(self):
         """
@@ -78,14 +71,7 @@ class Vote(models.Model):
                  vote title, vote vote_type
         """
 
-        return "id:{} event:{} is_active:{} is_extended:{} title:{} vote_type:{}". \
-            format(self.id,
-                   self.event.id if self.event
-                   else None,
-                   self.is_active,
-                   self.is_extended,
-                   self.title,
-                   self.vote_type)
+        return str(self.to_dict())[1:-1]
 
     def to_dict(self):
         """
@@ -248,13 +234,8 @@ class Answer(models.Model):
 
         :return: answer id, vote id, answer text, members.id
         """
-        members = [user.id for user in self.members.all()]
-        # [user.id for user in self.members] if self.members else None
 
-        return "{} {} {} {}".format(self.id,
-                                    self.vote.id if self.vote else None,
-                                    self.text,
-                                    members)
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def __str__(self):
         """
@@ -264,13 +245,7 @@ class Answer(models.Model):
         :return: answer id, vote id, answer text, members.id
         """
 
-        members = [user.id for user in self.members.all()]
-        # [user.id for user in self.members] if self.members else None
-
-        return "id:{} vote:{} text:{} members:{}".format(self.id,
-                                                         self.vote.id if self.vote else None,
-                                                         self.text,
-                                                         members)
+        return str(self.to_dict())[1:-1]
 
     def to_dict(self):
         """

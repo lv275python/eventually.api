@@ -52,16 +52,7 @@ class Team(models.Model):
         :return: string with team's information
         """
 
-        members = [user.id for user in self.members.all()] if self.members else None
-
-        return "{} {} {} {} {} {} {} {}".format(self.id,
-                                                self.name,
-                                                self.description,
-                                                self.image,
-                                                self.created_at,
-                                                self.updated_at,
-                                                self.owner.id if self.owner else None,
-                                                members)
+        return str(self.to_dict())[1:-1]
 
     def __repr__(self):
         """
@@ -71,14 +62,7 @@ class Team(models.Model):
         :return: string with team's information
         """
 
-        members = [user.id for user in self.members.all()] if self.members else None
-
-        return "{} {} {} {} {} {}".format(self.id,
-                                          self.name,
-                                          self.description,
-                                          self.image,
-                                          self.owner.id if self.owner else None,
-                                          members)
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def to_dict(self):
         """

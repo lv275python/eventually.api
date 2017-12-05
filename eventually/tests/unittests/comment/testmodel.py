@@ -47,24 +47,22 @@ class CommentModelTestCase(TestCase):
     def test_str(self):
         """Method that tests `__str__` method of certain Comment instance."""
         comment = Comment.objects.get(id=100)
-        expected_comment_str = "id: {}, text: {}, created_at: {}, updated_at: {}, " \
-                               "team_id: {}, event_id: {}, task_id: {}, vote_id: {}, " \
-                               "author_id: {}".format(100,
-                                                      "football",
-                                                      TEST_TIME,
-                                                      TEST_TIME,
-                                                      1000,
-                                                      None,
-                                                      None,
-                                                      None,
-                                                      2000)
+        expected_comment_str = "'id': 100, " \
+                               "'text': 'football', " \
+                               "'created_at': 1509351312, " \
+                               "'updated_at': 1509351312, " \
+                               "'team': 1000, " \
+                               "'event': None, "\
+                               "'task': None, " \
+                               "'vote': None, " \
+                               "'author': 2000"
 
         self.assertEqual(comment.__str__(), expected_comment_str)
 
     def test_repr(self):
         """Method that tests `__repr__` method of certain Comment instance."""
         comment = Comment.objects.get(id=100)
-        expected_comment_repr = "{} {}".format(100, "football")
+        expected_comment_repr = "Comment(id=100)"
 
         self.assertEqual(repr(comment), expected_comment_repr)
 

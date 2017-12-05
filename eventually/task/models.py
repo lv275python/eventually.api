@@ -60,14 +60,7 @@ class Task(models.Model):
         :return: task title, task description, task status, created , updated, event id, users id
         """
 
-        return "id:{} title:{} {} {} {} {} {} {}".format(self.id,
-                                                         self.title,
-                                                         self.description,
-                                                         self.status,
-                                                         self.created_at,
-                                                         self.updated_at,
-                                                         self.event.id,
-                                                         [user.id for user in self.users.all()])
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def __str__(self):
         """
@@ -77,14 +70,7 @@ class Task(models.Model):
         :return: task title, task description, task status, created , updated, event id, users id
         """
 
-        return "{} {} {} {} {} {} {} {}".format(self.id,
-                                                self.title,
-                                                self.description,
-                                                self.status,
-                                                self.created_at,
-                                                self.updated_at,
-                                                self.event.id,
-                                                [user.id for user in self.users.all()])
+        return str(self.to_dict())[1:-1]
 
     def to_dict(self):
         """

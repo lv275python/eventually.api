@@ -41,14 +41,14 @@ class TestCustomUserModel(TestCase):
 
 
         user_returned = str(CustomUser.objects.get(id=111))
-        user_to_expect = "id: 111, " \
-                         "first name:fname, " \
-                         "middle name:mname, " \
-                         "last name:lname, " \
-                         "email:email@mail.com, " \
-                         "updated:2017-04-10 12:00:00+00:00, " \
-                         "created:2017-04-10 12:00:00+00:00, " \
-                         "is_active: False"
+        user_to_expect = "'id': 111, " \
+                         "'first_name': 'fname', " \
+                         "'middle_name': 'mname', " \
+                         "'last_name': 'lname', " \
+                         "'email': 'email@mail.com', " \
+                         "'created_at': 1491825600, "\
+                         "'updated_at': 1491825600, " \
+                         "'is_active': False"
         self.assertEqual(user_returned, user_to_expect)
 
 
@@ -56,7 +56,7 @@ class TestCustomUserModel(TestCase):
         """Test of the CustomUser.__repr__() method"""
 
         user_returned = repr(CustomUser.objects.get(id=111))
-        user_to_expect = "id: 111, first name: fname, last name: lname, active: False"
+        user_to_expect = "CustomUser(id=111)"
 
         self.assertEqual(user_returned, user_to_expect)
 
