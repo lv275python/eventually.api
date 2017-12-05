@@ -57,37 +57,29 @@ class Comment(models.Model):
 
     def __str__(self):
         """
-        Return string value of model's parametrs in understandible format.
+        Magic method is redefined to show all information about Comment.
 
-        :return: id, text, create date, update date
+        :return: class, id
 
         """
-        return "id: {}, text: {}, created_at: {}, updated_at: {}, " \
-               "team_id: {}, event_id: {}, task_id: {}, vote_id: {}, " \
-               "author_id: {}".format(self.id,
-                                      self.text,
-                                      self.created_at,
-                                      self.updated_at,
-                                      self.team.id if self.team else None,
-                                      self.event.id if self.event else None,
-                                      self.task.id if self.task else None,
-                                      self.vote.id if self.vote else None,
-                                      self.author.id)
+        return str(self.to_dict())[1:-1]
 
     def __repr__(self):
         """
-        Return string value of model's parametrs in understandible format.
+        This magic method is redefined to show class and id of Comment object.
 
-        :return: id, text, create date, update date
+        :return: comment id, comment text, comment create date, comment update date,
+                 comment team, comment event, comment task, comment vote, comment author.
 
         """
-        return "{} {}".format(self.id, self.text)
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def to_dict(self):
         """
-        Return dictionary with comment's info.
+        Method that returns dictionary with comment's info.
 
-        :return: dictionary with comment's info
+        :return: comment id, comment text, comment create date, comment update date,
+                 comment team, comment event, comment task, comment vote, comment author.
 
         :Example:
         | {

@@ -82,14 +82,21 @@ class VoteTestCase(TestCase):
         vote = Vote.objects.get(id=111)
 
         actual_repr = vote.__repr__()
-        expected_repr = 'id:111 event:111 is_active:True is_extended:True title:title vote_type:0'
+        expected_repr = 'Vote(id=111)'
         self.assertEqual(actual_repr, expected_repr)
 
     def test_vote_str(self):
         """Method that test `__repr__` method of Vote instance object."""
         vote = Vote.objects.get(id=222)
         actual_str = vote.__str__()
-        expected_str = 'id:222 event:111 is_active:True is_extended:False title:vote vote_type:1'
+        expected_str = "'id': 222, " \
+                       "'event': 111, " \
+                       "'is_active': True, " \
+                       "'is_extended': False, " \
+                       "'title': 'vote', " \
+                       "'vote_type': 1, " \
+                       "'create_at': 1508044512, " \
+                       "'update_at': 1508044512"
         self.assertMultiLineEqual(actual_str, expected_str)
 
     def test_vote_success_create(self):
@@ -176,9 +183,9 @@ class AnswerTestCase(TestCase):
     def test_answer_parameters_to_dict(self):
         answer = Answer.objects.get(id=111)
         expect_answer_dict = {'id': 111,
-                              'members': [111],
                               'vote': 111,
                               'text': 'answer',
+                              'members': [111],
                               'create_at': 1508044512,
                               'update_at': 1508044512,
                               }
@@ -200,14 +207,19 @@ class AnswerTestCase(TestCase):
         answer = Answer.objects.get(id=111)
 
         actual_repr = answer.__repr__()
-        expected_repr = '111 111 answer [111]'
+        expected_repr = 'Answer(id=111)'
         self.assertEqual(actual_repr, expected_repr)
 
     def test_answer_str(self):
         """Method that test `__repr__` method of Answer instance object."""
         answer = Answer.objects.get(id=111)
         actual_str = answer.__str__()
-        expected_str = 'id:111 vote:111 text:answer members:[111]'
+        expected_str = "'id': 111, " \
+                       "'vote': 111, " \
+                       "'text': 'answer', " \
+                       "'members': [111], " \
+                       "'create_at': 1508044512, " \
+                       "'update_at': 1508044512"
         self.assertEqual(actual_str, expected_str)
 
     def test_answer_success_create(self):

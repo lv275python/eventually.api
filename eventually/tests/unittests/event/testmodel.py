@@ -209,13 +209,25 @@ class EventModelTestCase(TestCase):
         event = Event.objects.get(id=101)
         actual_repr = event.__repr__()
 
-        self.assertEqual(actual_repr, 'id:101 team:101 owner:101 name:football status:0')
+        self.assertEqual(actual_repr, 'Event(id=101)')
 
     def test_event_str(self):
         """Method that test `__str__` magic method of Event instance object."""
 
         event = Event.objects.get(id=101)
         actual_str = event.__str__()
-        expected_str = 'id:101 team:101 owner:101 name:football description: start_at:None\
-                duration:None status:0'
+        expected_str = "'id': 101, " \
+                       "'team': 101, " \
+                       "'name': 'football', " \
+                       "'owner': 101, " \
+                       "'description': '', " \
+                       "'start_at': None, " \
+                       "'created_at': 1508044512, " \
+                       "'updated_at': 1508044512, " \
+                       "'duration': None, " \
+                       "'longitude': None, " \
+                       "'latitude': None, " \
+                       "'budget': None, " \
+                       "'status': 0"
+
         self.assertMultiLineEqual(actual_str, expected_str)

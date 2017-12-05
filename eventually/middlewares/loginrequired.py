@@ -41,7 +41,6 @@ class LoginRequiredMiddleware():  # pylint: disable=too-few-public-methods
             except (SyntaxError, JSONDecodeError):
                 return HttpResponse(status=400)
                 # dont forget about loger
-
         for current_path in ANONYMOUS_USERS_PATHS:
             if request.path_info.startswith(current_path):
 
@@ -49,7 +48,6 @@ class LoginRequiredMiddleware():  # pylint: disable=too-few-public-methods
                     return HttpResponse(status=400)
                 response = self.get_response(request)
                 return response
-
         if not request.user.is_authenticated():
             return HttpResponse(status=403)
         response = self.get_response(request)

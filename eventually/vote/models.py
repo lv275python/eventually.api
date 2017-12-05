@@ -53,39 +53,22 @@ class Vote(models.Model):
 
     def __repr__(self):
         """
-        Magic method that returns string representation of
-        vote instance object.
+        This magic method is redefined to show class and id of Vote object.
 
-        :return: vote id, event id, vote is_active, vote is_extended,
-                 vote title, vote vote_type
+        :return: class, id
         """
 
-        return "id:{} event:{} is_active:{} is_extended:{} title:{} vote_type:{}". \
-            format(self.id,
-                   self.event.id if self.event
-                   else None,
-                   self.is_active,
-                   self.is_extended,
-                   self.title,
-                   self.vote_type)
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def __str__(self):
         """
-        Magic method that returns string representation of
-        vote instance object.
+        Magic method is redefined to show all information about Vote.
 
         :return: vote id, event id, vote is_active, vote is_extended,
-                 vote title, vote vote_type
+                 vote title, vote vote_type, create date, update date
         """
 
-        return "id:{} event:{} is_active:{} is_extended:{} title:{} vote_type:{}". \
-            format(self.id,
-                   self.event.id if self.event
-                   else None,
-                   self.is_active,
-                   self.is_extended,
-                   self.title,
-                   self.vote_type)
+        return str(self.to_dict())[1:-1]
 
     def to_dict(self):
         """
@@ -243,34 +226,21 @@ class Answer(models.Model):
 
     def __repr__(self):
         """
-        Magic method that returns string representation of
-        answer instance object.
+        This magic method is redefined to show class and id of Answer object.
 
-        :return: answer id, vote id, answer text, members.id
+        :return: class, id
         """
-        members = [user.id for user in self.members.all()]
-        # [user.id for user in self.members] if self.members else None
 
-        return "{} {} {} {}".format(self.id,
-                                    self.vote.id if self.vote else None,
-                                    self.text,
-                                    members)
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def __str__(self):
         """
-        Magic method that returns string representation of
-        answer instance object.
+        Magic method is redefined to show all information about Answer.
 
-        :return: answer id, vote id, answer text, members.id
+        :return: answer id, vote id, answer text, members.id, create date, update date
         """
 
-        members = [user.id for user in self.members.all()]
-        # [user.id for user in self.members] if self.members else None
-
-        return "id:{} vote:{} text:{} members:{}".format(self.id,
-                                                         self.vote.id if self.vote else None,
-                                                         self.text,
-                                                         members)
+        return str(self.to_dict())[1:-1]
 
     def to_dict(self):
         """
