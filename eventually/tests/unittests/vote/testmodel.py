@@ -228,7 +228,7 @@ class AnswerTestCase(TestCase):
         """Method that tests `update` method of certain Answer instance."""
 
         actual_answer = Answer.get_by_id(111)
-        actual_answer.update(text='new text')
+        actual_answer.update(members=[111], text='new text')
         expected_answer = Answer.objects.get(id=111)
         self.assertEqual(actual_answer, expected_answer)
 
