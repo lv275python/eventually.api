@@ -307,7 +307,6 @@ class RegistrationValidatorsTestCase(TestCase):
         is_valid = registration_validate(data)
         self.assertFalse(is_valid, 'empty data')
 
-
     def test_registration_invalid_not_string(self):
         """Method that tests registration string validation"""
 
@@ -361,7 +360,7 @@ class EventDataValidateTestCase(TestCase):
 
         invalid_empty_name_data = {'name': ''}
         invalid_non_string_name_data = {'name': []}
-        invalid_long_name_data = {'name': 'some name'*30}
+        invalid_long_name_data = {'name': 'some name' * 30}
 
         self.assertFalse(event_data_validate(invalid_empty_name_data, required_keys=[]))
         self.assertFalse(event_data_validate(invalid_non_string_name_data, required_keys=[]))
@@ -427,3 +426,80 @@ class EventDataValidateTestCase(TestCase):
         self.assertFalse(event_data_validate(invalid_non_int_status_data, required_keys=[]))
         self.assertFalse(event_data_validate(invalid_negative_status_data, required_keys=[]))
         self.assertFalse(event_data_validate(invalid_big_status_data, required_keys=[]))
+
+
+class VoteDataValidateTestCase(TestCase):
+    """Class that provides test cases for the vote data validate function."""
+
+    def test_none_data(self):
+        """Test empty data list"""
+
+        data = {}
+        self.assertFalse(vote_data_validator(data, required_keys=[]))
+
+    def test_valid_data(self):
+        """Test valid data"""
+
+        valid_data = {'event': 10,
+                      'is_active': True,
+                      'is_extended': True,
+                      'title': 'my new title',
+                      'vote_type': 0}
+        self.assertTrue(vote_data_validator(valid_data, required_keys=[]))
+
+    def test_required_keys_error(self):
+        """Test required keys error"""
+
+        valid_data = {'event': 10,
+                      'is_active': True,
+                      'is_extended': True,
+                      'title': 'my new title',
+                      'vote_type': 0}
+
+        self.assertFalse(vote_data_validator(valid_data, required_keys=['vote']))
+
+    def test_validate_error(self):
+        """Test validate error"""
+
+        valid_data = {'event': 10,
+                      'is_active': True,
+                      'is_extended': True,
+                      'title': 'my new title',
+                      'vote_type': 6}
+
+        self.assertFalse(vote_data_validator(valid_data, required_keys=[]))
+
+
+class AnswerDataValidateTestCase(TestCase):
+    """Class that provides test cases for the answer data validate function."""
+
+    def test_none_data(self):
+        """Test empty data list"""
+
+        data = {}
+        self.assertFalse(answer_data_validator(data, required_keys=[]))
+
+    def test_valid_data(self):
+        """Test valid data"""
+
+        valid_data = {'vote': 10,
+                      'text': 'my text',
+                      'members': [1, 2]}
+        self.assertTrue(answer_data_validator(valid_data, required_keys=[]))
+
+    def test_required_keys_error(self):
+        """Test required keys error"""
+
+        valid_data = {'vote': 10,
+                      'text': 'my text',
+                      'members': [1, 2]}
+        self.assertFalse(answer_data_validator(valid_data, required_keys=['answer']))
+
+    def test_validate_error(self):
+        """Test validate error"""
+
+        valid_data = {'vote': 10,
+                      'text': 123,
+                      'members': [1, 2]}
+
+        self.assertFalse(answer_data_validator(valid_data, required_keys=[]))
