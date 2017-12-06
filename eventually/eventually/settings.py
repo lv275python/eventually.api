@@ -164,6 +164,8 @@ LOGGING = {
     },
 }
 
+SESSION_COOKIE_HTTPONLY = False
+
 try:
     from .local_settings import *
 except ImportError:
