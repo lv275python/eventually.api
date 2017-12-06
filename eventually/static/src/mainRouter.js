@@ -13,5 +13,6 @@ export default class MainRouter extends React.Component{
                 </Switch>
             </main>
         )
-      }
     }
+}
+
