@@ -96,6 +96,8 @@ class ItemModelTestCase(TestCase):
                               'created_at': 1476508512,
                               'updated_at': 1476508512}
         actual_item_dict = item.to_dict()
+        actual_item_dict['authors'].sort()
+        actual_item_dict['superiors'].sort()
         self.assertDictEqual(actual_item_dict, expected_item_dict)
 
     def test_item_success_get_by_id(self):
