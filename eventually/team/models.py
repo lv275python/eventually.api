@@ -46,45 +46,31 @@ class Team(models.Model):
 
     def __str__(self):
         """
-        Magic method that returns string representation of
-        team instance object.
+        Magic method is redefined to show all information about Team.
 
-        :return: string with team's information
+        :return: team id, team name, team description, team image,
+                 team create date, team update date
+                 team owner, team members
         """
 
-        members = [user.id for user in self.members.all()] if self.members else None
-
-        return "{} {} {} {} {} {} {} {}".format(self.id,
-                                                self.name,
-                                                self.description,
-                                                self.image,
-                                                self.created_at,
-                                                self.updated_at,
-                                                self.owner.id if self.owner else None,
-                                                members)
+        return str(self.to_dict())[1:-1]
 
     def __repr__(self):
         """
-        Magic method that returns representation of
-        team instance object.
+        This magic method is redefined to show class and id of Team object.
 
-        :return: string with team's information
+        :return: class, id
         """
 
-        members = [user.id for user in self.members.all()] if self.members else None
-
-        return "{} {} {} {} {} {}".format(self.id,
-                                          self.name,
-                                          self.description,
-                                          self.image,
-                                          self.owner.id if self.owner else None,
-                                          members)
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def to_dict(self):
         """
         Method that converts team object to dictionary.
 
-        :return: dictionary with team's information
+        :return: team id, team name, team description, team image,
+                 team create date, team update date
+                 team owner, team members
 
         :Example:
             | {

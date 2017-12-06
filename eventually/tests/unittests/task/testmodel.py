@@ -170,15 +170,20 @@ class TaskModelTestCase(TestCase):
         task = Task.objects.get(id=11)
         actual_repr = task.__repr__()
 
-        self.assertEqual(actual_repr, 'id:11 title:Potato thing My awesome task, give me potato 0 '
-                                      '2017-02-02 10:00:12+00:00 '
-                                      '2017-02-02 10:00:12+00:00 11 [11, 12]')
+        self.assertEqual(actual_repr, 'Task(id=11)')
 
     def test_task_str(self):
         """Method that test `__str__` magic method of Task instance object."""
 
         task = Task.objects.get(id=11)
         actual_str = task.__str__()
-        expected_str = '11 Potato thing My awesome task, give me potato' \
-                       ' 0 2017-02-02 10:00:12+00:00 2017-02-02 10:00:12+00:00 11 [11, 12]'
+        expected_str = "'id': 11, " \
+                       "'title': 'Potato thing', " \
+                       "'description': 'My awesome task, give me potato', " \
+                       "'status': 0, " \
+                       "'created_at': 1486029612, " \
+                       "'updated_at': 1486029612, " \
+                       "'event': 11, " \
+                       "'users': [11, 12]"
         self.assertMultiLineEqual(actual_str, expected_str)
+        

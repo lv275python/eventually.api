@@ -83,37 +83,25 @@ class Event(models.Model):
 
     def __repr__(self):
         """
-        Magic method that returns string representation of
-        event instance object.
+        This magic method is redefined to show class and id of Event object.
 
-        :return: event id, event team, event owner, event name, event status
+        :return: class, id
         """
 
-        return "id:{} team:{} owner:{} name:{} status:{}".format(self.id,
-                                                                 self.team.id,
-                                                                 self.owner.id if self.owner
-                                                                 else None,
-                                                                 self.name,
-                                                                 self.status)
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def __str__(self):
         """
-        Magic method that returns string representation of
-        event instance object.
+        Magic method is redefined to show all information about Event.
 
-        :return: event id, event team, event owner, event name,
-                 event description, event duration, event status
+        :return: event id, event team, event name, event owner,
+                 event description, event start at, event create date,
+                 event update date, event duration, event longtitude,
+                 event latitude, event budget, event status
+
         """
 
-        return "id:{} team:{} owner:{} name:{} description:{} start_at:{}\
-                duration:{} status:{}".format(self.id,
-                                              self.team.id,
-                                              self.owner.id if self.owner else None,
-                                              self.name,
-                                              self.description,
-                                              self.start_at,
-                                              self.duration,
-                                              self.status)
+        return str(self.to_dict())[1:-1]
 
     def to_dict(self):
         """
@@ -132,6 +120,7 @@ class Event(models.Model):
         |    'start_at': 1509539867,
         |    'created_at': 1509539867,
         |    'updated_at': 1509539867,
+        |    'duration': 124234,
         |    'longitude': 7.03125,
         |    'latitude': 21.105,
         |    'budget': 100,

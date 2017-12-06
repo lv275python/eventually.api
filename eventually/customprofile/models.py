@@ -39,31 +39,22 @@ class CustomProfile(models.Model):
 
     def __str__(self):
         """
-        Magic method that returns string representation of profile instance object.
+        Magic method is redefined to show all information about CustomProfile.
 
-        :return: profile hobby, profile photo, profile birthday
+        :return: profile id, profile user, profile hobby, profile photo,
+                 profile birthday, create date, update date
         """
 
-        return "id:{} hobby:{} photo:{} birthday:{}\
-                created_at:{} update_at:{}".format(self.id,
-                                                   self.hobby[:30],
-                                                   self.photo,
-                                                   self.birthday,
-                                                   self.created_at,
-                                                   self.updated_at)
+        return str(self.to_dict())[1:-1]
 
     def __repr__(self):
         """
-        Magic method that returns string representation of
-        profile instance object.
+        This magic method is redefined to show class and id of CustomProfile object.
 
-        :return: profile hobby, profile photo, profile birthday
+        :return: class, id
         """
 
-        return "{} {} {} {}".format(self.id,
-                                    self.hobby[:30],
-                                    self.photo,
-                                    self.birthday)
+        return f'{self.__class__.__name__}(id={self.id})'
 
     @staticmethod
     def create(user, hobby='', photo='', birthday=None):
@@ -153,7 +144,7 @@ class CustomProfile(models.Model):
                 'user': self.user.id,
                 'hobby': self.hobby[:30],
                 'photo': self.photo,
-                'birthday': self.birthday,
+                'birthday': str(self.birthday) if self.birthday else None,
                 'created_at': int(self.created_at.timestamp()),
                 'updated_at': int(self.updated_at.timestamp())}
 

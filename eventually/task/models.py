@@ -52,39 +52,26 @@ class Task(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True)
     users = models.ManyToManyField(CustomUser)
 
+
     def __repr__(self):
         """
-        Magic method that returns representation of
-        task instance object.
+        This magic method is redefined to show class and id of Task object.
 
-        :return: task title, task description, task status, created , updated, event id, users id
+        :return: class, id
+
         """
 
-        return "id:{} title:{} {} {} {} {} {} {}".format(self.id,
-                                                         self.title,
-                                                         self.description,
-                                                         self.status,
-                                                         self.created_at,
-                                                         self.updated_at,
-                                                         self.event.id,
-                                                         [user.id for user in self.users.all()])
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def __str__(self):
         """
-        Magic method that returns string representation of
-        task instance object.
+        Magic method is redefined to show all information about Task.
 
         :return: task title, task description, task status, created , updated, event id, users id
         """
 
-        return "{} {} {} {} {} {} {} {}".format(self.id,
-                                                self.title,
-                                                self.description,
-                                                self.status,
-                                                self.created_at,
-                                                self.updated_at,
-                                                self.event.id,
-                                                [user.id for user in self.users.all()])
+        return str(self.to_dict())[1:-1]
+
 
     def to_dict(self):
         """

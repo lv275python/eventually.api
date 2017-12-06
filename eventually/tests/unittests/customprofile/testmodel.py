@@ -68,7 +68,7 @@ class CustomProfileTestCase(TestCase):
                                'user': 101,
                                'hobby': 'box',
                                'photo': 'link1',
-                               'birthday': datetime.date(1995, 6, 8),
+                               'birthday': '1995-06-08',
                                'created_at': 1509351312,
                                'updated_at': 1509351312}
 
@@ -164,7 +164,7 @@ class CustomProfileTestCase(TestCase):
 
         profile = CustomProfile.objects.get(id=101)
         actual_repr = profile.__repr__()
-        expected_repr = '101 box link1 1995-06-08'
+        expected_repr = 'CustomProfile(id=101)'
 
         self.assertEqual(actual_repr, expected_repr)
 
@@ -173,11 +173,12 @@ class CustomProfileTestCase(TestCase):
 
         profile = CustomProfile.objects.get(id=101)
         actual_str = profile.__str__()
-        new_str = "id:{} hobby:{} photo:{} birthday:{}\
-                created_at:{} update_at:{}".format(101,
-                                                   'box',
-                                                   'link1',
-                                                   datetime.date(1995, 6, 8),
-                                                   TEST_TIME,
-                                                   TEST_TIME)
+        new_str = "'id': 101, " \
+                  "'user': 101, " \
+                  "'hobby': 'box', " \
+                  "'photo': 'link1', " \
+                  "'birthday': '1995-06-08', "\
+                  "'created_at': 1509351312, " \
+                  "'updated_at': 1509351312"
+
         self.assertEqual(actual_str, new_str)
