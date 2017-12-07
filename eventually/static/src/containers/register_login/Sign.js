@@ -1,10 +1,9 @@
 import React from 'react';
-import {Link} from "react-router-dom";
+import {Link, withRouter} from "react-router-dom";
 import {Tabs, Tab} from 'material-ui/Tabs';
-import Login from './login.js';
-import Register from './register.js';
-import Forget from './forget.js';
-import {withRouter} from 'react-router-dom'
+import Login from './Login.js';
+import Register from './Register.js';
+import Forget from './Forget.js';
 
 
 class Sign extends React.Component {
