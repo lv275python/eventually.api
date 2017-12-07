@@ -6,8 +6,7 @@ This module implements class that represents the assignment entity.
 """
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
-# from item.models import Item
-
+from item.models import Item
 
 
 class Assignment(models.Model):
@@ -46,7 +45,7 @@ class Assignment(models.Model):
     statement = models.CharField(max_length=1024, blank=True)
     grade = models.FloatField(null=True)
     user = models.ForeignKey(CustomUser, null=True)
-    # item = models.ForeignKey(Item, null=True)
+    item = models.ForeignKey(Item, null=True)
     status = models.IntegerField(default=0, choices=STATUS_TYPE_CHOICES)
     started_at = models.DateTimeField(null=True)
     finished_at = models.DateTimeField(null=True)
@@ -55,35 +54,25 @@ class Assignment(models.Model):
 
     def __str__(self):
         """
-        Magic method that returns string representation of
-        assignment instance object.
+        Magic method is redefined to show all information about Assignment.
 
-        :return: string with assignment's information
+        :return: assignment id, assignment statement, assignment grade,
+                 assignment user, assignment item, assignment status,
+                 assignment started_at date, assignment finished_at date,
+                 assignment created_at date, assignment updated_at date
+
         """
 
-        return "{} {} {} {} {} {} {}".format(self.id,
-                                             self.statement,
-                                             self.grade,
-                                             self.user.id if self.user else None,
-                                             # self.item.id if self.item else None,
-                                             self.status,
-                                             self.started_at,
-                                             self.finished_at,)
+        return str(self.to_dict())[1:-1]
 
     def __repr__(self):
         """
-        Magic method that returns representation of
-        assignment instance object.
+        This magic method is redefined to show class and id of Assignment object.
 
-        :return: string with assignment's information
+        :return: class, id
         """
 
-        return "{} {} {} {} {}".format(self.id,
-                                       self.statement,
-                                       self.grade,
-                                       self.status,
-                                       self.user.id if self.user else None,)
-                                       # self.item.id if self.item else None,)
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def to_dict(self):
         """
@@ -110,7 +99,7 @@ class Assignment(models.Model):
                 'statement': self.statement,
                 'grade': self.grade,
                 'user_id': self.user.id if self.user else None,
-                # 'item_id': self.assignment.id if self.assignment else None,
+                'item_id': self.assignment.id if self.assignment else None,
                 'status': self.status,
                 'started_at': int(self.created_at.timestamp()),
                 'finished_at': int(self.updated_at.timestamp()),
@@ -138,7 +127,7 @@ class Assignment(models.Model):
     def create(statement,
                grade,
                user=None,
-               # item=None,
+               item=None,
                status=0,
                started_at=None,
                finished_at=None):
@@ -174,7 +163,7 @@ class Assignment(models.Model):
         assignment.statement = statement
         assignment.grade = grade
         assignment.user = user
-        # assignment.item = item
+        assignment.item = item
         assignment.status = status
         assignment.started_at = started_at
         assignment.finished_at = finished_at
@@ -188,7 +177,7 @@ class Assignment(models.Model):
                statement=None,
                grade=None,
                user=None,
-               # item=None,
+               item=None,
                status=None,
                started_at=None,
                finished_at=None):
@@ -224,8 +213,8 @@ class Assignment(models.Model):
             self.grade = grade
         if user:
             self.user = user
-         # if item:
-         #     self.item = item
+        if item:
+            self.item = item
         if status:
             self.status = status
         if started_at:
