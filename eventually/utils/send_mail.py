@@ -27,7 +27,7 @@ def send_email(subject, message, recipient_list, template, ctx):
     :return:
     """
     from_email = settings.DEFAULT_FROM_EMAIL
-    html_message = render_to_string('emails/'+template, ctx)
+    html_message = render_to_string('emails/' + template, ctx)
     try:
         send_mail(subject, message, from_email, recipient_list,
                   fail_silently=False, html_message=html_message)

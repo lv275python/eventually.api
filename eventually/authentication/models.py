@@ -11,7 +11,6 @@ from django.db import models, IntegrityError
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 
 
-
 class CustomUser(AbstractBaseUser):
     """
         This class represents a basic user. \n
@@ -168,8 +167,7 @@ class CustomUser(AbstractBaseUser):
             'email': self.email,
             'created_at': int(self.created_at.timestamp()),
             'updated_at': int(self.updated_at.timestamp()),
-            'is_active': self.is_active
-            }
+            'is_active': self.is_active}
 
     def update(self,
                first_name=None,
@@ -205,7 +203,7 @@ class CustomUser(AbstractBaseUser):
             self.middle_name = middle_name
         if password:
             self.set_password(password)
-        if is_active:
+        if is_active is not None:
             self.is_active = is_active
 
         self.save()
