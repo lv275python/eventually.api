@@ -295,24 +295,46 @@ def login_validate(data):
         return False
     return True
 
-def comment_data_validator(data):
+def comment_data_validator(data, required_keys):
     """
-    Function that validation incoming request.body
+    Function that provides complete comment model data validation
 
-    :param request_body: data that need to validate.
-    :type data: HttpRequest
+    :param data: the data that is received by comment view.
+    :type data: dict
 
-    :return: data if data is valid and `None` if it is not.
+    :param required_keys: the list of necessary keys of comment data schema.
+    :type required_keys: `list`
+
+    :return: `True' if all data is valid or `False` if some fields are invalid.
+    :rtype `bool`
     """
 
-    required_keys = ["text"]
-    if not required_keys_validator(data, required_keys):
-        return
+    errors = []
+    if not required_keys_validator(data=data, keys_required=required_keys, strict=False):
+        errors.append('required keys error')
 
-    if not string_validator(data.get("text")):
-        return
+    comment_model_fields = ['text',
+                            'team',
+                            'event',
+                            'vote',
+                            'task',
+                            'author']
 
-    return True
+    filtered_data = {key: data.get(key) for key in comment_model_fields}
+    validation_rules = {'text': lambda val: string_validator(val, min_length=1, max_length=255),
+                        'team': lambda val: isinstance(val, int) and val > 0,
+                        'event': lambda val: isinstance(val, int) and val > 0,
+                        'vote': lambda val: isinstance(val, int) and val > 0,
+                        'task': lambda val: isinstance(val, int) and val > 0,
+                        'author': lambda val: isinstance(val, int) and val > 0}
+
+    for key, value in filtered_data.items():
+        if value is not None:
+            if not validation_rules[key](value):
+                errors.append(key + ' field error')
+
+    is_data_valid = len(errors) == 0
+    return is_data_valid
 
 
 def profile_data_validator(data):

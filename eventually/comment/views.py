@@ -88,7 +88,7 @@ class CommentView(View):
             return HttpResponse(status=404)
 
         data = request.body
-        if not comment_data_validator(data):
+        if not comment_data_validator(data, required_keys=['text']):
             return HttpResponse(status=400)
 
         comment = Comment.create(author=request.user,
@@ -116,7 +116,7 @@ class CommentView(View):
                         HttpRequest with error if parameters are bad
         """
         data = request.body
-        if not comment_data_validator(data):
+        if not comment_data_validator(data, required_keys=['text']):
             return HttpResponse(status=400)
 
         comment = Comment.get_by_id(comment_id)
