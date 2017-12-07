@@ -41,7 +41,6 @@ export default class TopicItem extends React.Component {
                     title={this.props.title}
                     actAsExpander={true}
                     showExpandableButton={true}
-                    expanded={this.state.expanded}
                 />
                 <CardText
                     style={style}

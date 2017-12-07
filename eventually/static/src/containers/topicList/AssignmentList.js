@@ -1,6 +1,6 @@
 import React from 'react';
 import Divider from 'material-ui/Divider';
-import AssignmentLink from './AssignmentLink';
+import AssignmentItem from './AssignmentLink';
 import {assignmentsListService} from './CurriculumService';
 
 
@@ -13,19 +13,29 @@ export default class AssignmentList extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            assignments: []
+        }
+    }
+
+    componentWillMount() {
+        this.setState({
+            assignments: assignmentsListService().assignments
+        })
     }
 
     render() {
         return (
             <div style={style}>
-                    {
-                        assignmentsListService().assignments.map(assignment => (
-                            <AssignmentLink key={assignment.id.toString()}
-                                            title={assignment.title}
-                            />
-                            )
+                {
+                    this.state.assignments.map(assignment => (
+                        <AssignmentItem key={assignment.id.toString()}
+                                        title={assignment.title}
+                                        id={assignment.id}
+                        />
                         )
-                    }
+                    )
+                }
             </div>
         );
     }
