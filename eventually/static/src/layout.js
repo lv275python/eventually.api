@@ -1,10 +1,10 @@
 import React from "react";
 import {Route, Switch} from "react-router-dom";
 import MainRouter from './mainRouter';
-import Header from './components/header/header';
+import Header from './components/header/Header';
 
 import { isLogged } from './utils'
-import Sign from './containers/register_login/sign'
+import Sign from './containers/register_login/Sign'
 import SignRouter from './signRouter'
 import Paper from 'material-ui/Paper';
 

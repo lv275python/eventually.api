@@ -1,8 +1,9 @@
 import React from 'react';
+import {withRouter} from "react-router-dom";
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import {logoutService} from './registrationService.js'
-import {withRouter} from "react-router-dom";
+
 
 const style = {
   margin: 12,
