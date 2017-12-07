@@ -5,7 +5,7 @@ import {topicListService} from './CurriculumService';
 
 
 const style = {
-    'width': '60%',
+    'width': '80%',
     'margin': '0 auto',
 };
 
