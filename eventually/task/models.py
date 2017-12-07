@@ -100,7 +100,7 @@ class Task(models.Model):
                 'created_at': int(self.created_at.timestamp()),
                 'updated_at': int(self.updated_at.timestamp()),
                 'event': self.event.id,
-                'users': [user.id for user in self.users.all()]}
+                'users': sorted([user.id for user in self.users.all()])}
 
     @staticmethod
     def get_by_id(task_id):

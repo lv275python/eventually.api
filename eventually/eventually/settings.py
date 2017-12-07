@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'home',
     'assignment',
     'item',
+    'curriculum',
     'amazons3'
 ]
 
