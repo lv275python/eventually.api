@@ -7,6 +7,8 @@ import { isLogged } from './utils'
 import Sign from './containers/register_login/Sign'
 import SignRouter from './signRouter'
 import Paper from 'material-ui/Paper';
+import SiteBar from './components/siteBar/SiteBar'
+
 
 const style = {
   height: 300,
@@ -28,7 +30,7 @@ export default class Layout extends React.Component {
           isLogged()?
             <div>
               <Header />
-              <MainRouter />
+                <MainRouter />
             </div>:
             <div>
               <Sign />
