@@ -203,7 +203,7 @@ class Task(models.Model):
             task.delete()
             return True
         except (Task.DoesNotExist, AttributeError):
-            LOGGER.error('Certain task does not deleted')
+            LOGGER.error('Certai task does not deleted')
 
 
     def add_users(self, users_list):
