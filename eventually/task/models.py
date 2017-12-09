@@ -5,8 +5,9 @@ Task module.
 This module implements class that represents the task entity.
 """
 from django.db import models, IntegrityError
-from event.models import Event
 from authentication.models import CustomUser
+from event.models import Event
+from utils.utils import LOGGER
 
 
 class Task(models.Model):
@@ -116,7 +117,7 @@ class Task(models.Model):
         try:
             return Task.objects.get(id=task_id)
         except Task.DoesNotExist:
-            pass
+            LOGGER.error('Certain task does not exist')
 
     @staticmethod
     def create(event, users=None, title=None, description=None, status=0):
@@ -153,7 +154,7 @@ class Task(models.Model):
             task.users.add(*users)
             return task
         except (ValueError, IntegrityError):
-            pass
+            LOGGER.error('Inappropriate value or relational integrity fail')
 
     def update(self, title=None, description=None, status=None):
         """
@@ -201,7 +202,7 @@ class Task(models.Model):
             task.delete()
             return True
         except (Task.DoesNotExist, AttributeError):
-            pass
+            LOGGER.error('Certain task does not deleted')
 
 
     def add_users(self, users_list):
