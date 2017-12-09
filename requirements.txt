@@ -4,3 +4,4 @@ pytz==2017.2
 PyJWT==1.5.3
 boto3==1.4.7
 botocore==1.7.47
+Pillow==4.3.0

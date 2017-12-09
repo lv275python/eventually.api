@@ -6,10 +6,37 @@ Validator tests
 import datetime
 from django.test import TestCase
 from utils.validators import *
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from unittest import mock
 
+IMAGE_NAME = "testimage.png"
+IMAGE_MIME_TYPE = "image/png"
+GOOD_IMAGE_SIZE = 3 * 1024 * 1024
+BAD_IMAGE_SIZE = 9 * 1024 * 1024
+IMAGE_FORMAT = "png"
 
 class ValidatorsTestCase(TestCase):
     """TestCase for validators"""
+
+    def setUp(self):
+        file = BytesIO()
+        pil_image = Image.new('RGBA', size=(5000, 5000), color=(155, 0, 0))
+        pil_image.save(file, format=IMAGE_FORMAT)
+        file.seek(0)
+
+        self.image_good = InMemoryUploadedFile(file, None, IMAGE_NAME, IMAGE_MIME_TYPE,
+                                               GOOD_IMAGE_SIZE, None)
+        self.image_badsize = InMemoryUploadedFile(file, None, IMAGE_NAME, IMAGE_MIME_TYPE,
+                                                  BAD_IMAGE_SIZE, None)
+
+        bad_file = BytesIO()
+        pil_image = Image.new('RGBA', size=(5000, 5000), color=(155, 0, 0))
+        pil_image.save(bad_file, format="tiff")
+        bad_file.seek(0)
+        self.image_badcontent = InMemoryUploadedFile(bad_file, None, 'testimage.vfc', 'image/vfc',
+                                                     3 * 1024 * 1024, None)
 
     def test_list_of_int_validator_list_int(self):
         """Method that tests list_of_int_validator method with list of int enter parameter"""
@@ -245,6 +272,24 @@ class ValidatorsTestCase(TestCase):
         is_valid = updating_password_validate(data, requred_key)
 
         self.assertIsNone(is_valid)
+
+    def test_imagevalidator_size_pass(self):
+        """ Positive test size verification statement"""
+        with mock.patch("imghdr.what") as mock_file_extension:
+            mock_file_extension.return_value = IMAGE_FORMAT
+            self.assertEqual(image_validator(self.image_good), IMAGE_FORMAT)
+
+    def test_imagevalidator_size_fail(self):
+        """ Negative test size verification statement"""
+        with mock.patch("imghdr.what") as mock_file_extension:
+            mock_file_extension.return_value = IMAGE_FORMAT
+            self.assertEqual(image_validator(self.image_badsize), False)
+
+    def test_imagevalidator_image_pass(self):
+        self.assertEqual(image_validator(self.image_good), IMAGE_FORMAT)
+
+    def test_imagevalidator_image_fail(self):
+        self.assertEqual(image_validator(self.image_badcontent), False)
 
 
 class EmailValidatorsTestCase(TestCase):
