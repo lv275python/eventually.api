@@ -11,6 +11,7 @@ from event.models import Event
 from task.models import Task
 from team.models import Team
 from vote.models import Vote
+from utils.utils import LOGGER
 
 
 class Comment(models.Model):
@@ -121,7 +122,7 @@ class Comment(models.Model):
             comment = Comment.objects.get(id=comment_id)
             return comment
         except Comment.DoesNotExist:
-            pass
+            LOGGER.error('Certain comment does not exist')
 
     @staticmethod
     def create(author, text=None, team=None, event=None, task=None, vote=None):
@@ -160,7 +161,7 @@ class Comment(models.Model):
             comment.save()
             return comment
         except (ValueError, IntegrityError):
-            pass
+            LOGGER.error('Inappropriate value or relational integrity fail')
 
     def update(self, text=None):
         """
@@ -192,4 +193,4 @@ class Comment(models.Model):
             comment.delete()
             return True
         except (Comment.DoesNotExist, AttributeError):
-            pass
+            LOGGER.error('Certain comment does not deleted')
