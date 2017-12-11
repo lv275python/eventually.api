@@ -7,6 +7,8 @@ install:
   - pip install pylint
   - pip install pylint-django
   - pip install coveralls
+  - nvm install stable
+  - npm install
 
 services:
   - postgresql
@@ -14,6 +16,7 @@ before_script:
   - psql -c "CREATE DATABASE travis_db;" -U postgres
 
 script:
+  - npm run build
   - cd eventually/
   - sudo touch /var/log/eventually.log
   - sudo chown -R $USER:$USER /var/log/eventually.log
