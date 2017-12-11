@@ -122,7 +122,7 @@ class Comment(models.Model):
             comment = Comment.objects.get(id=comment_id)
             return comment
         except Comment.DoesNotExist:
-            LOGGER.error('Certain comment does not exist')
+            LOGGER.error(f'The comment with id={comment_id} does not exist')
 
     @staticmethod
     def create(author, text=None, team=None, event=None, task=None, vote=None):
@@ -193,4 +193,4 @@ class Comment(models.Model):
             comment.delete()
             return True
         except (Comment.DoesNotExist, AttributeError):
-            LOGGER.error('Certain comment does not deleted')
+            LOGGER.error(f'The comment with id={comment_id} was not deleted')
