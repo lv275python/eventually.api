@@ -7,6 +7,7 @@ This module implements class that represents the users profile.
 
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
+from utils.utils import LOGGER
 
 
 class CustomProfile(models.Model):
@@ -86,7 +87,7 @@ class CustomProfile(models.Model):
             profile.save()
             return profile
         except (ValueError, IntegrityError):
-            pass
+            LOGGER.error('Inappropriate value or relational integrity fail')
 
     @staticmethod
     def get_by_id(profile_id):
@@ -103,7 +104,7 @@ class CustomProfile(models.Model):
             profile = CustomProfile.objects.get(id=profile_id)
             return profile
         except CustomProfile.DoesNotExist:
-            pass
+            LOGGER.error(f'The profile with id={profile_id} does not exist')
 
     @staticmethod
     def delete_by_id(profile_id):
@@ -120,7 +121,7 @@ class CustomProfile(models.Model):
             profile.delete()
             return True
         except (CustomProfile.DoesNotExist, AttributeError):
-            pass
+            LOGGER.error(f'The profile with id={profile_id} was not deleted')
 
     def to_dict(self):
         """
