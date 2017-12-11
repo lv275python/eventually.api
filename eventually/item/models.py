@@ -7,6 +7,7 @@ This module implements class that represents the item entity.
 
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
+from topic.models import Topic
 from utils.utils import LOGGER
 
 
@@ -55,6 +56,7 @@ class Item(models.Model):
 
     name = models.CharField(max_length=255)
     authors = models.ManyToManyField(CustomUser)
+    topic = models.ForeignKey(Topic)
     form = models.IntegerField(choices=ITEM_FORMS)
     superiors = models.ManyToManyField('self', related_name='subordinates', symmetrical=False)
     description = models.TextField(blank=True)
@@ -64,37 +66,20 @@ class Item(models.Model):
 
     def __repr__(self):
         """
-        Magic method that returns string representation of item instance object.
+        This magic method is redefined to show class and id of Item object.
 
-        :return: item id, item name, item authors, item form, item superiors, item description,
-                 item estimation.
+        :return: class, id
         """
-
-        return ('id:{} name:{} authors:{} form:{} superiors:{} description:{} estimation:{}'
-                .format(self.id,
-                        self.name,
-                        [author.id for author in self.authors.all()],
-                        self.form,
-                        [superior.id for superior in self.superiors.all()],
-                        self.description,
-                        int(self.estimation.total_seconds()) if self.estimation else None))
+        return f'{self.__class__.__name__}(id={self.id})'
 
     def __str__(self):
         """
         Magic method that returns string representation of item instance object.
 
         :return: item id, item name, item authors, item form, item superiors, item description,
-                 item estimation.
+                 item topic, item estimation, item create date, item last update date.
         """
-
-        return ('id:{} name:{} authors:{} form:{} superiors:{} description:{} estimation:{}'
-                .format(self.id,
-                        self.name,
-                        [author.id for author in self.authors.all()],
-                        self.form,
-                        [superior.id for superior in self.superiors.all()],
-                        self.description,
-                        int(self.estimation.total_seconds()) if self.estimation else None))
+        return str(self.to_dict())[1:-1]
 
     def to_dict(self):
         """
@@ -108,7 +93,8 @@ class Item(models.Model):
         | {
         |    'id': 4,
         |    'name': 'read,
-        |    'authors': [12]
+        |    'authors': [12],
+        |    'topic': 23,
         |    'form': 2,
         |    'superiors': [2, 4, 12]
         |    'description': 'description',
@@ -121,9 +107,10 @@ class Item(models.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'authors': [author.id for author in self.authors.all()],
+            'authors': sorted([author.id for author in self.authors.all()]),
+            'topic': self.topic.id,
             'form': self.form,
-            'superiors': [superior.id for superior in self.superiors.all()],
+            'superiors': sorted([superior.id for superior in self.superiors.all()]),
             'description': self.description,
             'estimation': int(self.estimation.total_seconds()) if self.estimation else None,
             'created_at': int(self.created_at.timestamp()),
@@ -144,10 +131,10 @@ class Item(models.Model):
         try:
             return Item.objects.get(id=item_id)
         except Item.DoesNotExist:
-            LOGGER.error('Unsuccessful attempt to get Item instance')
+            LOGGER.error(f'The item with id={item_id} does not exist')
 
     @staticmethod
-    def create(name, authors, form, superiors=None, description='', estimation=None):
+    def create(name, authors, topic, form, superiors=None, description='', estimation=None):
         """
         Static method that creates instance of Item class and creates database
         row with the accepted info.
@@ -160,6 +147,9 @@ class Item(models.Model):
 
         :param form: The type of the certain item that define the item requirements.
         :type form: int
+
+        :param topic: The Topic object that the current item belongs to.
+        :type  topic: int
 
         :param superiors: List of other items that have to be done for the possibility to start
                           work on the current item.
@@ -177,6 +167,7 @@ class Item(models.Model):
         item = Item()
         item.name = name
         item.form = form
+        item.topic = topic
         item.description = description
         item.estimation = estimation
         try:
@@ -185,7 +176,7 @@ class Item(models.Model):
             item.superiors.add(*superiors)
             return item
         except (ValueError, IntegrityError):
-            LOGGER.error('Unsuccessful attempt to create Item instance')
+            LOGGER.error('Inappropriate value or relational integrity fail')
 
     def update(self, name=None, form=None, description=None, estimation=None):
         """
@@ -270,4 +261,4 @@ class Item(models.Model):
             item.delete()
             return True
         except (Item.DoesNotExist, AttributeError):
-            LOGGER.error('Unsuccessful attempt to delete Item instance')
+            LOGGER.error(f'The item with id={item_id} was not deleted')

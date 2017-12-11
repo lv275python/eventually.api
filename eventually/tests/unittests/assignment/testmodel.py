@@ -9,6 +9,9 @@ from unittest import mock
 from django.test import TestCase
 from authentication.models import CustomUser
 from assignment.models import Assignment
+from curriculum.models import Curriculum
+from team.models import Team
+from topic.models import Topic
 from item.models import Item
 
 TEST_TIME = datetime.datetime(2017, 10, 15, 8, 15, 12)
@@ -31,18 +34,37 @@ class AssignmentModelTestCase(TestCase):
                                      password='30sectomrs')
             custom_user.save()
 
+            team = Team(id=101,
+                        owner=custom_user,
+                        name='Coldplay')
+            team.save()
+
+            curriculum = Curriculum.objects.create(id=101,
+                                                   name="testcurriculum",
+                                                   goals=["goal1", "goal2"],
+                                                   description="test_descr",
+                                                   team=team)
+            curriculum.save()
+
+            topic_python = Topic(id=101,
+                                 curriculum=curriculum,
+                                 title='Python',
+                                 description='My awesome topic')
+            topic_python.save()
+
             item = Item(id=101,
                         name='some name',
-                        form=1,)
+                        form=1,
+                        topic=topic_python)
             item.save()
             item.authors.add(custom_user)
 
             statement = 'It is you task'
-            assignment = Assignment(101,
+            assignment = Assignment(id=101,
                                     statement=statement,
                                     grade=5.5,
                                     user=custom_user,
-                                    item=item,)
+                                    item=item)
             assignment.save()
 
     def test_assignment_to_dict(self):
@@ -123,6 +145,7 @@ class AssignmentModelTestCase(TestCase):
         Test for updating all attributes.
         """
         actual_assignment = Assignment.get_by_id(101)
+
         new_custom_user = CustomUser(id=1020,
                                      first_name='Jared',
                                      last_name='Leto',
@@ -130,9 +153,30 @@ class AssignmentModelTestCase(TestCase):
                                      email='Jed.Leto@gmail.com',
                                      password='30sectomrs')
         new_custom_user.save()
+
+        new_team = Team(id=102,
+                        owner=new_custom_user,
+                        name='Green Day')
+        new_team.save()
+
+        new_curriculum = Curriculum.objects.create(id=102,
+                                               name="very interest curriculum",
+                                               goals=["goal1", "goal2"],
+                                               description="test",
+                                               team=new_team)
+        new_curriculum.save()
+
+        new_topic = Topic(id=102,
+                           curriculum=new_curriculum,
+                           title='HTML',
+                           description='My another awesome topic')
+        new_topic.save()
+        new_topic.authors.add(new_custom_user)
+
         new_item = Item(id=1020,
                         name='some name',
-                        form=1,)
+                        form=1,
+                        topic=new_topic)
         new_item.save()
         new_item.authors.add(new_custom_user)
 
