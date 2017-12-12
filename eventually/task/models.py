@@ -117,7 +117,7 @@ class Task(models.Model):
         try:
             return Task.objects.get(id=task_id)
         except Task.DoesNotExist:
-            LOGGER.error('Certain task does not exist')
+            LOGGER.error(f'The task with id={task_id} does not exist')
 
     @staticmethod
     def create(event, users=None, title=None, description=None, status=0):
@@ -202,15 +202,13 @@ class Task(models.Model):
             task.delete()
             return True
         except (Task.DoesNotExist, AttributeError):
-            LOGGER.error('Certain task does not deleted')
-
+            LOGGER.error(f'The task with id={task_id} was not deleted')
 
     def add_users(self, users_list):
         """Method that add users to task"""
 
         if users_list:
             self.users.add(*users_list)
-
 
     def remove_users(self, users_list):
         """Method that remove users from task"""
