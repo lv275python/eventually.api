@@ -183,7 +183,9 @@ class TestCurriculumApp(TestCase):
         self.assertEqual(objupdate.name, "newname")
         self.assertEqual(objupdate.description, "newdescription")
         self.assertEqual(objupdate.team, self.team)
-        self.assertEqual([mentor.id for mentor in objupdate.mentors.all()], [2, 3])
+        mentor_ids = [mentor.id for mentor in objupdate.mentors.all()]
+        mentor_ids.sort()
+        self.assertEqual(mentor_ids, [2, 3])
 
     def test_update_with_existing_name(self):
         """ Negative test update method """

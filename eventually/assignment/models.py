@@ -99,7 +99,7 @@ class Assignment(models.Model):
                 'statement': self.statement,
                 'grade': self.grade,
                 'user_id': self.user.id if self.user else None,
-                'item_id': self.assignment.id if self.assignment else None,
+                'item_id': self.item.id if self.item else None,
                 'status': self.status,
                 'started_at': int(self.created_at.timestamp()),
                 'finished_at': int(self.updated_at.timestamp()),
