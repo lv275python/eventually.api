@@ -3,15 +3,22 @@
 [run]
 
 source =
+    amazons3
+    assignment
     authentication
     comment
+    curriculum
     customprofile
     event
+    home
+    item
+    literature
+    middlewares
     task
     team
+    topic
     utils
     vote
-    topic
 
 omit =
     *migrations*
