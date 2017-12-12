@@ -4,13 +4,16 @@ LiteratureItem model
 
 This module implements class that represents the LiteratureItem model
 """
+# pylint: disable=arguments-differ
+
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
 from item.models import Item
+from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
 
-class LiteratureItem(models.Model):
+class LiteratureItem(AbstractModel):
     """
         Create LiteratureItem model
 
@@ -47,33 +50,6 @@ class LiteratureItem(models.Model):
     author = models.ForeignKey(CustomUser, null=True)
     item = models.ForeignKey(Item, null=True)
 
-    def __repr__(self):
-        """
-        Method that returns string representation of
-        vote instance object.
-
-        :return: literature_item id, title, description, source, author
-        """
-        return "id:{} title:{} description:{} source:{} author:{} item:{}".format(self.id,
-                                                                                  self.title,
-                                                                                  self.description,
-                                                                                  self.source,
-                                                                                  self.author.id,
-                                                                                  self.item.id)
-
-    def __str__(self):
-        """
-        Magic method that returns string representation of
-        vote instance object.
-
-        :return: literature_item id, title, description, source, author
-        """
-        return "id:{} title:{} description:{} source:{} author:{} item:{}".format(self.id,
-                                                                                  self.title,
-                                                                                  self.description,
-                                                                                  self.source,
-                                                                                  self.author.id,
-                                                                                  self.item.id)
 
     def to_dict(self):
         """
@@ -103,21 +79,6 @@ class LiteratureItem(models.Model):
             'author': self.author.id,
             'item': self.item.id,
         }
-
-    @staticmethod
-    def get_by_id(literature_id):
-        """
-        Static method that return LiteratureItem object by id
-
-        :param literature_id: id of element in model
-        :type literature_id: integer
-
-        :return: object with element, searched by id
-        """
-        try:
-            return LiteratureItem.objects.get(id=literature_id)
-        except LiteratureItem.DoesNotExist:
-            LOGGER.error(f'The literature with id={literature_id} does not exist')
 
     @staticmethod
     def create(title, source, author, item, description=""):
@@ -176,20 +137,3 @@ class LiteratureItem(models.Model):
             self.source = source
 
         self.save()
-
-    @staticmethod
-    def delete_by_id(literature_id):
-        """
-        Method delete existed LiteratureItem object by id
-
-        :param literature_id: id of object
-        :type literature_id: integer
-
-        :return:deleted LiteratureItem object
-        """
-        try:
-            literature = LiteratureItem.objects.get(id=literature_id)
-            literature.delete()
-            return True
-        except (LiteratureItem.DoesNotExist, AttributeError):
-            LOGGER.error(f'The literature with id={literature_id} was not deleted')

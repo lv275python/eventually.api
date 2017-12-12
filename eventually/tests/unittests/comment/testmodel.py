@@ -18,7 +18,7 @@ class CommentModelTestCase(TestCase):
     """TestCase for providing Comment model testing."""
 
     def setUp(self):
-        """Provide preparation before testing Comemnt model's features."""
+        """Provide preparation before testing Comment model's features."""
         with mock.patch('django.utils.timezone.now') as mock_time:
             mock_time.return_value = TEST_TIME
             custom_user = CustomUser(id=2000,

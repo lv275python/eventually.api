@@ -4,13 +4,16 @@ Vote & Answer models
 
 This module implements class that represents the vote and answer models
 """
+# pylint: disable=arguments-differ
+
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
 from event.models import Event
+from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
 
-class Vote(models.Model):
+class Vote(AbstractModel):
     """
         Create Vote model
 
@@ -52,25 +55,6 @@ class Vote(models.Model):
     create_at = models.DateTimeField(auto_now_add=True, editable=False)
     update_at = models.DateTimeField(auto_now=True)
 
-    def __repr__(self):
-        """
-        This magic method is redefined to show class and id of Vote object.
-
-        :return: class, id
-        """
-
-        return f'{self.__class__.__name__}(id={self.id})'
-
-    def __str__(self):
-        """
-        Magic method is redefined to show all information about Vote.
-
-        :return: vote id, event id, vote is_active, vote is_extended,
-                 vote title, vote vote_type, create date, update date
-        """
-
-        return str(self.to_dict())[1:-1]
-
     def to_dict(self):
         """
         Method that return Vote object in dictionary
@@ -100,20 +84,6 @@ class Vote(models.Model):
             'update_at': int(self.update_at.timestamp()),
         }
 
-    @staticmethod
-    def get_by_id(vote_id):
-        """
-        Static method that return Vote object by id
-
-        :param vote_id: id of element in model
-        :type vote_id: integer
-
-        :return: object with element, searched by id
-        """
-        try:
-            return Vote.objects.get(id=vote_id)
-        except Vote.DoesNotExist:
-            LOGGER.error(f'The vote with id={vote_id} does not exist')
 
     @staticmethod
     def create(event, is_active=True, is_extended=True, title="", vote_type=1):
@@ -179,25 +149,7 @@ class Vote(models.Model):
 
         self.save()
 
-    @staticmethod
-    def delete_by_id(vote_id):
-        """
-        Method delete existed Vote object by id
-
-        :param vote_id: id of object
-        :type vote_id: integer
-
-        :return:deleted Vote object
-        """
-        try:
-            vote = Vote.objects.get(id=vote_id)
-            vote.delete()
-            return True
-        except (Vote.DoesNotExist, AttributeError):
-            LOGGER.error(f'The vote with id={vote_id} was not deleted')
-
-
-class Answer(models.Model):
+class Answer(AbstractModel):
     """
         Create Answer model, that has variants to choose in Vote
 
@@ -225,24 +177,6 @@ class Answer(models.Model):
     create_at = models.DateTimeField(auto_now_add=True, editable=False)
     update_at = models.DateTimeField(auto_now=True)
 
-    def __repr__(self):
-        """
-        This magic method is redefined to show class and id of Answer object.
-
-        :return: class, id
-        """
-
-        return f'{self.__class__.__name__}(id={self.id})'
-
-    def __str__(self):
-        """
-        Magic method is redefined to show all information about Answer.
-
-        :return: answer id, vote id, answer text, members.id, create date, update date
-        """
-
-        return str(self.to_dict())[1:-1]
-
     def to_dict(self):
         """
         Method that return Answer object in dictionary
@@ -267,21 +201,6 @@ class Answer(models.Model):
             'create_at': int(self.create_at.timestamp()),
             'update_at': int(self.create_at.timestamp()),
         }
-
-    @staticmethod
-    def get_by_id(answer_id):
-        """
-        Static method that return Answer object by id
-
-        :param answer_id: id of element in model
-        :type answer_id: integer
-
-        :return: object with element, searched by id
-        """
-        try:
-            return Answer.objects.get(id=answer_id)
-        except Answer.DoesNotExist:
-            LOGGER.error(f'The answer with id={answer_id} does not exist')
 
     @staticmethod
     def create(members, vote, text=''):
@@ -327,21 +246,3 @@ class Answer(models.Model):
         if text:
             self.text = text
         self.save()
-
-    @staticmethod
-    def delete_by_id(answer_id):
-        """
-        Method delete existed Answer object by id
-
-        :param answer_id: id of element in model
-        :type answer_id: integer
-
-        :return:deleted Answer object
-        """
-        try:
-            answer = Answer.objects.get(id=answer_id)
-            answer.delete()
-            return True
-
-        except (Answer.DoesNotExist, AttributeError):
-            LOGGER.error(f'The answer with id={answer_id} was not deleted')

@@ -4,13 +4,15 @@ CustomProfile model
 
 This module implements class that represents the users profile.
 """
+# pylint: disable=arguments-differ
 
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
+from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
 
-class CustomProfile(models.Model):
+class CustomProfile(AbstractModel):
     """
     Describing of profile untity.
 
@@ -38,24 +40,6 @@ class CustomProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        """
-        Magic method is redefined to show all information about CustomProfile.
-
-        :return: profile id, profile user, profile hobby, profile photo,
-                 profile birthday, create date, update date
-        """
-
-        return str(self.to_dict())[1:-1]
-
-    def __repr__(self):
-        """
-        This magic method is redefined to show class and id of CustomProfile object.
-
-        :return: class, id
-        """
-
-        return f'{self.__class__.__name__}(id={self.id})'
 
     @staticmethod
     def create(user, hobby='', photo='', birthday=None):
@@ -88,40 +72,6 @@ class CustomProfile(models.Model):
             return profile
         except (ValueError, IntegrityError):
             LOGGER.error('Inappropriate value or relational integrity fail')
-
-    @staticmethod
-    def get_by_id(profile_id):
-        """
-        Static method that returns profile objects according to the accepted id.
-
-        :param profile_id: Unique identificator of profile.
-        :type profile_id: integer
-
-        :return: profile object or None
-
-        """
-        try:
-            profile = CustomProfile.objects.get(id=profile_id)
-            return profile
-        except CustomProfile.DoesNotExist:
-            LOGGER.error(f'The profile with id={profile_id} does not exist')
-
-    @staticmethod
-    def delete_by_id(profile_id):
-        """
-        Static method that removes profile object according to the accepted id.
-
-        :param profile_id: PrimaryKey.
-        :type profile_id: integer
-
-        :return: profile object or None if profile does not exist
-        """
-        try:
-            profile = CustomProfile.objects.get(id=profile_id)
-            profile.delete()
-            return True
-        except (CustomProfile.DoesNotExist, AttributeError):
-            LOGGER.error(f'The profile with id={profile_id} was not deleted')
 
     def to_dict(self):
         """

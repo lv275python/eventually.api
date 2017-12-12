@@ -336,8 +336,6 @@ class AnswerView(View):
         user = request.user
         team = Team.get_by_id(team_id)
 
-        print(answer_id)
-
         if not answer_id:
             return HttpResponse(status=400)
 

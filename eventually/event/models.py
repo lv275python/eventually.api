@@ -4,14 +4,16 @@ Event model
 
 This module implements class that represents the event entity.
 """
+# pylint: disable=arguments-differ
 
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
 from team.models import Team
+from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
 
-class Event(models.Model):
+class Event(AbstractModel):
     """
     Describing of event entity.
 
@@ -82,27 +84,6 @@ class Event(models.Model):
     budget = models.IntegerField(null=True)
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
 
-    def __repr__(self):
-        """
-        This magic method is redefined to show class and id of Event object.
-
-        :return: class, id
-        """
-
-        return f'{self.__class__.__name__}(id={self.id})'
-
-    def __str__(self):
-        """
-        Magic method is redefined to show all information about Event.
-
-        :return: event id, event team, event name, event owner,
-                 event description, event start at, event create date,
-                 event update date, event duration, event longtitude,
-                 event latitude, event budget, event status
-
-        """
-
-        return str(self.to_dict())[1:-1]
 
     def to_dict(self):
         """
@@ -145,21 +126,6 @@ class Event(models.Model):
             'status': self.status
         }
 
-    @staticmethod
-    def get_by_id(event_id):
-        """
-        Static method that returns event objects according to the accepted id.
-
-        :param event_id: Unique identificator of event.
-        :type event_id: integer
-
-        :return: event object or None if event does not exist
-        """
-
-        try:
-            return Event.objects.get(id=event_id)
-        except Event.DoesNotExist:
-            LOGGER.error(f'The event with id={event_id} does not exist')
 
     @staticmethod
     def create(team, owner, name=None, description='', start_at=None,
@@ -286,21 +252,3 @@ class Event(models.Model):
             self.status = status
 
         self.save()
-
-    @staticmethod
-    def delete_by_id(event_id):
-        """
-        Static method that removes event object according to the accepted id.
-
-        :param event_id: Unique identificator of event.
-        :type event_id: integer
-
-        :return: event object or None if event does not exist
-        """
-
-        try:
-            event = Event.objects.get(id=event_id)
-            event.delete()
-            return True
-        except (Event.DoesNotExist, AttributeError):
-            LOGGER.error(f'The event with id={event_id} was not deleted')

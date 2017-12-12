@@ -4,6 +4,7 @@ Comment model
 
 This module implements class that represents the comment entity.
 """
+# pylint: disable=arguments-differ
 
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
@@ -11,10 +12,11 @@ from event.models import Event
 from task.models import Task
 from team.models import Team
 from vote.models import Vote
+from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
 
-class Comment(models.Model):
+class Comment(AbstractModel):
     """
     Comment model that describes comment entity.
 
@@ -56,28 +58,9 @@ class Comment(models.Model):
     vote = models.ForeignKey(Vote, null=True)
     author = models.ForeignKey(CustomUser, null=True, on_delete=models.SET_NULL)
 
-    def __str__(self):
-        """
-        Magic method is redefined to show all information about Comment.
-
-        :return: class, id
-
-        """
-        return str(self.to_dict())[1:-1]
-
-    def __repr__(self):
-        """
-        This magic method is redefined to show class and id of Comment object.
-
-        :return: comment id, comment text, comment create date, comment update date,
-                 comment team, comment event, comment task, comment vote, comment author.
-
-        """
-        return f'{self.__class__.__name__}(id={self.id})'
-
     def to_dict(self):
         """
-        Method that returns dictionary with comment's info.
+        Return dictionary with comment's info.
 
         :return: comment id, comment text, comment create date, comment update date,
                  comment team, comment event, comment task, comment vote, comment author.
@@ -106,23 +89,6 @@ class Comment(models.Model):
             "vote": self.vote.id if self.vote else None,
             "author": self.author.id
         }
-
-    @staticmethod
-    def get_by_id(comment_id):
-        """
-        Return comment, found by id.
-
-        :param comment_id: comment's id
-        :type comment_id: integer
-
-        :return: Comment object instance or None if object does not exist
-
-        """
-        try:
-            comment = Comment.objects.get(id=comment_id)
-            return comment
-        except Comment.DoesNotExist:
-            LOGGER.error(f'The comment with id={comment_id} does not exist')
 
     @staticmethod
     def create(author, text=None, team=None, event=None, task=None, vote=None):
@@ -175,22 +141,3 @@ class Comment(models.Model):
             self.text = text
 
         self.save()
-
-    @staticmethod
-    def delete_by_id(comment_id):
-        """
-        Delete comment, found by id.
-
-        :param comment_id: - comment's id
-        :type comment_id: integer
-
-        :return: True if comment seccessfully deleted or
-                 None if object does not exist
-
-        """
-        try:
-            comment = Comment.objects.get(id=comment_id)
-            comment.delete()
-            return True
-        except (Comment.DoesNotExist, AttributeError):
-            LOGGER.error(f'The comment with id={comment_id} was not deleted')

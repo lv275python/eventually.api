@@ -4,14 +4,16 @@ Item model
 
 This module implements class that represents the item entity.
 """
+# pylint: disable=arguments-differ
 
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
 from topic.models import Topic
+from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
 
-class Item(models.Model):
+class Item(AbstractModel):
     """
     Describing of item entity.
 
@@ -64,23 +66,6 @@ class Item(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __repr__(self):
-        """
-        This magic method is redefined to show class and id of Item object.
-
-        :return: class, id
-        """
-        return f'{self.__class__.__name__}(id={self.id})'
-
-    def __str__(self):
-        """
-        Magic method that returns string representation of item instance object.
-
-        :return: item id, item name, item authors, item form, item superiors, item description,
-                 item topic, item estimation, item create date, item last update date.
-        """
-        return str(self.to_dict())[1:-1]
-
     def to_dict(self):
         """
         Method that converts item object to dictionary.
@@ -116,22 +101,6 @@ class Item(models.Model):
             'created_at': int(self.created_at.timestamp()),
             'updated_at': int(self.updated_at.timestamp()),
         }
-
-    @staticmethod
-    def get_by_id(item_id):
-        """
-        Static method that returns item objects according to the accepted id.
-
-        :param item_id: Unique identificator of item.
-        :type item_id: int
-
-        :return: item object or None if item does not exist
-        """
-
-        try:
-            return Item.objects.get(id=item_id)
-        except Item.DoesNotExist:
-            LOGGER.error(f'The item with id={item_id} does not exist')
 
     @staticmethod
     def create(name, authors, topic, form, superiors=None, description='', estimation=None):
@@ -244,21 +213,3 @@ class Item(models.Model):
             self.superiors.add(*superiors_add)
         if superiors_del:
             self.superiors.remove(*superiors_del)
-
-    @staticmethod
-    def delete_by_id(item_id):
-        """
-        Static method that removes item object according to the accepted id.
-
-        :param item_id: Unique identificator of item.
-        :type item_id: int
-
-        :return: item object or None if item does not exist
-        """
-
-        try:
-            item = Item.objects.get(id=item_id)
-            item.delete()
-            return True
-        except (Item.DoesNotExist, AttributeError):
-            LOGGER.error(f'The item with id={item_id} was not deleted')
