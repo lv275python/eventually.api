@@ -8,6 +8,7 @@ from django.db import models
 from django.db.utils import IntegrityError
 from django.contrib.postgres.fields import ArrayField
 from team.models import Team
+from utils.utils import LOGGER
 
 
 class Curriculum(models.Model):
@@ -89,7 +90,7 @@ class Curriculum(models.Model):
         try:
             return Curriculum.objects.get(id=curriculum_id)
         except Curriculum.DoesNotExist:
-            pass
+            LOGGER.error("Curriculum does not exist")
 
 
     @staticmethod
@@ -103,7 +104,7 @@ class Curriculum(models.Model):
         try:
             return Curriculum.objects.get(name=curriculum_name)
         except Curriculum.DoesNotExist:
-            pass
+            LOGGER.error("Curriculum does not exist")
 
 
     @staticmethod
@@ -120,7 +121,7 @@ class Curriculum(models.Model):
             curriculum.delete()
             return True
         except Curriculum.DoesNotExist:
-            pass
+            LOGGER.error("Curriculum does not exist")
 
 
     @staticmethod
@@ -155,7 +156,7 @@ class Curriculum(models.Model):
             new_curriculum.mentors.add(*mentors)
             return new_curriculum
         except IntegrityError:
-            pass
+            LOGGER.error("Relational integrity error")
 
 
     def to_dict(self):
@@ -219,4 +220,4 @@ class Curriculum(models.Model):
             self.save()
             return True
         except (IntegrityError, AttributeError):
-            pass
+            LOGGER.error("Inappropriate values or relational integrity error")
