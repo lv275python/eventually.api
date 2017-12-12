@@ -103,7 +103,7 @@ class Topic(models.Model):
         try:
             return Topic.objects.get(id=topic_id)
         except Topic.DoesNotExist:
-            LOGGER.error('Certain topic does not exist')
+            LOGGER.error(f'The topic with id={topic_id} does not exist')
 
     @staticmethod
     def create(curriculum, authors=None, title=None, description=None):
@@ -173,7 +173,7 @@ class Topic(models.Model):
             topic.delete()
             return True
         except (Topic.DoesNotExist, AttributeError):
-            LOGGER.error('Certain topic does not deleted')
+            LOGGER.error(f'The topic with id={topic_id} was not deleted')
 
     def add_authors(self, authors_list):
         """Method that add authors to topic"""
