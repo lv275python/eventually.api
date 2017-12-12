@@ -6,6 +6,7 @@ This module implements class that represents the LiteratureItem model
 """
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
+from item.models import Item
 from utils.utils import LOGGER
 
 
@@ -28,8 +29,8 @@ class LiteratureItem(models.Model):
             :param author: id of author
             :type author: integer
 
-            :param assignment: assignment
-            :type assignment: integer
+            :param item: id of item
+            :type item: integer
 
             :param create_at: The date when the certain event was created
             :type create_at: datetime
@@ -44,6 +45,7 @@ class LiteratureItem(models.Model):
     create_at = models.DateTimeField(auto_now_add=True, editable=False)
     update_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(CustomUser, null=True)
+    item = models.ForeignKey(Item, null=True)
 
     def __repr__(self):
         """
@@ -52,11 +54,12 @@ class LiteratureItem(models.Model):
 
         :return: literature_item id, title, description, source, author
         """
-        return "id:{} title:{} description:{} source:{} author:{}".format(self.id,
-                                                                          self.title,
-                                                                          self.description,
-                                                                          self.source,
-                                                                          self.author.id)
+        return "id:{} title:{} description:{} source:{} author:{} item:{}".format(self.id,
+                                                                                  self.title,
+                                                                                  self.description,
+                                                                                  self.source,
+                                                                                  self.author.id,
+                                                                                  self.item.id)
 
     def __str__(self):
         """
@@ -65,11 +68,12 @@ class LiteratureItem(models.Model):
 
         :return: literature_item id, title, description, source, author
         """
-        return "id:{} title:{} description:{} source:{} author:{}".format(self.id,
-                                                                          self.title,
-                                                                          self.description,
-                                                                          self.source,
-                                                                          self.author.id)
+        return "id:{} title:{} description:{} source:{} author:{} item:{}".format(self.id,
+                                                                                  self.title,
+                                                                                  self.description,
+                                                                                  self.source,
+                                                                                  self.author.id,
+                                                                                  self.item.id)
 
     def to_dict(self):
         """
@@ -86,6 +90,7 @@ class LiteratureItem(models.Model):
          |     'created_at': 1509540116,
          |     'updated_at': 1509540116,
          |     'author': 1,
+         |     'item': 3,
          | }
         """
         return {
@@ -95,7 +100,8 @@ class LiteratureItem(models.Model):
             'source': self.source,
             'create_at': int(self.create_at.timestamp()),
             'update_at': int(self.update_at.timestamp()),
-            'author': self.author.id
+            'author': self.author.id,
+            'item': self.item.id,
         }
 
     @staticmethod
@@ -114,7 +120,7 @@ class LiteratureItem(models.Model):
             LOGGER.error(f'The literature with id={literature_id} does not exist')
 
     @staticmethod
-    def create(title, source, author, description=""):
+    def create(title, source, author, item, description=""):
         """
         Static method that create new LiteratureItem object
 
@@ -130,12 +136,16 @@ class LiteratureItem(models.Model):
         :param author: id of author
         :type author: integer
 
+        :param item: id of item
+        :type item: integer
+
         :return: new created object or None
         """
         literature = LiteratureItem(title=title,
                                     description=description,
                                     source=source,
-                                    author=author)
+                                    author=author,
+                                    item=item)
         try:
             literature.save()
             return literature
