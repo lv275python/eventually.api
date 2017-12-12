@@ -8,6 +8,7 @@ This module implements class that represents the event entity.
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
 from team.models import Team
+from utils.utils import LOGGER
 
 
 class Event(models.Model):
@@ -158,7 +159,7 @@ class Event(models.Model):
         try:
             return Event.objects.get(id=event_id)
         except Event.DoesNotExist:
-            pass
+            LOGGER.error(f'The event with id={event_id} does not exist')
 
     @staticmethod
     def create(team, owner, name=None, description='', start_at=None,
@@ -222,7 +223,7 @@ class Event(models.Model):
             event.save()
             return event
         except (ValueError, IntegrityError):
-            pass
+            LOGGER.error('Inappropriate value or relational integrity fail')
 
     def update(self, owner=None, name=None, description=None, start_at=None,
                duration=None, longitude=None, latitude=None, budget=None,
@@ -302,4 +303,4 @@ class Event(models.Model):
             event.delete()
             return True
         except (Event.DoesNotExist, AttributeError):
-            pass
+            LOGGER.error(f'The event with id={event_id} was not deleted')
