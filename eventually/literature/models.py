@@ -6,6 +6,7 @@ This module implements class that represents the LiteratureItem model
 """
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
+from utils.utils import LOGGER
 
 
 class LiteratureItem(models.Model):
@@ -110,7 +111,7 @@ class LiteratureItem(models.Model):
         try:
             return LiteratureItem.objects.get(id=literature_id)
         except LiteratureItem.DoesNotExist:
-            pass
+            LOGGER.error(f'The literature with id={literature_id} does not exist')
 
     @staticmethod
     def create(title, source, author, description=""):
@@ -139,7 +140,7 @@ class LiteratureItem(models.Model):
             literature.save()
             return literature
         except (ValueError, IntegrityError):
-            pass
+            LOGGER.error('Value or integrity error error was raised')
 
     def update(self, title="", description="", source=""):
         """
@@ -181,4 +182,4 @@ class LiteratureItem(models.Model):
             literature.delete()
             return True
         except (LiteratureItem.DoesNotExist, AttributeError):
-            pass
+            LOGGER.error(f'The literature with id={literature_id} was not deleted')

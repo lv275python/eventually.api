@@ -7,6 +7,7 @@ This module implements class that represents the vote and answer models
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
 from event.models import Event
+from utils.utils import LOGGER
 
 
 class Vote(models.Model):
@@ -112,7 +113,7 @@ class Vote(models.Model):
         try:
             return Vote.objects.get(id=vote_id)
         except Vote.DoesNotExist:
-            pass
+            LOGGER.error(f'The vote with id={vote_id} does not exist')
 
     @staticmethod
     def create(event, is_active=True, is_extended=True, title="", vote_type=1):
@@ -146,7 +147,7 @@ class Vote(models.Model):
             vote.save()
             return vote
         except (ValueError, IntegrityError):
-            pass
+            LOGGER.error('Value or integrity error error was raised')
 
     def update(self, is_active=None, is_extended=None, title=None, vote_type=None):
         """
@@ -193,7 +194,7 @@ class Vote(models.Model):
             vote.delete()
             return True
         except (Vote.DoesNotExist, AttributeError):
-            pass
+            LOGGER.error(f'The vote with id={vote_id} was not deleted')
 
 
 class Answer(models.Model):
@@ -280,7 +281,7 @@ class Answer(models.Model):
         try:
             return Answer.objects.get(id=answer_id)
         except Answer.DoesNotExist:
-            pass
+            LOGGER.error(f'The answer with id={answer_id} does not exist')
 
     @staticmethod
     def create(members, vote, text=''):
@@ -307,7 +308,7 @@ class Answer(models.Model):
             answer.members.add(*members)
             return answer
         except (ValueError, IntegrityError, TypeError):
-            pass
+            LOGGER.error('Value or integrity error error was raised')
 
     def update(self, members=None, text=None):
         """
@@ -343,4 +344,4 @@ class Answer(models.Model):
             return True
 
         except (Answer.DoesNotExist, AttributeError):
-            pass
+            LOGGER.error(f'The answer with id={answer_id} was not deleted')
