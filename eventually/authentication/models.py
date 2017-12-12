@@ -9,6 +9,7 @@ This file contains models for the postgresql database.
 
 from django.db import models, IntegrityError
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from utils.utils import LOGGER
 
 
 class CustomUser(AbstractBaseUser):
@@ -76,7 +77,7 @@ class CustomUser(AbstractBaseUser):
         try:
             return CustomUser.objects.get(id=user_id)
         except CustomUser.DoesNotExist:
-            return None
+            LOGGER.error("User does not exist")
 
     @staticmethod
     def get_by_email(email):
@@ -91,7 +92,7 @@ class CustomUser(AbstractBaseUser):
         try:
             return CustomUser.objects.get(email=email)
         except CustomUser.DoesNotExist:
-            pass
+            LOGGER.error("User does not exist")
 
     @staticmethod
     def delete_by_id(_id):
@@ -106,7 +107,7 @@ class CustomUser(AbstractBaseUser):
             user.delete()
             return True
         except CustomUser.DoesNotExist:
-            pass
+            LOGGER.error("User does not exist")
 
     @staticmethod
     def create(email, password, first_name=None, middle_name=None, last_name=None):
@@ -140,7 +141,7 @@ class CustomUser(AbstractBaseUser):
             user.save()
             return user
         except (IntegrityError, AttributeError):
-            pass
+            LOGGER.error("Wrong attributes or relational integrity error")
 
     def to_dict(self):
         """
@@ -205,5 +206,4 @@ class CustomUser(AbstractBaseUser):
             self.set_password(password)
         if is_active is not None:
             self.is_active = is_active
-
         self.save()
