@@ -1,6 +1,6 @@
 import React from 'react';
-import {withRouter} from 'react-router-dom'
-import {getAssignment} from './ItemService.js'
+import {getAssignment} from './ItemService.js';
+
 const style = {
     fontSize: 24,
     paddingTop: 16,
@@ -10,8 +10,9 @@ const style = {
 };
 
 class Assignment extends React.Component {
+
     constructor(props) {
-      super(props);
+        super(props);
     }
 
     render() {
@@ -21,7 +22,7 @@ class Assignment extends React.Component {
                 <p>{this.props.description}</p>
             </div>
         );
-    };
-};
+    }
+}
 
-export default Assignment
+export default Assignment;

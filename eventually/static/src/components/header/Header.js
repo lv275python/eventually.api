@@ -1,7 +1,7 @@
 import React from 'react';
 import AppBar from 'material-ui/AppBar';
-import Logout from '../../containers/register_login/Logout.js';
-import SiteBar from '../siteBar/SiteBar'
+import Logout from '../../containers/registerLogin/Logout.js';
+import SiteBar from '../siteBar/SiteBar';
 
 export default class Header extends React.Component {
 
@@ -11,7 +11,7 @@ export default class Header extends React.Component {
     }
 
     toggleSiteBarOpen = () => {
-        this.setState({open: !this.state.open})
+        this.setState({open: !this.state.open});
     };
 
     render() {
@@ -24,6 +24,6 @@ export default class Header extends React.Component {
                 />
                 <SiteBar open={this.state.open} toggleSiteBarOpen={this.toggleSiteBarOpen}/>
             </div>
-        )
+        );
     }
 }

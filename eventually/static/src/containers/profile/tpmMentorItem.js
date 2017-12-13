@@ -3,14 +3,14 @@ import {Card, CardHeader} from 'material-ui/Card';
 import Avatar from 'material-ui/Avatar';
 
 const cardHeaderStyle = {
-    'display': 'flex',
-    'alignItems': 'center',
-    'cursor': 'pointer'
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer'
 };
 
 const titleStyle = {
-    'fontWeight': 'bold',
-    'fontSize': '18px'
+    fontWeight: 'bold',
+    fontSize: '18px'
 };
 
 export default class MentorItem extends React.Component {
@@ -20,7 +20,7 @@ export default class MentorItem extends React.Component {
     }
 
     handleClick = () => {
-        this.props.onMentorClick(this.props.id)
+        this.props.onMentorClick(this.props.id);
     };
 
     render() {
@@ -30,7 +30,7 @@ export default class MentorItem extends React.Component {
                     <CardHeader
                         style={cardHeaderStyle}
                         title={`${this.props.firstName} ${this.props.lastName}`}
-                        avatar={<Avatar src={"https://robohash.org/" + this.props.avatar}/>}
+                        avatar={<Avatar src={`https://robohash.org/${this.props.avatar}`}/>}
                         titleStyle={titleStyle}
                         onClick={this.handleClick}
                     />

@@ -20,9 +20,9 @@ export default class ItemsList extends React.Component {
                     {
                         this.props.items.map(item => (
                             <ItemUnit key={item.id.toString()}
-                                            name={item.name}
-                                            description={item.description}
-                                            form={item.form}
+                                name={item.name}
+                                description={item.description}
+                                form={item.form}
                             />)
                         )
                     }

@@ -9,29 +9,29 @@ import {Card, CardHeader, CardText, CardActions} from 'material-ui/Card';
 import {blue500, yellow600, lime500} from 'material-ui/styles/colors';
 
 const titleStyle = {
-    'fontWeight': 'bold',
-    'fontSize': '16px'
+    fontWeight: 'bold',
+    fontSize: '16px'
 };
 
 const cardHeaderStyle = {
-    'display': 'flex',
-    'alignItems': 'center',
-    'cursor': 'pointer'
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer'
 };
 
 const textStyle = {
-    'fontSize': '14px'
+    fontSize: '14px'
 };
 
 const actionsStyle = {
-    'display': 'flex',
-    'justifyContent': 'flex-end'
+    display: 'flex',
+    justifyContent: 'flex-end'
 };
 
 const buttonStyle = {
-    'width': '17%',
-    'minWidth': '17%',
-    'height': '25px'
+    width: '17%',
+    minWidth: '17%',
+    height: '25px'
 };
 
 export default class ItemUnit extends React.Component {
@@ -52,16 +52,17 @@ export default class ItemUnit extends React.Component {
         let avatar = null;
 
         if (this.props.form === 0) {
-            avatar = (<Avatar icon={<LibraryBooks />} backgroundColor={yellow600} />)
+            avatar = (<Avatar icon={<LibraryBooks />} backgroundColor={yellow600} />);
         } else if (this.props.form === 1) {
-            avatar = (<Avatar icon={<Code />} backgroundColor={blue500} />)
+            avatar = (<Avatar icon={<Code />} backgroundColor={blue500} />);
         } else {
-            avatar = (<Avatar icon={<Group />} backgroundColor={lime500} />)
+            avatar = (<Avatar icon={<Group />} backgroundColor={lime500} />);
         }
 
-        return (<div>
+        return (
+            <div>
                 <Card expanded={this.state.expanded}
-                      onExpandChange={this.handleExpandChange}>
+                    onExpandChange={this.handleExpandChange}>
                     <CardHeader
                         title={this.props.name}
                         avatar={avatar}
@@ -71,17 +72,17 @@ export default class ItemUnit extends React.Component {
                         titleStyle={titleStyle}
                     />
                     <CardText expandable={true}
-                              style={textStyle}>
+                        style={textStyle}>
                         {this.props.description}
                     </CardText>
                     <CardActions style={actionsStyle}>
                         <RaisedButton icon={<PlayArrow />}
-                                      secondary={true}
-                                      style={buttonStyle}>
+                            secondary={true}
+                            style={buttonStyle}>
                         </RaisedButton>
                     </CardActions>
                 </Card>
-              </div>
-        )
+            </div>
+        );
     }
 }

@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 import ItemsList from './ItemsList';
 import MessagesBar from './MessagesBar';
-import ProgressGraph from "./ProgressGraph";
+import ProgressGraph from './ProgressGraph';
 import {itemsListService} from './profileService';
 
 const profileStyle = {
@@ -10,27 +10,27 @@ const profileStyle = {
 };
 
 const itemsListStyle = {
-    'width': '25%'
+    width: '25%'
 };
 
 const progressGraphStyle = {
-    'width': '55%',
-    'margin': 2.5
+    width: '55%',
+    margin: 2.5
 };
 
 const messagesBarStyle = {
-    'width': '30%'
+    width: '30%'
 };
 
 export default class Profile extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {}
+        this.state = {};
     }
 
     componentWillMount() {
-        this.setState({items: itemsListService().items})
+        this.setState({items: itemsListService().items});
     }
 
     render() {

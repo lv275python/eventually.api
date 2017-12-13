@@ -1,6 +1,5 @@
 import React from 'react';
-import {withRouter} from 'react-router-dom'
-import {getLiterature} from './ItemService.js'
+import {getLiterature} from './ItemService.js';
 
 const style = {
     fontSize: 24,
@@ -9,6 +8,7 @@ const style = {
     fontWeight: 400,
     height: 270,
 };
+
 class Literature extends React.Component {
     constructor(props) {
         super(props);
@@ -27,7 +27,7 @@ class Literature extends React.Component {
                 </ul>
             </div>
         );
-    };
-};
+    }
+}
 
-export default Literature
+export default Literature;

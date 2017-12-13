@@ -3,7 +3,6 @@ import {Route, Switch, Redirect} from 'react-router-dom';
 import Home from './containers/Home';
 import Profile from './containers/profile/Profile';
 import Item from './containers/item/Item';
-import TopicList from './containers/topicList/TopicList';
 import Curriculum from './containers/curriculum/Curriculum';
 
 export default class MainRouter extends React.Component {

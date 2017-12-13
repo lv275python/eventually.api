@@ -1,9 +1,9 @@
 import React from 'react';
 
 const style = {
-    'fontSize': '20px',
-    'fontWeight': 'bold',
-    'textAlign': 'center'
+    fontSize: '20px',
+    fontWeight: 'bold',
+    textAlign: 'center'
 };
 
 export default class ItemsListTitle extends React.Component {
@@ -13,6 +13,6 @@ export default class ItemsListTitle extends React.Component {
     }
 
     render() {
-        return (<h2 style={style}>{this.props.text}</h2>)
+        return (<h2 style={style}>{this.props.text}</h2>);
     }
 }
