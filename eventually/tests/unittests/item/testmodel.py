@@ -9,7 +9,10 @@ import datetime
 from unittest import mock
 from django.test import TestCase
 from authentication.models import CustomUser
+from curriculum.models import Curriculum
 from item.models import Item
+from team.models import Team
+from topic.models import Topic
 
 
 TEST_TIME = datetime.datetime(2016, 10, 15, 8, 15, 12)
@@ -39,25 +42,65 @@ class ItemModelTestCase(TestCase):
                                             password='123456')
             custom_user_second.save()
 
+            custom_user_third = CustomUser(id=103,
+                                           first_name='pablo',
+                                           last_name='martines',
+                                           middle_name='jo',
+                                           email='sometest@email',
+                                           password='123456')
+            custom_user_third.save()
+
+            team = Team(id=101,
+                        owner=custom_user_first,
+                        name='Coldplay')
+            team.save()
+            team.members.add(custom_user_first, custom_user_second)
+
+            curriculum = Curriculum.objects.create(id=101,
+                                                   name="testcurriculum",
+                                                   goals=["goal1", "goal2"],
+                                                   description="test_descr",
+                                                   team=team)
+            curriculum.save()
+            curriculum.mentors.add(custom_user_first, custom_user_third)
+
+            topic_python = Topic(id=101,
+                          curriculum=curriculum,
+                          title='Python',
+                          description='My awesome topic')
+            topic_python.save()
+            topic_python.authors.add(custom_user_first, custom_user_third)
+
+            topic_html = Topic(id=102,
+                          curriculum=curriculum,
+                          title='HTML',
+                          description='My another awesome topic')
+            topic_html.save()
+            topic_html.authors.add(custom_user_third)
+
             item_first = Item(id=101,
                               name='read documentation',
-                              form=0)
+                              form=0,
+                              topic=topic_python)
             item_first.save()
-            item_first.authors.add(custom_user_first)
+            item_first.authors.add(custom_user_first, custom_user_third)
+
             item_second = Item(id=102,
                                name='pass test',
                                form=1,
+                               topic=topic_python,
                                estimation=datetime.timedelta(seconds=54000))
             item_second.save()
             item_second.authors.add(custom_user_first)
+
             item_third = Item(id=103,
                               name='watch videos',
                               form=0,
+                              topic=topic_html,
                               description='test',
                               estimation=datetime.timedelta(seconds=1104000))
-
             item_third.save()
-            item_third.authors.add(custom_user_first, custom_user_second)
+            item_third.authors.add(custom_user_first, custom_user_third)
             item_third.superiors.add(item_first, item_second)
 
     def test_item_repr(self):
@@ -65,8 +108,7 @@ class ItemModelTestCase(TestCase):
 
         item = Item.objects.get(id=103)
         actual_repr = item.__repr__()
-        expected_repr = ('id:103 name:watch videos authors:[101, 102] form:0 '
-                         'superiors:[101, 102] description:test estimation:1104000')
+        expected_repr = ('Item(id=103)')
         self.assertEqual(actual_repr, expected_repr)
 
     def test_item_str(self):
@@ -74,8 +116,9 @@ class ItemModelTestCase(TestCase):
 
         item = Item.objects.get(id=101)
         actual_repr = item.__str__()
-        expected_repr = ('id:101 name:read documentation authors:[101] form:0 '
-                         'superiors:[] description: estimation:None')
+        expected_repr = ("'id': 101, 'name': 'read documentation', 'authors': [101, 103], "
+                         "'topic': 101, 'form': 0, 'superiors': [], 'description': '', "
+                         "'estimation': None, 'created_at': 1476508512, 'updated_at': 1476508512")
         self.assertEqual(actual_repr, expected_repr)
 
     def test_item_to_dict(self):
@@ -88,7 +131,8 @@ class ItemModelTestCase(TestCase):
         item = Item.objects.get(id=103)
         expected_item_dict = {'id': 103,
                               'name': 'watch videos',
-                              'authors': [101, 102],
+                              'authors': [101, 103],
+                              'topic': 102,
                               'form': 0,
                               'superiors': [101, 102],
                               'description': 'test',
@@ -122,10 +166,13 @@ class ItemModelTestCase(TestCase):
         superior_first = Item.objects.get(id=102)
         superior_second = Item.objects.get(id=103)
         superiors = [superior_first, superior_second]
+        topic = Topic.objects.get(id=101)
         time = datetime.timedelta(seconds=66000)
-        item = Item.create(name='new', authors=users, form=1, superiors=superiors, estimation=time)
+        item = Item.create(name='new', authors=users, topic=topic,
+                           form=1, superiors=superiors, estimation=time)
         self.assertIsInstance(item, Item)
         self.assertEqual(item.name, 'new')
+        self.assertEqual(item.topic.id, 101)
         self.assertEqual(item.form, 1)
         self.assertListEqual(list(item.authors.all()), users)
         self.assertListEqual(list(item.superiors.all()), superiors)
@@ -136,7 +183,8 @@ class ItemModelTestCase(TestCase):
         """Method that tests unsucceeded `create` method of Item class object."""
 
         author = CustomUser.objects.get(id=101)
-        item = Item.create(name='test', authors=[author], form='str')
+        topic = Topic.objects.get(id=101)
+        item = Item.create(name='test', authors=[author], topic=topic, form='str')
         self.assertIsNone(item)
 
     def test_item_update(self):
