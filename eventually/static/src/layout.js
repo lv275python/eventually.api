@@ -1,12 +1,11 @@
-import React from "react";
-import {Route, Switch} from "react-router-dom";
-import MainRouter from './mainRouter';
-import Header from './components/header/Header';
-
-import { isLogged } from './utils'
-import Sign from './containers/register_login/Sign'
-import SignRouter from './signRouter'
+import React from 'react';
+import {Route, Switch} from 'react-router-dom';
 import Paper from 'material-ui/Paper';
+import MainRouter from './mainRouter';
+import { isLogged } from './utils'
+import SignRouter from './signRouter'
+import Header from './components/header/Header';
+import Sign from './containers/register_login/Sign'
 import SiteBar from './components/siteBar/SiteBar'
 
 

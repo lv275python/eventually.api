@@ -13,10 +13,13 @@
   "devDependencies": {
     "axios": "^0.17.1",
     "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.3",
     "babel-loader": "^7.1.2",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+    "eslint": "^4.13.1",
+    "eslint-plugin-react": "^7.5.1",
     "extract-text-webpack-plugin": "^3.0.2",
     "material-ui": "^0.19.4"
   },
