@@ -6,6 +6,7 @@ This module implements class that represents the team entity.
 """
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
+from utils.utils import LOGGER
 
 
 class Team(models.Model):
@@ -111,7 +112,7 @@ class Team(models.Model):
         try:
             return Team.objects.get(id=team_id)
         except Team.DoesNotExist:
-            pass
+            LOGGER.error(f'The team with id={team_id} does not exist')
 
     @staticmethod
     def create(owner, members, name=None, description='', image=''):
@@ -147,7 +148,7 @@ class Team(models.Model):
             team.members.add(*members)
             return team
         except (ValueError, IntegrityError):
-            pass
+            LOGGER.error('Inappropriate value or relational integrity fail')
 
     def add_users(self, members_add):
         """Method that adds members to team"""
@@ -214,4 +215,4 @@ class Team(models.Model):
             team.delete()
             return True
         except (Team.DoesNotExist, AttributeError):
-            pass
+            LOGGER.error(f'The team with id={team_id} was not deleted')

@@ -7,6 +7,7 @@ This module implements class that represents the assignment entity.
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
 from item.models import Item
+from utils.utils import LOGGER
 
 
 class Assignment(models.Model):
@@ -121,7 +122,7 @@ class Assignment(models.Model):
         try:
             return Assignment.objects.get(id=assignment_id)
         except Assignment.DoesNotExist:
-            pass
+            LOGGER.error(f'The assignment with id={assignment_id} does not exist')
 
     @staticmethod
     def create(statement,
@@ -171,7 +172,8 @@ class Assignment(models.Model):
             assignment.save()
             return assignment
         except (ValueError, IntegrityError):
-            pass
+            LOGGER.error('Inappropriate value or relational integrity fail')
+
 
     def update(self,
                statement=None,
@@ -239,4 +241,4 @@ class Assignment(models.Model):
             assignment.delete()
             return True
         except (Assignment.DoesNotExist, AttributeError):
-            pass
+            LOGGER.error(f'The assignment with id={assignment_id} was not deleted')
