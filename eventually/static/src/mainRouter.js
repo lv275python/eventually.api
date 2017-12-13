@@ -11,13 +11,13 @@ export default class MainRouter extends React.Component {
         return (
             <main>
                 <Switch>
-                  <Route path='/home' component={Home} />
-                  <Route path='/profile' component={Profile}/>
-                  <Route path='/curriculum' component={Curriculum}/>
-                  <Route path='/item/:itemId' component={Item} />
-                  <Redirect path="*" to="/home" />
+                    <Route path='/home' component={Home} />
+                    <Route path='/profile' component={Profile}/>
+                    <Route path='/curriculum' component={Curriculum}/>
+                    <Route path='/item/:itemId' component={Item} />
+                    <Redirect path="*" to="/home" />
                 </Switch>
             </main>
-        )
+        );
     }
 }
