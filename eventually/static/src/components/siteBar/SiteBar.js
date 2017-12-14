@@ -1,7 +1,7 @@
 import React from 'react';
 import Drawer from 'material-ui/Drawer';
-import SiteBarItem from "./SiteBarItem";
-import {withRouter} from "react-router-dom";
+import SiteBarItem from './SiteBarItem';
+import {withRouter} from 'react-router-dom';
 
 class SiteBar extends React.Component {
 
@@ -11,25 +11,25 @@ class SiteBar extends React.Component {
 
     goToHome = () => {
         this.props.toggleSiteBarOpen();
-        this.props.history.push('/home')
+        this.props.history.push('/home');
     };
 
     goToProfile = () => {
         this.props.toggleSiteBarOpen();
-        this.props.history.push('/profile')
+        this.props.history.push('/profile');
     };
 
     goToCurriculum = () => {
         this.props.toggleSiteBarOpen();
-        this.props.history.push('/curriculum')
+        this.props.history.push('/curriculum');
     };
 
     render() {
         return (
             <div>
                 <Drawer open={this.props.open}
-                        docked={false}
-                        onRequestChange={this.props.toggleSiteBarOpen}>
+                    docked={false}
+                    onRequestChange={this.props.toggleSiteBarOpen}>
                     <SiteBarItem itemName={'Home'} itemClick={this.goToHome} />
                     <SiteBarItem itemName={'Profile'} itemClick={this.goToProfile} />
                     <SiteBarItem itemName={'Curriculum'} itemClick={this.goToCurriculum} />
@@ -39,4 +39,4 @@ class SiteBar extends React.Component {
     }
 }
 
-export default withRouter(SiteBar)
+export default withRouter(SiteBar);

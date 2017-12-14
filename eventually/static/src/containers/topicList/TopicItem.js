@@ -1,6 +1,5 @@
 import React from 'react';
-import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
-import FlatButton from 'material-ui/FlatButton';
+import {Card, CardHeader, CardText} from 'material-ui/Card';
 import AssignmentList from './AssignmentList';
 
 
@@ -8,12 +7,13 @@ const style = {
     color: '#455A64',
     fontSize: '15px'
 };
+
 const style1 = {
     fontSize: '25px'
-}
+};
 
 export default class TopicItem extends React.Component {
-    
+
     constructor(props) {
         super(props);
         this.state = {
@@ -23,33 +23,33 @@ export default class TopicItem extends React.Component {
 
     cangeExp = (newExpandedState) => {
         this.props.change(this.props.id);
-    }
+    };
 
-    componentWillReceiveProps(nextProps){
+    componentWillReceiveProps(nextProps) {
         this.setState({expanded: nextProps.isActive});
     }
 
-    render(){
-        return(
+    render() {
+        return (
             <div>
                 <Card
                     onExpandChange={this.cangeExp}
                     expanded={this.state.expanded}
                 >
-                <CardHeader
-                    style={style1}
-                    title={this.props.title}
-                    actAsExpander={true}
-                    showExpandableButton={true}
-                />
-                <CardText
-                    style={style}
-                    expandable={true}>
-                    {this.props.description}
-                    <AssignmentList/>
-                </CardText>
+                    <CardHeader
+                        style={style1}
+                        title={this.props.title}
+                        actAsExpander={true}
+                        showExpandableButton={true}
+                    />
+                    <CardText
+                        style={style}
+                        expandable={true}>
+                        {this.props.description}
+                        <AssignmentList/>
+                    </CardText>
                 </Card>
             </div>
-        )
+        );
     }
 }

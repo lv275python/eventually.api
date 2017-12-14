@@ -1,4 +1,5 @@
 const itemsListService = () => {
+
     const items = {
         'items': [
             {
@@ -80,7 +81,7 @@ const messagesListService = id => {
                     'text': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sollicitudin luctus enim ut sagittis. Proin varius lectus nulla, id dictum nisl ultricies eget. Donec vitae gravida justo, ut rhoncus felis. Maecenas mi urna, ornare sed rutrum eu, pulvinar sed lectus. Sed in odio lacinia, maximus arcu at, rhoncus nulla.'
                 }
             ]
-        }
+        };
     } else if (id == 2) {
         messages = {
             'messages': [
@@ -118,7 +119,7 @@ const messagesListService = id => {
                     'text': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sollicitudin luctus enim ut sagittis. Proin varius lectus nulla, id dictum nisl ultricies eget. Donec vitae gravida justo, ut rhoncus felis. Maecenas mi urna, ornare sed rutrum eu, pulvinar sed lectus. Sed in odio lacinia, maximus arcu at, rhoncus nulla.'
                 }
             ]
-        }
+        };
     } else if (id == 3) {
         messages = {
             'messages': [
@@ -156,13 +157,14 @@ const messagesListService = id => {
                     'text': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sollicitudin luctus enim ut sagittis. Proin varius lectus nulla, id dictum nisl ultricies eget. Donec vitae gravida justo, ut rhoncus felis. Maecenas mi urna, ornare sed rutrum eu, pulvinar sed lectus. Sed in odio lacinia, maximus arcu at, rhoncus nulla.'
                 }
             ]
-        }
+        };
     }
 
     return messages;
 };
 
 const mentorsService = () => {
+
     let mentors = {
         'mentors': [
             {
@@ -189,4 +191,4 @@ const mentorsService = () => {
     return mentors;
 };
 
-export {itemsListService, messagesListService, mentorsService}
+export {itemsListService, messagesListService, mentorsService};

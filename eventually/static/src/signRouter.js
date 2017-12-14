@@ -1,8 +1,8 @@
 import React from 'react';
 import {Route, Switch, Redirect} from 'react-router-dom';
-import Register from './containers/register_login/Register';
-import Login from './containers/register_login/Login';
-import Forget from './containers/register_login/Forget';
+import Register from './containers/registerLogin/Register';
+import Login from './containers/registerLogin/Login';
+import Forget from './containers/registerLogin/Forget';
 
 
 export default class SignRouter extends React.Component{

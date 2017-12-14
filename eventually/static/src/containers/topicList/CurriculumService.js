@@ -1,4 +1,5 @@
 const topicListService = () => {
+
     const topics = {
         'topics': [
             {
@@ -35,6 +36,7 @@ const topicListService = () => {
 };
 
 const assignmentsListService = () => {
+
     const assignments = {
         'assignments': [
             {
@@ -59,4 +61,4 @@ const assignmentsListService = () => {
 
     return assignments;
 };
-export {topicListService, assignmentsListService}
+export {topicListService, assignmentsListService};

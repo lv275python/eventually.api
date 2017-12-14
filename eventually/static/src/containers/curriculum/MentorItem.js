@@ -20,7 +20,7 @@ export default class MentorItem extends React.Component {
     }
 
     handleClick = () => {
-        this.props.onMentorClick(this.props.id)
+        this.props.onMentorClick(this.props.id);
     };
 
     render() {
@@ -30,7 +30,7 @@ export default class MentorItem extends React.Component {
                     <CardHeader
                         style={cardHeaderStyle}
                         title={`${this.props.firstName} ${this.props.lastName}`}
-                        avatar={<Avatar src={"https://robohash.org/" + this.props.avatar}/>}
+                        avatar={<Avatar src={`https://robohash.org/${this.props.avatar}`}/>}
                         titleStyle={titleStyle}
                         onClick={this.handleClick}
                     />

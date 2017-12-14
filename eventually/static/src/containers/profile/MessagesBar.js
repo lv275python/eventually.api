@@ -1,10 +1,10 @@
 import React from 'react';
-import MentorsList from "./tmpMentorsList";
-import MessagesList from "./MessagesList";
-import {messagesListService, mentorsService} from './profileService'
+import MentorsList from './tmpMentorsList';
+import MessagesList from './MessagesList';
+import {messagesListService, mentorsService} from './profileService';
 
 const mentorsListStyle = {
-    'paddingTop': 10
+    paddingTop: 10
 };
 
 export default class MessagesBar extends React.Component {
@@ -13,20 +13,20 @@ export default class MessagesBar extends React.Component {
         super(props);
         this.state = {
             isMessagesList: false
-        }
+        };
     }
 
     componentWillMount() {
         this.setState({
             mentors: mentorsService().mentors
-        })
+        });
     }
 
     handleMentorClick = mentorId => {
         this.setState({
             isMessagesList: true,
             messages: messagesListService(mentorId).messages
-        })
+        });
     };
 
     render() {

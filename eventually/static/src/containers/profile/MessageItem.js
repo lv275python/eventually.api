@@ -3,18 +3,18 @@ import {Card, CardHeader, CardText} from 'material-ui/Card';
 import Avatar from 'material-ui/Avatar';
 
 const cardHeaderStyle = {
-    'display': 'flex',
-    'alignItems': 'center',
-    'cursor': 'pointer'
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer'
 };
 
 const titleStyle = {
-    'fontWeight': 'bold',
-    'fontSize': '16px'
+    fontWeight: 'bold',
+    fontSize: '16px'
 };
 
 const textStyle = {
-    'fontSize': '14px'
+    fontSize: '14px'
 };
 
 export default class MessagesList extends React.Component {
@@ -29,7 +29,7 @@ export default class MessagesList extends React.Component {
                 <Card>
                     <CardHeader
                         title={this.props.author}
-                        avatar={<Avatar src={"https://robohash.org/" + this.props.avatar}/>}
+                        avatar={<Avatar src={`https://robohash.org/"${this.props.avatar}`}/>}
                         style={cardHeaderStyle}
                         titleStyle={titleStyle}
                     />

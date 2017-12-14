@@ -4,12 +4,12 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
 
 const paperStyle = {
-    'marginTop': 10,
-    'marginBottom': 10,
-    'padding': 10,
-    'display': 'flex',
-    'flexDirection': 'column',
-    'alignItems': 'flex-start'
+    marginTop: 10,
+    marginBottom: 10,
+    padding: 10,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start'
 };
 
 const buttonStyle = {
@@ -27,13 +27,13 @@ export default class MessagesSender extends React.Component {
         return (
             <div>
                 <Paper style={paperStyle} zDepth={2}>
-                <TextField
-                    fullWidth={true}
-                    multiLine={true}
-                    rowsMax={8}
-                    hintText="Enter your message"
-                />
-                <RaisedButton label="Send" primary={true} style={buttonStyle}/>
+                    <TextField
+                        fullWidth={true}
+                        multiLine={true}
+                        rowsMax={8}
+                        hintText="Enter your message"
+                    />
+                    <RaisedButton label="Send" primary={true} style={buttonStyle}/>
                 </Paper>
             </div>
         );
