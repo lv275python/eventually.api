@@ -69,7 +69,6 @@ class TestCurriculumApp(TestCase):
                    "'created': 1491825600, " \
                    "'updated': 1491825600"
         returned = str(Curriculum.objects.get(name="testcurriculum"))
-        print(returned)
         self.assertEqual(expected, returned)
 
 

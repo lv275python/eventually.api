@@ -4,13 +4,17 @@ Task module.
 
 This module implements class that represents the task entity.
 """
+# pylint: disable=arguments-differ
+
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
 from event.models import Event
+
+from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
 
-class Task(models.Model):
+class Task(AbstractModel):
     """
      Describing of task entity.
 
@@ -54,26 +58,6 @@ class Task(models.Model):
     users = models.ManyToManyField(CustomUser)
 
 
-    def __repr__(self):
-        """
-        This magic method is redefined to show class and id of Task object.
-
-        :return: class, id
-
-        """
-
-        return f'{self.__class__.__name__}(id={self.id})'
-
-    def __str__(self):
-        """
-        Magic method is redefined to show all information about Task.
-
-        :return: task title, task description, task status, created , updated, event id, users id
-        """
-
-        return str(self.to_dict())[1:-1]
-
-
     def to_dict(self):
         """
         Method that converts task object to dictionary.
@@ -102,22 +86,6 @@ class Task(models.Model):
                 'updated_at': int(self.updated_at.timestamp()),
                 'event': self.event.id,
                 'users': sorted([user.id for user in self.users.all()])}
-
-    @staticmethod
-    def get_by_id(task_id):
-        """
-        Static method that returns task objects according to the accepted id.
-
-        :param task_id: Unique identificator of task.
-        :type task_id: integer
-
-        :return: task object or None if task does not exist
-        """
-
-        try:
-            return Task.objects.get(id=task_id)
-        except Task.DoesNotExist:
-            LOGGER.error(f'The task with id={task_id} does not exist')
 
     @staticmethod
     def create(event, users=None, title=None, description=None, status=0):
@@ -186,23 +154,6 @@ class Task(models.Model):
             self.status = status
 
         self.save()
-
-    @staticmethod
-    def delete_by_id(task_id):
-        """
-        Static method that removes task object according to the accepted id.
-
-        :param task_id: Unique identificator of task.
-        :type task_id: integer
-
-        :return: task object or None if task does not exist
-        """
-        try:
-            task = Task.objects.get(id=task_id)
-            task.delete()
-            return True
-        except (Task.DoesNotExist, AttributeError):
-            LOGGER.error(f'The task with id={task_id} was not deleted')
 
     def add_users(self, users_list):
         """Method that add users to task"""

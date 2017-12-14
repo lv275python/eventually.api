@@ -2,16 +2,17 @@
 Curriculum model
 ================
 """
+# pylint: disable=arguments-differ
 
 from authentication.models import CustomUser
-from django.db import models
-from django.db.utils import IntegrityError
+from django.db import models, IntegrityError
 from django.contrib.postgres.fields import ArrayField
 from team.models import Team
+from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
 
-class Curriculum(models.Model):
+class Curriculum(AbstractModel):
     """
     Curriculum model class
     Attributes:
@@ -46,53 +47,6 @@ class Curriculum(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 
-
-    def __str__(self):
-        """
-        Magic method is redefined to show all information about the Curriculum.
-        :return: id, name, description, goal, teams, mentors, created_at, updated_at
-
-        :Example:
-         |   id: 1,
-         |   name: reading,
-         |   description: shakespeare,
-         |   goals: ['Be a Senior dev'],
-         |   team: 1,
-         |   mentors: [46, 12],
-         |   created: 2017-11-22 21:33:20.089291+00:00,
-         |   updated: 2017-11-22 23:51:30.653525+00:00"
-        """
-
-        return str(self.to_dict())[1:-1]
-
-
-    def __repr__(self):
-        """
-        Magic method is redefined to show short information about the Curriculum.
-        :return: id, name, goal
-
-        :Example:
-         |   "id: 1, name: reading, goal: True"
-        """
-
-        return f'{self.__class__.__name__}(id={self.id})'
-
-
-    @staticmethod
-    def get_by_id(curriculum_id):
-        """
-        :param curriculum_id: id of a curriculum in the DB
-        :type curriculum_id: int
-
-        :return: Curriculum object or None
-        """
-
-        try:
-            return Curriculum.objects.get(id=curriculum_id)
-        except Curriculum.DoesNotExist:
-            LOGGER.error("Curriculum does not exist")
-
-
     @staticmethod
     def get_by_name(curriculum_name):
         """
@@ -103,23 +57,6 @@ class Curriculum(models.Model):
 
         try:
             return Curriculum.objects.get(name=curriculum_name)
-        except Curriculum.DoesNotExist:
-            LOGGER.error("Curriculum does not exist")
-
-
-    @staticmethod
-    def delete_by_id(curriculum_id):
-        """
-        :param curriculum_id: id of a curriculum in the DB
-        :type curriculum_id: int
-
-        :return: True or None
-        """
-
-        try:
-            curriculum = Curriculum.objects.get(id=curriculum_id)
-            curriculum.delete()
-            return True
         except Curriculum.DoesNotExist:
             LOGGER.error("Curriculum does not exist")
 

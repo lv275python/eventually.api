@@ -4,12 +4,15 @@ Team model
 
 This module implements class that represents the team entity.
 """
+# pylint: disable=arguments-differ
+
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
+from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
 
-class Team(models.Model):
+class Team(AbstractModel):
 
     """
     Describing of team entity.
@@ -45,26 +48,6 @@ class Team(models.Model):
     owner = models.ForeignKey(CustomUser, null=True, on_delete=models.SET_NULL)
     members = models.ManyToManyField(CustomUser, related_name='teams')
 
-    def __str__(self):
-        """
-        Magic method is redefined to show all information about Team.
-
-        :return: team id, team name, team description, team image,
-                 team create date, team update date
-                 team owner, team members
-        """
-
-        return str(self.to_dict())[1:-1]
-
-    def __repr__(self):
-        """
-        This magic method is redefined to show class and id of Team object.
-
-        :return: class, id
-        """
-
-        return f'{self.__class__.__name__}(id={self.id})'
-
     def to_dict(self):
         """
         Method that converts team object to dictionary.
@@ -96,23 +79,6 @@ class Team(models.Model):
                 'updated_at': int(self.updated_at.timestamp()),
                 'owner_id': self.owner.id if self.owner else None,
                 'members_id': members}
-
-    @staticmethod
-    def get_by_id(team_id):
-        """
-        Static method that returns team objects according to the accepted id.
-        Return comment, found by id.
-
-        :param team_id: team's id
-        :type team_id: int
-
-        :return: Team object instance or None if object does not exist
-        """
-
-        try:
-            return Team.objects.get(id=team_id)
-        except Team.DoesNotExist:
-            LOGGER.error(f'The team with id={team_id} does not exist')
 
     @staticmethod
     def create(owner, members, name=None, description='', image=''):
@@ -198,21 +164,3 @@ class Team(models.Model):
         if image:
             self.image = image
         self.save()
-
-    @staticmethod
-    def delete_by_id(team_id):
-        """
-        Static method that removes team object according to the accepted id.
-
-        :param team_id: team's id
-        :type team_id: int
-
-        :return: True if object succseffull deleted or
-                            None if object isnt found
-        """
-        try:
-            team = Team.objects.get(id=team_id)
-            team.delete()
-            return True
-        except (Team.DoesNotExist, AttributeError):
-            LOGGER.error(f'The team with id={team_id} was not deleted')

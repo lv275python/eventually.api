@@ -87,22 +87,24 @@ class LiteratureItemTestCase(TestCase):
         self.assertEqual(literature.id, 111)
 
     def test_literature_repr(self):
-        """Method that test `__repr__` method of LiteratureItem instance object."""
+        """Method that tests `__repr__` method of certain LiteratureItem instance."""
         literature = LiteratureItem.objects.get(id=111)
+        expected_literature_repr = "LiteratureItem(id=111)"
 
-        actual_repr = literature.__repr__()
-        expected_repr = 'id:111 title:title description:description source:source ' \
-                        'author:111 item:111'
-        self.assertEqual(actual_repr, expected_repr)
+        self.assertEqual(repr(literature), expected_literature_repr)
 
     def test_literature_str(self):
-        """Method that test `__repr__` method of LiteratureItem instance object."""
+        """Method that tests `__str__` method of certain LiteratureItem instance."""
         literature = LiteratureItem.objects.get(id=111)
-
-        actual_repr = literature.__str__()
-        expected_repr = 'id:111 title:title description:description source:source ' \
-                        'author:111 item:111'
-        self.assertEqual(actual_repr, expected_repr)
+        expected_literature_str = "'id': 111, " \
+                                  "'title': 'title', " \
+                                  "'description': 'description', " \
+                                  "'source': 'source', " \
+                                  "'create_at': 1508044512, " \
+                                  "'update_at': 1508044512, "\
+                                  "'author': 111, " \
+                                  "'item': 111"
+        self.assertEqual(str(literature), expected_literature_str)
 
     def test_literature_success_create(self):
         """Method that tests succeeded `create` method of LiteratureItem class object."""

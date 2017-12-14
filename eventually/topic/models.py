@@ -4,13 +4,15 @@ Topic module.
 
 This module implements class that represents the topic entity.
 """
+# pylint: disable=arguments-differ
 
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
 from curriculum.models import Curriculum
+from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
-class Topic(models.Model):
+class Topic(AbstractModel):
     """
      Describing of topic entity.
 
@@ -43,25 +45,6 @@ class Topic(models.Model):
     curriculum = models.ForeignKey(Curriculum, on_delete=models.CASCADE, null=True)
     authors = models.ManyToManyField(CustomUser)
 
-    def __repr__(self):
-        """
-        This magic method is redefined to show class and id of Topic object.
-
-        :return: class, id
-
-        """
-
-        return f'{self.__class__.__name__}(id={self.id})'
-
-    def __str__(self):
-        """
-        Magic method is redefined to show all information about Topic.
-
-        :return: topic title, topic description, created , updated, curriculum id, authors id
-        """
-
-        return str(self.to_dict())[1:-1]
-
     def to_dict(self):
         """
         Method that converts topic object to dictionary.
@@ -88,22 +71,6 @@ class Topic(models.Model):
                 'updated_at': int(self.updated_at.timestamp()),
                 'curriculum': self.curriculum.id,
                 'authors': sorted([author.id for author in self.authors.all()])}
-
-    @staticmethod
-    def get_by_id(topic_id):
-        """
-        Static method that returns topic objects according to the accepted id.
-
-        :param topic_id: Unique identificator of topic.
-        :type topic_id: integer
-
-        :return: topic object or None if topic does not exist
-        """
-
-        try:
-            return Topic.objects.get(id=topic_id)
-        except Topic.DoesNotExist:
-            LOGGER.error(f'The topic with id={topic_id} does not exist')
 
     @staticmethod
     def create(curriculum, authors=None, title=None, description=None):
@@ -157,23 +124,6 @@ class Topic(models.Model):
             self.description = description
 
         self.save()
-
-    @staticmethod
-    def delete_by_id(topic_id):
-        """
-        Static method that removes topics object according to the accepted id.
-
-        :param topic_id: Unique identificator of topic.
-        :type topic_id: integer
-
-        :return: topic object or None if topic does not exist
-        """
-        try:
-            topic = Topic.objects.get(id=topic_id)
-            topic.delete()
-            return True
-        except (Topic.DoesNotExist, AttributeError):
-            LOGGER.error(f'The topic with id={topic_id} was not deleted')
 
     def add_authors(self, authors_list):
         """Method that add authors to topic"""
