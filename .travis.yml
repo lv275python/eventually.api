@@ -8,6 +8,7 @@ install:
   - pip install pylint-django
   - pip install coveralls
   - nvm install stable
+  - npm install -g eslint-cli
   - npm install
 
 services:
@@ -16,6 +17,7 @@ before_script:
   - psql -c "CREATE DATABASE travis_db;" -U postgres
 
 script:
+  - eslint --config .eslintrc.js eventually/static/src/
   - npm run build
   - cd eventually/
   - sudo touch /var/log/eventually.log
