@@ -88,7 +88,7 @@ class VoteViewTest(TestCase):
 
         url = reverse('event:vote:detail', args=[222, 222, 222])
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 403)
 
     def test_error_invalid_event_id_post(self):
         """Method that tests unsuccessful post request with invalid event id"""
@@ -195,7 +195,7 @@ class VoteViewTest(TestCase):
 
         url = reverse('event:vote:detail', args=[222, 222, 222])
         response = self.client.put(url, json.dumps(data), content_type='application/json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 403)
 
     def test_success_delete(self):
         """Method that test invalid delete request for the updating the certain vote"""
@@ -232,7 +232,7 @@ class VoteViewTest(TestCase):
 
         url = reverse('event:vote:detail', args=[222, 222, 222])
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 403)
 
 
 class AnswerViewTest(TestCase):
@@ -327,7 +327,7 @@ class AnswerViewTest(TestCase):
 
         url = reverse('event:vote:answer_detail', args=[222, 222, 222, 222])
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 403)
 
     def test_error_invalid_vote_id_post(self):
         """Method that tests unsuccessful post request with invalid vote id"""
@@ -336,7 +336,7 @@ class AnswerViewTest(TestCase):
 
         url = reverse('event:vote:answer', args=[111, 111, 110])
         response = self.client.post(url, json.dumps(data), content_type='application/json')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 400)
 
     def test_success_answer_post(self):
         """Method that tests successful post request with answer."""
@@ -391,7 +391,7 @@ class AnswerViewTest(TestCase):
 
         url = reverse('event:vote:answer_detail', args=[111, 111, 111, 10])
         response = self.client.put(url, json.dumps(data), content_type='application/json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
 
     def test_error_invalid_json_put(self):
         """Method that tests unsuccessful put request with invalid JSON accepted data"""
@@ -418,7 +418,7 @@ class AnswerViewTest(TestCase):
 
         url = reverse('event:vote:answer_detail', args=[222, 222, 222, 222])
         response = self.client.put(url, json.dumps(data), content_type='application/json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 403)
 
     def test_success_delete(self):
         """Method that test invalid delete request for the updating the certain vote"""
@@ -446,4 +446,4 @@ class AnswerViewTest(TestCase):
 
         url = reverse('event:vote:answer_detail', args=[222, 222, 222, 222])
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 403)

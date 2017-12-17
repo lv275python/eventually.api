@@ -3,13 +3,17 @@ Views module
 ============
 """
 
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.views.generic.base import View
-from utils.validators import comment_data_validator
 from event.models import Event
 from task.models import Task
 from team.models import Team
 from vote.models import Vote
+from utils.responsehelper import (RESPONSE_200_DELETED,
+                                  RESPONSE_400_INVALID_DATA,
+                                  RESPONSE_403_ACCESS_DENIED,
+                                  RESPONSE_404_OBJECT_NOT_FOUND)
+from utils.validators import comment_data_validator
 from .models import Comment
 
 
@@ -37,7 +41,7 @@ class CommentView(View):
             if comment:
                 comment = comment.to_dict()
                 return JsonResponse(comment, status=200)
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
         commented = None
         if task_id:
@@ -85,11 +89,11 @@ class CommentView(View):
         team = Team.get_by_id(team_id)
 
         if not (task or vote or event or team):
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
         data = request.body
         if not comment_data_validator(data, required_keys=['text']):
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         comment = Comment.create(author=request.user,
                                  text=data.get("text"),
@@ -99,7 +103,7 @@ class CommentView(View):
                                  vote=vote)
         if comment:
             return JsonResponse(comment.to_dict(), status=201)
-        return HttpResponse(status=400)
+        return RESPONSE_400_INVALID_DATA
 
     def put(self, request, team_id=None, event_id=None, task_id=None, # pylint: disable=unused-argument
                            vote_id=None, comment_id=None): # pylint: disable=unused-argument, bad-continuation
@@ -117,7 +121,7 @@ class CommentView(View):
         """
         data = request.body
         if not comment_data_validator(data, required_keys=['text']):
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         comment = Comment.get_by_id(comment_id)
         if comment:
@@ -125,8 +129,8 @@ class CommentView(View):
                 comment.update(text=data.get("text"))
                 comment = comment.to_dict()
                 return JsonResponse(comment, status=200)
-            return HttpResponse(status=403)
-        return HttpResponse(status=404)
+            return RESPONSE_403_ACCESS_DENIED
+        return RESPONSE_404_OBJECT_NOT_FOUND
 
     def delete(self, request, team_id=None, event_id=None, task_id=None, # pylint: disable=unused-argument
                               vote_id=None, comment_id=None): # pylint: disable=unused-argument, bad-continuation
@@ -146,6 +150,6 @@ class CommentView(View):
         comment = Comment.get_by_id(comment_id)
         if comment:
             if request.user == comment.author:
-                return HttpResponse(status=200)
-            return HttpResponse(status=403)
-        return HttpResponse(status=404)
+                return RESPONSE_200_DELETED
+            return RESPONSE_403_ACCESS_DENIED
+        return RESPONSE_404_OBJECT_NOT_FOUND
