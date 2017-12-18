@@ -4,9 +4,6 @@ python:
 
 install:
   - pip install -r requirements.txt
-  - pip install pylint
-  - pip install pylint-django
-  - pip install coveralls
   - nvm install stable
   - npm install -g eslint-cli
   - npm install
