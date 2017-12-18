@@ -169,7 +169,7 @@ class EventViewTest(TestCase):
 
         url = reverse('event:detail', args=[101, 101])
         response = self.client.put(url, json.dumps(data), content_type='application/json')
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
 
     def test_error_invalid_event_id_put(self):
         """Method that tests unsuccessful put request with invalid event id."""
