@@ -63,18 +63,18 @@ class TestForgetPassword(TestCase):
         """ Test PUT function with bad identifier """
 
         new_password_valid = json.dumps({"new_password": "QwErTy1234"})
-        expect_400 = self.client.put(URL_WITH_TOKEN,
+        expect_498 = self.client.put(URL_WITH_TOKEN,
                                      new_password_valid, content_type='application/json')
-        self.assertEqual(expect_400.status_code, 400)
+        self.assertEqual(expect_498.status_code, 498)
 
 
     def test_put_baduser(self):
         """ Test PUT function with no user specified"""
 
         new_password_valid = json.dumps({"new_password": "QwErTy1234"})
-        expect_400 = self.client.put(URL_WITH_TOKEN,
+        expect_498 = self.client.put(URL_WITH_TOKEN,
                                      new_password_valid, content_type='application/json')
-        self.assertEqual(expect_400.status_code, 400)
+        self.assertEqual(expect_498.status_code, 498)
 
 
     def test_put_nouser(self):
@@ -83,9 +83,9 @@ class TestForgetPassword(TestCase):
         with mock.patch('authentication.views.handle_token') as handle_token:
             handle_token.return_value = {"user_id": 100500, 'email': 'john@email.com'}
             new_password_valid = json.dumps({"new_password": "QwErTy1234"})
-            expect_400 = self.client.put(URL_WITH_TOKEN,
+            expect_404 = self.client.put(URL_WITH_TOKEN,
                                          new_password_valid, content_type='application/json')
-            self.assertEqual(expect_400.status_code, 400)
+            self.assertEqual(expect_404.status_code, 404)
 
 
     def test_put_badpassword(self):
@@ -102,5 +102,5 @@ class TestForgetPassword(TestCase):
     def test_put_notoken(self):
         """ Test PUT method with invalid token """
 
-        expect_498 = self.client.put(URL_WITHOUT_TOKEN, {}, content_type='application/json')
-        self.assertEqual(expect_498.status_code, 498)
+        expect_400 = self.client.put(URL_WITHOUT_TOKEN, {}, content_type='application/json')
+        self.assertEqual(expect_400.status_code, 400)
