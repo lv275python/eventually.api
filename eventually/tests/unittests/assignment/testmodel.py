@@ -77,8 +77,8 @@ class AssignmentModelTestCase(TestCase):
                                   'user_id': 101,
                                   'item_id': 101,
                                   'status': 0,
-                                  'started_at': 1508044512,
-                                  'finished_at': 1508044512,
+                                  'started_at': None,
+                                  'finished_at': None,
                                   'created_at': 1508044512,
                                   'updated_at': 1508044512}
         actual_assignment_dict = assignment.to_dict()
@@ -223,8 +223,8 @@ class AssignmentModelTestCase(TestCase):
         actual_str = assignment.__str__()
         expected_str = ("'id': 101, 'statement': 'It is you task', "
                         "'grade': 5.5, 'user_id': 101, 'item_id': "
-                        "101, 'status': 0, 'started_at': 1508044512, "
-                        "'finished_at': 1508044512, 'created_at': 1508044512, "
+                        "101, 'status': 0, 'started_at': None, "
+                        "'finished_at': None, 'created_at': 1508044512, "
                         "'updated_at': 1508044512")
         self.assertMultiLineEqual(actual_str, expected_str)
 
