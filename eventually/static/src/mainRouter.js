@@ -5,6 +5,7 @@ import UserProgress from './containers/userProgress/UserProgress';
 import Item from './containers/item/Item';
 import CurriculumList from './containers/curriculum/CurriculumList';
 import MentorItem from './containers/mentor_item/MentorItem';
+import TeamList from './containers/teamList/TeamList';
 
 export default class MainRouter extends React.Component {
     render() {
@@ -16,6 +17,7 @@ export default class MainRouter extends React.Component {
                     <Route path='/curriculums' component={CurriculumList}/>
                     <Route path='/item/:itemId' component={Item} />
                     <Route path='/mentoritem' component={MentorItem}/>
+                    <Route path='/teamlist' component={TeamList}/>
                     <Redirect path="*" to="/home" />
                 </Switch>
             </main>
