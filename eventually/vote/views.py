@@ -3,11 +3,16 @@
     ============================
 """
 
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.views.generic.base import View
 from event.models import Event
 from team.models import Team
 from vote.models import Vote, Answer
+from utils.responsehelper import (RESPONSE_200_DELETED,
+                                  RESPONSE_200_UPDATED,
+                                  RESPONSE_400_INVALID_DATA,
+                                  RESPONSE_403_ACCESS_DENIED,
+                                  RESPONSE_404_OBJECT_NOT_FOUND)
 from utils.validators import (string_validator,
                               vote_data_validator,
                               answer_data_validator)
@@ -46,14 +51,14 @@ class VoteView(View):
 
         members = [user.id for user in team.members.all()]
         if user.id not in members:
-            return HttpResponse(status=400)
+            return RESPONSE_403_ACCESS_DENIED
 
         vote = Vote.get_by_id(vote_id)
         if not vote:
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
-        vote.to_dict()
-        return HttpResponse(vote, status=200)
+        vote = vote.to_dict()
+        return JsonResponse(vote, status=200)
 
     def post(self, request, team_id=None, event_id=None):
         """
@@ -73,11 +78,11 @@ class VoteView(View):
 
         event = Event.get_by_id(event_id)
         if not event:
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
         data = request.body
         if not vote_data_validator(data, request.body):
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         vote = Vote.create(event=event,
                            is_active=data.get("is_active") if data.get("is_active") else True,
@@ -89,7 +94,7 @@ class VoteView(View):
         if vote:
             vote = vote.to_dict()
             return JsonResponse(vote, status=201)
-        return HttpResponse(status=400)
+        return RESPONSE_400_INVALID_DATA
 
     def put(self, request, team_id, event_id, vote_id=None):  # pylint: disable=unused-argument
         """
@@ -115,18 +120,18 @@ class VoteView(View):
 
         data = request.body
         if not vote_data_validator(data, request.body):
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         if not vote_id:
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         members = [user.id for user in team.members.all()]
         if user.id not in members:
-            return HttpResponse(status=400)
+            return RESPONSE_403_ACCESS_DENIED
 
         vote = Vote.get_by_id(vote_id)
         if not vote:
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         if data.get('title') and string_validator(data['title']):
             set_title = data.get('title')
@@ -139,7 +144,7 @@ class VoteView(View):
         }
         vote.update(**data)
         vote.to_dict()
-        return HttpResponse(vote, status=200)
+        return RESPONSE_200_UPDATED
 
     def delete(self, request, team_id, event_id, vote_id=None):  # pylint: disable=unused-argument
         """
@@ -164,18 +169,18 @@ class VoteView(View):
         team = Team.get_by_id(team_id)
 
         if not vote_id:
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         members = [user.id for user in team.members.all()]
         if user.id not in members:
-            return HttpResponse(status=400)
+            return RESPONSE_403_ACCESS_DENIED
 
         vote = Vote.get_by_id(vote_id)
         if not vote:
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
         Vote.delete_by_id(vote_id)
-        return HttpResponse(status=200)
+        return RESPONSE_200_DELETED
 
 
 class AnswerView(View):
@@ -215,14 +220,13 @@ class AnswerView(View):
 
         team_members = [user.id for user in team.members.all()]
         if user.id not in team_members:
-            return HttpResponse(status=400)
+            return RESPONSE_403_ACCESS_DENIED
 
         answer = Answer.get_by_id(answer_id)
-        if not answer:
-            return HttpResponse(status=404)
-
-        answer.to_dict()
-        return HttpResponse(answer, status=200)
+        if answer:
+            answer = answer.to_dict()
+            return JsonResponse(answer, status=200)
+        return RESPONSE_404_OBJECT_NOT_FOUND
 
     def post(self, request, team_id=None, event_id=None, vote_id=None):  # pylint: disable=unused-argument
         """
@@ -245,11 +249,11 @@ class AnswerView(View):
 
         vote = Vote.get_by_id(vote_id)
         if not vote:
-            return HttpResponse(status=404)
+            return RESPONSE_400_INVALID_DATA
 
         data = request.body
         if not answer_data_validator(data, request.body):
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         answer = Answer.create(members=data.get('members'),
                                vote=vote,
@@ -257,7 +261,7 @@ class AnswerView(View):
         if answer:
             answer = answer.to_dict()
             return JsonResponse(answer, status=201)
-        return HttpResponse(status=400)
+        return RESPONSE_400_INVALID_DATA
 
     def put(self, request, team_id, event_id, vote_id, answer_id=None):  # pylint: disable=unused-argument
         """
@@ -286,19 +290,19 @@ class AnswerView(View):
 
         data = request.body
         if not answer_data_validator(data, request.body):
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         if not answer_id:
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         team_members = [user.id for user in team.members.all()]
 
         if user.id not in team_members:
-            return HttpResponse(status=400)
+            return RESPONSE_403_ACCESS_DENIED
 
         answer = Answer.get_by_id(answer_id)
         if not answer:
-            return HttpResponse(status=400)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
         if data.get('text') and string_validator(data['text']):
             set_text = data.get('text')
@@ -309,7 +313,7 @@ class AnswerView(View):
         }
         answer.update(**data)
         answer.to_dict()
-        return HttpResponse(answer, status=200)
+        return RESPONSE_200_UPDATED
 
     def delete(self, request, team_id, event_id, vote_id, answer_id=None):  # pylint: disable=unused-argument
         """
@@ -337,15 +341,15 @@ class AnswerView(View):
         team = Team.get_by_id(team_id)
 
         if not answer_id:
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         team_members = [user.id for user in team.members.all()]
         if user.id not in team_members:
-            return HttpResponse(status=400)
+            return RESPONSE_403_ACCESS_DENIED
 
         answer = Answer.get_by_id(answer_id)
         if not answer:
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
         Answer.delete_by_id(answer_id)
-        return HttpResponse(status=200)
+        return RESPONSE_200_DELETED
