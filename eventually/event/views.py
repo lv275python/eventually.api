@@ -8,9 +8,15 @@ of event's model objects.
 
 import datetime
 from django.views.generic.base import View
-from django.http import JsonResponse, HttpResponse
-from utils.validators import event_data_validate
+from django.http import JsonResponse
 from team.models import Team
+from utils.validators import event_data_validate
+from utils.responsehelper import (RESPONSE_200_DELETED,
+                                  RESPONSE_200_UPDATED,
+                                  RESPONSE_400_DB_OPERATION_FAILED,
+                                  RESPONSE_400_INVALID_DATA,
+                                  RESPONSE_403_ACCESS_DENIED,
+                                  RESPONSE_404_OBJECT_NOT_FOUND)
 from .models import Event
 
 
@@ -42,7 +48,7 @@ class EventView(View):
         if event_id:
             event = Event.get_by_id(event_id)
             if not event:
-                return HttpResponse(status=404)
+                return RESPONSE_404_OBJECT_NOT_FOUND
 
             event = event.to_dict()
             return JsonResponse(event, status=200)
@@ -53,7 +59,7 @@ class EventView(View):
             data = {'events': [event.to_dict() for event in events]}
             return JsonResponse(data, status=200)
 
-        return HttpResponse(status=404)
+        return RESPONSE_404_OBJECT_NOT_FOUND
 
     def post(self, request, team_id=None):
         """
@@ -73,14 +79,14 @@ class EventView(View):
         data = request.body
 
         if not data:
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         if not event_data_validate(data, required_keys=['name']):
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         team = Team.get_by_id(team_id)
         if not team:
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
         start_at = data.get('start_at')
         start_at = datetime.datetime.fromtimestamp(start_at) if start_at else None
@@ -100,7 +106,7 @@ class EventView(View):
         if event:
             return JsonResponse(event.to_dict(), status=201)
 
-        return HttpResponse(status=400)
+        return RESPONSE_400_DB_OPERATION_FAILED
 
     def put(self, request, team_id, event_id=None):  # pylint: disable=unused-argument
         """
@@ -122,17 +128,17 @@ class EventView(View):
         user = request.user
         event = Event.get_by_id(event_id)
         if not event:
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
         if user.id is not event.owner.id:
-            return HttpResponse(status=403)
+            return RESPONSE_403_ACCESS_DENIED
 
         data = request.body
         if not data:
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         if not event_data_validate(data, required_keys=[]):
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         start_at = data.get('start_at')
         start_at = datetime.datetime.fromtimestamp(start_at) if start_at else None
@@ -149,7 +155,7 @@ class EventView(View):
                 'status': data.get('status')}
 
         event.update(**data)
-        return HttpResponse(status=204)
+        return RESPONSE_200_UPDATED
 
     def delete(self, request, team_id, event_id=None):  # pylint: disable=unused-argument
         """
@@ -171,13 +177,13 @@ class EventView(View):
         user = request.user
         event = Event.get_by_id(event_id)
         if not event:
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
         if user.id is not event.owner.id:
-            return HttpResponse(status=403)
+            return RESPONSE_403_ACCESS_DENIED
 
         is_deleted = Event.delete_by_id(event_id)
         if is_deleted:
-            return HttpResponse(status=200)
+            return RESPONSE_200_DELETED
 
-        return HttpResponse(status=400)
+        return RESPONSE_400_DB_OPERATION_FAILED
