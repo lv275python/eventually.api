@@ -102,8 +102,8 @@ class Assignment(models.Model):
                 'user_id': self.user.id if self.user else None,
                 'item_id': self.item.id if self.item else None,
                 'status': self.status,
-                'started_at': int(self.created_at.timestamp()),
-                'finished_at': int(self.updated_at.timestamp()),
+                'started_at': int(self.started_at.timestamp()) if self.started_at else None,
+                'finished_at': int(self.finished_at.timestamp()) if self.finished_at else None,
                 'created_at': int(self.created_at.timestamp()),
                 'updated_at': int(self.updated_at.timestamp())}
 
