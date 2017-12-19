@@ -12,6 +12,18 @@ from eventually.settings import FRONT_HOST
 from utils.jwttoken import create_token, handle_token
 from utils.passwordreseting import send_password_update_letter, send_successful_update_letter
 from utils.send_mail import send_email
+from utils.responsehelper import (RESPONSE_404_OBJECT_NOT_FOUND,
+                                  RESPONSE_400_INVALID_DATA,
+                                  RESPONSE_200_UPDATED, RESPONSE_200_DELETED,
+                                  RESPONSE_403_ACCESS_DENIED,
+                                  RESPONSE_400_EMPTY_JSON,
+                                  RESPONSE_400_EXISTED_EMAIL,
+                                  RESPONSE_400_INVALID_HTTP_METHOD,
+                                  RESPONSE_498_INVALID_TOKEN,
+                                  RESPONSE_200_ACTIVATED,
+                                  RESPONSE_400_INVALID_EMAIL,
+                                  RESPONSE_400_INVALID_EMAIL_OR_PASSWORD,
+                                  RESPONSE_200_OK)
 from utils.validators import (updating_password_validate,
                               updating_email_validate,
                               registration_validate,
@@ -51,7 +63,7 @@ class UserView(View):
         if user:
             user = user.to_dict()
             return JsonResponse(user, status=200)
-        return HttpResponse(status=404)
+        return RESPONSE_404_OBJECT_NOT_FOUND
 
     def put(self, request, user_id):
         """
@@ -77,7 +89,7 @@ class UserView(View):
 
         user = CustomUser.get_by_id(user_id)
         if not user:
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
         first_name = new_attrs.get('first_name')
         last_name = new_attrs.get('last_name')
@@ -92,13 +104,13 @@ class UserView(View):
 
         new_password = new_attrs.get('password')
         if new_password and not password_validator(new_password):
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
 
         user.update(first_name=first_name,
                     last_name=last_name,
                     middle_name=middle_name,
                     password=new_password)
-        return HttpResponse(status=200)
+        return RESPONSE_200_UPDATED
 
     def delete(self, request, user_id):
         """
@@ -113,11 +125,11 @@ class UserView(View):
 
         user = CustomUser.get_by_id(user_id)
         if not user:
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
         if user.id == request.user.id:
             if CustomUser.delete_by_id(user_id):
-                return HttpResponse(status=200)
-        return HttpResponse(status=403)
+                return RESPONSE_200_DELETED
+        return RESPONSE_403_ACCESS_DENIED
 
 
 def registration(request):
@@ -125,9 +137,9 @@ def registration(request):
     if request.method == 'POST':
         data = request.body
         if not data:
-            return HttpResponse(status=400)
+            return RESPONSE_400_EMPTY_JSON
         if not registration_validate(data):
-            return HttpResponse('Data is not valid', status=400)
+            return RESPONSE_400_INVALID_DATA
 
         user = CustomUser.create(first_name=data.get('first_name'),
                                  last_name=data.get('last_name'),
@@ -135,7 +147,7 @@ def registration(request):
                                  email=data['email'].lower().strip(),
                                  password=data['password'])
         if not user:
-            return HttpResponse('Email is already exist', status=400)
+            return RESPONSE_400_EXISTED_EMAIL
 
         ctx = {
             'first_name': user.first_name,
@@ -149,7 +161,7 @@ def registration(request):
         send_email(mail_subject, message, [user.email], 'registration.html', ctx)
         msg = 'Please confirm your email address to complete the registration'
         return HttpResponse(msg, status=201)
-    return HttpResponse(status=400)
+    return RESPONSE_400_INVALID_HTTP_METHOD
 
 
 def activate(request, token):
@@ -158,14 +170,14 @@ def activate(request, token):
 
         data = handle_token(token)
         if not data:
-            return HttpResponse(status=498)
+            return RESPONSE_498_INVALID_TOKEN
         user = CustomUser.get_by_email(email=data['email'])
         if user:
             user.update(is_active=True)
             CustomProfile.create(user)
-            return HttpResponse(status=200)
-        return HttpResponse(status=400)
-    return HttpResponse(status=404)
+            return RESPONSE_200_ACTIVATED
+        return RESPONSE_400_INVALID_EMAIL
+    return RESPONSE_400_INVALID_HTTP_METHOD
 
 
 def login_user(request):
@@ -179,14 +191,14 @@ def login_user(request):
     if request.method == "POST":
         data = request.body
         if not login_validate(data):
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
         email = data['email'].strip().lower()
         user = authenticate(email=email, password=data['password'])
         if user and user.is_active:
             login(request, user)
-            return HttpResponse(status=200)
-
-    return HttpResponse(status=400)
+            return RESPONSE_200_OK
+        return RESPONSE_400_INVALID_EMAIL_OR_PASSWORD
+    return RESPONSE_400_INVALID_HTTP_METHOD
 
 
 def logout_user(request):
@@ -198,8 +210,8 @@ def logout_user(request):
 
     if request.method == "GET":
         logout(request)
-        return HttpResponse(status=200)
-    return HttpResponse(status=400)
+        return RESPONSE_200_OK
+    return RESPONSE_400_INVALID_HTTP_METHOD
 
 
 class ForgetPassword(View):
@@ -215,23 +227,23 @@ class ForgetPassword(View):
                 arg = {'user_id': user.id}
                 token = create_token(data=arg, expiration_time=TTL_SEND_PASSWORD_TOKEN)
                 send_password_update_letter(user, token)
-                return HttpResponse(status=200)
-        return HttpResponse(status=400)
+                return RESPONSE_200_OK
+        return RESPONSE_400_INVALID_DATA
 
     def put(self, request, token=None):
         """Handles PUT request."""
         if token:
             identifier = handle_token(token)
             if not identifier:
-                return HttpResponse(status=400)
+                return RESPONSE_498_INVALID_TOKEN
             user = CustomUser.get_by_id(identifier['user_id'])
             if not user:
-                return HttpResponse(status=400)
+                return RESPONSE_404_OBJECT_NOT_FOUND
             data = request.body
             if updating_password_validate(data, 'new_password'):
                 new_password = data.get('new_password')
                 user.set_password(new_password)
                 send_successful_update_letter(user)
-                return HttpResponse(status=200)
-            return HttpResponse(status=400)
-        return HttpResponse(status=498)
+                return RESPONSE_200_OK
+            return RESPONSE_400_INVALID_DATA
+        return RESPONSE_400_INVALID_DATA

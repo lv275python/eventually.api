@@ -133,7 +133,7 @@ class AuthenticationViewTest(TestCase):
         url = reverse(('activate'), args=['someargs'])
         request = self.client.put(url, dumps({"email": "someemail@gmail.com", "password": "p1Rd"}),
                                   content_type='application/json')
-        self.assertEqual(request.status_code, 404)
+        self.assertEqual(request.status_code, 400)
 
 
     def test_get(self):
