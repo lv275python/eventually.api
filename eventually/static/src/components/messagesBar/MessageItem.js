@@ -29,7 +29,7 @@ export default class MessagesList extends React.Component {
                 <Card>
                     <CardHeader
                         title={this.props.author}
-                        avatar={<Avatar src={`https://robohash.org/"${this.props.avatar}`}/>}
+                        avatar={<Avatar src={`https://robohash.org/${this.props.avatar}`}/>}
                         style={cardHeaderStyle}
                         titleStyle={titleStyle}
                     />

@@ -1,6 +1,6 @@
 import React from 'react';
 import ItemsList from './ItemsList';
-import MessagesBar from './MessagesBar';
+import MessagesBar from '../../components/messagesBar/MessagesBar';
 import ProgressGraph from './ProgressGraph';
 import {itemsListService} from './profileService';
 
