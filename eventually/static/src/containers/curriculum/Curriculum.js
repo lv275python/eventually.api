@@ -1,8 +1,7 @@
 import React from 'react';
 import Subheader from 'material-ui/Subheader';
 import TopicsList from '../topicList/TopicList';
-import MentorsList from './MentorsList';
-import {mentorsService} from './CurriculumService';
+import MessagesBar from '../../components/messagesBar/MessagesBar';
 
 const style_h3 = {
     marginLeft:30,
@@ -50,12 +49,6 @@ export default class Curriculum extends React.Component {
         super(props);
     }
 
-    componentWillMount() {
-        this.setState({
-            mentors: mentorsService().mentors
-        });
-    }
-
     render() {
         return (
             <div style={main_style}>
@@ -72,8 +65,7 @@ export default class Curriculum extends React.Component {
                     </div>
                 </div>
                 <div style={style_right_div}>
-                    <Subheader style={style}>Your mentors</Subheader>
-                    <MentorsList mentors={this.state.mentors}/>
+                    <MessagesBar />
                 </div>
             </div>
         );

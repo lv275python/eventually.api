@@ -1,7 +1,7 @@
 import React from 'react';
-import MentorsList from '../../components/curriculumMentors/CurriculumMentors';
+import CurriculumMentors from '../curriculumMentors/CurriculumMentors';
 import MessagesList from './MessagesList';
-import {messagesListService, mentorsService} from './profileService';
+import {messagesListService, mentorsService} from './messagesBarService';
 
 const mentorsListStyle = {
     paddingTop: 10
@@ -34,7 +34,10 @@ export default class MessagesBar extends React.Component {
 
         return (
             <div style={this.props.style}>
-                <MentorsList style={mentorsListStyle} mentors={this.state.mentors} onMentorClick={this.handleMentorClick}/>
+                <CurriculumMentors
+                    style={mentorsListStyle}
+                    mentors={this.state.mentors}
+                    onMentorClick={this.handleMentorClick}/>
                 {messagesList}
             </div>
         );
