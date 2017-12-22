@@ -166,7 +166,7 @@ class EventViewTest(TestCase):
                 'members_di_add': [102]}
         url = reverse('team', args=[110])
         response = self.client.put(url, json.dumps(data), content_type='application/json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
 
     def test_error_invalid_team_owner_put(self):
         """Method that tests unsuccessful put request with invalid event id."""
@@ -217,7 +217,7 @@ class EventViewTest(TestCase):
 
         url = reverse('team', args=[110])
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
 
     def test_error_invalid_owner_id_delete(self):
         """Method that tests unsuccessful delete request with invalid owner id. User in not owner"""

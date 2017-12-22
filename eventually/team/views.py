@@ -3,11 +3,18 @@ Views module
 ============
 """
 
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.views.generic.base import View
 from utils.validators import required_keys_validator
 from utils.team_views_functions import (create_team_dict,
                                         update_team_dict)
+from utils.responsehelper import (RESPONSE_200_DELETED,
+                                  RESPONSE_200_UPDATED,
+                                  RESPONSE_400_INVALID_DATA,
+                                  RESPONSE_400_DB_OPERATION_FAILED,
+                                  RESPONSE_403_ACCESS_DENIED,
+                                  RESPONSE_404_OBJECT_NOT_FOUND,
+                                  RESPONSE_400_EMPTY_JSON)
 from .models import Team
 
 
@@ -43,7 +50,7 @@ class TeamView(View):
             if team:
                 team = team.to_dict()
                 return JsonResponse(team, status=200)
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
         current_user = request.user
         teams = current_user.teams.all()
         data = {'teams': [teama.to_dict() for teama in teams]}
@@ -69,17 +76,17 @@ class TeamView(View):
 
         data = request.body
         if not data:
-            return HttpResponse(status=400)
+            return RESPONSE_400_EMPTY_JSON
         keys_required = ['name']
         if not required_keys_validator(data, keys_required, False):
-            return HttpResponse(status=400)
+            return RESPONSE_400_INVALID_DATA
         user = request.user
         dict_data = create_team_dict(data, user)
         if dict_data and required_keys_validator(dict_data, keys_required, False):
             team = Team.create(**dict_data)
             team = team.to_dict()
             return JsonResponse(team, status=201)
-        return HttpResponse(status=400)
+        return RESPONSE_400_INVALID_DATA
 
     def put(self, request, team_id):
         """
@@ -102,18 +109,17 @@ class TeamView(View):
         """
         team = Team.get_by_id(team_id)
         if not team:
-            return HttpResponse(status=400)
+            return RESPONSE_404_OBJECT_NOT_FOUND
         if not request.user == team.owner:
-            return HttpResponse(status=403)
+            return RESPONSE_403_ACCESS_DENIED
         data = request.body
         if not data:
-            return HttpResponse(status=400)
+            return RESPONSE_400_EMPTY_JSON
         dict_data = update_team_dict(data, request.user)
         if dict_data:
             team.update(**dict_data)
-            team = team.to_dict()
-            return JsonResponse(team, status=200)
-        return HttpResponse(status=400)
+            return RESPONSE_200_UPDATED
+        return RESPONSE_400_INVALID_DATA
 
     def delete(self, request, team_id):
          #pylint: disable=unused-argument
@@ -126,10 +132,10 @@ class TeamView(View):
         :return: status 200 if team was deleted and status=400 if it was not
         """
         if not Team.get_by_id(team_id):
-            return HttpResponse(status=400)
+            return RESPONSE_404_OBJECT_NOT_FOUND
         if request.user == Team.get_by_id(team_id).owner:
             is_deleted = Team.delete_by_id(team_id)
             if is_deleted:
-                return HttpResponse('Team deleted', status=200)
-            return HttpResponse('Team was not deleted', status=400)
-        return HttpResponse(status=403)
+                return RESPONSE_200_DELETED
+            return RESPONSE_400_DB_OPERATION_FAILED
+        return RESPONSE_403_ACCESS_DENIED

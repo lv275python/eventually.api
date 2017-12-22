@@ -176,7 +176,7 @@ class TaskViewTest(TestCase):
 
         url = reverse('event:task:detail', args=[11, 11, 11])
         response = self.client.put(url, json.dumps(data), content_type='application/json')
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
 
     def test_invalid_task_id_put(self):
         """Method that tests unsuccessful put request with invalid task id."""

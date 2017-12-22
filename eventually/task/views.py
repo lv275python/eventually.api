@@ -2,13 +2,19 @@
 Views module
 ===========
 """
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.views import View
-
 from authentication.models import CustomUser
 from event.models import Event
 from team.models import Team
 from utils.validators import task_data_validate_update, task_data_validate_create
+from utils.responsehelper import (RESPONSE_200_UPDATED,
+                                  RESPONSE_200_DELETED,
+                                  RESPONSE_400_DB_OPERATION_FAILED,
+                                  RESPONSE_400_INVALID_DATA,
+                                  RESPONSE_403_ACCESS_DENIED,
+                                  RESPONSE_404_OBJECT_NOT_FOUND,
+                                  RESPONSE_400_EMPTY_JSON)
 from .models import Task
 
 
@@ -71,13 +77,13 @@ class TaskView(View):
         if task_id:
             task = Task.get_by_id(task_id)
             if not task:
-                return HttpResponse(status=404)
+                return RESPONSE_404_OBJECT_NOT_FOUND
             task = task.to_dict()
             return JsonResponse(task, status=200)
 
         event = Event.get_by_id(event_id)
         if not event:
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
         tasks = event.task_set.all()
         data = {'tasks': [task.to_dict() for task in tasks]}
         return JsonResponse(data, status=200)
@@ -104,16 +110,16 @@ class TaskView(View):
         event = Event.get_by_id(event_id)
 
         if not data:
-            return HttpResponse(status=400)
+            return RESPONSE_400_EMPTY_JSON
 
         if not team:
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
         if not event:
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
         if not task_data_validate_create(data):
-            return HttpResponse('data is not valid', status=400)
+            return RESPONSE_400_INVALID_DATA
 
 
         data = {
@@ -129,7 +135,7 @@ class TaskView(View):
             task = task.to_dict()
             return JsonResponse(task, status=201)
 
-        return HttpResponse(status=400)
+        return RESPONSE_400_DB_OPERATION_FAILED
 
 
     def put(self, request, team_id=None, event_id=None, task_id=None): # pylint: disable=unused-argument
@@ -156,16 +162,16 @@ class TaskView(View):
 
         task = Task.get_by_id(task_id)
         if not task:
-            return HttpResponse(status=404)
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
         team_members = task.event.team.members.all()
         if request.user not in team_members:
-            return HttpResponse(status=403)
+            return RESPONSE_403_ACCESS_DENIED
 
         data = request.body
 
         if not task_data_validate_update(data):
-            return HttpResponse('data is not valid', status=400)
+            return RESPONSE_400_INVALID_DATA
 
         users = get_users(data.get('add_users')) if data.get('add_users') else []
         if users:
@@ -182,7 +188,7 @@ class TaskView(View):
         }
 
         task.update(**data)
-        return HttpResponse(status=204)
+        return RESPONSE_200_UPDATED
 
 
 
@@ -209,9 +215,9 @@ class TaskView(View):
 
         team_members = Task.get_by_id(task_id).event.team.members.all()
         if not request.user in team_members:
-            return HttpResponse(status=403)
+            return RESPONSE_403_ACCESS_DENIED
         is_deleted = Task.delete_by_id(task_id)
         if is_deleted:
-            return HttpResponse(status=200)
+            return RESPONSE_200_DELETED
 
-        return HttpResponse(status=400)
+        return RESPONSE_400_DB_OPERATION_FAILED
