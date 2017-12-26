@@ -59,7 +59,7 @@ class CustomProfileView(View):
                  or response with 400 or 403 or 404 failed status code.
 
         :rtype: `HttpResponse object."""
-
+        print(request.body)
         userreq = request.user
         user = CustomUser.get_by_id(user_id)
         if not user:
