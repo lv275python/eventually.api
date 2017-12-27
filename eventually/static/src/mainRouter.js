@@ -1,7 +1,7 @@
 import React from 'react';
 import {Route, Switch, Redirect} from 'react-router-dom';
 import Home from './containers/Home';
-import Profile from './containers/profile/ProfileEdit';
+import ProfileEdit from './containers/profile/ProfileEdit';
 import UserProgress from './containers/userProgress/UserProgress';
 import Item from './containers/item/Item';
 import CurriculumList from './containers/curriculum/CurriculumList';

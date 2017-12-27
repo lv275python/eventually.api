@@ -5,7 +5,7 @@ Amazons3 view test
 
 import json
 from io import BytesIO
-import mock
+from unittest import mock
 from PIL import Image
 from django.test import TestCase, Client
 from django.core.files.uploadedfile import InMemoryUploadedFile

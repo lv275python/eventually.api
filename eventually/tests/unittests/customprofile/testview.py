@@ -1,6 +1,6 @@
 """
 CustomProfile view tests
-================
+========================
 This module provides complete testing for all CustomProfile's views functions.
 """
 
@@ -44,7 +44,7 @@ class CustomProfileViewTest(TestCase):
                                                           user=user,
                                                           hobby='box',
                                                           photo='link1',
-                                                          birthday=None)
+                                                          birthday=12345)
             custom_profile.save()
 
             custom_profile_second = CustomProfile.objects.create(user=user_second)
@@ -62,7 +62,7 @@ class CustomProfileViewTest(TestCase):
                          'last_name': 'Downey',
                          'hobby': 'box',
                          'photo': 'link1',
-                         'birthday': None,
+                         'birthday': 12345,
                          'is_active': True,
                          'created_at': 1491825600,
                          'updated_at': 1491825600}
@@ -89,10 +89,10 @@ class CustomProfileViewTest(TestCase):
         self.client.login(username='mail@gmail.com', password='Ivan16')
         data = {'hobby': 'programming',
                 'photo': 'link16',
-                'birthday': None}
+                'birthday': 12345}
         url = reverse('profile', args=[101])
         response = self.client.put(url, json.dumps(data), content_type='application/json')
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
 
     def test_error_invalid_data_put(self):
         """Method that tests unsuccessful put request with invalid put data ."""
@@ -101,7 +101,7 @@ class CustomProfileViewTest(TestCase):
         data = {'user.id': 55, 
                 'hobby': -3,
                 'photo': 5,
-                'birthday': None}
+                'birthday': 12345}
         url = reverse('profile', args=[101])
         response = self.client.put(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
@@ -111,22 +111,10 @@ class CustomProfileViewTest(TestCase):
         self.client.login(username='mail@gmail.com', password='Ivan16')
         data = {'hobby': 'programming',
                 'photo': 'link16',
-                'birthday': None}
+                'birthday': 12345}
         url = reverse('profile', args=[102])
         response = self.client.put(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 403)
-
-    def test_error_invalid_user_id_put(self):
-        """Method that tests unsuccessful put request with invalid user id."""
-        self.client.login(username='mail@gmail.com', password='Ivan16')
-        data = {'hobby': 'programming',
-                'photo': 'link16',
-                'birthday': None}
-        url = reverse('profile', args=[104])
-        response = self.client.put(url, json.dumps(data), content_type='application/json')
-        self.assertEqual(response.status_code, 404)
-
-
 
     def test_success_delete(self):
         """Method that tests successful logout user"""

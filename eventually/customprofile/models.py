@@ -35,7 +35,7 @@ class CustomProfile(AbstractModel):
     """
     user = models.OneToOneField(CustomUser, null=True)
     hobby = models.CharField(max_length=1024, blank=True)
-    photo = models.CharField(max_length=30, blank=True)
+    photo = models.CharField(max_length=100, blank=True)
     birthday = models.DateField(null=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
