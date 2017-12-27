@@ -1,12 +1,12 @@
 import React from 'react';
 import Divider from 'material-ui/Divider';
 import TopicItem from './TopicItem';
-import {topicListService} from './CurriculumService';
 
 
 const style = {
     width: '80%',
     margin: '0 auto',
+    paddingBottom: '20px',
 };
 
 export default class TopicsList extends React.Component {
@@ -14,7 +14,7 @@ export default class TopicsList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            topics: topicListService().topics,
+            topics: props.topics,
             isActive: -1
         };
     }
@@ -40,7 +40,6 @@ export default class TopicsList extends React.Component {
                         change={this.change}
                         id={topic.id} />
                 ))}
-                <Divider inset={true} />
             </div>
         );
     }

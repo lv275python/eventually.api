@@ -24,7 +24,7 @@ SECRET_KEY = 'p40lad8jx!=byfzjrgi40(is0lz2pzn9l+zg0(993bvj425*r$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 APPEND_SLASH = False
 # Application definition

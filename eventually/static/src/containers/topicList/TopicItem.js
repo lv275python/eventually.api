@@ -1,16 +1,23 @@
 import React from 'react';
-import {Card, CardHeader, CardText} from 'material-ui/Card';
-import AssignmentList from './AssignmentList';
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import RaisedButton from 'material-ui/RaisedButton';
+import TopicDialog from '../topicList/TopicDialog';
+import {lightGreen400} from 'material-ui/styles/colors';
 
-
-const style = {
+const cardTextstyle = {
     color: '#455A64',
     fontSize: '15px'
 };
 
-const style1 = {
+const cardHederStyle= {
     fontSize: '25px'
 };
+
+const raiseButtonStyle = {
+    display: 'flex',
+    justifyContent: 'flex-end'
+};
+
 
 export default class TopicItem extends React.Component {
 
@@ -26,7 +33,7 @@ export default class TopicItem extends React.Component {
     };
 
     componentWillReceiveProps(nextProps) {
-        this.setState({expanded: nextProps.isActive});
+        this.setState({ expanded: nextProps.isActive });
     }
 
     render() {
@@ -37,16 +44,23 @@ export default class TopicItem extends React.Component {
                     expanded={this.state.expanded}
                 >
                     <CardHeader
-                        style={style1}
+                        style={cardHederStyle}
                         title={this.props.title}
                         actAsExpander={true}
                         showExpandableButton={true}
                     />
+
                     <CardText
-                        style={style}
+                        style={cardTextstyle}
                         expandable={true}>
                         {this.props.description}
-                        <AssignmentList/>
+                        <CardActions>
+                            <div style={raiseButtonStyle}>
+                                <RaisedButton 
+                                    label="Assign" 
+                                    backgroundColor={lightGreen400} />
+                            </div>
+                        </CardActions>
                     </CardText>
                 </Card>
             </div>

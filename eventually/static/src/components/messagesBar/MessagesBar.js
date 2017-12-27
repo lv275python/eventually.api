@@ -1,5 +1,5 @@
 import React from 'react';
-import CurriculumMentors from '../curriculumMentors/CurriculumMentors';
+// import CurriculumMentors from '../curriculumMentors/CurriculumMentors';
 import MessagesList from './MessagesList';
 import {messagesListService, mentorsService} from './messagesBarService';
 
