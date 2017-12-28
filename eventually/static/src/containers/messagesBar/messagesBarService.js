@@ -116,17 +116,20 @@ const getMessagesList = receiverId => {
                     'id': 1,
                     'author': 'Eric Moreno',
                     'avatar': 'ericmoreno',
+                    'created_at': 1514412290374,
                     'text': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sollicitudin luctus enim ut sagittis.'
                 },
                 {
                     'id': 2,
                     'author': 'Me',
+                    'created_at': 1514412290374,
                     'text': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
                 },
                 {
                     'id': 3,
                     'author': 'Eric Moreno',
                     'avatar': 'ericmoreno',
+                    'created_at': 1514412290374,
                     'text': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse sollicitudin luctus enim ut sagittis.Proin varius lectus nulla, id dictum nisl ultricies eget. Donec vitae gravida justo, ut rhoncus felis. Maecenas mi urna, ornare sed rutrum eu, pulvinar sed lectus. Sed in odio lacinia, maximus arcu at, rhoncus nulla'
                 },
                 {

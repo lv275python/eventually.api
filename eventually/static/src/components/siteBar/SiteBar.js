@@ -24,6 +24,11 @@ class SiteBar extends React.Component {
         this.props.history.push('/curriculums');
     };
 
+    goToDashboard = () => {
+        this.props.toggleSiteBarOpen();
+        this.props.history.push('/dashboard');
+    };
+
     goToTeamList = () => {
         this.props.toggleSiteBarOpen();
         this.props.history.push('/teamlist');
