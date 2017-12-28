@@ -41,13 +41,14 @@ class Login extends React.Component {
                 <h2>Email</h2>
                 <TextField
                     onChange={this.handleEmail}
-                    hintText='example@example.com'
+                    hintText='email'
                 /><br/>
                 <br/>
                 <h2>Password</h2>
                 <TextField
                     onChange={this.handlePassword}
-                    hintText='123456789'
+                    hintText='password'
+                    type="password"
                 /><br/>
                 <RaisedButton
                     label='Login'
