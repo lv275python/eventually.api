@@ -141,4 +141,5 @@ def update_team_dict(data, user):
     image = data.get('image')
     if not (string_validator(image, 0, 300) or image is None):
         return None
+    result['image'] = image
     return result
