@@ -41,6 +41,7 @@ class SiteBar extends React.Component {
                     docked={false}
                     onRequestChange={this.props.toggleSiteBarOpen}>
                     <SiteBarItem itemName={'Home'} itemClick={this.goToHome} />
+                    <SiteBarItem itemName={'Dashboard'} itemClick={this.goToDashboard} />
                     <SiteBarItem itemName={'My progress'} itemClick={this.goToProgress} />
                     <SiteBarItem itemName={'Curriculums'} itemClick={this.goToCurriculum} />
                     <SiteBarItem itemName={'Teams'} itemClick={this.goToTeamList} />
