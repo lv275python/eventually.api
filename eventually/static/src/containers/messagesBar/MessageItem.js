@@ -24,11 +24,18 @@ export default class MessagesList extends React.Component {
     }
 
     render() {
+
+        const messageDate = new Date(this.props.date),
+            messageYear = messageDate.getFullYear(),
+            messageMonth = messageDate.getMonth() + 1,
+            messageDay = messageDate.getDay();
+
         return (
             <div>
                 <Card>
                     <CardHeader
                         title={this.props.author}
+                        subtitle={`${messageYear}.${messageMonth}.${messageDay}`}
                         avatar={<Avatar src={`https://robohash.org/${this.props.avatar}`}/>}
                         style={cardHeaderStyle}
                         titleStyle={titleStyle}

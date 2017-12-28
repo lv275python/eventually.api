@@ -30,7 +30,7 @@ export default class MessagesSender extends React.Component {
                     <TextField
                         fullWidth={true}
                         multiLine={true}
-                        rowsMax={8}
+                        rowsMax={3}
                         hintText="Enter your message"
                     />
                     <RaisedButton label="Send" primary={true} style={buttonStyle}/>
