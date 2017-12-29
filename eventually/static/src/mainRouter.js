@@ -1,6 +1,7 @@
 import React from 'react';
 import {Route, Switch, Redirect} from 'react-router-dom';
 import Home from './containers/Home';
+import ProfileEdit from './containers/profile/ProfileEdit';
 import UserProgress from './containers/userProgress/UserProgress';
 import Item from './containers/item/Item';
 import CurriculumList from './containers/curriculum/CurriculumList';
@@ -14,6 +15,7 @@ export default class MainRouter extends React.Component {
             <main>
                 <Switch>
                     <Route path='/home' component={Home} />
+                    <Route path='/profile' component={ProfileEdit}/>
                     <Route path='/progress' component={UserProgress}/>
                     <Route path='/curriculums' component={CurriculumList}/>
                     <Route path='/item/:itemId' component={Item} />
