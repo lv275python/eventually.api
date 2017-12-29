@@ -4,6 +4,8 @@ import ReceiversList from './ReceiversList';
 import {getReceiversList, getMessagesList} from './messagesBarService';
 
 const messagesListStyle = {
+    display: 'flex',
+    flexDirection: 'column',
     position: 'absolute',
     top: 0,
     marginRight: '20%'

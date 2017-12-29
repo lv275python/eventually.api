@@ -29,6 +29,11 @@ class SiteBar extends React.Component {
         this.props.history.push('/curriculums');
     };
 
+    goToDashboard = () => {
+        this.props.toggleSiteBarOpen();
+        this.props.history.push('/dashboard');
+    };
+
     goToTeamList = () => {
         this.props.toggleSiteBarOpen();
         this.props.history.push('/teamlist');
@@ -42,6 +47,7 @@ class SiteBar extends React.Component {
                     onRequestChange={this.props.toggleSiteBarOpen}>
                     <SiteBarItem itemName={'Home'} itemClick={this.goToHome} />
                     <SiteBarItem itemName={'Profile'} itemClick={this.goToProfile} />
+                    <SiteBarItem itemName={'Dashboard'} itemClick={this.goToDashboard} />
                     <SiteBarItem itemName={'My progress'} itemClick={this.goToProgress} />
                     <SiteBarItem itemName={'Curriculums'} itemClick={this.goToCurriculum} />
                     <SiteBarItem itemName={'Teams'} itemClick={this.goToTeamList} />
