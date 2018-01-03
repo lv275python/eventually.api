@@ -26,4 +26,4 @@ class RedisWorker():
         """Function that get records from redis db"""
         return self.redis.get(key)
 
-redisHelper = RedisWorker()
+REDIS_HELPER = RedisWorker()

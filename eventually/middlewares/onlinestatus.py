@@ -3,7 +3,7 @@ Online status
 =============
 The module that provides functionality for online status checking.
 """
-from utils.redishelper import redisHelper
+from utils.redishelper import REDIS_HELPER
 
 
 class OnlineStatusMiddleware():  # pylint: disable=too-few-public-methods
@@ -22,6 +22,6 @@ class OnlineStatusMiddleware():  # pylint: disable=too-few-public-methods
         """
         user = request.user
         if user.is_authenticated():
-            redisHelper.set(user.id, user.email)
+            REDIS_HELPER.set(user.id, user.email)
         response = self.get_response(request)
         return response

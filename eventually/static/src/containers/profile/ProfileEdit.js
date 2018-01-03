@@ -58,7 +58,7 @@ export default class ProfileEdit extends React.Component {
             last_name: '',
             hobby: '',
             photo: '',
-            birthday: '1970.1.1'
+            birthday: new Date()
         };
     }
         
@@ -106,7 +106,7 @@ export default class ProfileEdit extends React.Component {
         const last_name = this.state.last_name;
         const hobby = this.state.hobby;
         const photo = this.state.photo;
-        const birthday = this.state.birthday.getTime()/1000;
+        const birthday = this.state.birthday.getFullYear() + '-' +(this.state.birthday.getMonth() + 1) + '-' +  this.state.birthday.getDate();
         
 
         putProfileService(this.state.id, first_name, middle_name, last_name, hobby, photo, birthday)
@@ -165,7 +165,7 @@ export default class ProfileEdit extends React.Component {
                         <DatePicker 
                             floatingLabelText="Birthday:"
                             hintText="Birthday"
-                            Dialog mode="landscape" 
+                            mode="landscape"
                             openToYearSelection={true}
                             fullWidth={true}
                             onChange={this.handleBirthday}
@@ -173,7 +173,7 @@ export default class ProfileEdit extends React.Component {
                         />
                     </div>
                     <div style={style_container}>
-                        <img src={getImageUrl(this.state.photo)}
+                        <img src={this.state.photo && getImageUrl(this.state.photo)}
                             alt=""
                             style={{maxHeight: '100%'}}
                         />

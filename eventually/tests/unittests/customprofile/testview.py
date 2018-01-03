@@ -13,7 +13,7 @@ from customprofile.models import CustomProfile
 from authentication.models import CustomUser
 from unittest import mock
 
-TEST_DATE = datetime.datetime(2017, 4, 10, 12, 00, tzinfo=pytz.utc)
+TEST_CREATED_AT = datetime.datetime(2017, 4, 10, 12, 00, tzinfo=pytz.utc)
 
 
 class CustomProfileViewTest(TestCase):
@@ -38,13 +38,15 @@ class CustomProfileViewTest(TestCase):
         self.client = Client()
 
         with mock.patch('django.utils.timezone.now') as mock_time:
-            mock_time.return_value = TEST_DATE
+            mock_time.return_value = TEST_CREATED_AT
 
             custom_profile = CustomProfile.objects.create(id=101,
                                                           user=user,
                                                           hobby='box',
                                                           photo='link1',
-                                                          birthday=12345)
+                                                          birthday='2000-2-4',
+                                                          created_at=TEST_CREATED_AT,
+                                                          updated_at=TEST_CREATED_AT)
             custom_profile.save()
 
             custom_profile_second = CustomProfile.objects.create(user=user_second)
@@ -62,10 +64,10 @@ class CustomProfileViewTest(TestCase):
                          'last_name': 'Downey',
                          'hobby': 'box',
                          'photo': 'link1',
-                         'birthday': 12345,
+                         'birthday': '2000-02-04',
                          'is_active': True,
                          'created_at': 1491825600,
-                         'updated_at': 1491825600}
+                         'updated_at': 1491825600,}
 
         url = reverse('profile', args=[101])
         response = self.client.get(url)
@@ -89,7 +91,7 @@ class CustomProfileViewTest(TestCase):
         self.client.login(username='mail@gmail.com', password='Ivan16')
         data = {'hobby': 'programming',
                 'photo': 'link16',
-                'birthday': 12345}
+                'birthday': '2000-2-4'}
         url = reverse('profile', args=[101])
         response = self.client.put(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
@@ -101,7 +103,7 @@ class CustomProfileViewTest(TestCase):
         data = {'user.id': 55, 
                 'hobby': -3,
                 'photo': 5,
-                'birthday': 12345}
+                'birthday': '2000-2-4'}
         url = reverse('profile', args=[101])
         response = self.client.put(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
@@ -111,7 +113,7 @@ class CustomProfileViewTest(TestCase):
         self.client.login(username='mail@gmail.com', password='Ivan16')
         data = {'hobby': 'programming',
                 'photo': 'link16',
-                'birthday': 12345}
+                'birthday': '2000-2-4'}
         url = reverse('profile', args=[102])
         response = self.client.put(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 403)
