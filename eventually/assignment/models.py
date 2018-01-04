@@ -4,13 +4,16 @@ Assignment model
 
 This module implements class that represents the assignment entity.
 """
+# pylint: disable=arguments-differ
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
 from item.models import Item
+
+from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
 
-class Assignment(models.Model):
+class Assignment(AbstractModel):
 
     """
     Describing of assignment entity.
@@ -53,27 +56,6 @@ class Assignment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        """
-        Magic method is redefined to show all information about Assignment.
-
-        :return: assignment id, assignment statement, assignment grade,
-                 assignment user, assignment item, assignment status,
-                 assignment started_at date, assignment finished_at date,
-                 assignment created_at date, assignment updated_at date
-
-        """
-
-        return str(self.to_dict())[1:-1]
-
-    def __repr__(self):
-        """
-        This magic method is redefined to show class and id of Assignment object.
-
-        :return: class, id
-        """
-
-        return f'{self.__class__.__name__}(id={self.id})'
 
     def to_dict(self):
         """
@@ -107,22 +89,7 @@ class Assignment(models.Model):
                 'created_at': int(self.created_at.timestamp()),
                 'updated_at': int(self.updated_at.timestamp())}
 
-    @staticmethod
-    def get_by_id(assignment_id):
-        """
-        Static method that returns assignment objects according to the accepted id.
-        Return comment, found by id.
 
-        :param assignment_id: assignment's id
-        :type assignment_id: int
-
-        :return: Assignment object instance or None if object does not exist
-        """
-
-        try:
-            return Assignment.objects.get(id=assignment_id)
-        except Assignment.DoesNotExist:
-            LOGGER.error(f'The assignment with id={assignment_id} does not exist')
 
     @staticmethod
     def create(statement,
@@ -224,21 +191,3 @@ class Assignment(models.Model):
         if finished_at:
             self.finished_at = finished_at
         self.save()
-
-    @staticmethod
-    def delete_by_id(assignment_id):
-        """
-        Static method that removes Assignment object according to the accepted id.
-
-        :param assignment_id: assignment's id
-        :type assignment_id: int
-
-        :return: True if object succseffull deleted or
-                            None if object isnt found
-        """
-        try:
-            assignment = Assignment.objects.get(id=assignment_id)
-            assignment.delete()
-            return True
-        except (Assignment.DoesNotExist, AttributeError):
-            LOGGER.error(f'The assignment with id={assignment_id} was not deleted')
