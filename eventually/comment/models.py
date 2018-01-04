@@ -36,16 +36,19 @@ class Comment(AbstractModel):
     :type team: integer
 
     :param event: ForeignKey on the certain Event Model
-    :type team: integer
+    :type event: integer
 
     :param task: ForeignKey on the certain Task Model
     :type task: integer
 
     :param vote: ForeignKey on the certain Vote Model
-    :type team: integer
+    :type vote: integer
 
     :param author: ForeignKey on the certain CustomUser Model
-    :type team: integer
+    :type author: integer
+
+    :param receiver: ForeignKey on the certain CustomUser Model
+    :type receiver: integer
 
     """
 
@@ -56,14 +59,18 @@ class Comment(AbstractModel):
     event = models.ForeignKey(Event, null=True)
     task = models.ForeignKey(Task, null=True)
     vote = models.ForeignKey(Vote, null=True)
-    author = models.ForeignKey(CustomUser, null=True, on_delete=models.SET_NULL)
+    author = models.ForeignKey(CustomUser, null=True, on_delete=models.SET_NULL,
+                               related_name='comment_author')
+    receiver = models.ForeignKey(CustomUser, null=True, on_delete=models.SET_NULL,
+                                 related_name='comment_receiver')
 
     def to_dict(self):
         """
         Return dictionary with comment's info.
 
         :return: comment id, comment text, comment create date, comment update date,
-                 comment team, comment event, comment task, comment vote, comment author.
+                 comment team, comment event, comment task, comment vote, comment author,
+                 comment receiver.
 
         :Example:
         | {
@@ -76,6 +83,7 @@ class Comment(AbstractModel):
         |     "task": 12,
         |     "vote": 11,
         |     "author": 12
+        |     "receiver":14
         | }
         """
         return {
@@ -87,11 +95,13 @@ class Comment(AbstractModel):
             "event": self.event.id if self.event else None,
             "task": self.task.id if self.task else None,
             "vote": self.vote.id if self.vote else None,
-            "author": self.author.id
+            "author": self.author.id,
+            "receiver": self.receiver.id
         }
 
     @staticmethod
-    def create(author, text=None, team=None, event=None, task=None, vote=None):
+    def create(author, text=None, team=None, event=None, task=None, vote=None,
+               receiver=None):
         """
         Create comment.
 
@@ -113,6 +123,9 @@ class Comment(AbstractModel):
         :param vote: Certain's Vote object.
         :type vote: Vote object
 
+        :param receiver: Certain's CustomUser object.
+        :type receiver: CustomUser object
+
         :return: Comment object instance
 
         """
@@ -123,6 +136,7 @@ class Comment(AbstractModel):
         comment.text = text
         comment.task = task
         comment.vote = vote
+        comment.receiver = receiver
         try:
             comment.save()
             return comment
