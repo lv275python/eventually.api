@@ -43,7 +43,6 @@ def string_validator(value, min_length=STR_MIN_LENGTH, max_length=STR_MAX_LENGTH
 
     return True
 
-
 def duration_validator(value):
     """
     Function that provides validation for time duration field.
@@ -66,7 +65,6 @@ def duration_validator(value):
     except OverflowError:
         pass
 
-
 def timestamp_validator(value):
     """
     Function that provides validation for time date and datetime fields.
@@ -82,7 +80,6 @@ def timestamp_validator(value):
         return True
     except (OverflowError, ValueError, OSError, TypeError):
         pass
-
 
 def required_keys_validator(data, keys_required, strict=True):
     """
@@ -107,7 +104,6 @@ def required_keys_validator(data, keys_required, strict=True):
 
     return not keys_required.difference(keys)
 
-
 def list_of_int_validator(value):
     """
     Function that provides list validation
@@ -125,7 +121,6 @@ def list_of_int_validator(value):
         return False
     return True
 
-
 def email_validator(email):
     """
     Function that provides string validation.
@@ -142,7 +137,6 @@ def email_validator(email):
         return True
     except (ValidationError, AttributeError):
         pass
-
 
 def registration_validate(data):
     """Validation data from registration request.
@@ -165,7 +159,6 @@ def registration_validate(data):
         return False
     return True
 
-
 def password_validator(password):
     """
     Function that provides password validation.
@@ -184,7 +177,6 @@ def password_validator(password):
             return True
     except (TypeError, AttributeError):
         pass
-
 
 def updating_password_validate(data, new_password):
     """
@@ -207,7 +199,6 @@ def updating_password_validate(data, new_password):
             return None
         if password_validator(string):
             return True
-
 
 def updating_email_validate(data, email):
     """
@@ -336,7 +327,6 @@ def comment_data_validator(data, required_keys):
     is_data_valid = len(errors) == 0
     return is_data_valid
 
-
 def profile_data_validator(data):
     """
     Function that validation incoming request.body
@@ -358,7 +348,6 @@ def profile_data_validator(data):
         return
 
     return True
-
 
 def vote_data_validator(data, required_keys):
     """
@@ -397,7 +386,6 @@ def vote_data_validator(data, required_keys):
 
     is_data_valid = len(errors) == 0
     return is_data_valid
-
 
 def answer_data_validator(data, required_keys):
     """
@@ -462,7 +450,6 @@ def task_data_validate_create(data):
         return False
     return True
 
-
 def task_data_validate_update(data):
     """
     Function that provides complete task model data validation
@@ -514,3 +501,44 @@ def image_validator(image_file):
         return False
 
     return file_extension
+
+def paginator_page_validator(page_number, pages_amount):
+    """
+    Function that provides validation for chat view paginator pages.
+
+    :param page_number: number of the accepted page.
+    :type page_number: `int`
+
+    :param pages_amount: the amount of all of the currently existed pages.
+    :type pages_amount: `int`
+
+    :return: `True' if all data is valid or `False` if some fields are invalid.
+    :rtype `bool`
+    """
+
+    return int(page_number) in range(1, (pages_amount + 1))
+
+def chat_message_validator(data, required_keys):
+    """
+    Function that provides complete chat messages view data validation
+
+    :param data: the data that is received by chat view.
+    :type data: `dict`
+
+    :param required_keys: the list of necessary keys of message data schema.
+    :type required_keys: `list`
+
+    :return: `True' if all data is valid or `False` if some fields are invalid.
+    :rtype `bool`
+    """
+
+    errors = []
+
+    if not required_keys_validator(data=data, keys_required=required_keys, strict=False):
+        errors.append('required keys error')
+
+    if not string_validator(value=data.get('text'), max_length=1024, min_length=1):
+        errors.append('text field error')
+
+    is_data_valid = len(errors) == 0
+    return is_data_valid
