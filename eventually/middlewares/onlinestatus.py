@@ -21,6 +21,7 @@ class OnlineStatusMiddleware():  # pylint: disable=too-few-public-methods
         Method that makes middleware instance callable and implements setting user id in redis db
         """
         user = request.user
-        redisHelper.set(user.id, user.email)
+        if user.is_authenticated():
+            redisHelper.set(user.id, user.email)
         response = self.get_response(request)
         return response

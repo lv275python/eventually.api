@@ -33,7 +33,7 @@ export default class MessagesSender extends React.Component {
                         rowsMax={3}
                         hintText="Enter your message"
                     />
-                    <RaisedButton label="Send" primary={true} style={buttonStyle}/>
+                    <RaisedButton label="Send" primary={true} style={buttonStyle} onClick={console.log('Hello dima')}/>
                 </Paper>
             </div>
         );
