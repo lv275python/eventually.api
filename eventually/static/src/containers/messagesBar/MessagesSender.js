@@ -21,7 +21,23 @@ export default class MessagesSender extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            value: ''
+        };
     }
+
+    handleChange = (event, newValue) => {
+        this.setState({
+            value: newValue
+        });
+    }
+
+    handleClick = () => {
+        this.props.onSendClick(this.props.receiverId, this.state.value);
+        this.setState({
+            value: ''
+        });
+    };
 
     render() {
 
@@ -33,8 +49,15 @@ export default class MessagesSender extends React.Component {
                         multiLine={true}
                         rowsMax={3}
                         hintText="Enter your message"
+                        onChange={this.handleChange}
+                        value={this.state.value}
                     />
-                    <RaisedButton label="Send" primary={true} style={buttonStyle} onClick={post}/>
+                    <RaisedButton 
+                        label="Send"
+                        primary={true}
+                        style={buttonStyle}
+                        onClick={this.handleClick}
+                    />
                 </Paper>
             </div>
         );

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const appPath = '/api/v1/chat/2/';
+const appPath = '/api/v1/chat/';
 
 const getReceiversList = (isMentor = false) => {
 
@@ -11,7 +11,7 @@ const getReceiversList = (isMentor = false) => {
         receivers = {
             'receivers': [
                 {
-                    'id': 1,
+                    'id': 10,
                     'first_name': 'Sam',
                     'last_name': 'Ruby',
                     'avatar': 'samruby',
@@ -25,7 +25,7 @@ const getReceiversList = (isMentor = false) => {
                     'is_online': false
                 },
                 {
-                    'id': 3,
+                    'id': 9,
                     'first_name': 'Ismail',
                     'last_name': 'Botobo',
                     'avatar': 'ismailbotobo',
@@ -69,15 +69,16 @@ const getReceiversList = (isMentor = false) => {
 const getMessagesList = receiverId => {
     // const url = appPath + '1' + '/';
     // console.log(url);
-    let a = axios.get('/api/v1/chat/36/1/');
-    console.log(a);    
-    return axios.get('/api/v1/chat/36/1/');
+    // let a = axios.get('/api/v1/chat/36/1/');
+    // console.log(a);    
+    return axios.get('/api/v1/chat/2/1/');
 };
 
-const post = () => {
-    console.log(111111111111111);
-    const text = 'hello';
-    return axios.post(appPath, { text });
+const postChatMessage = (receiverId, text) => {
+    const postChatUrl = `${appPath}${receiverId}/`;
+    return axios.post(postChatUrl, {
+        'text': text
+    });
 };
 
-export { getReceiversList, getMessagesList, post };
+export {getReceiversList, getMessagesList, postChatMessage};

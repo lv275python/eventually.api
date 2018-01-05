@@ -12,8 +12,9 @@ export default class MessagesList extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log(props);
     }
+
+    handleSendClick = this.props.onSendClick;
 
     render() {
         return (
@@ -29,7 +30,7 @@ export default class MessagesList extends React.Component {
                         />)
                     )}
                 </Paper>
-                <MessagesSender />
+                <MessagesSender receiverId={this.props.receiverId} onSendClick={this.handleSendClick} />
             </div>
         );
     }
