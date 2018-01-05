@@ -2,6 +2,7 @@ import React from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
+import post from './messagesBarService';
 
 const paperStyle = {
     marginTop: 10,
@@ -33,7 +34,7 @@ export default class MessagesSender extends React.Component {
                         rowsMax={3}
                         hintText="Enter your message"
                     />
-                    <RaisedButton label="Send" primary={true} style={buttonStyle} onClick={console.log('Hello dima')}/>
+                    <RaisedButton label="Send" primary={true} style={buttonStyle} onClick={post}/>
                 </Paper>
             </div>
         );

@@ -30,15 +30,21 @@ export default class MessagesBar extends React.Component {
         this.setState({
             receivers: receiversObject.receivers
         });
+        this.getMessages();
+        console.log(this.state.messages);
     }
 
     handleReceiverClick = receiverId => {
         this.setState({
             isMessagesList: true,
             isReceiversList: false,
-            messages: getMessagesList(receiverId).messages,
+            // messages: getMessagesList(receiverId).messages,
             activeReceiverItem: receiverId
         });
+    };
+
+    getMessages = () => {
+        getMessagesList().then(response => this.setState({'messages': response.data.messages}));
     };
 
     handleReceiversListMouseOver = () => {
