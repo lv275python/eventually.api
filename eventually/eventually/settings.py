@@ -61,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'middlewares.loginrequired.LoginRequiredMiddleware',
+    'middlewares.onlinestatus.OnlineStatusMiddleware',
 ]
 
 ROOT_URLCONF = 'eventually.urls'
