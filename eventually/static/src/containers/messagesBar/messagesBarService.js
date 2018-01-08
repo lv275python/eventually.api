@@ -11,21 +11,21 @@ const getReceiversList = (isMentor = false) => {
         receivers = {
             'receivers': [
                 {
-                    'id': 10,
+                    'id': 36,
                     'first_name': 'Sam',
                     'last_name': 'Ruby',
                     'avatar': 'samruby',
                     'is_online': true
                 },
                 {
-                    'id': 2,
+                    'id': 1,
                     'first_name': 'Marcelo',
                     'last_name': 'Petrov',
                     'avatar': 'marcelopetrov',
                     'is_online': false
                 },
                 {
-                    'id': 9,
+                    'id': 19,
                     'first_name': 'Ismail',
                     'last_name': 'Botobo',
                     'avatar': 'ismailbotobo',
@@ -66,12 +66,9 @@ const getReceiversList = (isMentor = false) => {
     return receivers;
 };
 
-const getMessagesList = receiverId => {
-    // const url = appPath + '1' + '/';
-    // console.log(url);
-    // let a = axios.get('/api/v1/chat/36/1/');
-    // console.log(a);    
-    return axios.get('/api/v1/chat/2/1/');
+const getMessagesList = (receiverId, pageNumber) => {
+    const getChatUrl = `${appPath}${receiverId}/${pageNumber}/`;
+    return axios.get(getChatUrl);
 };
 
 const postChatMessage = (receiverId, text) => {
