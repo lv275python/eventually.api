@@ -1,13 +1,14 @@
 import React from 'react';
 import MessagesList from './MessagesList';
 import ReceiversList from './ReceiversList';
-import {getReceiversList, getMessagesList} from './messagesBarService';
+import {getReceiversList, getMessagesList, postChatMessage} from './messagesBarService';
 
 const messagesListStyle = {
     display: 'flex',
     flexDirection: 'column',
     position: 'absolute',
     top: 0,
+    width: '80%',
     marginRight: '20%'
 };
 
@@ -38,7 +39,6 @@ export default class MessagesBar extends React.Component {
         this.setState({
             isMessagesList: true,
             isReceiversList: false,
-            // messages: getMessagesList(receiverId).messages,
             activeReceiverItem: receiverId
         });
     };
@@ -59,10 +59,19 @@ export default class MessagesBar extends React.Component {
         });
     };
 
+    handleSendClick = (receiverId, text) => {
+        postChatMessage(receiverId, text);
+    }
+
     render() {
 
         let messagesList = this.state.isMessagesList ?
-            <MessagesList messages={this.state.messages} style={messagesListStyle} /> :
+            <MessagesList
+                style={messagesListStyle}
+                messages={this.state.messages}
+                receiverId={this.state.activeReceiverItem}
+                onSendClick={this.handleSendClick}
+            /> :
             null;
 
         return (
