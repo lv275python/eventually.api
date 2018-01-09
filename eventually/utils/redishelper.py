@@ -19,7 +19,7 @@ class RedisWorker():
     def set(self, key, value):
         """Function that set records to redis db"""
         self.redis.set(key, value)
-        self.redis.expire(key, 50)
+        self.redis.expire(key, 60)
         return True
 
     def get(self, key):

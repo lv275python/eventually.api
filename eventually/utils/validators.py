@@ -153,9 +153,9 @@ def registration_validate(data):
     for key in ('first_name', 'middle_name', 'last_name'):
         if data.get(key) and not string_validator(data[key], 0, 20):
             return False
-    if not string_validator(data['email']) and not email_validator(data['email']):
+    if not (string_validator(data['email']) and email_validator(data['email'])):
         return False
-    if not string_validator(data['password']) and not password_validator(data['password']):
+    if not (string_validator(data['password']) and password_validator(data['password'])):
         return False
     return True
 
