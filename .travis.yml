@@ -10,6 +10,7 @@ install:
 
 services:
   - postgresql
+  - redis-server
 before_script:
   - psql -c "CREATE DATABASE travis_db;" -U postgres
 
