@@ -1,13 +1,14 @@
 import React from 'react';
 import MessagesList from './MessagesList';
 import ReceiversList from './ReceiversList';
-import {getReceiversList, getMessagesList} from './messagesBarService';
+import { getReceiversList, getMessagesList, postChatMessage } from './messagesBarService';
 
 const messagesListStyle = {
     display: 'flex',
     flexDirection: 'column',
     position: 'absolute',
     top: 0,
+    width: '80%',
     marginRight: '20%'
 };
 
@@ -21,7 +22,9 @@ export default class MessagesBar extends React.Component {
             isReceiversList: true,
             receiversListExpandedWidth: this.props.expandedWidth,
             receiversListWrappedWidth: this.props.wrappedWidth,
-            activeReceiverItem: -1
+            activeReceiverItem: -1,
+            messages: [],
+            nextPage: 1
         };
 
     }
@@ -33,12 +36,33 @@ export default class MessagesBar extends React.Component {
     }
 
     handleReceiverClick = receiverId => {
-        this.setState({
-            isMessagesList: true,
-            isReceiversList: false,
-            messages: getMessagesList(receiverId).messages,
-            activeReceiverItem: receiverId
-        });
+        const nextPage = receiverId === this.state.activeReceiverItem ? this.state.nextPage : 1;
+        getMessagesList(receiverId, nextPage)
+            .then(response => {
+                const data = response.data;
+                this.setState({ 
+                    isMessagesList: true,
+                    isReceiversList: false,
+                    activeReceiverItem: receiverId,
+                    nextPage: data.next_page,
+                    messages: data.messages
+                });
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    };
+
+    getMessages = (receiverId, pageNumber) => {
+        getMessagesList(receiverId, pageNumber)
+            .then(response => {
+                let messages = response.data.messages ? this.state.messages.concat(response.data.messages) : this.state.messages;
+                this.setState({'messages': messages});
+                return true;
+            })
+            .catch(error => {
+                console.log(error);
+            });
     };
 
     handleReceiversListMouseOver = () => {
@@ -53,10 +77,37 @@ export default class MessagesBar extends React.Component {
         });
     };
 
-    render() {
+    handleSendClick = (receiverId, text) => {
+        postChatMessage(receiverId, text);
+    }
 
-        let messagesList = this.state.isMessagesList ?
-            <MessagesList messages={this.state.messages} style={messagesListStyle} /> :
+    handleShowMoreClick = () => {
+        getMessagesList(this.state.activeReceiverItem, this.state.nextPage)
+            .then(response => {
+                const data = response.data,
+                    messages = data.messages ? this.state.messages.concat(data.messages) : this.state.messages;
+
+                this.setState({ 
+                    messages: messages,
+                    nextPage: data.next_page
+                });
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
+    render() {
+        const isShowMoreButton = this.state.nextPage !== -1;
+        const messagesList = this.state.isMessagesList ?
+            <MessagesList
+                style={messagesListStyle}
+                messages={this.state.messages}
+                receiverId={this.state.activeReceiverItem}
+                onSendClick={this.handleSendClick}
+                onShowMoreClick={this.handleShowMoreClick}
+                isShowMoreButton={isShowMoreButton}
+            /> :
             null;
 
         return (
