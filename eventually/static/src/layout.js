@@ -6,7 +6,6 @@ import SignRouter from './signRouter';
 import Header from './components/header/Header';
 import Sign from './containers/registerLogin/Sign';
 
-
 const style = {
     height: 300,
     width: '60%',
@@ -25,6 +24,9 @@ export default class Layout extends React.Component {
     }
 
     render() {
+        document.body.style.margin = '0';
+        document.body.style.padding = '0';
+
         return (
             isLogged() ?
                 <div>
@@ -36,7 +38,6 @@ export default class Layout extends React.Component {
                     <Paper style={style} zDepth={5}>
                         <SignRouter/>
                     </Paper>
-
                 </div>
         );
     }
