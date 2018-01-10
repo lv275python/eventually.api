@@ -15,6 +15,7 @@ from utils.responsehelper import (RESPONSE_400_INVALID_DATA,
                                   RESPONSE_400_EMPTY_JSON,
                                   RESPONSE_400_DB_OPERATION_FAILED)
 from utils.validators import paginator_page_validator, chat_message_validator
+from utils.redishelper import REDIS_HELPER as redis
 
 MESSAGES_PER_PAGE = 20
 
@@ -105,3 +106,22 @@ class ChatView(View):
             return RESPONSE_400_DB_OPERATION_FAILED
 
         return JsonResponse(message.to_dict(), status=201)
+
+class OnlineStatusView(View):
+    """Chat view that handles POST requests and provides logic for getting online users"""
+
+    def post(self, request):
+        """
+        Method that handles POST request.
+
+        :param request: the accepted HTTP request.
+        :type request: `HttpRequest object`
+
+        :return: the response with certain online status users.
+
+        """
+        data = request.body
+        ids = data.get('users')
+        users_online = {id: redis.get(id).decode('utf-8') if redis.get(id) else None for id in ids}
+
+        return JsonResponse(users_online, status=200)
