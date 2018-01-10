@@ -11,25 +11,25 @@ const getReceiversList = (isMentor = false) => {
         receivers = {
             'receivers': [
                 {
-                    'id': 2,
+                    'id': 36,
                     'first_name': 'Sam',
                     'last_name': 'Ruby',
                     'avatar': 'samruby',
-                    'is_online': true
+                    'is_online': false
                 },
                 {
-                    'id': 9,
+                    'id': 39,
                     'first_name': 'Marcelo',
                     'last_name': 'Petrov',
                     'avatar': 'marcelopetrov',
                     'is_online': false
                 },
                 {
-                    'id': 10,
+                    'id': 1,
                     'first_name': 'Ismail',
                     'last_name': 'Botobo',
                     'avatar': 'ismailbotobo',
-                    'is_online': true
+                    'is_online': false
                 }
             ]
         };
@@ -78,4 +78,11 @@ const postChatMessage = (receiverId, text) => {
     });
 };
 
-export {getReceiversList, getMessagesList, postChatMessage};
+const getOnlineUsers = users => {
+    const getOnlineUsersUrl = `${appPath}online/`;
+    return axios.post(getOnlineUsersUrl, {
+        users: users
+    });
+};
+
+export {getReceiversList, getMessagesList, postChatMessage, getOnlineUsers};

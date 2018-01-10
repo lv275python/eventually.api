@@ -1,7 +1,7 @@
 import React from 'react';
 import MessagesList from './MessagesList';
 import ReceiversList from './ReceiversList';
-import { getReceiversList, getMessagesList, postChatMessage } from './messagesBarService';
+import { getReceiversList, getMessagesList, postChatMessage, getOnlineUsers } from './messagesBarService';
 
 const messagesListStyle = {
     display: 'flex',
@@ -24,15 +24,40 @@ export default class MessagesBar extends React.Component {
             receiversListWrappedWidth: this.props.wrappedWidth,
             activeReceiverItem: -1,
             messages: [],
-            nextPage: 1
+            nextPage: 1,
+            requestIntervalId: null,
+            receivers: []
         };
-
     }
+
     componentWillMount() {
         const receiversObject = this.props.location === 'progress' ? getReceiversList() : getReceiversList(true);
+        const requestIntervalId = setInterval(this.handleOnlineStatus, 5000);
         this.setState({
-            receivers: receiversObject.receivers
+            receivers: receiversObject.receivers,
+            requestIntervalId: requestIntervalId
         });
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.state.requestIntervalId);
+    }
+
+    handleOnlineStatus = () => {
+        const users = this.state.receivers.map(receiver => {
+            return receiver.id;
+        });
+        getOnlineUsers(users)
+            .then(response => {
+                const data = response.data;
+                const updatedRecivers = this.state.receivers.map(receiver => {
+                    receiver.is_online = !!data[receiver.id];
+                    return receiver;
+                });
+                this.setState({
+                    receivers: updatedRecivers
+                });
+            });
     }
 
     handleReceiverClick = receiverId => {
@@ -40,7 +65,7 @@ export default class MessagesBar extends React.Component {
         getMessagesList(receiverId, nextPage)
             .then(response => {
                 const data = response.data;
-                this.setState({ 
+                this.setState({
                     isMessagesList: true,
                     isReceiversList: false,
                     activeReceiverItem: receiverId,
@@ -57,7 +82,7 @@ export default class MessagesBar extends React.Component {
         getMessagesList(receiverId, pageNumber)
             .then(response => {
                 let messages = response.data.messages ? this.state.messages.concat(response.data.messages) : this.state.messages;
-                this.setState({'messages': messages});
+                this.setState({ 'messages': messages });
                 return true;
             })
             .catch(error => {
@@ -87,7 +112,7 @@ export default class MessagesBar extends React.Component {
                 const data = response.data,
                     messages = data.messages ? this.state.messages.concat(data.messages) : this.state.messages;
 
-                this.setState({ 
+                this.setState({
                     messages: messages,
                     nextPage: data.next_page
                 });
