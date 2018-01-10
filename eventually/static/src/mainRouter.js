@@ -22,7 +22,7 @@ export default class MainRouter extends React.Component {
                     <Route path='/mentoritem' component={MentorItem}/>
                     <Route path='/dashboard' component={MentorDashboard}/>
                     <Route path='/teamlist' component={TeamList}/>
-                    <Redirect path="*" to="/home" />
+                    <Redirect path='*' to='/home' />
                 </Switch>
             </main>
         );

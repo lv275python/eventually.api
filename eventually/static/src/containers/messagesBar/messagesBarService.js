@@ -18,14 +18,14 @@ const getReceiversList = (isMentor = false) => {
                     'is_online': false
                 },
                 {
-                    'id': 39,
+                    'id': 1,
                     'first_name': 'Marcelo',
                     'last_name': 'Petrov',
                     'avatar': 'marcelopetrov',
                     'is_online': false
                 },
                 {
-                    'id': 1,
+                    'id': 10,
                     'first_name': 'Ismail',
                     'last_name': 'Botobo',
                     'avatar': 'ismailbotobo',
