@@ -5,7 +5,6 @@ The module that provides basic logic for getting, updating and deleting
 of profile's model objects.
 """
 
-import datetime
 from django.contrib.auth import logout
 from django.views.generic.base import View
 from django.http import JsonResponse
@@ -70,13 +69,11 @@ class CustomProfileView(View):
             return RESPONSE_403_ACCESS_DENIED
 
         data = request.body
-
         if not profile_data_validator(data):
             return RESPONSE_400_INVALID_DATA
-
         data_profile = {'hobby': data.get('hobby'),
                         'photo': data.get('photo'),
-                        'birthday': datetime.datetime.fromtimestamp(data.get('birthday'))}
+                        'birthday':data.get('birthday')}
         data_user = {'first_name': data.get('first_name'),
                      'middle_name': data.get('middle_name'),
                      'last_name': data.get('last_name')}

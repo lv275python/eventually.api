@@ -9,6 +9,7 @@ import re
 import imghdr
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from utils.responsehelper import (RESPONSE_400_INVALID_DATA)
 
 PASSWORD_REG_EXP = r'^(?=.*?\d)(?=.*?[A-Z])(?=.*?[a-z])[A-Za-z\d]*$'
 STR_MIN_LENGTH = 0
@@ -327,6 +328,17 @@ def comment_data_validator(data, required_keys):
     is_data_valid = len(errors) == 0
     return is_data_valid
 
+def valid_date_type(datec):
+    """custom argparse *date* type for user dates values given from the command line"""
+    if not isinstance(datec, str):
+        return False
+    for mask in ['%Y%m%d', '%Y-%m-%d', '%d%m%Y', '%m%d%Y']:
+        try:
+            datetime.datetime.strptime(datec, mask)
+            return True
+        except ValueError:
+            return RESPONSE_400_INVALID_DATA
+
 def profile_data_validator(data):
     """
     Function that validation incoming request.body
@@ -339,12 +351,12 @@ def profile_data_validator(data):
     if not is_hobby_valid:
         return
 
-    is_photo_valid = string_validator(data.get("photo")) if data.get('photo') else True
-    if not is_photo_valid:
+    is_birthday_valid = valid_date_type(data.get("birthday")) if data.get('birthday') else True
+    if not is_birthday_valid:
         return
 
-    is_birthday_valid = timestamp_validator(data.get("birthday")) if data.get('birthday') else True
-    if not is_birthday_valid:
+    is_photo_valid = string_validator(data.get("photo")) if data.get('photo') else True
+    if not is_photo_valid:
         return
 
     return True
