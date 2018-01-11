@@ -33,6 +33,7 @@ from utils.validators import (updating_password_validate,
 
 TTL_SEND_PASSWORD_TOKEN = 60 * 60
 USER_TTL_NOTIFICATOR = TTL_SEND_PASSWORD_TOKEN / 60
+TTL_USER_ID_COOKIE = 60 * 60 * 24 * 14
 
 class UserView(View):
     """    A class to handle GET, PUT and DELETE operations    """
@@ -196,7 +197,9 @@ def login_user(request):
         user = authenticate(email=email, password=data['password'])
         if user and user.is_active:
             login(request, user)
-            return RESPONSE_200_OK
+            response = RESPONSE_200_OK
+            response.set_cookie('user_id', user.id, max_age=TTL_USER_ID_COOKIE)
+            return response
         return RESPONSE_400_INVALID_EMAIL_OR_PASSWORD
     return RESPONSE_400_INVALID_HTTP_METHOD
 
@@ -210,7 +213,9 @@ def logout_user(request):
 
     if request.method == "GET":
         logout(request)
-        return RESPONSE_200_OK
+        response = RESPONSE_200_OK
+        response.delete_cookie('user_id')
+        return response
     return RESPONSE_400_INVALID_HTTP_METHOD
 
 
