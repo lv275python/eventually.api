@@ -96,7 +96,7 @@ class Comment(AbstractModel):
             "task": self.task.id if self.task else None,
             "vote": self.vote.id if self.vote else None,
             "author": self.author.id,
-            "receiver": self.receiver.id
+            "receiver": self.receiver.id if self.receiver else None
         }
 
     @staticmethod
