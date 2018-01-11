@@ -2,6 +2,7 @@ import React from 'react';
 import MessagesList from './MessagesList';
 import ReceiversList from './ReceiversList';
 import { getReceiversList, getMessagesList, postChatMessage, getOnlineUsers } from './messagesBarService';
+import { getMessagesSet, getNextPageNumber } from './messagesBarHelper';
 
 const messagesListStyle = {
     display: 'flex',
@@ -22,25 +23,30 @@ export default class MessagesBar extends React.Component {
             isReceiversList: true,
             receiversListExpandedWidth: this.props.expandedWidth,
             receiversListWrappedWidth: this.props.wrappedWidth,
+            receivers: [],
             activeReceiverItem: -1,
             messages: [],
-            nextPage: 1,
+            defaultPage: 1,
+            nextPage: null,
             requestIntervalId: null,
-            receivers: []
+            messagesRefreshId: null
         };
     }
 
     componentWillMount() {
         const receiversObject = this.props.location === 'progress' ? getReceiversList() : getReceiversList(true);
         const requestIntervalId = setInterval(this.handleOnlineStatus, 5000);
+        const messagesRefreshId = setInterval(this.handleMessagesRefresh, 5000);
         this.setState({
             receivers: receiversObject.receivers,
-            requestIntervalId: requestIntervalId
+            requestIntervalId: requestIntervalId,
+            messagesRefreshId: messagesRefreshId
         });
     }
 
     componentWillUnmount() {
         clearInterval(this.state.requestIntervalId);
+        clearInterval(this.state.messagesRefreshId);
     }
 
     handleOnlineStatus = () => {
@@ -50,19 +56,34 @@ export default class MessagesBar extends React.Component {
         getOnlineUsers(users)
             .then(response => {
                 const data = response.data;
-                const updatedRecivers = this.state.receivers.map(receiver => {
+                const updatedReceivers = this.state.receivers.map(receiver => {
                     receiver.is_online = !!data[receiver.id];
                     return receiver;
                 });
                 this.setState({
-                    receivers: updatedRecivers
+                    receivers: updatedReceivers
                 });
             });
-    }
+    };
+
+    handleMessagesRefresh = () => {
+        getMessagesList(this.state.activeReceiverItem, this.state.defaultPage)
+            .then(response => {
+                const data = response.data;
+                if (data.messages) {
+                    const allMessages = this.state.messages.concat(data.messages),
+                        messages = getMessagesSet(allMessages),
+                        actualNextPage = getNextPageNumber(messages, this.state.defaultPage, data.per_page);
+                    this.setState({
+                        messages: messages,
+                        nextPage: this.state.nextPage === -1 ? this.state.nextPage : actualNextPage
+                    });
+                }
+            });
+    };
 
     handleReceiverClick = receiverId => {
-        const nextPage = receiverId === this.state.activeReceiverItem ? this.state.nextPage : 1;
-        getMessagesList(receiverId, nextPage)
+        getMessagesList(receiverId, this.state.defaultPage)
             .then(response => {
                 const data = response.data;
                 this.setState({
@@ -72,21 +93,6 @@ export default class MessagesBar extends React.Component {
                     nextPage: data.next_page,
                     messages: data.messages
                 });
-            })
-            .catch(error => {
-                console.log(error);
-            });
-    };
-
-    getMessages = (receiverId, pageNumber) => {
-        getMessagesList(receiverId, pageNumber)
-            .then(response => {
-                let messages = response.data.messages ? this.state.messages.concat(response.data.messages) : this.state.messages;
-                this.setState({ 'messages': messages });
-                return true;
-            })
-            .catch(error => {
-                console.log(error);
             });
     };
 
@@ -104,26 +110,24 @@ export default class MessagesBar extends React.Component {
 
     handleSendClick = (receiverId, text) => {
         postChatMessage(receiverId, text);
-    }
+    };
 
     handleShowMoreClick = () => {
         getMessagesList(this.state.activeReceiverItem, this.state.nextPage)
             .then(response => {
                 const data = response.data,
-                    messages = data.messages ? this.state.messages.concat(data.messages) : this.state.messages;
+                    allMessages = this.state.messages.concat(data.messages),
+                    messages = getMessagesSet(allMessages);
 
                 this.setState({
                     messages: messages,
                     nextPage: data.next_page
                 });
-            })
-            .catch(error => {
-                console.log(error);
             });
-    }
+    };
 
     render() {
-        const isShowMoreButton = this.state.nextPage !== -1;
+        const isShowMoreButton = this.state.nextPage > 1;
         const messagesList = this.state.isMessagesList ?
             <MessagesList
                 style={messagesListStyle}
