@@ -276,6 +276,9 @@ class AuthenticationViewTest(TestCase):
         response = self.client.post(reverse('login_user'), user, content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
+        user = json.dumps({'email': 'mail@gmail.net', 'password': "abcd"})
+        response = self.client.post(reverse('login_user'), user, content_type='application/json')
+        self.assertEqual(response.status_code, 400)
 
     def test_logout(self):
         """ Positive user logout test """
