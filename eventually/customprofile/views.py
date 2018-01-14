@@ -14,7 +14,7 @@ from utils.responsehelper import (RESPONSE_400_INVALID_DATA,
                                   RESPONSE_200_DELETED,
                                   RESPONSE_404_OBJECT_NOT_FOUND,
                                   RESPONSE_403_ACCESS_DENIED)
-from utils.validators import (profile_data_validator)
+from utils.validators import profile_data_validator
 
 
 class CustomProfileView(View):
