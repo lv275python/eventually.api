@@ -4,7 +4,6 @@ Curriculum model
 """
 # pylint: disable=arguments-differ
 
-from authentication.models import CustomUser
 from django.db import models, IntegrityError
 from django.contrib.postgres.fields import ArrayField
 from team.models import Team
@@ -26,11 +25,8 @@ class Curriculum(AbstractModel):
         :param description: description of the curriculum
         :type description: str
 
-        :param mentors: id of mentors to control the flow of the curriculum
-        :type mentors: int
-
         :param team: id of teams which are studying by the curriculum
-        :type name: int
+        :type team: int
 
         :param created_at: Describes the date when the curriculum was created
         :type created_at: datetime
@@ -42,7 +38,6 @@ class Curriculum(AbstractModel):
     name = models.CharField(max_length=50, unique=True, blank=False)
     goals = ArrayField(models.CharField(max_length=30, blank=False), size=8, null=True)
     description = models.TextField(max_length=500, blank=True)
-    mentors = models.ManyToManyField(CustomUser, blank=False, related_name='mentors')
     team = models.ForeignKey(Team, null=True, related_name='team')
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
@@ -62,7 +57,7 @@ class Curriculum(AbstractModel):
 
 
     @staticmethod
-    def create(name, description='', goals=(), team=None, mentors=()):
+    def create(name, description='', goals=(), team=None):
         """
         Create a new Curriculum object in the database
 
@@ -78,9 +73,6 @@ class Curriculum(AbstractModel):
         :param team: id of teams which study the curriculum
         :type team: list
 
-        :param mentors: one or more mentors to direct the curriculum
-        :type mentors: list
-
         :return: Curriculum object or none
         """
 
@@ -90,7 +82,6 @@ class Curriculum(AbstractModel):
                                                        goals=goals,
                                                        team=team)
             new_curriculum.save()
-            new_curriculum.mentors.add(*mentors)
             return new_curriculum
         except IntegrityError:
             LOGGER.error("Relational integrity error")
@@ -107,26 +98,22 @@ class Curriculum(AbstractModel):
         |   'description': 'shakespeare',
         |   'goals': ['Be a Senior dev'],
         |   'team': 'Team(id=1)',
-        |   'mentors': [46, 54],
         |   'created': 1511386400,
         |   'updated': 1511394690
         | }
         """
-
-        mentors = sorted([mentor.id for mentor in self.mentors.all()] if self.mentors else None)
 
         return {'id:': self.id,
                 'name:': self.name,
                 'description': self.description,
                 'goals': self.goals,
                 'team': self.team,
-                'mentors': mentors,
                 'created': int(self.created_at.timestamp()),
                 'updated': int(self.updated_at.timestamp())
                }
 
 
-    def update(self, name=None, description=None, team=None, mentors=()):
+    def update(self, name=None, description=None, team=None):
         """
         Updates the curriculum object
 
@@ -139,9 +126,6 @@ class Curriculum(AbstractModel):
         :param team: id of teams which study the curriculum
         :type team: list
 
-        :param mentors: one or more mentors to add to the curriculum
-        :type mentors: tuple
-
         :return: True if updated or None
         """
 
@@ -151,8 +135,6 @@ class Curriculum(AbstractModel):
             self.description = description
         if team:
             self.team = team
-        if mentors:
-            self.mentors.add(*mentors) # Add method to delete mentors
         try:
             self.save()
             return True
