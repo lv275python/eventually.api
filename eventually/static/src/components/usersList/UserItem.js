@@ -34,6 +34,11 @@ export default class UserItem extends React.Component {
     handleClick = this.props.onButtonClick;
 
     render() {
+        const btn=(this.props.tabIndex===2) ?
+            (<RaisedButton label="Assign" backgroundColor={lightGreen400}
+                style={buttonStyle} onClick={this.handleClick}/>):
+            (<RaisedButton label="Info" style={buttonStyle} onClick={this.handleClick}/>);
+
         return (
             <div>
                 <Card>
@@ -45,12 +50,8 @@ export default class UserItem extends React.Component {
                             titleStyle={titleStyle}
                             onClick={this.handleClick}
                         />
-                        <RaisedButton
-                            label="Assign"
-                            backgroundColor={lightGreen400}
-                            style={buttonStyle}
-                            onClick={this.handleClick}
-                        />
+                        {btn}
+
                     </div>
                 </Card>
             </div>

@@ -22,6 +22,7 @@ export default class UsersList extends React.Component {
                             lastName={student.last_name}
                             avatar={student.avatar}
                             onButtonClick={this.handleItemButtonClick}
+                            tabIndex={this.props.tabIndex}
                         />
                     ))}
                 </Paper>
