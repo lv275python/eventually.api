@@ -7,10 +7,12 @@ import { getMessagesSet, getNextPageNumber } from './messagesBarHelper';
 const messagesListStyle = {
     display: 'flex',
     flexDirection: 'column',
+    justifyContent: 'space-between',
     position: 'absolute',
     top: 0,
     width: '80%',
-    marginRight: '20%'
+    marginRight: '20%',
+    height: '90vh'
 };
 
 export default class MessagesBar extends React.Component {
