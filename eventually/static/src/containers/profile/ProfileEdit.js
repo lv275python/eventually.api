@@ -6,7 +6,7 @@ import FileUpload from '../fileUpload/FileUpload';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import DatePicker from 'material-ui/DatePicker';
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import {Card, CardHeader} from 'material-ui/Card';
 
 
 const style_card = {
@@ -36,10 +36,10 @@ const style_header = {
 
 const style_buttons = {        
     display: 'flex',      
-    alignItems: 'center',     
-    justifyContent: 'space-between',    
-    margin: '20px 80px 40px 100px' , 
-    width: '80%',
+    alignItems: 'flex-end',     
+    justifyContent: 'space-around',    
+    margin: '20px 20px 40px 350px' , 
+    width: '40%',
 };
 
 const style_container = {
@@ -48,80 +48,12 @@ const style_container = {
     margin:'0px 100px',
 };
 
+
 export default class ProfileEdit extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            id: '',
-            first_name: '',
-            middle_name: '', 
-            last_name: '',
-            hobby: '',
-            photo: '',
-            birthday: new Date()
-        };
     }
-        
-    componentWillMount(){
-        this.getProfile();
-    }
-    getProfile = () => {
-        getProfileService().then(response => {
 
-            this.setState({'id': response.data['user'],
-                first_name: response.data['first_name'],
-                middle_name: response.data['middle_name'], 
-                last_name: response.data['last_name'],
-                hobby: response.data['hobby'],
-                photo: response.data['photo'],
-                birthday: new Date(response.data['birthday'])});
-        }, error => {
-            console.log(error);    
-        });                  
-    };    
-
-    handleFirstName = event => {
-        this.setState({first_name: event.target.value});
-    };
-
-    handleMiddleName = event => {
-        this.setState({middle_name: event.target.value});
-    };
-
-    handleLastName = event => {
-        this.setState({last_name: event.target.value});
-    };
-
-    handleHobby = event => {
-        this.setState({hobby: event.target.value});
-    };
-
-    handleBirthday = (event, date) => {
-        this.setState({birthday: date});
-    };
-    
-    handleSave = () => {
-        const first_name = this.state.first_name;
-        const middle_name = this.state.middle_name;
-        const last_name = this.state.last_name;
-        const hobby = this.state.hobby;
-        const photo = this.state.photo;
-        const birthday = this.state.birthday.getFullYear() + '-' +(this.state.birthday.getMonth() + 1) + '-' +  this.state.birthday.getDate();
-        
-
-        putProfileService(this.state.id, first_name, middle_name, last_name, hobby, photo, birthday)
-            .then(response => {
-                console.log(response);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    };
-
-    uploadImage = imageName => {
-        this.setState({photo: imageName});
-    }
-    
     render() {
         return (
             <div style={style_main_div}>
@@ -133,34 +65,33 @@ export default class ProfileEdit extends React.Component {
                     <div style={style_name}>
                         <TextField
                             floatingLabelText="First Name:"
-                            onChange={this.handleFirstName}
+                            onChange={this.props.onFirstNameChange}
                             hintText='First Name'
-                            value={this.state.first_name}
+                            value={this.props.profileData.first_name}
                             fullWidth={true}
                         />
                         <TextField
                             floatingLabelText="Middle Name:"
-                            onChange={this.handleMiddleName}
+                            onChange={this.props.onMiddleNameChange}
                             hintText='Middle Name'
-                            value={this.state.middle_name}
+                            value={this.props.profileData.middle_name}
                             fullWidth={true}
                         />
                         <TextField
                             floatingLabelText="Last Name:"
-                            onChange={this.handleLastName}
+                            onChange={this.props.onLastNameChange}
                             hintText='Last Name'
-                            value={this.state.last_name}
+                            value={this.props.profileData.last_name}
                             fullWidth={true}
-
                         />
                         <TextField
                             floatingLabelText="Hobby:"
                             hintText='Hobby'
-                            onChange={this.handleHobby}
+                            onChange={this.props.onHobbyChange}
                             fullWidth={true}
                             multiLine={true}
                             rowsMax={3}
-                            value={this.state.hobby}
+                            value={this.props.profileData.hobby}
                         />
                         <DatePicker 
                             floatingLabelText="Birthday:"
@@ -168,24 +99,32 @@ export default class ProfileEdit extends React.Component {
                             mode="landscape"
                             openToYearSelection={true}
                             fullWidth={true}
-                            onChange={this.handleBirthday}
-                            value={new Date(this.state.birthday)}
+                            onChange={this.props.onBirthdayChange}
+                            value={this.props.profileData.birthday}
                         />
                     </div>
                     <div style={style_container}>
-                        <img src={this.state.photo && getImageUrl(this.state.photo)}
+                        <img src={this.props.profileData.photo && getImageUrl(this.props.profileData.photo)}
                             alt=""
                             style={{maxHeight: '100%'}}
+                        />
+                        <FileUpload 
+                            updateImageNameInDb={this.props.uploadImage}
                         />
                     </div>
                         
                     <div style={style_buttons}>
-                        <FileUpload updateImageNameInDb={this.uploadImage}/>
+                        <RaisedButton
+                            label="Cancel"
+                            secondary={true}
+                            keyboardFocused={true}
+                            onClick={this.props.onCloseClick}
+                        />
                         <RaisedButton
                             label="Save"
                             primary={true}
                             keyboardFocused={true}
-                            onClick={this.handleSave}
+                            onClick={this.props.onSaveClick}
                         />
                     </div>
                 </Card>
