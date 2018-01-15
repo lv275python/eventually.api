@@ -49,7 +49,7 @@ class ChatView(View):
         if not interlocutor:
             return RESPONSE_404_OBJECT_NOT_FOUND
 
-        if user is interlocutor:
+        if user.id == interlocutor.id:
             return RESPONSE_400_INVALID_DATA
 
         user_messages = Comment.objects.filter(Q(author=user) | Q(receiver=user))
@@ -94,7 +94,7 @@ class ChatView(View):
         if not receiver:
             return RESPONSE_404_OBJECT_NOT_FOUND
 
-        if author is receiver:
+        if author.id == receiver.id:
             return RESPONSE_400_INVALID_DATA
 
         if not chat_message_validator(data, required_keys=['text']):
