@@ -77,18 +77,21 @@ export default class StudentsTabsList extends React.Component {
                         <UsersList
                             students={this.state.mentorStudents}
                             onItemButtonClick={this.handleModalOpen}
+                            tabIndex={this.state.slideIndex}
                         />
                     </div>
                     <div>
                         <UsersList 
                             students={this.state.allStudents}
                             onItemButtonClick={this.handleModalOpen}
+                            tabIndex={this.state.slideIndex}
                         />
                     </div>
                     <div>
                         <UsersList
                             students={this.state.availableStudents}
                             onItemButtonClick={this.handleModalOpen}
+                            tabIndex={this.state.slideIndex}
                         />
                     </div>
                 </SwipeableViews>
