@@ -307,10 +307,8 @@ class ValidatorsTestCase(TestCase):
         """
         Method that tests `chat_message_validator`.
         """
-        data = {"users": [1, 2, 3, 4, 5],
-                "messages_amount": 100,
-                "text": "some_text"}
-        required_keys = ["users", "messages_amount", "text"]
+        data = {"text": "some_text"}
+        required_keys = ["text"]
 
         is_valid = chat_message_validator(data, required_keys)
 
@@ -321,10 +319,8 @@ class ValidatorsTestCase(TestCase):
         Method that tests `chat_message_validator`,
         when `data` does not contain all `required_keys`.
         """
-        data = {"users": [1, 2, 3, 4, 5],
-                "messages_amount": 100,
-                "text": "some_text"}
-        required_keys = ["users", "messages_amount", "some_key", "text"]
+        data = {}
+        required_keys = ["text"]
 
         is_valid = chat_message_validator(data, required_keys)
 
@@ -335,10 +331,8 @@ class ValidatorsTestCase(TestCase):
         Method that tests `chat_message_validator`,
         when `data['text']` is not a string.
         """
-        data = {"users": [1, 2, 3, 4, 5],
-                "messages_amount": 100,
-                "text": 222}
-        required_keys = ["users", "messages_amount", "text"]
+        data = {"text": 222}
+        required_keys = ["text"]
 
         is_valid = chat_message_validator(data, required_keys)
 
@@ -349,10 +343,8 @@ class ValidatorsTestCase(TestCase):
         Method that tests `chat_message_validator`,
         when `data['text']` has length less than `min_length` (1).
         """
-        data = {"users": [1, 2, 3, 4, 5],
-                "messages_amount": 100,
-                "text": ""}
-        required_keys = ["users", "messages_amount", "text"]
+        data = {"text": ""}
+        required_keys = ["text"]
 
         is_valid = chat_message_validator(data, required_keys)
 
