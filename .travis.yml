@@ -17,11 +17,10 @@ before_script:
 script:
   - eslint --config .eslintrc.js eventually/static/src/
   - npm run build
-  - cd eventually/
   - sudo touch /var/log/eventually.log
   - sudo chown -R $USER:$USER /var/log/eventually.log
-  - pylint --rcfile=.pylintrc *
-  - coverage run manage.py test
+  - pylint --rcfile=eventually/.pylintrc eventually
+  - coverage run eventually/manage.py test eventually
 
 after_success:
   - coveralls
