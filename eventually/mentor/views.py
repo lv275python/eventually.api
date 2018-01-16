@@ -5,9 +5,9 @@ Mentor view module
 The module that provides basic logic for getting, creating, updating and deleting
 of MentorStudent's model objects.
 """
-
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.generic.base import View
+from mentor.models import MentorStudent
 from authentication.models import CustomUser
 from mentor.models import MentorStudent
 from topic.models import Topic
@@ -17,6 +17,22 @@ from utils.validators import mentor_validator
 
 class MentorView(View):
     """Mentor view handles GET, POST, PUT, DELETE requests."""
+
+    def get(self, request):
+        """
+        Method that handles GET request.
+        """
+        students = MentorStudent.objects.all()
+        students.filter(mentor_id=request.user.id)
+        for student in students:
+            print(student.to_dict())
+
+        if request.GET.get('topic', None):
+            students.filter()
+        if request.GET.get('', None):
+            students.filter()
+            return HttpResponse(status=300)
+        return HttpResponse(status=200)
 
     def post(self, request, mentor_id=None, student_id=None, topic_id=None):
         """
