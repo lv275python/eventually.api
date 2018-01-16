@@ -62,7 +62,6 @@ class ItemModelTestCase(TestCase):
                                                    description="test_descr",
                                                    team=team)
             curriculum.save()
-            curriculum.mentors.add(custom_user_first, custom_user_third)
 
             topic_python = Topic(id=101,
                           curriculum=curriculum,

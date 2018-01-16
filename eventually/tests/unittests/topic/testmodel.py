@@ -49,9 +49,7 @@ class TopicModelTestCase(TestCase):
                                                         name="testcurriculum",
                                                         goals=["goal1", "goal2"],
                                                         description="t_descr",
-                                                        team=team,
-                                                        mentors=[custom_user_first,
-                                                                 custom_user_second])
+                                                        team=team)
 
 
             topic = Topic(id=11,
