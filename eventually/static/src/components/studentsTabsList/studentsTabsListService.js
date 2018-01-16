@@ -1,97 +1,10 @@
-const getMentorStudentsList = () => {
+import axios from 'axios';
 
-    return [
-        {
-            'id': 1,
-            'first_name': 'John',
-            'last_name': 'Doe',
-            'avatar': 'johndoe'
-        },
-        {
-            'id': 2,
-            'first_name': 'Eric',
-            'last_name': 'Moreno',
-            'avatar': 'ericmoreno'
-        },
-        {
-            'id': 3,
-            'first_name': 'Mark',
-            'last_name': 'Smith',
-            'avatar': 'marksmith'
-        }
-    ];
-};
+const appPath = '/api/v1/chat/';
 
-const getAllStudentsList = () => {
-
-    return [
-        {
-            'id': 1,
-            'first_name': 'John',
-            'last_name': 'Doe',
-            'avatar': 'johndoe'
-        },
-        {
-            'id': 2,
-            'first_name': 'Eric',
-            'last_name': 'Moreno',
-            'avatar': 'ericmoreno'
-        },
-        {
-            'id': 3,
-            'first_name': 'Mark',
-            'last_name': 'Smith',
-            'avatar': 'marksmith'
-        },
-        {
-            'id': 4,
-            'first_name': 'Jacob',
-            'last_name': 'Anderson',
-            'avatar': 'jacobanderson'
-        },
-        {
-            'id': 5,
-            'first_name': 'Matthew',
-            'last_name': 'Bellamy',
-            'avatar': 'matthewbellamy'
-        },
-        {
-            'id': 6,
-            'first_name': 'Jared',
-            'last_name': 'Leto',
-            'avatar': 'jaredleto'
-        },
-        {
-            'id': 7,
-            'first_name': 'Kurt',
-            'last_name': 'Cobain',
-            'avatar': 'kurtcobain'
-        }
-    ];
-};
-
-const getAvailableStudentsList = () => {
-
-    return [
-        {
-            'id': 5,
-            'first_name': 'Matthew',
-            'last_name': 'Bellamy',
-            'avatar': 'matthewbellamy'
-        },
-        {
-            'id': 6,
-            'first_name': 'Jared',
-            'last_name': 'Leto',
-            'avatar': 'jaredleto'
-        },
-        {
-            'id': 7,
-            'first_name': 'Kurt',
-            'last_name': 'Cobain',
-            'avatar': 'kurtcobain'
-        }
-    ];
+const getStudentsList = (chosenTopic, isTopicDone, fromDate, toDate) => {
+    const getStudentsUrl = `${appPath}?topic=${chosenTopic}&is_done${isTopicDone}&from${fromDate}&to${toDate}/`;
+    return axios.get(getStudentsUrl);
 };
 
 const getCurriculumTopics = () => {
@@ -133,4 +46,4 @@ const getCurriculumTopics = () => {
     ];
 };
 
-export { getMentorStudentsList, getAllStudentsList, getAvailableStudentsList, getCurriculumTopics};
+export {getStudentsList, getCurriculumTopics};
