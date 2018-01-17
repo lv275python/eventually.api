@@ -4,7 +4,7 @@ Comment Model Test.
 This module provides complete testing for all Comment's model functions.
 """
 import datetime
-from unittest import mock, skip
+from unittest import mock
 from django.test import TestCase
 from django.utils import timezone
 from authentication.models import CustomUser
@@ -13,7 +13,7 @@ from team.models import Team
 
 TEST_TIME = datetime.datetime(2017, 10, 30, 8, 15, 12, 0, tzinfo=timezone.utc)
 
-@skip
+
 class CommentModelTestCase(TestCase):
     """TestCase for providing Comment model testing."""
 
@@ -22,9 +22,14 @@ class CommentModelTestCase(TestCase):
         with mock.patch('django.utils.timezone.now') as mock_time:
             mock_time.return_value = TEST_TIME
             custom_user = CustomUser(id=2000,
-                                     email='email',
-                                     password='123456')
+                                     email='email.customuser@test.test')
+            custom_user.set_password('123456')
             custom_user.save()
+
+            receiver = CustomUser(id=1500,
+                                  email='email.receiver@test.test')
+            receiver.set_password("123456789")
+            receiver.save()
 
             team = Team(id=1000,
                         owner=custom_user,
@@ -35,13 +40,16 @@ class CommentModelTestCase(TestCase):
             comment = Comment(id=100,
                               team=team,
                               author=custom_user,
-                              text='football')
+                              text='football',
+                              receiver=receiver)
             comment.save()
 
             comment = Comment(id=200,
                               team=team,
                               author=custom_user,
-                              text='tennis')
+                              text='tennis',
+                              receiver=receiver
+                              )
             comment.save()
 
     def test_str(self):
@@ -55,7 +63,8 @@ class CommentModelTestCase(TestCase):
                                "'event': None, "\
                                "'task': None, " \
                                "'vote': None, " \
-                               "'author': 2000"
+                               "'author': 2000, " \
+                               "'receiver': 1500"
 
         self.assertEqual(comment.__str__(), expected_comment_str)
 
@@ -78,7 +87,8 @@ class CommentModelTestCase(TestCase):
             "event": None,
             "task": None,
             "vote": None,
-            "author": 2000
+            "author": 2000,
+            "receiver": 1500
         }
 
         comment_dict = comment.to_dict()

@@ -22,12 +22,28 @@ class TeamModelTestCase(TestCase):
         with mock.patch('django.utils.timezone.now') as mock_time:
             mock_time.return_value = TEST_TIME
 
+            custom_user = CustomUser(id=301,
+                                     first_name='Homer',
+                                     last_name='Simpson',
+                                     middle_name='Jay',
+                                     email='member2@gmail.com')
+            custom_user.set_password('donuts')
+            custom_user.save()
+
+            custom_user = CustomUser(id=401,
+                                     first_name='Ned',
+                                     last_name='Flanders',
+                                     middle_name='HeyDiddlyHo',
+                                     email='member3@gmail.com')
+            custom_user.set_password('niceday')
+            custom_user.save()
+
             custom_user = CustomUser(id=101,
                                      first_name='john',
                                      last_name='doe',
                                      middle_name='eric',
-                                     email='email',
-                                     password='123456')
+                                     email='email')
+            custom_user.set_password('123456')
             custom_user.save()
 
             members = [custom_user]
@@ -128,7 +144,7 @@ class TeamModelTestCase(TestCase):
         Test for updating only a few attributes.
         """
 
-        actual_team = Team.get_by_id(101)
+        actual_team = Team.objects.get(id=101)
 
         actual_team.update(name='somename3', description='updated description')
         expected_team = Team.objects.get(id=101)
@@ -141,10 +157,11 @@ class TeamModelTestCase(TestCase):
         Test for updating all attributes.
         """
 
-        actual_team = Team.get_by_id(101)
+        actual_team = Team.objects.get(id=101)
         new_owner = CustomUser.objects.create(id=201,
-                                              email='exp@gmail.com',
-                                              password='123')
+                                              email='exp@gmail.com')
+        new_owner.set_password('123')
+        new_owner.save()
         new_members = [CustomUser.objects.get(id=101), new_owner]
         actual_team.update(owner=new_owner,
                            members_add=[new_owner],
@@ -157,6 +174,24 @@ class TeamModelTestCase(TestCase):
         self.assertEqual(actual_team.name, 'tennis')
         self.assertEqual(actual_team.image, 'link11')
         self.assertEqual(actual_team.description, 'very fun game')
+
+    def test_team_member_del_update(self):
+        """
+        Method that tests `update` method of certain Team instance.
+        Test for updating only `members_del` attribute.
+        """
+
+        actual_team = Team.objects.get(id=101)
+        first_member = actual_team.members.get(id=101)
+        second_member = CustomUser.objects.get(id=301)
+
+        actual_team.members.add(second_member)
+        actual_team.update(members_del=[first_member])
+        expected_members = [second_member]
+
+        actual_team_members = list(actual_team.members.all())
+        expected_team_members = list(expected_members)
+        self.assertListEqual(actual_team_members, expected_team_members)
 
     def test_team_success_delete(self):
         """
@@ -174,7 +209,6 @@ class TeamModelTestCase(TestCase):
 
         is_team_delete = Team.delete_by_id(188)
         self.assertIsNone(is_team_delete)
-
 
     def test_team_repr(self):
         """Method that test `__repr__` magic method of Team instance object."""
@@ -194,7 +228,26 @@ class TeamModelTestCase(TestCase):
                        "'description': 'somedescription', " \
                        "'image': 'link1', " \
                        "'created_at': 1508044512, " \
-                       "'updated_at': 1508044512, "\
+                       "'updated_at': 1508044512, " \
                        "'owner_id': 101, " \
                        "'members_id': [101]"
         self.assertMultiLineEqual(actual_str, expected_str)
+
+    def test_del_users(self):
+        """
+        Method that tests `del_users` method of the certain Team instance.
+
+        Test for removing certain members.
+        """
+
+        team = Team.objects.get(id=101)
+        first_member = team.members.get(id=101)
+        second_member = CustomUser.objects.get(id=301)
+        third_member = CustomUser.objects.get(id=401)
+
+        team.members.add(second_member, third_member)
+        team.del_users([first_member, third_member])
+
+        actual_members = list(team.members.all())
+        expected_members = list([second_member])
+        self.assertListEqual(actual_members, expected_members)

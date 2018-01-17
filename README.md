@@ -8,9 +8,15 @@ This is the source code of the service which is called "eventually". This app pr
 * PostgreSQL (9.5.9)
 * Django (1.11.6)
 * NodeJS (6.11.4)
+* Redis (3.0.6)
 
 ## Install
 For the next steps of service installation, you will need setup of Ubuntu OS
+
+### Install redis-server on your local machine:
+```
+sudo apt-get install redis-server
+```
 
 ### Install and configure PostgreSQL server on your local machine:
 ```

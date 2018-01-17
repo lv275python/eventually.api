@@ -10,7 +10,7 @@ from django.test import TestCase, Client
 from authentication.models import CustomUser
 from django.core.urlresolvers import reverse
 from django.utils import timezone
-from unittest import mock, skip
+from unittest import mock
 from comment.models import Comment
 from event.models import Event
 from task.models import Task
@@ -22,7 +22,7 @@ from comment.views import CommentView
 
 TEST_TIME = datetime.datetime(2017, 10, 30, 8, 15, 12, 0, tzinfo=timezone.utc)
 
-@skip
+
 class Comment_View_Test(TestCase):
     """TestCase for providing Comment view testing."""
     def setUp(self):
@@ -30,6 +30,10 @@ class Comment_View_Test(TestCase):
         custom_user = CustomUser.objects.create(id=100, email='email@gmail.com', is_active=True)
         custom_user.set_password('Aa123456')
         custom_user.save()
+
+        receiver = CustomUser.objects.create(id=1500, email='receiver@gmail.com', is_active=True)
+        receiver.set_password('123456')
+        receiver.save()
 
         second_custom_user = CustomUser.objects.create(id=200, email='qwerty@gmail.com', is_active=True)
         second_custom_user.set_password('Aaqwerty11')
@@ -59,16 +63,18 @@ class Comment_View_Test(TestCase):
                                    event=event,
                                    vote_type=0)
 
+
+
         with mock.patch('django.utils.timezone.now') as mock_time:
             mock_time.return_value = TEST_TIME
             first_comment = Comment.objects.create(id=100, team=team, author=custom_user,
-                                                   text='football')
+                                                   text='football', receiver=receiver)
             second_comment = Comment.objects.create(id=200, team=team, event=event, author=second_custom_user,
-                                                    text='some_sport')
+                                                    text='some_sport', receiver=receiver)
             third_comment = Comment.objects.create(id=300, team=team, event=event, task=task, author=second_custom_user,
-                                                   text='any_sport')
+                                                   text='any_sport', receiver=receiver)
             fourth_comment = Comment.objects.create(id=400, team=team, event=event, vote=vote, author=second_custom_user,
-                                                    text='sport')
+                                                    text='sport', receiver=receiver)
 
     def test_get_success_with_event(self):
         """
@@ -83,7 +89,8 @@ class Comment_View_Test(TestCase):
             "event": 1000,
             "task": None,
             "vote": None,
-            "author": 200
+            "author": 200,
+            "receiver": 1500
         }
         url = reverse('event:comment:detail', args=[1000, 1000, 200])
         response = self.client.get(url)

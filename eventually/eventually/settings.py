@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'item',
     'curriculum',
     'amazons3',
-    'mentor'
+    'mentor',
+    'chat'
 ]
 
 AUTH_USER_MODEL = 'authentication.CustomUser'

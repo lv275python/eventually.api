@@ -9,7 +9,6 @@ import re
 import imghdr
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from utils.responsehelper import (RESPONSE_400_INVALID_DATA)
 
 PASSWORD_REG_EXP = r'^(?=.*?\d)(?=.*?[A-Z])(?=.*?[a-z])[A-Za-z\d]*$'
 STR_MIN_LENGTH = 0
@@ -93,7 +92,7 @@ def required_keys_validator(data, keys_required, strict=True):
     :type keys_required: set or list or tuple
 
     :param strict: shows the status of strict method of comparing keys
-                   in input data with requred keys in method.
+                   in input data with required keys in method.
     :type strict: Bool
 
     :return: `True` if data is valid and `False` if it is not valid.
@@ -328,16 +327,16 @@ def comment_data_validator(data, required_keys):
     is_data_valid = len(errors) == 0
     return is_data_valid
 
-def valid_date_type(datec):
+def valid_date_type(date):
     """custom argparse *date* type for user dates values given from the command line"""
-    if not isinstance(datec, str):
+    if not isinstance(date, str):
         return False
     for mask in ['%Y%m%d', '%Y-%m-%d', '%d%m%Y', '%m%d%Y']:
         try:
-            datetime.datetime.strptime(datec, mask)
+            datetime.datetime.strptime(date, mask)
             return True
         except ValueError:
-            return RESPONSE_400_INVALID_DATA
+            pass
 
 def profile_data_validator(data):
     """
@@ -490,6 +489,42 @@ def task_data_validate_update(data):
 
     is_data_valid = len(errors) == 0
     return is_data_valid
+
+
+def mentor_validator(data, required_keys):
+    """
+    Function that provides complete mentorStudent model data validation
+
+    :param data: the data that is received by task view.
+    :type data: dict
+
+    :return: data if data is valid and `None` if it is not
+    """
+
+    if not data:
+        return False
+
+    errors = []
+    if not required_keys_validator(data=data, keys_required=required_keys, strict=False):
+        errors.append('required keys error')
+
+    vote_fields = ["mentor", "student", "topic", "is_done"]
+
+    filtered_data = {key: data.get(key) for key in vote_fields}
+
+    validation_rules = {'mentor': lambda val: isinstance(val, int),
+                        'student': lambda val: isinstance(val, int),
+                        'topic': lambda val: isinstance(val, int),
+                        'is_done': lambda val: isinstance(val, bool)}
+
+    for key, value in filtered_data.items():
+        if value is not None:
+            if not validation_rules[key](value):
+                errors.append(key + ' field error')
+
+    is_data_valid = len(errors) == 0
+    return is_data_valid
+
 
 def image_validator(image_file):
     """

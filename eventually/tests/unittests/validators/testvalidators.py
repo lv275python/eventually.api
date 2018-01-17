@@ -10,6 +10,7 @@ from PIL import Image
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from unittest import mock
+from django.http import HttpResponse
 
 IMAGE_NAME = "testimage.png"
 IMAGE_MIME_TYPE = "image/png"
@@ -108,6 +109,14 @@ class ValidatorsTestCase(TestCase):
         my_str = string_validator('word', 1, 3)
         self.assertFalse(my_str)
 
+    def test_login_validator_success(self):
+        """Method that tests `login_validator`."""
+        password = 'fgh1DFvd2'
+
+        is_valid = password_validator(password)
+
+        self.assertTrue(is_valid)
+
     def test_password_validator_success(self):
         """Method that tests `password_validator`."""
         password = 'fgh1DFvd2'
@@ -121,6 +130,556 @@ class ValidatorsTestCase(TestCase):
         password = 'fghDFvd'
 
         is_valid = password_validator(password)
+
+        self.assertIsNone(is_valid)
+
+    def test_password_validator_type_error_fail(self):
+        """
+        Method that tests `password_validator`,
+        when `password` parameter has wrong type (not string).
+        """
+        password = 12
+
+        is_valid = password_validator(password)
+
+        self.assertIsNone(is_valid)
+
+    def test_login_validate_success(self):
+        """
+        Method that tests `login_validate`.
+        """
+        data = {"email": "example@gmail.com",
+                "password": "some_password"}
+
+        is_valid = login_validate(data)
+
+        self.assertTrue(is_valid)
+
+    def test_login_validate_fail_empty_data(self):
+        """
+        Method that tests `login_validate`,
+        when `data` is empty dict.
+        """
+        data = {}
+
+        is_valid = login_validate(data)
+
+        self.assertFalse(is_valid)
+
+    def test_login_validate_fail_data_without_email(self):
+        """
+        Method that tests `login_validate`,
+        when `data` does not contain `email` key.
+        """
+        data = {"password": "some_password"}
+
+        is_valid = login_validate(data)
+
+        self.assertFalse(is_valid)
+
+    def test_login_validate_fail_invalid_email(self):
+        """
+        Method that tests `login_validate`,
+        when `data['email']` does not contain `@` symbol.
+        """
+        data = {"email": "example_gmail.com",
+                "password": "some_password"}
+
+        is_valid = login_validate(data)
+
+        self.assertFalse(is_valid)
+
+    def test_task_data_validate_create_success(self):
+        """
+        Method that tests `task_data_validate_create`.
+        """
+        data = {"title": "some_title",
+                "description": "some_description",
+                "status": 2,
+                "users": [1, 2, 3]}
+
+        is_valid = task_data_validate_create(data)
+
+        self.assertTrue(is_valid)
+
+    def test_task_data_validate_create_fail_data_without_all_required_keys(self):
+        """
+        Method that tests `task_data_validate_create`,
+        when `data` does not contain all `required_keys`.
+        """
+        data = {"title": "some_title",
+                "description": "some_description"}
+
+        is_valid = task_data_validate_create(data)
+
+        self.assertFalse(is_valid)
+
+    def test_task_data_validate_create_fail_title_invalid_type(self):
+        """
+        Method that tests `task_data_validate_create`,
+        when `data['title']` is not a string.
+        """
+        data = {"title": 222,
+                "description": "some_description",
+                "status": "some_status"}
+
+        is_valid = task_data_validate_create(data)
+
+        self.assertFalse(is_valid)
+
+    def test_task_data_validate_create_fail_description_invalid_type(self):
+        """
+        Method that tests `task_data_validate_create`,
+        when `data['description']` is not a string.
+        """
+        data = {"title": "some_title",
+                "description": 222,
+                "status": "some_status"}
+
+        is_valid = task_data_validate_create(data)
+
+        self.assertFalse(is_valid)
+
+    def test_task_data_validate_create_fail_users_invalid_type(self):
+        """
+        Method that tests `task_data_validate_create`,
+        when `data['users']` is neither list nor tuple.
+        """
+        data = {"title": "some_title",
+                "description": "some_description",
+                "status": "some_status",
+                "users": 222}
+
+        is_valid = task_data_validate_create(data)
+
+        self.assertFalse(is_valid)
+
+    def test_task_data_validate_create_fail_status_outside_range(self):
+        """
+        Method that tests `task_data_validate_create`,
+        when `data['status']` is outside the `status_range` (0, 1, 2).
+        """
+        data = {"title": "some_title",
+                "description": "some_description",
+                "status": 10}
+
+        is_valid = task_data_validate_create(data)
+
+        self.assertFalse(is_valid)
+
+    def test_paginator_page_validator_success_valid_int(self):
+        """
+        Method that tests `paginator_page_validator`,
+        when type of `page_number` is int.
+        """
+        page_number = 2
+        pages_amount = 3
+
+        is_valid = paginator_page_validator(page_number, pages_amount)
+
+        self.assertTrue(is_valid)
+
+    def test_paginator_page_validator_success_valid_str(self):
+        """
+        Method that tests `paginator_page_validator`,
+        when type of `page_number` is str, which consist of digits.
+        """
+        page_number = '2'
+        pages_amount = 3
+
+        is_valid = paginator_page_validator(page_number, pages_amount)
+
+        self.assertTrue(is_valid)
+
+    def test_paginator_page_validator_fail(self):
+        """
+        Method that tests `paginator_page_validator`,
+        when `page_number` is outside the `pages_amount`.
+        """
+        page_number = 10
+        pages_amount = 3
+
+        is_valid = paginator_page_validator(page_number, pages_amount)
+
+        self.assertFalse(is_valid)
+
+    def test_chat_message_validator_success(self):
+        """
+        Method that tests `chat_message_validator`.
+        """
+        data = {"text": "some_text"}
+        required_keys = ["text"]
+
+        is_valid = chat_message_validator(data, required_keys)
+
+        self.assertTrue(is_valid)
+
+    def test_chat_message_validator_fail_data_without_all_required_keys(self):
+        """
+        Method that tests `chat_message_validator`,
+        when `data` does not contain all `required_keys`.
+        """
+        data = {}
+        required_keys = ["text"]
+
+        is_valid = chat_message_validator(data, required_keys)
+
+        self.assertFalse(is_valid)
+
+    def test_chat_message_validator_fail_text_invalid_type(self):
+        """
+        Method that tests `chat_message_validator`,
+        when `data['text']` is not a string.
+        """
+        data = {"text": 222}
+        required_keys = ["text"]
+
+        is_valid = chat_message_validator(data, required_keys)
+
+        self.assertFalse(is_valid)
+
+    def test_chat_message_validator_fail_text_invalid_length(self):
+        """
+        Method that tests `chat_message_validator`,
+        when `data['text']` has length less than `min_length` (1).
+        """
+        data = {"text": ""}
+        required_keys = ["text"]
+
+        is_valid = chat_message_validator(data, required_keys)
+
+        self.assertFalse(is_valid)
+
+    def test_comment_data_validator_success(self):
+        """
+        Method that tests `comment_data_validator`.
+        """
+        data = {'text': "some_text",
+                'team': 1,
+                'event': 2,
+                'vote': 3,
+                'task': 4,
+                'author': 5}
+        required_keys = ['text', 'team', 'event', 'vote', 'task', 'author']
+
+        is_valid = comment_data_validator(data, required_keys)
+
+        self.assertTrue(is_valid)
+
+    def test_comment_data_validator_fail_data_without_all_required_keys(self):
+        """
+        Method that tests `comment_data_validator`,
+        when `data` does not contain all `required_keys`.
+        """
+        data = {"name": "Some_name",
+                "team": "some_team",
+                "text": "some_text"}
+        required_keys = ["name", "team", "some_key", "text"]
+
+        is_valid = comment_data_validator(data, required_keys)
+
+        self.assertFalse(is_valid)
+
+    def test_comment_data_validator_fail_text_invalid_type(self):
+        """
+        Method that tests `comment_data_validator`,
+        when `data['text']` is not a string.
+        """
+        data = {'text': 222,
+                'team': 1,
+                'event': 2,
+                'vote': 3,
+                'task': 4,
+                'author': 5}
+        required_keys = ['text', 'team', 'event', 'vote', 'task', 'author']
+
+        is_valid = comment_data_validator(data, required_keys)
+
+        self.assertFalse(is_valid)
+
+    def test_comment_data_validator_fail_team_invalid_type(self):
+        """
+        Method that tests `comment_data_validator`,
+        when `data['team']` is not an int.
+        """
+        data = {'text': "some_text",
+                'team': "abc",
+                'event': 2,
+                'vote': 3,
+                'task': 4,
+                'author': 5}
+        required_keys = ['text', 'team', 'event', 'vote', 'task', 'author']
+
+        is_valid = comment_data_validator(data, required_keys)
+
+        self.assertFalse(is_valid)
+
+    def test_comment_data_validator_fail_event_invalid_type(self):
+        """
+        Method that tests `comment_data_validator`,
+        when `data['event']` is not an int.
+        """
+        data = {'text': "some_text",
+                'team': 2,
+                'event': "abc",
+                'vote': 3,
+                'task': 4,
+                'author': 5}
+        required_keys = ['text', 'team', 'event', 'vote', 'task', 'author']
+
+        is_valid = comment_data_validator(data, required_keys)
+
+        self.assertFalse(is_valid)
+
+    def test_comment_data_validator_fail_vote_invalid_type(self):
+        """
+        Method that tests `comment_data_validator`,
+        when `data['vote']` is not an int.
+        """
+        data = {'text': "some_text",
+                'team': 2,
+                'event': 3,
+                'vote': "abc",
+                'task': 4,
+                'author': 5}
+        required_keys = ['text', 'team', 'event', 'vote', 'task', 'author']
+
+        is_valid = comment_data_validator(data, required_keys)
+
+        self.assertFalse(is_valid)
+
+    def test_comment_data_validator_fail_task_invalid_type(self):
+        """
+        Method that tests `comment_data_validator`,
+        when `data['task']` is not an int.
+        """
+        data = {'text': "some_text",
+                'team': 2,
+                'event': 3,
+                'vote': 4,
+                'task': "abc",
+                'author': 5}
+        required_keys = ['text', 'team', 'event', 'vote', 'task', 'author']
+
+        is_valid = comment_data_validator(data, required_keys)
+
+        self.assertFalse(is_valid)
+
+    def test_comment_data_validator_fail_author_invalid_type(self):
+        """
+        Method that tests `comment_data_validator`,
+        when `data['author']` is not an int.
+        """
+        data = {'text': "some_text",
+                'team': 2,
+                'event': 3,
+                'vote': 4,
+                'task': 5,
+                'author': "abc"}
+        required_keys = ['text', 'team', 'event', 'vote', 'task', 'author']
+
+        is_valid = comment_data_validator(data, required_keys)
+
+        self.assertFalse(is_valid)
+
+    def test_task_data_validate_update_success(self):
+        """
+        Method that tests `task_data_validate_update`.
+        """
+        data = {'title': "some_title",
+                'description': "some_description",
+                'status': 1,
+                'add_users': [1, 2, 3],
+                'remove_users': [4, 5, 6]}
+
+        is_valid = task_data_validate_update(data)
+
+        self.assertTrue(is_valid)
+
+    def test_task_data_validate_update_fail_title_invalid_type(self):
+        """
+        Method that tests `task_data_validate_update`,
+        when `data['title']` is not a string.
+        """
+        data = {'title': 222,
+                'description': "some_description",
+                'status': 1,
+                'add_users': [1, 2, 3],
+                'remove_users': [4, 5, 6]}
+
+        is_valid = task_data_validate_update(data)
+
+        self.assertFalse(is_valid)
+
+    def test_task_data_validate_update_fail_description_invalid_type(self):
+        """
+        Method that tests `task_data_validate_update`,
+        when `data['description']` is not a string.
+        """
+        data = {'title': "some_title",
+                'description': 222,
+                'status': 1,
+                'add_users': [1, 2, 3],
+                'remove_users': [4, 5, 6]}
+
+        is_valid = task_data_validate_update(data)
+
+        self.assertFalse(is_valid)
+
+    def test_task_data_validate_update_fail_status_invalid_type(self):
+        """
+        Method that tests `task_data_validate_update`,
+        when `data['status']` is not an int.
+        """
+        data = {'title': "some_title",
+                'description': "some_description",
+                'status': "some_status",
+                'add_users': [1, 2, 3],
+                'remove_users': [4, 5, 6]}
+
+        is_valid = task_data_validate_update(data)
+
+        self.assertFalse(is_valid)
+
+    def test_task_data_validate_update_fail_add_users_invalid_type(self):
+        """
+        Method that tests `task_data_validate_update`,
+        when `data['add_users']` is neither list nor tuple.
+        """
+        data = {'title': "some_title",
+                'description': "some_description",
+                'status': 1,
+                'add_users': "[1, 2, 3]",
+                'remove_users': [4, 5, 6]}
+
+        is_valid = task_data_validate_update(data)
+
+        self.assertFalse(is_valid)
+
+    def test_task_data_validate_update_fail_remove_users_invalid_type(self):
+        """
+        Method that tests `task_data_validate_update`,
+        when `data['remove_users']` is neither list nor tuple.
+        """
+        data = {'title': "some_title",
+                'description': "some_description",
+                'status': 1,
+                'add_users': [1, 2, 3],
+                'remove_users': "[4, 5, 6]"}
+
+        is_valid = task_data_validate_update(data)
+
+        self.assertFalse(is_valid)
+
+    def test_profile_data_validator_success(self):
+        """
+        Method that tests `profile_data_validator`.
+        """
+        data = {"hobby": "swimming",
+                "birthday": "180110",
+                "photo": "png"}
+
+        is_valid = profile_data_validator(data)
+
+        self.assertTrue(is_valid)
+
+    def test_profile_data_validator_fail_hobby_invalid_type(self):
+        """
+        Method that tests `profile_data_validator`,
+        when `data['hobby']` is not a string.
+        """
+        data = {"hobby": 222}
+
+        is_valid = profile_data_validator(data)
+
+        self.assertIsNone(is_valid)
+
+    def test_profile_data_validator_fail_birthday_invalid_type(self):
+        """
+        Method that tests `profile_data_validator`,
+        when `data['birthday']` is not a string.
+        """
+        data = {"birthday": 222}
+
+        is_valid = profile_data_validator(data)
+
+        self.assertIsNone(is_valid)
+
+    def test_profile_data_validator_fail_photo_invalid_type(self):
+        """
+        Method that tests `profile_data_validator`,
+        when `data['photo']` is not a string.
+        """
+        data = {"photo": 222}
+
+        is_valid = profile_data_validator(data)
+
+        self.assertIsNone(is_valid)
+
+    def test_valid_date_type_success_valid_format_Ymd(self):
+        """
+        Method that tests `valid_date_type`,
+        when `date` format matches '%Y%m%d'.
+        """
+        date = "20180110"
+
+        is_valid = valid_date_type(date)
+
+        self.assertTrue(is_valid)
+
+    def test_valid_date_type_success_valid_format_Y_m_d(self):
+        """
+        Method that tests `valid_date_type`,
+        when `date` format matches '%Y-%m-%d'.
+        """
+        date = "2018-01-10"
+
+        is_valid = valid_date_type(date)
+
+        self.assertTrue(is_valid, True)
+
+    def test_valid_date_type_success_valid_format_dmY(self):
+        """
+        Method that tests `valid_date_type`,
+        when `date` format matches '%d%m%Y'.
+        """
+        date = "10012018"
+
+        is_valid = valid_date_type(date)
+
+        self.assertTrue(is_valid, True)
+
+    def test_valid_date_type_success_valid_format_mdY(self):
+        """
+        Method that tests `valid_date_type`,
+        when `date` format matches '%m%d%Y'.
+        """
+        date = "01102018"
+
+        is_valid = valid_date_type(date)
+
+        self.assertTrue(is_valid, True)
+
+    def test_valid_date_type_fail_date_invalid_type(self):
+        """
+        Method that tests `valid_date_type`,
+        when `date` is not a string.
+        """
+        date = 222
+
+        is_valid = valid_date_type(date)
+
+        self.assertFalse(is_valid)
+
+    def test_valid_date_type_fail_invalid_format(self):
+        """
+        Method that tests `valid_date_type`,
+        when `date` has invalid format
+        (valid formats: '%Y%m%d', '%Y-%m-%d', '%d%m%Y', '%m%d%Y').
+        """
+        date = "abcdef"
+
+        is_valid = valid_date_type(date)
 
         self.assertIsNone(is_valid)
 
@@ -183,12 +742,10 @@ class ValidatorsTestCase(TestCase):
 
     def test_required_keys_validator_strict_fail(self):
         """Method that tests `required_keys_validator`."""
-        data = {
-            "name": "Some_name",
-            "email": "some_email",
-            "adress": "some_city",
-            "status": "some_status"
-        }
+        data = {"name": "Some_name",
+                "email": "some_email",
+                "adress": "some_city",
+                "status": "some_status"}
         keys_required = ["name", "email"]
 
         is_valid = required_keys_validator(data, keys_required)
@@ -215,12 +772,10 @@ class ValidatorsTestCase(TestCase):
 
     def test_updating_email_validate_success(self):
         """Method that tests `reset_password_validate`."""
-        data = {
-            "name": "Some_name",
-            "email": "example@gmail.com",
-            "adress": "some_city",
-            "status": "some_status"
-        }
+        data = {"name": "Some_name",
+                "email": "example@gmail.com",
+                "adress": "some_city",
+                "status": "some_status"}
 
         requred_key = "email"
 
@@ -230,12 +785,10 @@ class ValidatorsTestCase(TestCase):
 
     def test_updating_email_validate_fail(self):
         """Method that tests `reset_password_validate`."""
-        data = {
-            "name": "Some_name",
-            "email": "some_email",
-            "adress": "some_city",
-            "status": "some_status"
-        }
+        data = {"name": "Some_name",
+                "email": "some_email",
+                "adress": "some_city",
+                "status": "some_status"}
 
         requred_key = "email"
 
@@ -243,14 +796,57 @@ class ValidatorsTestCase(TestCase):
 
         self.assertIsNone(is_valid)
 
+    def test_updating_email_validate_required_keys(self):
+        """
+        Method that tests `updating_email_validate`,
+        when `data` does not contain key as value of parameter `email`.
+        """
+        data = {"name": "Some_name",
+                "email": "some_email",
+                "adress": "some_city",
+                "password": "some_password"}
+        email = "ffffff"
+
+        is_valid = updating_email_validate(data, email)
+
+        self.assertIsNone(is_valid)
+
+    def test_updating_email_validate_string_validator_email_invalid_type(self):
+        """
+        Method that tests `updating_email_validate`,
+        when value of `data['email']` is not a string.
+        """
+        data = {"name": "Some_name",
+                "email": 123,
+                "adress": "some_city",
+                "password": "some_password"}
+        email = "email"
+
+        is_valid = updating_email_validate(data, email)
+
+        self.assertIsNone(is_valid)
+
+    def test_updating_email_validate_string_validator_email_invalid_length(self):
+        """
+        Method that tests `updating_email_validate`,
+        when value of `data['email']` has length less than `min_length` (4).
+        """
+        data = {"name": "Some_name",
+                "email": "s",
+                "adress": "some_city",
+                "password": "some_password"}
+        email = "email"
+
+        is_valid = updating_email_validate(data, email)
+
+        self.assertIsNone(is_valid)
+
     def test_updating_password_validate_success(self):
         """Method that tests `reset_password_validate`."""
-        data = {
-            "name": "Some_name",
-            "email": "example@gmail.com",
-            "adress": "some_city",
-            "password": "aaaA1"
-        }
+        data = {"name": "Some_name",
+                "email": "example@gmail.com",
+                "adress": "some_city",
+                "password": "aaaA1"}
 
         requred_key = "password"
 
@@ -260,16 +856,59 @@ class ValidatorsTestCase(TestCase):
 
     def test_updating_password_validate_fail(self):
         """Method that tests `reset_password_validate`."""
-        data = {
-            "name": "Some_name",
-            "email": "some_email",
-            "adress": "some_city",
-            "password": "somepassword"
-        }
+        data = {"name": "Some_name",
+                "email": "some_email",
+                "adress": "some_city",
+                "password": "somepassword"}
 
         requred_key = "password"
 
         is_valid = updating_password_validate(data, requred_key)
+
+        self.assertIsNone(is_valid)
+
+    def test_updating_password_validate_required_keys(self):
+        """
+        Method that tests `updating_password_validate`,
+        when `data` does not contain key as value of parameter `new_password`.
+        """
+        data = {"name": "Some_name",
+                "email": "some_email",
+                "adress": "some_city",
+                "password": "somepassword"}
+        new_password = "ffffff"
+
+        is_valid = updating_password_validate(data, new_password)
+
+        self.assertIsNone(is_valid)
+
+    def test_updating_password_validate_string_validator_password_invalid_type(self):
+        """
+        Method that tests `updating_password_validate`,
+        when value of `data['password']` is not a string.
+        """
+        data = {"name": "Some_name",
+                "email": "some_email",
+                "adress": "some_city",
+                "password": 123}
+        new_password = "password"
+
+        is_valid = updating_password_validate(data, new_password)
+
+        self.assertIsNone(is_valid)
+
+    def test_updating_password_validate_string_validator_password_invalid_length(self):
+        """
+        Method that tests `updating_password_validate`,
+        when value of `data['password']` has length less than min_length (4).
+        """
+        data = {"name": "Some_name",
+                "email": "some_email",
+                "adress": "some_city",
+                "password": "s"}
+        new_password = "password"
+
+        is_valid = updating_password_validate(data, new_password)
 
         self.assertIsNone(is_valid)
 
