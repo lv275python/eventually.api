@@ -37,11 +37,13 @@ export default class StudentsTabsList extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        const nextFilterBar = nextState.filtersBar;
-        const currentFilterBar = this.state.filtersBar;
 
-        if (!isObjectsEqual(nextFilterBar, currentFilterBar)) {
+        if (!isObjectsEqual(nextState.filtersBar, this.state.filtersBar)) {
             this.getData();
+            return true;
+        }
+
+        if (!isObjectsEqual(nextState.studentsList, this.state.studentsList)) {
             return true;
         }
 
