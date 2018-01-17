@@ -3,8 +3,9 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
 import UsersList from '../usersList/UsersList';
 import AssignTopicModal from '../assignTopicModal/AssignTopicModal';
-import { getStudentsList, getCurriculumTopics, postStudentList} from './studentsTabsListService';
+import {getStudentsList, getCurriculumTopics, postStudentList} from './studentsTabsListService';
 import StudentsTabsFiltersBar from './StudentsTabsFiltersBar';
+import {isObjectsEqual} from './helper';
 
 export default class StudentsTabsList extends React.Component {
 
@@ -36,20 +37,24 @@ export default class StudentsTabsList extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        console.log(nextState.filtersBar);
-        console.log(this.state.filtersBar);
-        if (!(this.state.filtersBar.topicValue == nextState.filtersBar.topicValue &&
-            this.state.filtersBar.isTopicDone == nextState.filtersBar.isTopicDone &&
-            this.state.filtersBar.fromDate == nextState.filtersBar.fromDate &&
-            this.state.filtersBar.toDate == nextState.filtersBar.toDate)) {
+        const nextFilterBar = nextState.filtersBar;
+        const currentFilterBar = this.state.filtersBar;
+
+        if (!isObjectsEqual(nextFilterBar, currentFilterBar)) {
             this.getData();
             return true;
         }
+
         return false;
     }
 
     getData = () => {
-        getStudentsList(this.state.filtersBar.topicValue, this.state.filtersBar.isTopicDone, this.state.filtersBar.fromDate, this.state.filtersBar.toDate)
+        const chosenTopic = this.state.filtersBar.topicValue;
+        const isTopicDone = this.state.filtersBar.isTopicDone;
+        const fromDate = this.state.filtersBar.fromDate;
+        const toDate = this.state.filtersBar.toDate;
+
+        getStudentsList(chosenTopic, isTopicDone, fromDate, toDate)
             .then(response => {
                 const data = response.data;
                 this.setState({
@@ -95,21 +100,6 @@ export default class StudentsTabsList extends React.Component {
         postStudentList(this.state.chosenStudent, this.state.chosenTopic)
             .then(response => {
                 this.handleModalClose();
-            });
-    }
-
-    handleFilterBarChange = (filterParameters) => {
-        const chosenTopic = filterParameters.chosenTopic;
-        const isTopicDone = filterParameters.isTopicDone;
-        const fromDate = filterParameters.fromDate;
-        const toDate = filterParameters.toDate;
-
-        getStudentsList(chosenTopic, isTopicDone, fromDate, toDate)
-            .then((response) => {
-                const data = response.data;
-                this.setState({
-                    studentsList: data.students
-                });
             });
     }
 
@@ -168,7 +158,7 @@ export default class StudentsTabsList extends React.Component {
                     <Tab label="All students" value={1} />
                     <Tab label="Available students" value={2} />
                 </Tabs>
-                <StudentsTabsFiltersBar 
+                <StudentsTabsFiltersBar
                     topicValue={this.state.filtersBar.topicValue}
                     fromDate={this.state.filtersBar.fromDate}
                     toDate={this.state.filtersBar.toDate}
