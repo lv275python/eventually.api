@@ -38,7 +38,7 @@ class MentorStudent(AbstractModel):
     :type update_at: datetime
     """
 
-    mentor = models.ForeignKey(CustomUser, related_name='mentor')
+    mentor = models.ForeignKey(CustomUser, null=True, related_name='mentor')
     student = models.ForeignKey(CustomUser, related_name='student')
     topic = models.ForeignKey(Topic)
     is_done = models.BooleanField(default=False)
@@ -74,8 +74,8 @@ class MentorStudent(AbstractModel):
         }
 
     @staticmethod
-    def create(mentor, student, topic, is_done=False):
-        """
+    def create(student, topic, mentor=None, is_done=False):
+        """mentor=None,
         Static method that creates instance of MentorStudent class and creates database
         record with the accepted info.
 

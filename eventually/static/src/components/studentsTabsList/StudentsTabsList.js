@@ -16,7 +16,11 @@ export default class StudentsTabsList extends React.Component {
             chosenTopic: null,
             chosenStudent: null,
             isOneChosen: false,
-            studentsList: null,
+            studentsList: {
+                myStudents: [],
+                allStudents: [],
+                availableStudents: []
+            },
             curriculumTopics: null,
             filtersBar: {
                 topicValue: null,
@@ -28,10 +32,34 @@ export default class StudentsTabsList extends React.Component {
     }
 
     componentWillMount() {
-        this.setState({
-            studentsList: getStudentsList(),
-            curriculumTopics: getCurriculumTopics()
-        });
+        this.getData();
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        console.log(nextState.filtersBar);
+        console.log(this.state.filtersBar);
+        if (!(this.state.filtersBar.topicValue == nextState.filtersBar.topicValue &&
+            this.state.filtersBar.isTopicDone == nextState.filtersBar.isTopicDone &&
+            this.state.filtersBar.fromDate == nextState.filtersBar.fromDate &&
+            this.state.filtersBar.toDate == nextState.filtersBar.toDate)) {
+            this.getData();
+            return true;
+        }
+        return false;
+    }
+
+    getData = () => {
+        getStudentsList(this.state.filtersBar.topicValue, this.state.filtersBar.isTopicDone, this.state.filtersBar.fromDate, this.state.filtersBar.toDate)
+            .then(response => {
+                const data = response.data;
+                this.setState({
+                    studentsList: {
+                        myStudents: data.my_students,
+                        allStudents: data.all_students,
+                        availableStudents: data.available_students
+                    }
+                });
+            });
     }
 
     handleChange = (value) => {
@@ -88,7 +116,10 @@ export default class StudentsTabsList extends React.Component {
     handleFiltersTopicsChange = (event, index, value) => {
         this.setState({
             filtersBar: {
-                topicValue: value
+                topicValue: value,
+                isTopicDone: this.state.filtersBar.isTopicDone,
+                fromDate: this.state.filtersBar.fromDate,
+                toDate: this.state.filtersBar.toDate
             }
         });
     }
@@ -96,7 +127,10 @@ export default class StudentsTabsList extends React.Component {
     handleFiltersFromDateChange = (event, date) => {
         this.setState({
             filtersBar: {
-                fromDate: date
+                topicValue: this.state.filtersBar.topicValue,
+                isTopicDone: this.state.filtersBar.isTopicDone,
+                fromDate: date,
+                toDate: this.state.filtersBar.toDate
             }
         });
     }
@@ -104,6 +138,9 @@ export default class StudentsTabsList extends React.Component {
     handleFiltersToDateChange = (event, date) => {
         this.setState({
             filtersBar: {
+                topicValue: this.state.filtersBar.topicValue,
+                isTopicDone: this.state.filtersBar.isTopicDone,
+                fromDate: this.state.filtersBar.from,
                 toDate: date
             }
         });
@@ -112,7 +149,10 @@ export default class StudentsTabsList extends React.Component {
     handleFiltersIsDoneToggle = (event, isInputChecked) => {
         this.setState({
             filtersBar: {
-                isTopicDone: isInputChecked
+                topicValue: this.state.filtersBar.topicValue,
+                isTopicDone: isInputChecked,
+                fromDate: this.state.filtersBar.from,
+                toDate: this.state.filtersBar.toDate
             }
         });
     }
@@ -144,30 +184,30 @@ export default class StudentsTabsList extends React.Component {
                 >
                     <div>
                         <UsersList
-                            students={this.state.studentsList}
-                            onItemButtonClick={this.handleModalOpen}
-                            tabIndex={this.state.slideIndex}
-                        />
-                    </div>
-                    <div>
-                        <UsersList 
-                            students={this.state.studentsList}
+                            students={this.state.studentsList.myStudents}
                             onItemButtonClick={this.handleModalOpen}
                             tabIndex={this.state.slideIndex}
                         />
                     </div>
                     <div>
                         <UsersList
-                            students={this.state.studentsList}
+                            students={this.state.studentsList.allStudents}
+                            onItemButtonClick={this.handleModalOpen}
+                            tabIndex={this.state.slideIndex}
+                        />
+                    </div>
+                    <div>
+                        <UsersList
+                            students={this.state.studentsList.availableStudents}
                             onItemButtonClick={this.handleModalOpen}
                             tabIndex={this.state.slideIndex}
                         />
                     </div>
                 </SwipeableViews>
-                <AssignTopicModal 
-                    isModalOpen={this.state.isModalOpen} 
+                <AssignTopicModal
+                    isModalOpen={this.state.isModalOpen}
                     onCancelClick={this.handleModalClose}
-                    onSubmitClick={this.handleTopicsSubmit} 
+                    onSubmitClick={this.handleTopicsSubmit}
                     topics={this.state.curriculumTopics}
                     onTopicCheck={this.handleTopicCheck}
                     isOneChosen={this.state.isOneChosen}/>

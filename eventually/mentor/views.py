@@ -22,17 +22,42 @@ class MentorView(View):
         """
         Method that handles GET request.
         """
-        students = MentorStudent.objects.all()
-        students.filter(mentor_id=request.user.id)
-        for student in students:
-            print(student.to_dict())
-
+        mentors_items = MentorStudent.objects.all()
+        print(request.GET.get)
         if request.GET.get('topic', None):
-            students.filter()
-        if request.GET.get('', None):
-            students.filter()
-            return HttpResponse(status=300)
-        return HttpResponse(status=200)
+            # mentors_items.filter(topic_id=request.GET.get('topic'))
+            print(request.GET.get('topic'))
+
+
+        # if request.GET.get('', None):
+        #     students.filter()
+
+        my_students = mentors_items.filter(mentor_id=request.user.id)
+        available_students = mentors_items.filter(mentor_id=None)
+
+        my_students = [item.student_id for item in my_students]
+        my_students = [CustomUser.get_by_id(id).to_dict() for id in my_students]
+        all_students = set([record.student_id for record in mentors_items])
+        all_students = [CustomUser.get_by_id(id).to_dict() for id in all_students]
+        available_students = [record.student_id for record in available_students]
+        available_students = [CustomUser.get_by_id(id).to_dict() for id in available_students]
+        response = {'my_students': my_students,
+                    'all_students': all_students,
+                    'available_students': available_students}
+
+
+        return JsonResponse(response, status=200)
+
+
+
+        # if request.GET.get('topic', None):
+        #     mentorsRecords.filter()
+        # if request.GET.get('', None):
+        #     students.filter()
+        #     return HttpResponse(status=300)
+        # return HttpResponse(status=200)
+        # for student in students:
+        #     print(student.to_dict())
 
     def post(self, request, mentor_id=None, student_id=None, topic_id=None):
         """
