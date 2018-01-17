@@ -3,7 +3,8 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
 import UsersList from '../usersList/UsersList';
 import AssignTopicModal from '../assignTopicModal/AssignTopicModal';
-import {getAllStudentsList, getAvailableStudentsList, getMentorStudentsList, getCurriculumTopics} from './studentsTabsListService';
+import {getStudentsList, getCurriculumTopics} from './studentsTabsListService';
+import StudentsTabsFiltersBar from './StudentsTabsFiltersBar';
 
 export default class StudentsTabsList extends React.Component {
 
@@ -13,8 +14,23 @@ export default class StudentsTabsList extends React.Component {
             slideIndex: 0,
             isModalOpen: false,
             chosenTopics: [],
-            isOneChosen: false
+            isOneChosen: false,
+            studentsList: null,
+            curriculumTopics: null,
+            filtersBar: {
+                topicValue: null,
+                isTopicDone: false,
+                fromDate: null,
+                toDate: null
+            }
         };
+    }
+
+    componentWillMount() {
+        this.setState({
+            studentsList: getStudentsList(),
+            curriculumTopics: getCurriculumTopics()
+        });
     }
 
     handleChange = (value) => {
@@ -49,12 +65,50 @@ export default class StudentsTabsList extends React.Component {
         });
     };
 
-    componentWillMount() {
+    handleFilterBarChange = (filterParameters) => {
+        const chosenTopic = filterParameters.chosenTopic;
+        const isTopicDone = filterParameters.isTopicDone;
+        const fromDate = filterParameters.fromDate;
+        const toDate = filterParameters.toDate;
+
+        getStudentsList(chosenTopic, isTopicDone, fromDate, toDate)
+            .then((response) => {
+                const data = response.data;
+                this.setState({
+                    studentsList: data.students
+                });
+            });
+    }
+
+    handleFiltersTopicsChange = (event, index, value) => {
         this.setState({
-            mentorStudents: getMentorStudentsList(),
-            allStudents: getAllStudentsList(),
-            availableStudents: getAvailableStudentsList(),
-            curriculumTopics: getCurriculumTopics()
+            filtersBar: {
+                topicValue: value
+            }
+        });
+    }
+
+    handleFiltersFromDateChange = (event, date) => {
+        this.setState({
+            filtersBar: {
+                fromDate: date
+            }
+        });
+    }
+
+    handleFiltersToDateChange = (event, date) => {
+        this.setState({
+            filtersBar: {
+                toDate: date
+            }
+        });
+    }
+
+    handleFiltersIsDoneToggle = (event, isInputChecked) => {
+        this.setState({
+            filtersBar: {
+                isTopicDone: isInputChecked
+            }
         });
     }
 
@@ -69,9 +123,19 @@ export default class StudentsTabsList extends React.Component {
                     <Tab label="All students" value={1} />
                     <Tab label="Available students" value={2} />
                 </Tabs>
-                <SwipeableViews
+                <StudentsTabsFiltersBar 
+                    topicValue={this.state.filtersBar.topicValue}
+                    fromDate={this.state.filtersBar.fromDate}
+                    toDate={this.state.filtersBar.toDate}
+                    onFiltersTopicsChange={this.handleFiltersTopicsChange}
+                    onFiltersFromDateChange={this.handleFiltersFromDateChange}
+                    onFiltersToDateChange={this.handleFiltersToDateChange}
+                    onFiltersIsDoneToggle={this.handleFiltersIsDoneToggle}
+                />
+                {/* <SwipeableViews
                     index={this.state.slideIndex}
                     onChangeIndex={this.handleChange}
+                    style={{ margin: 5 }}
                 >
                     <div>
                         <UsersList
@@ -94,7 +158,7 @@ export default class StudentsTabsList extends React.Component {
                             tabIndex={this.state.slideIndex}
                         />
                     </div>
-                </SwipeableViews>
+                </SwipeableViews> */}
                 <AssignTopicModal 
                     isModalOpen={this.state.isModalOpen} 
                     onCancelClick={this.handleModalClose} 
