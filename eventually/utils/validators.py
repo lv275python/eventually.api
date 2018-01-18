@@ -490,6 +490,38 @@ def task_data_validate_update(data):
     is_data_valid = len(errors) == 0
     return is_data_valid
 
+def mentor_validator(data, required_keys):
+    """
+    Function that provides complete mentorStudent model data validation
+
+    :param data: the data that is received by task view.
+    :type data: dict
+
+    :return: data if data is valid and `None` if it is not
+    """
+
+    if not data:
+        return False
+
+    errors = []
+    if not required_keys_validator(data=data, keys_required=required_keys, strict=False):
+        errors.append('required keys error')
+
+    vote_fields = ['student', 'topic']
+
+    filtered_data = {key: data.get(key) for key in vote_fields}
+
+    validation_rules = {'student': lambda val: isinstance(val, int),
+                        'topic': lambda val: isinstance(val, int)}
+
+    for key, value in filtered_data.items():
+        if value is not None:
+            if not validation_rules[key](value):
+                errors.append(key + ' field error')
+
+    is_data_valid = len(errors) == 0
+    return is_data_valid
+
 def image_validator(image_file):
     """
     Checks if the uploaded file is a valid image file.

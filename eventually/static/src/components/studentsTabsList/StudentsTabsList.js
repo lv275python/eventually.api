@@ -3,7 +3,7 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
 import UsersList from '../usersList/UsersList';
 import AssignTopicModal from '../assignTopicModal/AssignTopicModal';
-import {getStudentsList, getCurriculumTopics} from './studentsTabsListService';
+import { getStudentsList, getCurriculumTopics, postStudentList} from './studentsTabsListService';
 import StudentsTabsFiltersBar from './StudentsTabsFiltersBar';
 
 export default class StudentsTabsList extends React.Component {
@@ -13,7 +13,8 @@ export default class StudentsTabsList extends React.Component {
         this.state = {
             slideIndex: 0,
             isModalOpen: false,
-            chosenTopics: [],
+            chosenTopic: null,
+            chosenStudent: null,
             isOneChosen: false,
             studentsList: null,
             curriculumTopics: null,
@@ -39,31 +40,35 @@ export default class StudentsTabsList extends React.Component {
         });
     };
 
-    handleModalOpen = () => {
-        this.setState({isModalOpen: true});
+    handleModalOpen = (studentId) => {
+        this.setState({
+            isModalOpen: true,
+            chosenStudent: studentId
+        });
     };
 
     handleModalClose = () => {
         this.setState({
             isModalOpen: false,
-            isOneChosen: false
+            isOneChosen: false,
+            chosenStudent: null,
+            chosenTopic: null,
         });
     };
 
-    handleTopicCheck = (topicId, isInputChecked) => {
-        let chosenTopics = this.state.chosenTopics.slice();
-
-        if (isInputChecked) {
-            chosenTopics.push(topicId);
-        } else {
-            chosenTopics.pop(topicId);
-        }
-
+    handleTopicCheck = (event, topicId) => {
         this.setState({
-            chosenTopics: chosenTopics,
-            isOneChosen: chosenTopics.length
+            chosenTopic: topicId,
+            isOneChosen: true
         });
     };
+
+    handleTopicsSubmit = () => {
+        postStudentList(this.state.chosenStudent, this.state.chosenTopic)
+            .then(response => {
+                this.handleModalClose();
+            });
+    }
 
     handleFilterBarChange = (filterParameters) => {
         const chosenTopic = filterParameters.chosenTopic;
@@ -132,36 +137,37 @@ export default class StudentsTabsList extends React.Component {
                     onFiltersToDateChange={this.handleFiltersToDateChange}
                     onFiltersIsDoneToggle={this.handleFiltersIsDoneToggle}
                 />
-                {/* <SwipeableViews
+                <SwipeableViews
                     index={this.state.slideIndex}
                     onChangeIndex={this.handleChange}
-                    style={{ margin: 5 }}
+                    style={{margin: 5}}
                 >
                     <div>
                         <UsersList
-                            students={this.state.mentorStudents}
+                            students={this.state.studentsList}
                             onItemButtonClick={this.handleModalOpen}
                             tabIndex={this.state.slideIndex}
                         />
                     </div>
                     <div>
                         <UsersList 
-                            students={this.state.allStudents}
+                            students={this.state.studentsList}
                             onItemButtonClick={this.handleModalOpen}
                             tabIndex={this.state.slideIndex}
                         />
                     </div>
                     <div>
                         <UsersList
-                            students={this.state.availableStudents}
+                            students={this.state.studentsList}
                             onItemButtonClick={this.handleModalOpen}
                             tabIndex={this.state.slideIndex}
                         />
                     </div>
-                </SwipeableViews> */}
+                </SwipeableViews>
                 <AssignTopicModal 
                     isModalOpen={this.state.isModalOpen} 
-                    onCancelClick={this.handleModalClose} 
+                    onCancelClick={this.handleModalClose}
+                    onSubmitClick={this.handleTopicsSubmit} 
                     topics={this.state.curriculumTopics}
                     onTopicCheck={this.handleTopicCheck}
                     isOneChosen={this.state.isOneChosen}/>

@@ -74,7 +74,7 @@ class MentorStudent(AbstractModel):
         }
 
     @staticmethod
-    def create(mentor, student, topic, is_done):
+    def create(mentor, student, topic, is_done=False):
         """
         Static method that creates instance of MentorStudent class and creates database
         record with the accepted info.
