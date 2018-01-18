@@ -33,17 +33,28 @@ export default class StudentsTabsList extends React.Component {
     }
 
     componentWillMount() {
-        this.getData();
+        const chosenTopic = this.state.filtersBar.topicValue;
+        const isTopicDone = this.state.filtersBar.isTopicDone;
+        const fromDate = this.state.filtersBar.fromDate;
+        const toDate = this.state.filtersBar.toDate;
+        getStudentsList(chosenTopic, isTopicDone, fromDate, toDate)
+            .then(response => {
+                const data = response.data;
+                console.log(data);
+                this.setState({
+                    studentsList: {
+                        myStudents: data.my_students,
+                        allStudents: data.all_students,
+                        availableStudents: data.available_students
+                    }
+                });
+            });
     }
 
     shouldComponentUpdate(nextProps, nextState) {
 
         if (!isObjectsEqual(nextState.filtersBar, this.state.filtersBar)) {
             this.getData();
-            return true;
-        }
-
-        if (!isObjectsEqual(nextState.studentsList, this.state.studentsList)) {
             return true;
         }
 

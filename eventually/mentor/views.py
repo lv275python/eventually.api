@@ -35,7 +35,7 @@ class MentorView(View):
         my_students = mentors_items.filter(mentor_id=request.user.id)
         available_students = mentors_items.filter(mentor_id=None)
 
-        my_students = [item.student_id for item in my_students]
+        my_students = set([item.student_id for item in my_students])
         my_students = [CustomUser.get_by_id(id).to_dict() for id in my_students]
         all_students = set([record.student_id for record in mentors_items])
         all_students = [CustomUser.get_by_id(id).to_dict() for id in all_students]
