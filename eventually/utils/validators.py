@@ -490,7 +490,6 @@ def task_data_validate_update(data):
     is_data_valid = len(errors) == 0
     return is_data_valid
 
-
 def mentor_validator(data, required_keys):
     """
     Function that provides complete mentorStudent model data validation
@@ -508,14 +507,12 @@ def mentor_validator(data, required_keys):
     if not required_keys_validator(data=data, keys_required=required_keys, strict=False):
         errors.append('required keys error')
 
-    vote_fields = ["mentor", "student", "topic", "is_done"]
+    vote_fields = ['student', 'topic']
 
     filtered_data = {key: data.get(key) for key in vote_fields}
 
-    validation_rules = {'mentor': lambda val: isinstance(val, int),
-                        'student': lambda val: isinstance(val, int),
-                        'topic': lambda val: isinstance(val, int),
-                        'is_done': lambda val: isinstance(val, bool)}
+    validation_rules = {'student': lambda val: isinstance(val, int),
+                        'topic': lambda val: isinstance(val, int)}
 
     for key, value in filtered_data.items():
         if value is not None:
@@ -524,7 +521,6 @@ def mentor_validator(data, required_keys):
 
     is_data_valid = len(errors) == 0
     return is_data_valid
-
 
 def image_validator(image_file):
     """

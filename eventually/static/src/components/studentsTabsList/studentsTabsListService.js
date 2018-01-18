@@ -1,17 +1,17 @@
 import axios from 'axios';
 
-const appPath = '/api/v1/chat/';
+const appPath = '/api/v1/mentor/students/';
 
 const getStudentsList = (chosenTopic, isTopicDone, fromDate, toDate) => {
     return [
         {
-            'id': 1,
+            'id': 5,
             'first_name': 'John',
             'last_name': 'Doe',
             'avatar': 'johndoe'
         },
         {
-            'id': 2,
+            'id': 4,
             'first_name': 'Eric',
             'last_name': 'Moreno',
             'avatar': 'ericmoreno'
@@ -25,8 +25,13 @@ const getStudentsList = (chosenTopic, isTopicDone, fromDate, toDate) => {
     ];
 };
 
-const postStudentList = () => {
-
+const postStudentList = (studentId, chosenTopic) => {
+    console.log(studentId, chosenTopic);
+    const postStudentsUrl = `${appPath}`;
+    return axios.post(postStudentsUrl, {
+        'student': studentId,
+        'topic': chosenTopic
+    });
 };
 
 const getCurriculumTopics = () => {

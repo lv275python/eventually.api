@@ -13,7 +13,7 @@ export default class StudentsTabsList extends React.Component {
         this.state = {
             slideIndex: 0,
             isModalOpen: false,
-            chosenTopics: [],
+            chosenTopic: null,
             chosenStudent: null,
             isOneChosen: false,
             studentsList: null,
@@ -40,36 +40,34 @@ export default class StudentsTabsList extends React.Component {
         });
     };
 
-    handleModalOpen = () => {
+    handleModalOpen = (studentId) => {
         this.setState({
-            isModalOpen: true
+            isModalOpen: true,
+            chosenStudent: studentId
         });
     };
 
     handleModalClose = () => {
         this.setState({
             isModalOpen: false,
-            isOneChosen: false
+            isOneChosen: false,
+            chosenStudent: null,
+            chosenTopic: null,
         });
     };
 
-    handleTopicCheck = (topicId, isInputChecked) => {
-        let chosenTopics = this.state.chosenTopics.slice();
-
-        if (isInputChecked) {
-            chosenTopics.push(topicId);
-        } else {
-            chosenTopics.pop(topicId);
-        }
-
+    handleTopicCheck = (event, topicId) => {
         this.setState({
-            chosenTopics: chosenTopics,
-            isOneChosen: chosenTopics.length
+            chosenTopic: topicId,
+            isOneChosen: true
         });
     };
 
     handleTopicsSubmit = () => {
-        postStudentList(this.state.chosenStudent, this.state.chosenTopics);
+        postStudentList(this.state.chosenStudent, this.state.chosenTopic)
+            .then(response => {
+                this.handleModalClose();
+            });
     }
 
     handleFilterBarChange = (filterParameters) => {
@@ -142,7 +140,7 @@ export default class StudentsTabsList extends React.Component {
                 <SwipeableViews
                     index={this.state.slideIndex}
                     onChangeIndex={this.handleChange}
-                    style={{ margin: 5 }}
+                    style={{margin: 5}}
                 >
                     <div>
                         <UsersList

@@ -1,7 +1,7 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import AssignTopicItem from './AssignTopicItem';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
 export default class AssignTopicModal extends React.Component {
 
@@ -9,14 +9,14 @@ export default class AssignTopicModal extends React.Component {
         super(props);
     }
 
-    handleTopicCheck = this.props.onTopicCheck;
     handleCancelClick = this.props.onCancelClick;
     handleSubmitClick = this.props.onSubmitClick;
+    handleRadioButtonChange = (event, value) => {
+        this.props.onTopicCheck(event, value);
+    };
 
     render() {
-
         const actions = [];
-
         const cancelButton = (
             <FlatButton
                 label="Cancel"
@@ -58,16 +58,18 @@ export default class AssignTopicModal extends React.Component {
                 >
                     <h3>Please, choose one of the available topics</h3>
                     <div>
-                        {
-                            this.props.topics.map(topic => (
-                                <AssignTopicItem 
-                                    key={topic.id.toString()}
-                                    id={topic.id}
-                                    title={topic.title}
-                                    onCheck={this.handleTopicCheck}
+                        <RadioButtonGroup 
+                            name='topics'
+                            onChange={this.handleRadioButtonChange}
+                        >
+                            {this.props.topics.map(topic => (
+                                <RadioButton
+                                    key={topic.id}
+                                    value={topic.id}
+                                    label={topic.title}
                                 />
-                            ))
-                        }
+                            ))}
+                        </RadioButtonGroup>
                     </div>
                 </Dialog>
             </div>

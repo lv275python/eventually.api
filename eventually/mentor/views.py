@@ -11,7 +11,8 @@ from django.views.generic.base import View
 from authentication.models import CustomUser
 from mentor.models import MentorStudent
 from topic.models import Topic
-from utils.responsehelper import RESPONSE_400_INVALID_DATA
+from utils.responsehelper import (RESPONSE_400_INVALID_DATA,
+                                  RESPONSE_404_OBJECT_NOT_FOUND)
 from utils.validators import mentor_validator
 
 class MentorView(View):
@@ -42,14 +43,16 @@ class MentorView(View):
         if not mentor_validator(data, request.body):
             return RESPONSE_400_INVALID_DATA
 
-        student = CustomUser.get_by_id(data.get("student"))
-        topic = Topic.get_by_id(data.get("topic"))
+        student = CustomUser.get_by_id(data.get('student'))
+        topic = Topic.get_by_id(data.get('topic'))
+
+        if not student or not topic:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+
         mentor = MentorStudent.create(mentor=user,
                                       student=student,
-                                      topic=topic,
-                                      is_done=data.get("is_done") if data.get("is_done") else
-                                      False)
-        print(mentor)
+                                      topic=topic)
+
         if mentor:
             mentor = mentor.to_dict()
             return JsonResponse(mentor, status=201)
