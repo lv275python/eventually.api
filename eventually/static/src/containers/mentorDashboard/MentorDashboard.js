@@ -44,12 +44,12 @@ export default class MentorDashboard extends React.Component {
                     <ProgressGraph style={progressGraphStyle} />
                     <StudentsTabsList style={usersListStyle} />
                 </div>
-                <MessagesBar
+                {/* <MessagesBar
                     style={messagesBarStyle}
                     location={this.props.location.pathname.slice(1)}
                     expandedWidth={'30%'}
                     wrappedWidth={'5%'}
-                />
+                /> */}
             </div>
         );
     }
