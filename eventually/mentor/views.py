@@ -22,15 +22,13 @@ class MentorView(View):
         """
         Method that handles GET request.
         """
-        mentors_items = MentorStudent.objects.all()
-        print(request.GET.get)
-        if request.GET.get('topic', None):
-            # mentors_items.filter(topic_id=request.GET.get('topic'))
-            print(request.GET.get('topic'))
+        mentor_topics = CustomUser.topic_set.all()
+        print(mentor_topics)
+        print(mentor_topics)
+        print(mentor_topics)
+        print(mentor_topics)
+        print(mentor_topics)
 
-
-        # if request.GET.get('', None):
-        #     students.filter()
 
         my_students = mentors_items.filter(mentor_id=request.user.id)
         available_students = mentors_items.filter(mentor_id=None)
@@ -49,15 +47,6 @@ class MentorView(View):
         return JsonResponse(response, status=200)
 
 
-
-        # if request.GET.get('topic', None):
-        #     mentorsRecords.filter()
-        # if request.GET.get('', None):
-        #     students.filter()
-        #     return HttpResponse(status=300)
-        # return HttpResponse(status=200)
-        # for student in students:
-        #     print(student.to_dict())
 
     def post(self, request, mentor_id=None, student_id=None, topic_id=None):
         """

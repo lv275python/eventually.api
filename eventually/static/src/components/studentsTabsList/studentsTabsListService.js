@@ -8,6 +8,14 @@ const getStudentsList = (chosenTopic, isTopicDone, fromDate, toDate) => {
     return axios.get(getStudentsUrl);
 };
 
+const postStudentList = (studentId, chosenTopic) => {
+    const postStudentsUrl = `${appPath}`;
+    return axios.post(postStudentsUrl, {
+        'student': studentId,
+        'topic': chosenTopic
+    });
+};
+
 const getCurriculumTopics = () => {
     return [
         {

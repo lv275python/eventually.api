@@ -1,11 +1,11 @@
 import React from 'react';
-import {Tabs, Tab} from 'material-ui/Tabs';
+import { Tabs, Tab } from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
 import UsersList from '../usersList/UsersList';
 import AssignTopicModal from '../assignTopicModal/AssignTopicModal';
-import {getStudentsList, getCurriculumTopics, postStudentList} from './studentsTabsListService';
+import { getStudentsList, getCurriculumTopics, postStudentList } from './studentsTabsListService';
 import StudentsTabsFiltersBar from './StudentsTabsFiltersBar';
-import {isObjectsEqual} from './helper';
+import { isObjectsEqual } from './helper';
 
 export default class StudentsTabsList extends React.Component {
 
@@ -49,6 +49,9 @@ export default class StudentsTabsList extends React.Component {
                     }
                 });
             });
+        this.setState({
+            curriculumTopics: getCurriculumTopics()
+        });
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -183,7 +186,7 @@ export default class StudentsTabsList extends React.Component {
                 <SwipeableViews
                     index={this.state.slideIndex}
                     onChangeIndex={this.handleChange}
-                    style={{margin: 5}}
+                    style={{ margin: 5 }}
                 >
                     <div>
                         <UsersList
@@ -213,7 +216,7 @@ export default class StudentsTabsList extends React.Component {
                     onSubmitClick={this.handleTopicsSubmit}
                     topics={this.state.curriculumTopics}
                     onTopicCheck={this.handleTopicCheck}
-                    isOneChosen={this.state.isOneChosen}/>
+                    isOneChosen={this.state.isOneChosen} />
             </div>
         );
     }
