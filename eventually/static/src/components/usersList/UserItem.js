@@ -29,9 +29,14 @@ export default class UserItem extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            userId: this.props.id
+        };
     }
 
-    handleClick = this.props.onButtonClick;
+    handleClick = () => {
+        this.props.onButtonClick(this.props.id);
+    }
 
     render() {
         const btn=(this.props.tabIndex===2) ?
@@ -51,7 +56,6 @@ export default class UserItem extends React.Component {
                             onClick={this.handleClick}
                         />
                         {btn}
-
                     </div>
                 </Card>
             </div>

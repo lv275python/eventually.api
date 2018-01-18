@@ -3,7 +3,7 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
 import UsersList from '../usersList/UsersList';
 import AssignTopicModal from '../assignTopicModal/AssignTopicModal';
-import {getStudentsList, getCurriculumTopics} from './studentsTabsListService';
+import { getStudentsList, getCurriculumTopics, postStudentList} from './studentsTabsListService';
 import StudentsTabsFiltersBar from './StudentsTabsFiltersBar';
 
 export default class StudentsTabsList extends React.Component {
@@ -14,6 +14,7 @@ export default class StudentsTabsList extends React.Component {
             slideIndex: 0,
             isModalOpen: false,
             chosenTopics: [],
+            chosenStudent: null,
             isOneChosen: false,
             studentsList: null,
             curriculumTopics: null,
@@ -40,7 +41,9 @@ export default class StudentsTabsList extends React.Component {
     };
 
     handleModalOpen = () => {
-        this.setState({isModalOpen: true});
+        this.setState({
+            isModalOpen: true
+        });
     };
 
     handleModalClose = () => {
@@ -64,6 +67,10 @@ export default class StudentsTabsList extends React.Component {
             isOneChosen: chosenTopics.length
         });
     };
+
+    handleTopicsSubmit = () => {
+        postStudentList(this.state.chosenStudent, this.state.chosenTopics);
+    }
 
     handleFilterBarChange = (filterParameters) => {
         const chosenTopic = filterParameters.chosenTopic;
@@ -132,36 +139,37 @@ export default class StudentsTabsList extends React.Component {
                     onFiltersToDateChange={this.handleFiltersToDateChange}
                     onFiltersIsDoneToggle={this.handleFiltersIsDoneToggle}
                 />
-                {/* <SwipeableViews
+                <SwipeableViews
                     index={this.state.slideIndex}
                     onChangeIndex={this.handleChange}
                     style={{ margin: 5 }}
                 >
                     <div>
                         <UsersList
-                            students={this.state.mentorStudents}
+                            students={this.state.studentsList}
                             onItemButtonClick={this.handleModalOpen}
                             tabIndex={this.state.slideIndex}
                         />
                     </div>
                     <div>
                         <UsersList 
-                            students={this.state.allStudents}
+                            students={this.state.studentsList}
                             onItemButtonClick={this.handleModalOpen}
                             tabIndex={this.state.slideIndex}
                         />
                     </div>
                     <div>
                         <UsersList
-                            students={this.state.availableStudents}
+                            students={this.state.studentsList}
                             onItemButtonClick={this.handleModalOpen}
                             tabIndex={this.state.slideIndex}
                         />
                     </div>
-                </SwipeableViews> */}
+                </SwipeableViews>
                 <AssignTopicModal 
                     isModalOpen={this.state.isModalOpen} 
-                    onCancelClick={this.handleModalClose} 
+                    onCancelClick={this.handleModalClose}
+                    onSubmitClick={this.handleTopicsSubmit} 
                     topics={this.state.curriculumTopics}
                     onTopicCheck={this.handleTopicCheck}
                     isOneChosen={this.state.isOneChosen}/>

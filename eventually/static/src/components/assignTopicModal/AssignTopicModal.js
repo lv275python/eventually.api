@@ -11,6 +11,7 @@ export default class AssignTopicModal extends React.Component {
 
     handleTopicCheck = this.props.onTopicCheck;
     handleCancelClick = this.props.onCancelClick;
+    handleSubmitClick = this.props.onSubmitClick;
 
     render() {
 
@@ -32,7 +33,7 @@ export default class AssignTopicModal extends React.Component {
                     label="Submit"
                     primary={true}
                     disabled={false}
-                    onClick={this.handleClose}
+                    onClick={this.handleSubmitClick}
                 />);
 
         } else {
@@ -42,7 +43,7 @@ export default class AssignTopicModal extends React.Component {
                     label="Submit"
                     primary={true}
                     disabled={true}
-                    onClick={this.handleClose}
+                    onClick={this.handleSubmitClick}
                 />);
         }
 

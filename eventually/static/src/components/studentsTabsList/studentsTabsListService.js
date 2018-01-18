@@ -3,8 +3,30 @@ import axios from 'axios';
 const appPath = '/api/v1/chat/';
 
 const getStudentsList = (chosenTopic, isTopicDone, fromDate, toDate) => {
-    const getStudentsUrl = `${appPath}?topic=${chosenTopic}&is_done${isTopicDone}&from${fromDate}&to${toDate}/`;
-    return axios.get(getStudentsUrl);
+    return [
+        {
+            'id': 1,
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'avatar': 'johndoe'
+        },
+        {
+            'id': 2,
+            'first_name': 'Eric',
+            'last_name': 'Moreno',
+            'avatar': 'ericmoreno'
+        },
+        {
+            'id': 3,
+            'first_name': 'Mark',
+            'last_name': 'Smith',
+            'avatar': 'marksmith'
+        }
+    ];
+};
+
+const postStudentList = () => {
+
 };
 
 const getCurriculumTopics = () => {
@@ -46,4 +68,4 @@ const getCurriculumTopics = () => {
     ];
 };
 
-export {getStudentsList, getCurriculumTopics};
+export { getStudentsList, getCurriculumTopics, postStudentList};
