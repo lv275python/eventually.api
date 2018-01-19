@@ -3,9 +3,9 @@ import { Tabs, Tab } from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
 import UsersList from '../usersList/UsersList';
 import AssignTopicModal from '../assignTopicModal/AssignTopicModal';
-import { getStudentsList, getCurriculumTopics, postStudentList } from './studentsTabsListService';
+import {getStudentsList, getCurriculumTopics, postStudentList} from './studentsTabsListService';
 import StudentsTabsFiltersBar from './StudentsTabsFiltersBar';
-import { isObjectsEqual } from './helper';
+import {isObjectsEqual} from './helper';
 
 export default class StudentsTabsList extends React.Component {
 
@@ -33,7 +33,7 @@ export default class StudentsTabsList extends React.Component {
     }
 awfawe
     componentWillMount() {
-        this.getData();
+        this.getData(this.state);
         this.setState({
             curriculumTopics: getCurriculumTopics()
         });
@@ -42,22 +42,19 @@ awfawe
     shouldComponentUpdate(nextProps, nextState) {
 
         if (!isObjectsEqual(nextState.filtersBar, this.state.filtersBar)) {
-            this.getData();
+            this.getData(nextState);
             return true;
         }
 
-        if (nextState.slideIndex !== this.state.slideIndex) {
-            return true;
-        }
+        return nextState.slideIndex !== this.state.slideIndex;
 
-        return false;
     }
 
-    getData = () => {
-        const chosenTopic = this.state.filtersBar.topicValue;
-        const isTopicDone = this.state.filtersBar.isTopicDone;
-        const fromDate = this.state.filtersBar.fromDate;
-        const toDate = this.state.filtersBar.toDate;
+    getData = (state) => {
+        const chosenTopic = state.filtersBar.topicValue;
+        const isTopicDone = state.filtersBar.isTopicDone;
+        const fromDate = state.filtersBar.fromDate;
+        const toDate = state.filtersBar.toDate;
 
         getStudentsList(chosenTopic, isTopicDone, fromDate, toDate)
             .then(response => {
@@ -70,7 +67,7 @@ awfawe
                     }
                 });
             });
-    }
+    };
 
     handleChange = (value) => {
         this.setState({
@@ -106,7 +103,7 @@ awfawe
             .then(response => {
                 this.handleModalClose();
             });
-    }
+    };
 
     handleFiltersTopicsChange = (event, index, value) => {
         this.setState({
@@ -117,7 +114,7 @@ awfawe
                 toDate: this.state.filtersBar.toDate
             }
         });
-    }
+    };
 
     handleFiltersFromDateChange = (event, date) => {
         this.setState({
@@ -128,7 +125,7 @@ awfawe
                 toDate: this.state.filtersBar.toDate
             }
         });
-    }
+    };
 
     handleFiltersToDateChange = (event, date) => {
         this.setState({
@@ -139,7 +136,7 @@ awfawe
                 toDate: date
             }
         });
-    }
+    };
 
     handleFiltersIsDoneToggle = (event, isInputChecked) => {
         this.setState({
@@ -150,7 +147,7 @@ awfawe
                 toDate: this.state.filtersBar.toDate
             }
         });
-    }
+    };
 
     render() {
         return (
