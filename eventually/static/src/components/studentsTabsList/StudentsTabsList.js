@@ -24,37 +24,37 @@ export default class StudentsTabsList extends React.Component {
             },
             curriculumTopics: null,
             filtersBar: {
-                topicValue: '',
+                topicValue: null,
                 isTopicDone: false,
-                fromDate: '',
-                toDate: ''
+                fromDate: null,
+                toDate: null
             }
         };
     }
 
     componentWillMount() {
-        this.getData(this.state);
+        this.getData();
         this.setState({
             curriculumTopics: getCurriculumTopics()
         });
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     console.log('should');
+    //     if (!isObjectsEqual(nextState.filtersBar, this.state.filtersBar)) {
+    //         this.getData(nextState);
+    //         return true;
+    //     }
 
-        if (!isObjectsEqual(nextState.filtersBar, this.state.filtersBar)) {
-            this.getData(nextState);
-            return true;
-        }
+    //     return nextState.slideIndex !== this.state.slideIndex;
 
-        return nextState.slideIndex !== this.state.slideIndex;
+    // }
 
-    }
-
-    getData = (state) => {
-        const chosenTopic = state.filtersBar.topicValue;
-        const isTopicDone = state.filtersBar.isTopicDone;
-        const fromDate = state.filtersBar.fromDate;
-        const toDate = state.filtersBar.toDate;
+    getData = () => {
+        const chosenTopic = this.state.filtersBar.topicValue;
+        const isTopicDone = this.state.filtersBar.isTopicDone;
+        const fromDate = this.state.filtersBar.fromDate;
+        const toDate = this.state.filtersBar.toDate;
 
         getStudentsList(chosenTopic, isTopicDone, fromDate, toDate)
             .then(response => {
@@ -113,7 +113,7 @@ export default class StudentsTabsList extends React.Component {
                 fromDate: this.state.filtersBar.fromDate,
                 toDate: this.state.filtersBar.toDate
             }
-        });
+        }, this.getData);
     };
 
     handleFiltersFromDateChange = (event, date) => {
@@ -124,7 +124,7 @@ export default class StudentsTabsList extends React.Component {
                 fromDate: date,
                 toDate: this.state.filtersBar.toDate
             }
-        });
+        }, this.getData);
     };
 
     handleFiltersToDateChange = (event, date) => {
@@ -135,7 +135,7 @@ export default class StudentsTabsList extends React.Component {
                 fromDate: this.state.filtersBar.from,
                 toDate: date
             }
-        });
+        }, this.getData);
     };
 
     handleFiltersIsDoneToggle = (event, isInputChecked) => {
@@ -143,10 +143,10 @@ export default class StudentsTabsList extends React.Component {
             filtersBar: {
                 topicValue: this.state.filtersBar.topicValue,
                 isTopicDone: isInputChecked,
-                fromDate: this.state.filtersBar.from,
+                fromDate: this.state.filtersBar.fromDate,
                 toDate: this.state.filtersBar.toDate
             }
-        });
+        }, this.getData);
     };
 
     render() {

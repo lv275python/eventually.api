@@ -3,8 +3,15 @@ import axios from 'axios';
 const appPath = '/api/v1/mentor/students/';
 
 const getStudentsList = (chosenTopic, isTopicDone, fromDate, toDate) => {
-    // console.log(chosenTopic, isTopicDone, fromDate, toDate);
-    const getStudentsUrl = `${appPath}?topic=${chosenTopic}&is_done=${isTopicDone}&from=${fromDate}&to=${toDate}/`;
+    let getStudentsUrl = appPath;
+    const params = [];
+
+    if (chosenTopic) params.push(`topic=${chosenTopic}`);
+    if (isTopicDone) params.push(`is_done=${isTopicDone}`);
+    if (fromDate) params.push(`from=${fromDate}`);
+    if (toDate) params.push(`to=${toDate}`);
+
+    getStudentsUrl += params.length !== 0 ? `?${params.join('&')}` : '';
     return axios.get(getStudentsUrl);
 };
 
