@@ -24,14 +24,14 @@ export default class StudentsTabsList extends React.Component {
             },
             curriculumTopics: null,
             filtersBar: {
-                topicValue: null,
+                topicValue: '',
                 isTopicDone: false,
-                fromDate: null,
-                toDate: null
+                fromDate: '',
+                toDate: ''
             }
         };
     }
-
+awfawe
     componentWillMount() {
         this.getData();
         this.setState({
