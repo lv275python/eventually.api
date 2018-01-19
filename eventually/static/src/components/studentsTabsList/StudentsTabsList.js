@@ -39,17 +39,6 @@ export default class StudentsTabsList extends React.Component {
         });
     }
 
-    // shouldComponentUpdate(nextProps, nextState) {
-    //     console.log('should');
-    //     if (!isObjectsEqual(nextState.filtersBar, this.state.filtersBar)) {
-    //         this.getData(nextState);
-    //         return true;
-    //     }
-
-    //     return nextState.slideIndex !== this.state.slideIndex;
-
-    // }
-
     getData = () => {
         const chosenTopic = this.state.filtersBar.topicValue;
         const isTopicDone = this.state.filtersBar.isTopicDone;
@@ -101,6 +90,7 @@ export default class StudentsTabsList extends React.Component {
     handleTopicsSubmit = () => {
         postStudentList(this.state.chosenStudent, this.state.chosenTopic)
             .then(response => {
+                this.getData();
                 this.handleModalClose();
             });
     };
@@ -132,8 +122,8 @@ export default class StudentsTabsList extends React.Component {
             filtersBar: {
                 topicValue: this.state.filtersBar.topicValue,
                 isTopicDone: this.state.filtersBar.isTopicDone,
-                fromDate: this.state.filtersBar.from,
-                toDate: date
+                fromDate: this.state.filtersBar.fromDate,
+                toDate: date,
             }
         }, this.getData);
     };

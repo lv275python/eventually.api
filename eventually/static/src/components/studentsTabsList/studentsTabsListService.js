@@ -8,8 +8,8 @@ const getStudentsList = (chosenTopic, isTopicDone, fromDate, toDate) => {
 
     if (chosenTopic) params.push(`topic=${chosenTopic}`);
     if (isTopicDone) params.push(`is_done=${isTopicDone}`);
-    if (fromDate) params.push(`from=${fromDate}`);
-    if (toDate) params.push(`to=${toDate}`);
+    if (fromDate) params.push(`from=${fromDate.getTime()/1000}`);
+    if (toDate) params.push(`to=${toDate.getTime()/1000}`);
 
     getStudentsUrl += params.length !== 0 ? `?${params.join('&')}` : '';
     return axios.get(getStudentsUrl);
@@ -26,7 +26,7 @@ const postStudentList = (studentId, chosenTopic) => {
 const getCurriculumTopics = () => {
     return [
         {
-            'id': 4,
+            'id': 1,
             'title': 'Node.js',
             'author': 12,
             'curriculum': 1,

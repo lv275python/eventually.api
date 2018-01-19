@@ -65,7 +65,7 @@ class MentorStudent(AbstractModel):
 
         return {
             'id': self.id,
-            'mentor': self.mentor.id,
+            'mentor': self.mentor.id if self.mentor else None,
             'student': self.student.id,
             'topic': self.topic.id,
             'is_done': self.is_done,
@@ -132,3 +132,4 @@ class MentorStudent(AbstractModel):
             self.topic = topic
         if is_done:
             self.is_done = is_done
+        self.save()
