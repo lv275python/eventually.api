@@ -25,32 +25,32 @@ class MentorView(View):
         mentor_topics = mentor.topic_set.all()
         mentor_topics = [record.id for record in mentor_topics]
 
-
         all_students = MentorStudent.objects.exclude(mentor_id=request.user.id)
         all_students = all_students.exclude(mentor_id=None)
-        all_students = [record for record in all_students if record.topic_id in mentor_topics]
-        all_students = set([record.student_id for record in all_students])
-
 
         my_students = MentorStudent.objects.filter(mentor_id=request.user.id)
-        my_students = set([item.student_id for item in my_students])
-
 
         available_students = MentorStudent.objects.filter(mentor_id=None)
-        available_students = set([record.student_id for record in available_students])
 
-        is_done = True if request.GET.get('is_done', "") == 'true' else False
-        print(is_done)
+        is_done = True if request.GET.get('topic', "") == 'true' else False
 
         if request.GET.get('topic', None):
-            all_students =
-            my_students =
-            available_students =
+            topic = request.GET.get('topic')
+            all_students = all_students.filter(topic_id=str(topic))
+            my_students = my_students.filter(topic_id=str(topic))
+            available_students = available_students.filter(topic_id=str(topic))
 
 
+        all_students = [record for record in all_students if record.topic_id in mentor_topics]
+        all_students = set([record.student_id for record in all_students])
         all_students = [CustomUser.get_by_id(id).to_dict() for id in all_students]
+
+        my_students = set([item.student_id for item in my_students])
         my_students = [CustomUser.get_by_id(id).to_dict() for id in my_students]
+
+        available_students = set([record.student_id for record in available_students])
         available_students = [CustomUser.get_by_id(id).to_dict() for id in available_students]
+
         response = {'my_students': my_students,
                     'all_students': all_students,
                     'available_students': available_students}

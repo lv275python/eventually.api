@@ -31,7 +31,7 @@ export default class StudentsTabsList extends React.Component {
             }
         };
     }
-awfawe
+
     componentWillMount() {
         this.getData(this.state);
         this.setState({

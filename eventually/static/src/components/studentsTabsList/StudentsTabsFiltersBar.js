@@ -43,9 +43,9 @@ export default class StudentsTabsFiltersBar extends React.Component {
                             onChange={this.props.onFiltersTopicsChange}
                             style={topicsSelectFieldStyles}
                         >
-                            <MenuItem value={11} primaryText='Python' />
-                            <MenuItem value={12} primaryText='JavaScript' />
-                            <MenuItem value={13} primaryText='Swift' />
+                            <MenuItem value={1} primaryText='Python' />
+                            <MenuItem value={2} primaryText='JavaScript' />
+                            <MenuItem value={3} primaryText='Swift' />
                         </SelectField>
                         <DatePicker 
                             floatingLabelText='From'
