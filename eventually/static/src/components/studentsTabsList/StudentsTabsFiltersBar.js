@@ -43,6 +43,7 @@ export default class StudentsTabsFiltersBar extends React.Component {
                             onChange={this.props.onFiltersTopicsChange}
                             style={topicsSelectFieldStyles}
                         >
+                            <MenuItem value={null} primaryText='All topics'/>
                             <MenuItem value={1} primaryText='Python' />
                             <MenuItem value={2} primaryText='JavaScript' />
                             <MenuItem value={3} primaryText='Swift' />

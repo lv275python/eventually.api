@@ -5,6 +5,7 @@ Mentor view module
 The module that provides basic logic for getting, creating, updating and deleting
 of MentorStudent's model objects.
 """
+from datetime import datetime
 from django.http import JsonResponse, HttpResponse
 from django.views.generic.base import View
 from authentication.models import CustomUser
@@ -32,13 +33,36 @@ class MentorView(View):
 
         available_students = MentorStudent.objects.filter(mentor_id=None)
 
-        is_done = True if request.GET.get('topic', "") == 'true' else False
+        # is_done = True if request.GET.get('topic', "") == 'true' else False
 
         if request.GET.get('topic', None):
             topic = request.GET.get('topic')
             all_students = all_students.filter(topic_id=str(topic))
             my_students = my_students.filter(topic_id=str(topic))
             available_students = available_students.filter(topic_id=str(topic))
+
+        if request.GET.get('is_done', None):
+            all_students = all_students.filter(is_done=True)
+            my_students = my_students.filter(is_done=True)
+            available_students = available_students.filter(is_done=True)
+
+        if request.GET.get('from', None):
+
+            fromDate = request.GET.get('from', None)
+            fromDate = datetime.fromtimestamp(int(fromDate))
+
+            all_students = all_students.filter(created_at__gte=fromDate)
+            my_students = my_students.filter(created_at__gte=fromDate)
+            available_students = available_students.filter(created_at__gte=fromDate)
+
+        if request.GET.get('to', None):
+            toDate = request.GET.get('to', None)
+            toDate = datetime.fromtimestamp(int(toDate))
+
+            all_students = all_students.filter(created_at__lte=toDate)
+            my_students = my_students.filter(created_at__lte=toDate)
+            available_students = available_students.filter(created_at__lte=toDate)
+
 
 
         all_students = [record for record in all_students if record.topic_id in mentor_topics]
