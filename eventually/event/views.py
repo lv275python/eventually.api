@@ -115,7 +115,7 @@ class EventView(View):
 
         return RESPONSE_400_DB_OPERATION_FAILED
 
-    def put(self, request, team_id, event_id=None):  # pylint: disable=unused-argument
+    def put(self, request, team_id=None, event_id=None):  # pylint: disable=unused-argument
         """
         Method that handles PUT request.
 
