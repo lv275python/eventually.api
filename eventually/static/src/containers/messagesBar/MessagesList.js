@@ -6,7 +6,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 
 const messagesListStyle = {
     overflowY: 'scroll',
-    maxHeight: '70vh'
+    height: '80vh'
 };
 const showMoreButton = {
     display: 'flex',

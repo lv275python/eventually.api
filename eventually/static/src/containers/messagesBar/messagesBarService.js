@@ -11,21 +11,21 @@ const getReceiversList = (isMentor = false) => {
         receivers = {
             'receivers': [
                 {
-                    'id': 36,
+                    'id': 1,
                     'first_name': 'Sam',
                     'last_name': 'Ruby',
                     'avatar': 'samruby',
                     'is_online': false
                 },
                 {
-                    'id': 1,
+                    'id': 2,
                     'first_name': 'Marcelo',
                     'last_name': 'Petrov',
                     'avatar': 'marcelopetrov',
                     'is_online': false
                 },
                 {
-                    'id': 10,
+                    'id': 3,
                     'first_name': 'Ismail',
                     'last_name': 'Botobo',
                     'avatar': 'ismailbotobo',

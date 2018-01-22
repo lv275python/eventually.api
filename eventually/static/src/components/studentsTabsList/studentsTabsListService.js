@@ -1,103 +1,32 @@
-const getMentorStudentsList = () => {
+import axios from 'axios';
 
-    return [
-        {
-            'id': 1,
-            'first_name': 'John',
-            'last_name': 'Doe',
-            'avatar': 'johndoe'
-        },
-        {
-            'id': 2,
-            'first_name': 'Eric',
-            'last_name': 'Moreno',
-            'avatar': 'ericmoreno'
-        },
-        {
-            'id': 3,
-            'first_name': 'Mark',
-            'last_name': 'Smith',
-            'avatar': 'marksmith'
-        }
-    ];
+const appPath = '/api/v1/mentor/students/';
+
+const getStudentsList = (chosenTopic, isTopicDone, fromDate, toDate) => {
+    let getStudentsUrl = appPath;
+    const params = [];
+
+    if (chosenTopic) params.push(`topic=${chosenTopic}`);
+    if (isTopicDone) params.push(`is_done=${isTopicDone}`);
+    if (fromDate) params.push(`from=${fromDate.getTime()/1000}`);
+    if (toDate) params.push(`to=${toDate.getTime()/1000}`);
+
+    getStudentsUrl += params.length !== 0 ? `?${params.join('&')}` : '';
+    return axios.get(getStudentsUrl);
 };
 
-const getAllStudentsList = () => {
-
-    return [
-        {
-            'id': 1,
-            'first_name': 'John',
-            'last_name': 'Doe',
-            'avatar': 'johndoe'
-        },
-        {
-            'id': 2,
-            'first_name': 'Eric',
-            'last_name': 'Moreno',
-            'avatar': 'ericmoreno'
-        },
-        {
-            'id': 3,
-            'first_name': 'Mark',
-            'last_name': 'Smith',
-            'avatar': 'marksmith'
-        },
-        {
-            'id': 4,
-            'first_name': 'Jacob',
-            'last_name': 'Anderson',
-            'avatar': 'jacobanderson'
-        },
-        {
-            'id': 5,
-            'first_name': 'Matthew',
-            'last_name': 'Bellamy',
-            'avatar': 'matthewbellamy'
-        },
-        {
-            'id': 6,
-            'first_name': 'Jared',
-            'last_name': 'Leto',
-            'avatar': 'jaredleto'
-        },
-        {
-            'id': 7,
-            'first_name': 'Kurt',
-            'last_name': 'Cobain',
-            'avatar': 'kurtcobain'
-        }
-    ];
-};
-
-const getAvailableStudentsList = () => {
-
-    return [
-        {
-            'id': 5,
-            'first_name': 'Matthew',
-            'last_name': 'Bellamy',
-            'avatar': 'matthewbellamy'
-        },
-        {
-            'id': 6,
-            'first_name': 'Jared',
-            'last_name': 'Leto',
-            'avatar': 'jaredleto'
-        },
-        {
-            'id': 7,
-            'first_name': 'Kurt',
-            'last_name': 'Cobain',
-            'avatar': 'kurtcobain'
-        }
-    ];
+const postStudentList = (studentId, chosenTopic) => {
+    const postStudentsUrl = `${appPath}`;
+    return axios.post(postStudentsUrl, {
+        'student': studentId,
+        'topic': chosenTopic
+    });
 };
 
 const getCurriculumTopics = () => {
     return [
         {
-            'id': 4,
+            'id': 1,
             'title': 'Node.js',
             'author': 12,
             'curriculum': 1,
@@ -133,4 +62,4 @@ const getCurriculumTopics = () => {
     ];
 };
 
-export { getMentorStudentsList, getAllStudentsList, getAvailableStudentsList, getCurriculumTopics};
+export {getStudentsList, getCurriculumTopics, postStudentList};
