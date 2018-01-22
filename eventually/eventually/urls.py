@@ -1,7 +1,6 @@
 """Root urls"""
 
 from django.conf.urls import url, include
-from event.views import EventView
 
 urlpatterns = [
     url(r'^api/v1/user/', include('authentication.urls')),

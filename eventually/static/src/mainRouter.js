@@ -11,6 +11,7 @@ import TeamList from './containers/teamList/TeamList';
 import EventList from './containers/event/EventList';
 import AddEventTask from './containers/eventTask/AddEventTask';
 import EventEditButton from './containers/event/EventEditButton';
+import EventTaskList from './containers/event/EventTaskList';
 
 export default class MainRouter extends React.Component {
     render() {
@@ -25,6 +26,7 @@ export default class MainRouter extends React.Component {
                     <Route path='/mentoritem' component={MentorItem}/>
                     <Route path='/dashboard' component={MentorDashboard}/>
                     <Route path='/teamlist' component={TeamList}/>
+                    <Route path='/events/:eventId/tasks' component={EventTaskList}/>
                     <Route path='/events' component={EventList}/>
                     <Route path='/new_task' component={AddEventTask}/>
                     <Route path='/events/:eventId' component={CurriculumList}/>
