@@ -2,6 +2,8 @@ import React from 'react';
 import Drawer from 'material-ui/Drawer';
 import SiteBarItem from './SiteBarItem';
 import {withRouter} from 'react-router-dom';
+import {getUserId} from '../../helper/utils';
+
 
 class SiteBar extends React.Component {
 
@@ -16,7 +18,7 @@ class SiteBar extends React.Component {
 
     goToProfile = () => {
         this.props.toggleSiteBarOpen();
-        this.props.history.push('/profile');
+        this.props.history.push('/profile/' + getUserId());
     };
 
     goToProgress = () => {
