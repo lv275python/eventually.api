@@ -36,10 +36,10 @@ class CurriculumLink extends React.Component {
                         title={this.props.title}
                         subtitle={this.props.description}
                     />
-                    <TopicList 
+                    <TopicList
                         topics={this.state.topics}
                         expandable={true} />
-                    <TopicDialog 
+                    <TopicDialog
                         expandable={true} />
                 </Card>
             </div >
