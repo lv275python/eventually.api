@@ -49,6 +49,7 @@ export default class MentorDashboard extends React.Component {
                     location={this.props.location.pathname.slice(1)}
                     expandedWidth={'30%'}
                     wrappedWidth={'5%'}
+                    type='mentor'
                 />
             </div>
         );

@@ -114,3 +114,33 @@ class MentorView(View):
             mentor = mentor.to_dict()
             return JsonResponse(mentor, status=201)
         return RESPONSE_400_INVALID_DATA
+
+def get_mentors(request):
+    """
+    Function that handle get request for all mentors list for the certain student.
+
+    :param request: The accepted HTTP request.
+    :type request: HTTPRequest objects.
+
+    :return: Mentors list
+    """
+    user_id = request.user.id
+    mentors = set([record.mentor_id for record in MentorStudent.get_my_mentors(user_id)])
+    mentors = [CustomUser.get_by_id(id).to_dict() for id in mentors]
+    return JsonResponse({'receivers': mentors}, status=200)
+
+def get_students(request):
+    """
+    Function that handle get request for all students list for the certain mentor.
+
+    :param request: The accepted HTTP request.
+    :type request: HTTPRequest objects.
+
+    :return: Students list
+    """
+
+    user_id = request.user.id
+    students = set([record.student_id for record in MentorStudent.get_my_students(user_id)])
+    students = [CustomUser.get_by_id(id).to_dict() for id in students]
+
+    return JsonResponse({'receivers': students}, status=200)

@@ -34,7 +34,6 @@ export default class MessagesList extends React.Component {
                 onClick={this.handleShowMoreClick} 
             />) :
             null;
-
         return (
             <div style={this.props.style}>
                 <Paper zDepth={2} style={messagesListStyle}>

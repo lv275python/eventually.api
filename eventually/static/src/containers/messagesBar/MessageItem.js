@@ -34,7 +34,7 @@ export default class MessagesList extends React.Component {
             <div>
                 <Card>
                     <CardHeader
-                        title={this.props.author}
+                        title={`${this.props.author.first_name} ${this.props.author.last_name}`}
                         subtitle={`${messageYear}.${messageMonth}.${messageDay}`}
                         avatar={<Avatar src={`https://robohash.org/${this.props.avatar}`}/>}
                         style={cardHeaderStyle}
