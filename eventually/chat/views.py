@@ -63,7 +63,12 @@ class ChatView(View):
 
         messages_page = messages_paginator.page(page_number)
         next_page = messages_page.next_page_number() if messages_page.has_next() else -1
-        data = {'messages': [message.to_dict() for message in messages_page],
+        messages = []
+        for message in messages_page:
+            msg = message.to_dict()
+            msg['author'] = message.author.to_dict()
+            messages.append(msg)
+        data = {'messages': messages,
                 'next_page': next_page,
                 'per_page': MESSAGES_PER_PAGE}
 

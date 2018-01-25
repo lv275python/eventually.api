@@ -26,7 +26,7 @@ const postStudentList = (studentId, chosenTopic) => {
 const getCurriculumTopics = () => {
     return [
         {
-            'id': 1,
+            'id': 3,
             'title': 'Node.js',
             'author': 12,
             'curriculum': 1,
@@ -42,7 +42,7 @@ const getCurriculumTopics = () => {
             'updated_at': 1509539867,
         },
         {
-            'id': 3,
+            'id': 1,
             'title': 'JavaScript',
             'author': 23,
             'curriculum': 1,

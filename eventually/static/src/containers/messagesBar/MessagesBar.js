@@ -1,8 +1,8 @@
 import React from 'react';
 import MessagesList from './MessagesList';
 import ReceiversList from './ReceiversList';
-import { getReceiversList, getMessagesList, postChatMessage, getOnlineUsers } from './messagesBarService';
-import { getMessagesSet, getNextPageNumber } from './messagesBarHelper';
+import {getMentorsListService, getStudentsListService, getMessagesList, postChatMessage, getOnlineUsers} from './messagesBarService';
+import {getMessagesSet, getNextPageNumber} from './messagesBarHelper';
 
 const messagesListStyle = {
     display: 'flex',
@@ -36,19 +36,22 @@ export default class MessagesBar extends React.Component {
     }
 
     componentWillMount() {
-        const receiversObject = this.props.location === 'progress' ? getReceiversList() : getReceiversList(true);
         const requestIntervalId = setInterval(this.handleOnlineStatus, 5000);
         const messagesRefreshId = setInterval(this.handleMessagesRefresh, 5000);
         this.setState({
-            receivers: receiversObject.receivers,
             requestIntervalId: requestIntervalId,
             messagesRefreshId: messagesRefreshId
-        });
+        }, this.getReceivers);
     }
 
     componentWillUnmount() {
         clearInterval(this.state.requestIntervalId);
         clearInterval(this.state.messagesRefreshId);
+    }
+
+    getReceivers = () =>{
+        let service = this.props.type === 'mentor' ? getStudentsListService : getMentorsListService;
+        service().then(response => this.setState(response.data));
     }
 
     handleOnlineStatus = () => {
