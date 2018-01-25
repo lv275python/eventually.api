@@ -6,7 +6,6 @@ from django.http import JsonResponse
 from django.views import View
 from authentication.models import CustomUser
 from event.models import Event
-from team.models import Team
 from utils.validators import task_data_validate_update, task_data_validate_create
 from utils.responsehelper import (RESPONSE_200_UPDATED,
                                   RESPONSE_200_DELETED,
@@ -104,23 +103,21 @@ class TaskView(View):
         :rtype: `HttpResponse object.
         """
 
-
         data = request.body
-        team = Team.get_by_id(team_id)
+        # team = Team.get_by_id(team_id)
         event = Event.get_by_id(event_id)
 
         if not data:
             return RESPONSE_400_EMPTY_JSON
 
-        if not team:
-            return RESPONSE_404_OBJECT_NOT_FOUND
+        # if not team:
+        #     return RESPONSE_404_OBJECT_NOT_FOUND
 
         if not event:
             return RESPONSE_404_OBJECT_NOT_FOUND
 
         if not task_data_validate_create(data):
             return RESPONSE_400_INVALID_DATA
-
 
         data = {
             'event': event,
@@ -129,7 +126,6 @@ class TaskView(View):
             'status': data.get('status'),
             'users': get_users(data.get('users')) if data.get('users') else [],
         }
-
         task = Task.create(**data)
         if task:
             task = task.to_dict()

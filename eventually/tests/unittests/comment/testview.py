@@ -16,7 +16,6 @@ from event.models import Event
 from task.models import Task
 from team.models import Team
 from vote.models import Vote
-from comment.views import CommentView
 
 
 
@@ -92,7 +91,7 @@ class Comment_View_Test(TestCase):
             "author": 200,
             "receiver": 1500
         }
-        url = reverse('event:comment:detail', args=[1000, 1000, 200])
+        url = reverse('event:event_comment:detail', args=[1000, 1000, 200])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(data))
@@ -119,7 +118,7 @@ class Comment_View_Test(TestCase):
                              Comment.get_by_id(300).to_dict(),
                              Comment.get_by_id(400).to_dict()]
         }
-        url = reverse('event:comment:index', args=[1000, 1000])
+        url = reverse('event:event_comment:index', args=[1000, 1000])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(data))
