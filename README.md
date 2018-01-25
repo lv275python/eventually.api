@@ -106,3 +106,19 @@ Go to the folder with `manage.py` file, run eventually.api
 ```
 python manage.py runserver
 ```
+
+### show_urls
+
+```python manage.py shell```
+
+```
+from eventually.urls import urlpatterns
+
+def show_urls(urllist, depth=""):
+    for entry in urllist:
+        print(depth + entry.regex.pattern[1:])
+        if hasattr(entry, 'url_patterns'):
+            show_urls(entry.url_patterns, depth+entry.regex.pattern[1:])
+
+show_urls(urlpatterns)
+```
