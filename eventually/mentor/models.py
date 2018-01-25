@@ -160,7 +160,6 @@ class MentorStudent(AbstractModel):
         """
 
         all_students = MentorStudent.objects.exclude(mentor_id=mentor_id)
-        print(type(all_students))
         return all_students.exclude(mentor_id=None)
 
     @staticmethod
