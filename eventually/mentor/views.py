@@ -6,6 +6,8 @@ The module that provides basic logic for getting, creating, updating and deletin
 of MentorStudent's model objects.
 """
 from datetime import datetime
+import pytz
+
 from django.http import JsonResponse
 from django.views.generic.base import View
 from authentication.models import CustomUser
@@ -22,48 +24,32 @@ class MentorView(View):
     def get(self, request):
         """
         Method that handles GET request.
+
+        :param request: the accepted HTTP request.
+        :type request: `HttpRequest object`
+
+        :return: return JsonResponse within filtered students data
         """
         mentor = CustomUser.get_by_id(request.user.id)
         topics_id = [record.id for record in mentor.topic_set.all()]
 
-        all_students = MentorStudent.objects.exclude(mentor_id=request.user.id)
-        all_students = all_students.exclude(mentor_id=None)
-
-        my_students = MentorStudent.objects.filter(mentor_id=request.user.id)
-
-        available_students = MentorStudent.objects.filter(mentor_id=None)
-
-        # is_done = True if request.GET.get('topic', "") == 'true' else False
-
+        filters = {}
         if request.GET.get('topic', None):
-            topic = request.GET.get('topic')
-            all_students = all_students.filter(topic_id=str(topic))
-            my_students = my_students.filter(topic_id=str(topic))
-            available_students = available_students.filter(topic_id=str(topic))
-
+            filters['topic_id'] = request.GET.get('topic')
         if request.GET.get('is_done', None):
-            all_students = all_students.filter(is_done=True)
-            my_students = my_students.filter(is_done=True)
-            available_students = available_students.filter(is_done=True)
-
+            filters['is_done'] = True if request.GET.get('is_done') == 'true' else False
         if request.GET.get('from', None):
-
-            from_date = request.GET.get('from', None)
-            from_date = datetime.fromtimestamp(int(from_date))
-
-            all_students = all_students.filter(created_at__gte=from_date)
-            my_students = my_students.filter(created_at__gte=from_date)
-            available_students = available_students.filter(created_at__gte=from_date)
-
+            from_date = request.GET.get('from')
+            from_date = datetime.fromtimestamp(int(from_date), tz=pytz.UTC)
+            filters['created_at__gte'] = from_date
         if request.GET.get('to', None):
-            to_date = request.GET.get('to', None)
-            to_date = datetime.fromtimestamp(int(to_date))
+            to_date = request.GET.get('to')
+            to_date = datetime.fromtimestamp(int(to_date), tz=pytz.UTC)
+            filters['created_at__lte'] = to_date
 
-            all_students = all_students.filter(created_at__lte=to_date)
-            my_students = my_students.filter(created_at__lte=to_date)
-            available_students = available_students.filter(created_at__lte=to_date)
-
-
+        all_students = MentorStudent.get_all_students(mentor.id).filter(**filters)
+        my_students = MentorStudent.get_my_students(mentor.id).filter(**filters)
+        available_students = MentorStudent.get_available_students().filter(**filters)
 
         all_students = [record for record in all_students if record.topic_id in topics_id]
         all_students = set([record.student_id for record in all_students])

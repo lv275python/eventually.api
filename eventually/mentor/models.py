@@ -133,3 +133,43 @@ class MentorStudent(AbstractModel):
         if is_done:
             self.is_done = is_done
         self.save()
+
+    @staticmethod
+    def get_my_students(mentor_id):
+        """
+        A method that get students who belong to a certain mentor
+
+        :param mentor_id: Certain mentor id
+        :type mentor_id: int
+
+        :return: QuerySet with students
+        """
+
+        return MentorStudent.objects.filter(mentor_id=mentor_id)
+
+    @staticmethod
+    def get_all_students(mentor_id):
+        """
+        A method that only get students who signed in courses in which mentor can be certain mentor,
+        but them mentor is not certain mentor
+
+        :param mentor_id: Certain mentor id
+        :type mentor_id: int
+
+        :return: QuerySet with students
+        """
+
+        all_students = MentorStudent.objects.exclude(mentor_id=mentor_id)
+        print(type(all_students))
+        return all_students.exclude(mentor_id=None)
+
+    @staticmethod
+    def get_available_students():
+        """
+        A method that only get students who signed in courses in which mentor can be certain mentor,
+        but they do not have a mentor yet
+
+        :return: QuerySet with students
+        """
+
+        return MentorStudent.objects.filter(mentor_id=None)
