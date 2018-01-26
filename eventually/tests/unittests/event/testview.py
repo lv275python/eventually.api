@@ -59,6 +59,29 @@ class EventViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
 
+    def test_success_get_all_events_from_my_teams(self):
+        """Method that tests the successful get request for all events
+        from those teams, I am member of."""
+
+        expected_data = {'events': [{'id': 101,
+                                     'team': 101,
+                                     'name': 'ride',
+                                     'owner': 101,
+                                     'description': '',
+                                     'start_at': None,
+                                     'created_at': 1509344112,
+                                     'updated_at': 1509344112,
+                                     'duration': None,
+                                     'longitude': None,
+                                     'latitude': None,
+                                     'budget': None,
+                                     'status': 0}]}
+
+        url = reverse('events:index')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
+
     def test_error_get_all(self):
         """
         Method that tests the unsuccessful get request for all events of the certain team.
