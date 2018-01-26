@@ -22,23 +22,23 @@ class ChatViewTest(TestCase):
 
     def setUp(self):
         """Method that provides preparation before testing Event view's features."""
-        custom_user = CustomUser.objects.create(id=100, email='email@gmail.com', is_active=True)
-        custom_user.set_password('Aa123456')
-        custom_user.save()
 
-        receiver = CustomUser.objects.create(id=1500, email='receiver@gmail.com', is_active=True)
-        receiver.set_password('123456')
-        receiver.save()
-
-        second_custom_user = CustomUser.objects.create(id=200, email='qwerty@gmail.com', is_active=True)
-        second_custom_user.set_password('Aaqwerty11')
-        second_custom_user.save()
-
-        self.client = Client()
-        self.client.login(username='email@gmail.com', password='Aa123456')
 
         with mock.patch('django.utils.timezone.now') as mock_time:
             mock_time.return_value = TEST_TIME
+
+            custom_user = CustomUser.objects.create(id=100, email='email@gmail.com', is_active=True)
+            custom_user.set_password('Aa123456')
+            custom_user.save()
+
+            receiver = CustomUser.objects.create(id=1500, email='receiver@gmail.com', is_active=True)
+            receiver.set_password('123456')
+            receiver.save()
+
+            second_custom_user = CustomUser.objects.create(id=200, email='qwerty@gmail.com', is_active=True)
+            second_custom_user.set_password('Aaqwerty11')
+            second_custom_user.save()
+
             Comment.objects.create(id=100, author=custom_user,
                                    text='football', receiver=receiver)
             Comment.objects.create(id=200, author=custom_user,
@@ -47,12 +47,14 @@ class ChatViewTest(TestCase):
                                    text='any_sport', receiver=receiver)
             Comment.objects.create(id=400, author=second_custom_user,
                                    text='sport', receiver=receiver)
+        self.client = Client()
+        self.client.login(username='email@gmail.com', password='Aa123456')
 
     def test_get_success(self):
         """
-        Method that tests the successful get request for the page with chat messages that belong
-        to the certain conversation.
-        """
+            Method that tests the successful get request for the page with chat messages that belong
+            to the certain conversation.
+            """
         data = {"messages": [{"id": 100,
                               "text": 'football',
                               "created_at": int(TEST_TIME.timestamp()),
@@ -61,7 +63,14 @@ class ChatViewTest(TestCase):
                               "event": None,
                               "task": None,
                               "vote": None,
-                              "author": 100,
+                              "author": {'id': 100,
+                                         'first_name': '',
+                                         'middle_name': '',
+                                         'last_name': '',
+                                         'email': 'email@gmail.com',
+                                         'created_at': int(TEST_TIME.timestamp()),
+                                         'updated_at': int(TEST_TIME.timestamp()),
+                                         'is_active': True},
                               "receiver": 1500},
                              {"id": 200,
                               "text": 'some_sport',
@@ -71,7 +80,14 @@ class ChatViewTest(TestCase):
                               "event": None,
                               "task": None,
                               "vote": None,
-                              "author": 100,
+                              "author": {'id': 100,
+                                         'first_name': '',
+                                         'middle_name': '',
+                                         'last_name': '',
+                                         'email': 'email@gmail.com',
+                                         'created_at': int(TEST_TIME.timestamp()),
+                                         'updated_at': int(TEST_TIME.timestamp()),
+                                         'is_active': True},
                               "receiver": 1500}],
                 "next_page": -1,
                 "per_page": 20}

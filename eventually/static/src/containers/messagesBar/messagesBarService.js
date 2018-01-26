@@ -2,68 +2,14 @@ import axios from 'axios';
 
 const appPath = '/api/v1/chat/';
 
-const getReceiversList = (isMentor = false) => {
+const getMentorsListService = () => {
+    const url = '/api/v1/mentor/mentors_list/';
+    return axios.get(url);
+};
 
-    let receivers = {};
-
-    if (isMentor) {
-
-        receivers = {
-            'receivers': [
-                {
-                    'id': 1,
-                    'first_name': 'Sam',
-                    'last_name': 'Ruby',
-                    'avatar': 'samruby',
-                    'is_online': false
-                },
-                {
-                    'id': 2,
-                    'first_name': 'Marcelo',
-                    'last_name': 'Petrov',
-                    'avatar': 'marcelopetrov',
-                    'is_online': false
-                },
-                {
-                    'id': 3,
-                    'first_name': 'Ismail',
-                    'last_name': 'Botobo',
-                    'avatar': 'ismailbotobo',
-                    'is_online': false
-                }
-            ]
-        };
-
-    } else {
-
-        receivers = {
-            'receivers': [
-                {
-                    'id': 1,
-                    'first_name': 'John',
-                    'last_name': 'Doe',
-                    'avatar': 'johndoe',
-                    'is_online': true
-                },
-                {
-                    'id': 2,
-                    'first_name': 'Eric',
-                    'last_name': 'Moreno',
-                    'avatar': 'ericmoreno',
-                    'is_online': false
-                },
-                {
-                    'id': 3,
-                    'first_name': 'Mark',
-                    'last_name': 'Smith',
-                    'avatar': 'marksmith',
-                    'is_online': true
-                }
-            ]
-        };
-    }
-
-    return receivers;
+const getStudentsListService = () => {
+    const url = '/api/v1/mentor/students_list/';
+    return axios.get(url);
 };
 
 const getMessagesList = (receiverId, pageNumber) => {
@@ -85,4 +31,4 @@ const getOnlineUsers = users => {
     });
 };
 
-export {getReceiversList, getMessagesList, postChatMessage, getOnlineUsers};
+export {getMessagesList, postChatMessage, getOnlineUsers, getMentorsListService, getStudentsListService};

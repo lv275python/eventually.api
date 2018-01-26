@@ -148,6 +148,19 @@ class MentorStudent(AbstractModel):
         return MentorStudent.objects.filter(mentor_id=mentor_id)
 
     @staticmethod
+    def get_my_mentors(student_id):
+        """
+        A method that get mentors who belong to a certain student
+
+        :param student_id: Certain student id
+        :type student_id: int
+
+        :return: QuerySet with mentors
+        """
+
+        return MentorStudent.objects.filter(student_id=student_id)
+
+    @staticmethod
     def get_all_students(mentor_id):
         """
         A method that only get students who signed in courses in which mentor can be certain mentor,
