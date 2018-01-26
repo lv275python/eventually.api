@@ -8,8 +8,6 @@ import CurriculumList from './containers/curriculum/CurriculumList';
 import MentorItem from './containers/mentor_item/MentorItem';
 import MentorDashboard from './containers/mentorDashboard/MentorDashboard';
 import TeamList from './containers/teamList/TeamList';
-import EventList from './containers/event/EventList';
-
 
 export default class MainRouter extends React.Component {
     render() {
@@ -24,9 +22,6 @@ export default class MainRouter extends React.Component {
                     <Route path='/mentoritem' component={MentorItem}/>
                     <Route path='/dashboard' component={MentorDashboard}/>
                     <Route path='/teamlist' component={TeamList}/>
-                    <Route path='/events' component={EventList}/>
-                    <Redirect path='/events/:eventId' to='/events/:eventId'/>
-                    <Route path='/events/:eventId' component={CurriculumList}/>
                     <Redirect path='*' to='/home' />
                 </Switch>
             </main>

@@ -49,7 +49,7 @@ export default class CurriculumDialog extends React.Component {
 
         return (
             <div>
-                <FloatingActionButton
+                <FloatingActionButton 
                     onClick={this.handleOpen}
                     style={FlatButtonStyle}>
                     <ContentAdd />

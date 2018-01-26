@@ -22,9 +22,7 @@ export default class Header extends React.Component {
                     iconElementRight={<Logout />}
                     onLeftIconButtonTouchTap={this.toggleSiteBarOpen}
                 />
-                <SiteBar
-                    open={this.state.open}
-                    toggleSiteBarOpen={this.toggleSiteBarOpen}/>
+                <SiteBar open={this.state.open} toggleSiteBarOpen={this.toggleSiteBarOpen}/>
             </div>
         );
     }

@@ -52,5 +52,5 @@ class CurriculumList extends React.Component {
             </div>
         );
     }
-}
+} 
 export default CurriculumList;
