@@ -44,6 +44,15 @@ class EventView(View):
                  the 404 failed status code response.
         :rtype: `HttpResponse object.
         """
+        if not event_id and not team_id:
+            user = request.user
+            teams = user.teams.all()
+            events = []
+            for team in teams:
+                events.extend(team.event_set.all())
+            data = {'events': [event.to_dict() for event in events]}
+            return JsonResponse(data, status=200)
+
 
         if event_id:
             event = Event.get_by_id(event_id)
