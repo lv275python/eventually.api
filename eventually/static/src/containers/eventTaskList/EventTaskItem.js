@@ -1,6 +1,8 @@
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import {Card, CardHeader, CardText} from 'material-ui/Card';
+import {Card, CardHeader, CardActions, CardText} from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
+import EditEventTaskDialog from './EditEventTaskDialog';
 
 export default class EventTaskItem extends React.Component {
     constructor(props) {
@@ -8,22 +10,45 @@ export default class EventTaskItem extends React.Component {
         this.state = {
             title: this.props.title,
             description: this.props.description.slice(0,300)+'...',
-            status: this.props.status
+            openDialog: false
         };
+    }
+
+    handleDialogOpen = () =>{
+        this.setState({'openDialog': true});
+    }
+
+    handleDialogClose = () =>{
+        this.setState({'openDialog': false});
     }
 
     render() {
         return (
-            <Card>
-                <CardHeader
-                    title={this.state.title}
-                    actAsExpander={true}
-                    showExpandableButton={true}
+            <div>
+                <Card>
+                    <CardHeader
+                        title={this.state.title}
+                        actAsExpander={true}
+                        showExpandableButton={true}
+                    />
+                    <CardActions>
+                        <FlatButton label="Edit" onClick={this.handleDialogOpen}/>
+                    </CardActions>
+                    <CardText expandable={true}>
+                        {this.state.description}
+                    </CardText>
+                </Card>
+                <EditEventTaskDialog
+                    open = {this.state.openDialog}
+                    title = {this.state.title}
+                    description = {this.state.description}
+                    members = {this.props.members}
+                    id = {this.props.id}
+                    assignment_users = {this.props.assignment_users}
+                    handleDialogClose = {this.handleDialogClose}
+                    eventId = {this.props.eventId}
                 />
-                <CardText expandable={true}>
-                    {this.state.description}
-                </CardText>
-            </Card>
+            </div>
         );
     }
 }

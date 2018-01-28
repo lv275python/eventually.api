@@ -10,8 +10,8 @@ import MentorDashboard from './containers/mentorDashboard/MentorDashboard';
 import TeamList from './containers/teamList/TeamList';
 import EventList from './containers/event/EventList';
 import AddEventTask from './containers/eventTask/AddEventTask';
+import EventTaskList from './containers/eventTaskList/EventTaskList';
 import EventEditButton from './containers/event/EventEditButton';
-import EventTaskList from './containers/event/EventTaskList';
 
 export default class MainRouter extends React.Component {
     render() {

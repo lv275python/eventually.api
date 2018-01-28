@@ -1,14 +1,16 @@
 import React from 'react';
 import Sortable from 'sortablejs';
 import EventTaskItem from './EventTaskItem';
-import {eventTasksServiceGet, eventServiceGet, eventTaskServicePut} from './eventTaskService';
+import {eventTasksServiceGet, eventServiceGet, eventTaskServicePut, taskGetTeamService} from './EventTaskService';
 
 export default class EventTaskList extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            tasks:[],
+            eventId: this.props.match.params.eventId,
+            tasks: [],
+            members: []
         };
     }
 
@@ -18,15 +20,28 @@ export default class EventTaskList extends React.Component {
     }
 
     getEventTaskItem = () => {
-        eventTasksServiceGet(this.props.match.params.eventId).
+        eventTasksServiceGet(this.state.eventId).
             then(response => this.setState({'tasks': response.data.tasks}));
     };
 
+    getTeamMembers = team_id => {
+        let members = [];
+        taskGetTeamService(team_id, true).then(response => {
+            let members_id = response.data['members_id'];
+            members_id.map(member => {
+                members.push({'id': member.id, 'full_name': member.first_name + ' ' + member.last_name});
+            });
+        });
+        this.setState({'members': members});
+    }
+
     getEventName = () => {
-        eventServiceGet(this.props.match.params.eventId).then(response =>
+        eventServiceGet(this.state.eventId).then(response => {
             this.setState({'event_name': response.data.name,
-                'event_descr': response.data.description})
-        );
+                'event_descr': response.data.description
+            });
+            this.getTeamMembers(response.data.team);
+        });
     };
 
     sortableGroupDecorator = (sortableGroup) => {
@@ -36,10 +51,10 @@ export default class EventTaskList extends React.Component {
                 onRemove: evt => {
                     var task_id;
                     this.state.tasks.map(task => {
-                        if (task.title == evt.item.innerText) task_id = task.id;
+                        if (evt.item.innerText.search(task.title) > -1) task_id = task.id;
                     });
-                    let newStatus = parseInt(evt.to.id);
-                    eventTaskServicePut(task_id, newStatus);
+                    let data = {status: +evt.to.id};
+                    eventTaskServicePut(this.state.eventId, task_id, data);
                 }
             };
 
@@ -91,61 +106,74 @@ export default class EventTaskList extends React.Component {
                     {this.state.event_descr}
                 </h3>
                 <table style={tableStyle}>
-                    <tr>
-                        <th style={thStyle}>
-                            ToDo
-                        </th>
-                        <th style={thStyle}>
-                            InProgress
-                        </th>
-                        <th style={thStyle}>
-                            Done
-                        </th>
-                    </tr>
-                    <tr>
-                        <td style={tdStyle}>
-                            <ul  id='0' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
-                                {this.state.tasks.map(task => (task.status == 0 &&
-                                    <li style={liStyle}>
-                                        <EventTaskItem
-                                            key={task.id.toString()}
-                                            id={task.id}
-                                            title={task.title}
-                                            description={task.description}
-                                        />
-                                    </li>
-                                ))}
-                            </ul>
-                        </td>
-                        <td style={tdStyle}>
-                            <ul  id='1' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
-                                {this.state.tasks.map(task => (task.status == 1 &&
-                                    <li style={liStyle}>
-                                        <EventTaskItem
-                                            key={task.id.toString()}
-                                            id={task.id}
-                                            title={task.title}
-                                            description={task.description}
-                                        />
-                                    </li>
-                                ))}
-                            </ul>
-                        </td>
-                        <td style={tdStyle}>
-                            <ul  id='2' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
-                                {this.state.tasks.map(task => (task.status == 2 &&
-                                    <li style={liStyle}>
-                                        <EventTaskItem
-                                            key={task.id.toString()}
-                                            id={task.id}
-                                            title={task.title}
-                                            description={task.description}
-                                        />
-                                    </li>
-                                ))}
-                            </ul>
-                        </td>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th style={thStyle}>
+                                ToDo
+                            </th>
+                            <th style={thStyle}>
+                                InProgress
+                            </th>
+                            <th style={thStyle}>
+                                Done
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style={tdStyle}>
+                                <ul  id='0' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
+                                    {this.state.tasks.map(task => (task.status == 0 &&
+                                        <li style={liStyle}>
+                                            <EventTaskItem
+                                                key={task.id.toString()}
+                                                id={task.id}
+                                                title={task.title}
+                                                description={task.description}
+                                                assignment_users={task.users}
+                                                members={this.state.members}
+                                                eventId={this.state.eventId}
+                                            />
+                                        </li>
+                                    ))}
+                                </ul>
+                            </td>
+                            <td style={tdStyle}>
+                                <ul  id='1' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
+                                    {this.state.tasks.map(task => (task.status == 1 &&
+                                        <li style={liStyle}>
+                                            <EventTaskItem
+                                                key={task.id.toString()}
+                                                id={task.id}
+                                                title={task.title}
+                                                description={task.description}
+                                                assignment_users={task.users}
+                                                members={this.state.members}
+                                                eventId={this.state.eventId}
+                                            />
+                                        </li>
+                                    ))}
+                                </ul>
+                            </td>
+                            <td style={tdStyle}>
+                                <ul  id='2' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
+                                    {this.state.tasks.map(task => (task.status == 2 &&
+                                        <li style={liStyle}>
+                                            <EventTaskItem
+                                                key={task.id.toString()}
+                                                id={task.id}
+                                                title={task.title}
+                                                description={task.description}
+                                                assignment_users={task.users}
+                                                members={this.state.members}
+                                                eventId={this.state.eventId}
+                                            />
+                                        </li>
+                                    ))}
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         );
