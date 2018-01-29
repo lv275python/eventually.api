@@ -100,10 +100,10 @@ class MentorView(View):
         if not student or not topic:
             return RESPONSE_404_OBJECT_NOT_FOUND
 
-        record = list(MentorStudent.objects.filter(student_id=student.id, topic_id=topic.id))[0]
+        record = list(MentorStudent.objects.filter(student_id=student.id, topic_id=topic.id))
 
         if record:
-            record.update(mentor=user)
+            record[0].update(mentor=user)
             return RESPONSE_200_UPDATED
 
         mentor = MentorStudent.create(mentor=user,
