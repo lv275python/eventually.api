@@ -30,7 +30,10 @@ class TeamView(View):
         :param team_id: id of a team to return.
         :type team_id: int
 
-        :return: team dictionary
+        :param full_name: parametr to return.
+        :type full_name: Boolean value
+
+        :return: if not full_name return team dictionary
             E.G.
             |    {
             |        "id": 4,
@@ -44,12 +47,33 @@ class TeamView(View):
             |            1
             |        ]
             |    }
+            else return list of dictionaries (users full information):
+            E.G.
+            | [{'id': 8,
+            |   'first_name': 'fn',
+            |   'middle_name': 'mn',
+            |   'last_name': 'ln',
+            |   'email': 'ln@mail.com',
+            |   'created_at': 1509393504,
+            |   'updated_at': 1509402866,
+            |   'is_active:' True}
+            | {'id': 10,
+            |   'first_name': 'ls',
+            |   'middle_name': 'rf',
+            |   'last_name': 'lg',
+            |   'email': 'ls@mail.com',
+            |   'created_at': 1509393505,
+            |   'updated_at': 1509402867,
+            |   'is_active:' True}
         """
         if team_id:
             team = Team.get_by_id(team_id)
             if team:
-                team = team.to_dict()
-                return JsonResponse(team, status=200)
+                data = team.to_dict()
+                if request.GET.get('full_name', None):
+                    members = [user.to_dict() for user in team.members.all()]
+                    data['members_id'] = members
+                return JsonResponse(data, status=200)
             return RESPONSE_404_OBJECT_NOT_FOUND
         current_user = request.user
         teams = current_user.teams.all()
