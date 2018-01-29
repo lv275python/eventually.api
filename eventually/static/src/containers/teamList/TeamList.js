@@ -1,9 +1,15 @@
 import React from 'react';
 import TeamItem from './TeamItem';
 import {teamServiceGet} from './teamService';
+import CreateTeamDialog from './CreateTeamDialog';
+
+const CreateTeamDialogStyle = {
+    position: 'fixed',
+    right: '3%',
+    top: '85%'
+};
 
 export default class TeamList extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -46,6 +52,7 @@ export default class TeamList extends React.Component {
                         listOfMembers={team.members_id}
                     />
                 ))}
+                <CreateTeamDialog style={CreateTeamDialogStyle}/>
             </div>
         );
     }

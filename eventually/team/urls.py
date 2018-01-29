@@ -8,5 +8,5 @@ urlpatterns = [
     url(r'^(?P<team_id>\d+)/$', views.TeamView.as_view(), name='team'),
     url(r'^(?P<team_id>\d+)/event/', include('event.urls', namespace='event')),
     url(r'^(?P<team_id>\d+)/comment/', include('comment.urls', namespace='comment')),
-
+    url(r'^new/$', views.TeamView.as_view(), name='team_create'),
 ]
