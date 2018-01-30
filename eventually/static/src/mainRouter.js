@@ -9,7 +9,7 @@ import MentorItem from './containers/mentor_item/MentorItem';
 import MentorDashboard from './containers/mentorDashboard/MentorDashboard';
 import TeamList from './containers/teamList/TeamList';
 import EventList from './containers/event/EventList';
-import AddEventTask from './containers/eventTask/AddEventTask';
+import EventTaskList from './containers/eventTaskList/EventTaskList';
 import EventEditButton from './containers/event/EventEditButton';
 
 export default class MainRouter extends React.Component {
@@ -25,10 +25,9 @@ export default class MainRouter extends React.Component {
                     <Route path='/mentoritem' component={MentorItem}/>
                     <Route path='/dashboard' component={MentorDashboard}/>
                     <Route path='/teamlist' component={TeamList}/>
+                    <Route path='/events/:eventId/task' component={EventTaskList}/>
                     <Route path='/events/:eventId' component={CurriculumList}/>
                     <Route path='/events' component={EventList}/>
-                    <Route path='/new_task' component={AddEventTask}/>
-                    <Route path='/events/:eventId' component={CurriculumList}/>
                     <Route path='/eventedit/' component={EventEditButton}/>
                     <Redirect path='*' to='/home' />
                 </Switch>
