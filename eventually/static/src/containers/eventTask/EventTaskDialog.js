@@ -17,27 +17,18 @@ const FlatButtonStyle = {
     top: '85%'
 };
 
-const styles = {
-    block: {
-        maxWidth: 250,
-    },
-    checkbox: {
-        marginBottom: 16,
-    },
-};
-
 export default class TaskDialog extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            open: false,
             title: '',
             description: '',
             status: 0,
-            open: false,
             eventId: props.eventId,
             teamId: props.teamId,
             members: [],
-            values: []
+            assignment: []
         };
     }
 
@@ -67,25 +58,14 @@ export default class TaskDialog extends React.Component {
         this.setState({'status': value});
     };
 
-    handleChange = (event, index, values) => this.setState({values});
-
-    // selectionRenderer = (values) => {
-    //     switch (values.length) {
-    //         case 0:
-    //             return '';
-    //         case 1:
-    //             return this.state.members[values[0]].first_name;
-    //         default:
-    //             return `${values.length} users selected`;
-    //     }
-    // }
+    handleChange = (event, index, values) => this.setState({'assignment': values});
 
     menuItems(values) {
         return this.state.members.map((member) => (
             <MenuItem
                 key={member.id}
                 insetChildren={true}
-                checked={values && values.indexOf(member.id) > -1}
+                checked={values && this.state.assignment.indexOf(member.id) > -1}
                 value={member.id}
                 primaryText={member.first_name + ' ' + member.last_name}
             />
@@ -157,7 +137,7 @@ export default class TaskDialog extends React.Component {
                     <SelectField
                         multiple={true}
                         floatingLabelText="Select a name"
-                        value={values}
+                        value={this.state.assignment}
                         onChange={this.handleChange}
                         // selectionRenderer={this.selectionRenderer}
                     >

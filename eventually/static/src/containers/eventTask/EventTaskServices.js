@@ -11,8 +11,6 @@ const getTeamService = (teamId, full_name) => {
     if (full_name){
         url += '?full_name=true';
     }
-    console.log(url);
-    console.log(full_name);
     return axios.get(url);
 };
 
