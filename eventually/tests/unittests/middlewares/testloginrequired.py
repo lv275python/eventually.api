@@ -10,13 +10,15 @@ class TestLoginRequiredTestCase(TestCase):
         Method that provides preparation before starting testing  custom JSON check
         and permitted paths for anonymous users
         """
-        user = CustomUser.objects.create(id=12, email='someemail@gmail.com', is_active=True)
-        user.set_password('1234')
+        authenticated_user_email = 'someemail@gmail.com'
+        password = '1234'
+        user = CustomUser.objects.create(id=12, email=authenticated_user_email, is_active=True)
+        user.set_password(password)
         user.save()
         self.authenticated_client = Client()
-        self.authenticated_client.login(email='someemail@gmail.com', password='1234')
-        self.not_authenticated_data = {'email': 'mail@mail.co', 'password': '1234'}
-        self.authenticated_data = {'email': 'someemail@gmail.com', 'password': '1234'}
+        self.authenticated_client.login(email=authenticated_user_email, password=password)
+        self.not_authenticated_data = {'email': 'mail@mail.co', 'password': password}
+        self.authenticated_data = {'email': authenticated_user_email, 'password': password}
         
     def test_put_path_notapi(self):
         """

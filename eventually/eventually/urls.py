@@ -11,4 +11,3 @@ urlpatterns = [
     url(r'^api/v1/mentor/', include('mentor.urls')),
     url(r'.*', include('home.urls')),
 ]
-
