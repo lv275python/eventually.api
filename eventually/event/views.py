@@ -52,8 +52,6 @@ class EventView(View):
                 events.extend(team.event_set.all())
             data = {'events': [event.to_dict() for event in events]}
             return JsonResponse(data, status=200)
-
-
         if event_id:
             event = Event.get_by_id(event_id)
             if not event:
