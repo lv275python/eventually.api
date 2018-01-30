@@ -47,7 +47,7 @@ export default class TeamItem extends React.Component {
         };
     }
     /*update old prop*/
-    componentWillReceiveProps(nextProps){
+    componentWillReceiveProps (nextProps){
         this.setState({
             name: nextProps.name,
             description: nextProps.description.slice(0,300)+'...',
