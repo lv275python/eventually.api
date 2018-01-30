@@ -43,16 +43,15 @@ class ChatView(View):
         :rtype: `HttpResponse object`.
         """
 
-        user = request.user
         interlocutor = CustomUser.get_by_id(receiver_id)
 
         if not interlocutor:
             return RESPONSE_404_OBJECT_NOT_FOUND
 
-        if user.id == interlocutor.id:
+        if request.user.id == interlocutor.id:
             return RESPONSE_400_INVALID_DATA
 
-        user_messages = Comment.objects.filter(Q(author=user) | Q(receiver=user))
+        user_messages = Comment.objects.filter(Q(author=request.user) | Q(receiver=request.user))
         chat_messages = user_messages.filter(Q(author=interlocutor) | Q(receiver=interlocutor))
         ordered_messages = chat_messages.order_by('-created_at')
 
