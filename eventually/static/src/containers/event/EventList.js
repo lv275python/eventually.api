@@ -35,8 +35,8 @@ class EventList extends React.Component {
         });
     };
 
-    goToHome = () => {
-        this.props.history.push('/home');
+    goToEvent = () => {
+        this.props.history.push('/events/event');
     };
 
     componentWillMount() {
@@ -51,14 +51,24 @@ class EventList extends React.Component {
                     this.state.events.map(event => (
                         <EventLink
                             key={event.id.toString()}
-                            title={event.name}
+                            team={event.team}
+                            owner={event.owner}
+                            name={event.name}
                             description={event.description}
+                            start_at={event.start_at}
+                            created_at={event.created_at}
+                            updated_at={event.updated_at}
+                            duration={event.duration}
+                            longitude={event.longitude}
+                            latitude={event.latitude}
+                            budget={event.budget}
+                            status={event.status}
                             id={event.id}
                         />)
                     )
                 }
                 <FloatingActionButton
-                    onClick={this.goToHome}
+                    onClick={this.goToEvent}
                     style={FloatingButtonStyle}>
                     <ContentAdd />
                 </FloatingActionButton>
