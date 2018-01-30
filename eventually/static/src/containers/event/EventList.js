@@ -6,6 +6,7 @@ import { withRouter } from 'react-router-dom';
 import EventLink from './EventLink';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
+import CreateEvent from '../eventCreate/CreateEvent';
 
 const containerStyle = {
     width: '80%',
@@ -35,10 +36,6 @@ class EventList extends React.Component {
         });
     };
 
-    goToHome = () => {
-        this.props.history.push('/home');
-    };
-
     componentWillMount() {
         this.getData();
     }
@@ -57,11 +54,7 @@ class EventList extends React.Component {
                         />)
                     )
                 }
-                <FloatingActionButton
-                    onClick={this.goToHome}
-                    style={FloatingButtonStyle}>
-                    <ContentAdd />
-                </FloatingActionButton>
+                <CreateEvent />
             </div>
         );
     }
