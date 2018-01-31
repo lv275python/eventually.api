@@ -7,7 +7,7 @@ const STATUS_CHOICES = {
     1: 'published',
     2: 'going',
     3: 'finished'
-}
+};
 const myDate = new Date();
 myDate.setMilliseconds(1800);
 console.log(myDate);

@@ -27,7 +27,7 @@ export default class MainRouter extends React.Component {
                     <Route path='/mentoritem' component={MentorItem}/>
                     <Route path='/dashboard' component={MentorDashboard}/>
                     <Route path='/teamlist' component={TeamList}/>
-                    <Route path='/events/:eventId/tasks' component={EventTaskList}/>
+                    <Route path='/events/:eventId/task' component={EventTaskList}/>
                     <Route path='/events/:eventId' component={Event}/>
                     <Route path='/events' component={EventList}/>
                     <Route path='/eventedit/' component={EventEditButton}/>

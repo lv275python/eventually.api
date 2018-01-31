@@ -1,5 +1,4 @@
 import React from 'react';
-import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -8,7 +7,7 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import {eventTaskServicePost, getTeamService, getUserService} from './EventTaskServices';
+import {eventTaskServicePost, taskGetTeamService} from './EventTaskService';
 
 
 const FlatButtonStyle = {
@@ -33,7 +32,7 @@ export default class TaskDialog extends React.Component {
     }
 
     componentWillMount() {
-        getTeamService(this.state.teamId, true).then(response => {
+        taskGetTeamService(this.state.teamId, true).then(response => {
             this.setState({'members': response.data['members_id']});
         });
     }
@@ -136,7 +135,7 @@ export default class TaskDialog extends React.Component {
                     </SelectField>
                     <SelectField
                         multiple={true}
-                        floatingLabelText="Select a name"
+                        floatingLabelText="Select users"
                         value={this.state.assignment}
                         onChange={this.handleChange}
                         // selectionRenderer={this.selectionRenderer}
