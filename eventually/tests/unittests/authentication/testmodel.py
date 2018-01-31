@@ -181,3 +181,11 @@ class TestCustomUserModel(TestCase):
                                     is_active=True)
 
         self.assertEqual(user_to_update, user_to_expect)
+
+
+    def test_get_all_users(self):
+        """ Test of the CustomUser.get_all() method """
+        expected_value = CustomUser.objects.all()
+        current_value = CustomUser.get_all()
+        self.assertEqual(list(current_value), list(expected_value))
+        

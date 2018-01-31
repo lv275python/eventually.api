@@ -1,12 +1,15 @@
-import React from 'react';
+import React, {Component} from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import FileUpload from '../fileUpload/FileUpload';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import {teamServicePost} from './teamService';
-
+import {teamServicePost, usersServiceGet} from './teamService';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
+import {getUserId} from '../../helper/utils';
+import {orange500} from 'material-ui/styles/colors';
 
 const FlatButtonStyle = {
     position: 'fixed',
@@ -20,6 +23,11 @@ const CreateTeamDialogStyle = {
     top: '85%'
 };
 
+const errorStyle = {
+    color: orange500,
+};
+
+
 export default class CreateTeamDialog extends React.Component {
     constructor(props) {
         super(props);
@@ -28,19 +36,55 @@ export default class CreateTeamDialog extends React.Component {
             name: '',
             description: '',
             image: '',
-            owner: '1',
-            members: [1],
+            values: [],
+            users: [],
+            MessageName: '',
+            MessageDescription: '',
+            NameIsValid: false,
+            DescriptionIsValid: true,
         };
     }
 
-    /*set description to state*/
-    handleDescription = event => {
-        this.setState({description: event.target.value});
+    
+    componentWillMount(){
+        this.getAllUsers();
+    }
+
+    getAllUsers = () => {
+        usersServiceGet().then(response => this.setState({'users': response.data.users}));
     };
 
-    /*set name to state*/
+    /*set description to state after validation*/
+    handleDescription = event => {
+        const regex = /^[\S\s.]{0,1024}$/;
+        if(regex.test(event.target.value) === true ) {
+            this.setState({
+                MessageDescription: '',
+                description: event.target.value,
+                DescriptionIsValid: true,
+            });
+        } else {
+            this.setState({ MessageDescription: 'Invalid description'});
+            this.setState({ DescriptionIsValid: false});
+        }
+    };
+
+
+    /*set name to state after validation*/
     handleName = event => {
-        this.setState({name: event.target.value});
+        const regex = /^.{4,30}$/;
+        if(regex.test(event.target.value) === true ) {
+            this.setState({
+                MessageName: '', 
+                name: event.target.value,
+                NameIsValid: true,
+            });
+        } else {
+            this.setState({ 
+                MessageName: 'Invalid name',
+                NameIsValid: false,
+            });
+        }
     };
 
     /*set uploaded image to state*/
@@ -56,23 +100,50 @@ export default class CreateTeamDialog extends React.Component {
     /*close CreateTeamDialog*/
     handleClose = () => {
         this.setState({ open: false });
+        this.setState({
+            values: [],
+            image: '',
+            MessageName: '',
+            MessageDescription: '',
+            NameIsValid: false,
+            DescriptionIsValid: true,
+        });
+    };
+
+    handleChange = (event, index, values) => {
+        this.setState({values});
     };
 
     handleSubmit = () => {
-        const data = {
-            'name': this.state.name,
-            'description': this.state.description,
-            'image': this.state.image,
-            'owner': this.state.owner,
-            'members_id': this.state.members,
-        };
+        if(this.state.DescriptionIsValid === true && this.state.NameIsValid === true){
+            const data = {
+                'name': this.state.name,
+                'description': this.state.description,
+                'image': this.state.image,
+                'owner': getUserId(),
+                'members_id': this.state.values
+            };
 
-        teamServicePost(data).then(response => {
-            this.handleClose();
-        });
+            teamServicePost(data).then(response => {
+                this.handleClose();
+            });
+        }
+    }
+    
+    menuItems(values) {
+        return this.state.users.map((user) => (
+            <MenuItem
+                key={user.id}
+                insetChildren={true}
+                checked={values && values.indexOf(user.id) > -1}
+                value={user.id}
+                primaryText={user.email}
+            />
+        ));
     }
 
     render() {
+        const {values} = this.state;
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -86,6 +157,7 @@ export default class CreateTeamDialog extends React.Component {
                 onClick={this.handleSubmit}
             />,
         ];
+
 
         return (
             <div>
@@ -106,6 +178,8 @@ export default class CreateTeamDialog extends React.Component {
                         fullWidth={true}
                         defaultValue={this.props.title}
                         onChange={this.handleName}
+                        errorText={this.state.MessageName}
+                        errorStyle={errorStyle}
                     />
                     <TextField
                         defaultValue={this.props.description}
@@ -115,7 +189,20 @@ export default class CreateTeamDialog extends React.Component {
                         rowsMax={4}
                         fullWidth={true}
                         onChange={this.handleDescription}
+                        errorText={this.state.MessageDescription}
+                        errorStyle={errorStyle}
                     />
+
+                    <SelectField
+                        multiple={true}
+                        hintText="Select members"
+                        value={values}
+                        onChange={this.handleChange}
+                    >
+                        {this.menuItems(values)}
+                    </SelectField>
+
+
                     <FileUpload updateImageNameInDb={this.uploadImage}/>
                 </Dialog>
             </div>

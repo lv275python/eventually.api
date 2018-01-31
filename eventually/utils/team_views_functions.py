@@ -27,6 +27,25 @@ def find_users(members_id):
         return members
 
 
+def find_members(members_id):
+    """
+    Function that have to find users in database.
+
+    :param members_id: List of membes_id of team.
+    :type members_id: List
+
+    :return: list that contains members if they exist or None.
+    """
+    members = []
+    for member_id in members_id:
+        member = CustomUser.get_by_id(member_id)
+        if member:
+            members.append(member)
+        else:
+            return None
+    return members
+
+
 def create_team_dict(data, user):
     """
     Function that validate data for creating team and makes dict with valid data.
@@ -45,7 +64,7 @@ def create_team_dict(data, user):
     members_id = data.get('members_id')
     if members_id:
         if list_of_int_validator(members_id):
-            members = find_users(members_id)
+            members = find_members(members_id)
             if not members:
                 return None
 
