@@ -3,7 +3,7 @@ import Sortable from 'sortablejs';
 import EventTaskItem from './EventTaskItem';
 import TaskDialog from './EventTaskDialog';
 import { withRouter } from 'react-router-dom';
-import {eventTasksServiceGet, eventServiceGet, eventTaskServicePut, taskGetTeamService} from './EventTaskService';
+import {eventTasksServiceGet, eventTaskServicePut, taskGetTeamService} from './EventTaskService';
 
 const tableStyle = {
     border: '2px solid #B3E5FC',
@@ -55,7 +55,9 @@ export default class EventTaskList extends React.Component {
         super(props);
         this.state = {
             eventId: this.props.match.params.eventId,
-            teamId: null,
+            teamId: this.props.location.state.event.team,
+            event_name: this.props.location.state.event.name,
+            event_descr: this.props.location.state.event.description,
             tasks: [],
             members: []
         };
@@ -63,7 +65,7 @@ export default class EventTaskList extends React.Component {
 
     componentWillMount(){
         this.getEventTaskItem();
-        this.getEventName();
+        this.getTeamMembers();
     }
 
     getEventTaskItem = () => {
@@ -71,8 +73,9 @@ export default class EventTaskList extends React.Component {
             then(response => this.setState({'tasks': response.data.tasks}));
     };
 
-    getTeamMembers = team_id => {
+    getTeamMembers = () => {
         let members = [];
+        let team_id = this.state.teamId;
         taskGetTeamService(team_id, true).then(response => {
             let members_id = response.data['members_id'];
             members_id.map(member => {
@@ -82,17 +85,6 @@ export default class EventTaskList extends React.Component {
         });
         this.setState({'members': members});
     }
-
-    getEventName = () => {
-        eventServiceGet(this.state.eventId).then(response => {
-            this.setState({'event_name': response.data.name,
-                'event_descr': response.data.description,
-                'teamId': response.data.team,
-            });
-
-            this.getTeamMembers(response.data.team);
-        });
-    };
 
     sortableGroupDecorator = (sortableGroup) => {
         if (sortableGroup) {

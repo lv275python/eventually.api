@@ -12,11 +12,6 @@ const eventTasksServiceGet = event_id => {
     return axios.get(url);
 };
 
-const eventServiceGet = event_id => {
-    let url = eventPath+event_id+'/';
-    return axios.get(url);
-};
-
 const taskGetTeamService = (team_id, full_name) => {
     let url = teamPath + team_id + '/';
     if (full_name) url+='?full_name=true';
@@ -34,5 +29,5 @@ const eventTaskServicePost = (eventId, data) => {
 };
 
 
-export { eventTasksServiceGet, eventServiceGet, taskGetTeamService, eventTaskServicePut, eventTaskServicePost };
+export { eventTasksServiceGet, taskGetTeamService, eventTaskServicePut, eventTaskServicePost };
 
