@@ -252,3 +252,14 @@ class ForgetPassword(View):
                 return RESPONSE_200_OK
             return RESPONSE_400_INVALID_DATA
         return RESPONSE_400_INVALID_DATA
+
+def get_all_users(request):
+    """
+    returns JSON response with all users querysets
+    """
+    if request.method == "GET":
+        users = CustomUser.get_all()
+        data = {'users': [user.to_dict() for user in users]}
+        return JsonResponse(data, status=200)
+    return RESPONSE_400_INVALID_HTTP_METHOD
+    
