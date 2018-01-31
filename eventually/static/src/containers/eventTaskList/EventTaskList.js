@@ -3,7 +3,7 @@ import Sortable from 'sortablejs';
 import EventTaskItem from './EventTaskItem';
 import TaskDialog from './EventTaskDialog';
 import { withRouter } from 'react-router-dom';
-import {eventTasksServiceGet, eventTaskServicePut, taskGetTeamService} from './EventTaskService';
+import {eventTasksServiceGet, eventServiceGet, eventTaskServicePut, taskGetTeamService} from './EventTaskService';
 
 const tableStyle = {
     border: '2px solid #B3E5FC',
@@ -55,9 +55,7 @@ export default class EventTaskList extends React.Component {
         super(props);
         this.state = {
             eventId: this.props.match.params.eventId,
-            teamId: this.props.location.state.event.team,
-            event_name: this.props.location.state.event.name,
-            event_descr: this.props.location.state.event.description,
+            teamId: null,
             tasks: [],
             members: []
         };
@@ -65,7 +63,7 @@ export default class EventTaskList extends React.Component {
 
     componentWillMount(){
         this.getEventTaskItem();
-        this.getTeamMembers();
+        this.getEventName();
     }
 
     getEventTaskItem = () => {
@@ -85,6 +83,17 @@ export default class EventTaskList extends React.Component {
         });
         this.setState({'members': members});
     }
+
+    getEventName = () => {
+        eventServiceGet(this.state.eventId).then(response => {
+            this.setState({'event_name': response.data.name,
+                'event_descr': response.data.description,
+                'teamId': response.data.team,
+            });
+
+            this.getTeamMembers(response.data.team);
+        });
+    };
 
     sortableGroupDecorator = (sortableGroup) => {
         if (sortableGroup) {
@@ -130,7 +139,7 @@ export default class EventTaskList extends React.Component {
                     <tbody>
                         <tr>
                             <td style={tdStyle}>
-                                <ul  id='0' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
+                                <ul  id='0' key='0' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
                                     {this.state.tasks.map(task => (task.status == 0 &&
                                         <li style={liStyle}>
                                             <EventTaskItem
@@ -147,7 +156,7 @@ export default class EventTaskList extends React.Component {
                                 </ul>
                             </td>
                             <td style={tdStyle}>
-                                <ul  id='1' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
+                                <ul  id='1' key='1' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
                                     {this.state.tasks.map(task => (task.status == 1 &&
                                         <li style={liStyle}>
                                             <EventTaskItem
@@ -164,7 +173,7 @@ export default class EventTaskList extends React.Component {
                                 </ul>
                             </td>
                             <td style={tdStyle}>
-                                <ul  id='2' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
+                                <ul  id='2' key='2' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
                                     {this.state.tasks.map(task => (task.status == 2 &&
                                         <li style={liStyle}>
                                             <EventTaskItem

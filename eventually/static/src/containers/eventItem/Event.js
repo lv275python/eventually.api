@@ -5,6 +5,7 @@ import {getOwner, getTeam} from './EventItemService';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import EventEdit from '../event/EventEdit';
+import EventTaskList from '../eventTaskList/EventTaskList';
 
 const STATUS_CHOICES = {
     0: 'draft',
@@ -163,6 +164,10 @@ class Event extends React.Component {
                             id={this.props.id}
                         />
                     </div>
+                    <EventTaskList eventId={this.props.id}
+                                   team={this.props.team}
+                                   name={this.props.name}
+                                   description={this.props.description}/>
                 </Dialog>
             </div>
         );
