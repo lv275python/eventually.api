@@ -5,6 +5,8 @@ import { withRouter } from 'react-router-dom';
 import RaisedButton from 'material-ui/RaisedButton';
 import {lightGreen400} from 'material-ui/styles/colors';
 // import {createClient} from '@google/maps';
+import Event from '../eventItem/Event';
+
 
 const raiseButtonStyle = {
     display: 'flex',
@@ -22,9 +24,9 @@ class EventLink extends React.Component {
     // console.log(parseInt(this.props.match.params.eventId, 10)); //==> id
     // console.log(this.props.location.state.event); // ==> event data
 
-    goToEvent = () => {
+    goToTaskList = () => {
         this.props.history.push({
-            pathname: '/events/' + this.props.id,
+            pathname: '/events/' + this.props.id + '/task',
             state: {
                 event: {
                     team: this.props.team,
@@ -87,14 +89,25 @@ class EventLink extends React.Component {
                         title={this.props.name}
                         subtitle={this.props.longitude + ', ' + this.props.latitude}
                     />
-                    <CardActions>
-                        <div style={raiseButtonStyle}>
-                            <RaisedButton
-                                label="Details"
-                                backgroundColor={lightGreen400}
-                                onClick={this.goToEvent}>
-                            </RaisedButton>
-                        </div>
+
+                    <CardActions>                
+                        <RaisedButton label="Tasks" onClick={this.goToTaskList} />
+                        <Event 
+                            key={this.props.id.toString()}
+                            team={this.props.team}
+                            owner={this.props.owner}
+                            name={this.props.name}
+                            description={this.props.description}
+                            start_at={this.props.start_at}
+                            created_at={this.props.created_at}
+                            updated_at={this.props.updated_at}
+                            duration={this.props.duration}
+                            longitude={this.props.longitude}
+                            latitude={this.props.latitude}
+                            budget={this.props.budget}
+                            status={this.props.status}
+                            id={this.props.id}
+                        />
                     </CardActions>
                 </Card>
             </div >

@@ -2,7 +2,6 @@ import React from 'react';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import {getEventService, putEventService} from './EventService.js';
 import {teamServiceGet} from '../teamList/teamService.js';
-
 import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
 import TextField from 'material-ui/TextField';
@@ -63,22 +62,21 @@ export default class EventEdit extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            eventId: this.props.eventId,
-            teamId: this.props.teamId,
-            name: '',
-            description: '',
-            start_at: '',
-            budget: '',
-            status: '',
+            eventId: this.props.id,
             teams: [],
             open: false,
+            teamId: this.props.team,
+            owner: this.props.owner,
+            name: this.props.name,
+            description: this.props.description,
+            start_at: this.props.start_at,
+            budget: this.props.budget,
+            status: this.props.status,
         };
     }
 
     componentWillMount(){
-        this.getItem();
         this.getTeamItem();
-
     }
 
     getTeamItem = () => {
@@ -87,22 +85,7 @@ export default class EventEdit extends React.Component {
                 teams: response.data.teams
             });
         });
-
     };
-
-
-
-    getItem = () => {
-        getEventService(this.state.eventId).then(response => {
-            this.setState({
-                name: response.data['name'],
-                description: response.data['description'],
-                start_at: response.data['start_at'],
-                budget: response.data['budget'] ? response.data['budget'] : '' ,
-                status: response.data['status']
-            });
-        });
-    }
 
     handleOpen = () => {
         this.setState({ open: true });
@@ -153,6 +136,8 @@ export default class EventEdit extends React.Component {
     }
 
     render() {
+
+        
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -169,11 +154,12 @@ export default class EventEdit extends React.Component {
         return (
             <div style={style_main_div}>
 
-                <FloatingActionButton
+                <RaisedButton
+                    label="Edit"
+                    primary={true}
+                    keyboardFocused={true}
                     onClick={this.handleOpen}
-                    style={FlatButtonStyle}>
-                    <ContentAdd />
-                </FloatingActionButton>
+                />
 
                 <Dialog
                     title={this.props.title}
@@ -181,6 +167,7 @@ export default class EventEdit extends React.Component {
                     modal={false}
                     open={this.state.open}
                     onRequestClose={this.handleClose}
+                    autoScrollBodyContent={true}
                 >
 
                     <div style={style_name}>
@@ -214,6 +201,8 @@ export default class EventEdit extends React.Component {
                             fullWidth={true}
                         />
 
+
+
                         <div style = {date_style}>
                             <DatePicker
                                 floatingLabelText="The date and time the event will occur."
@@ -231,8 +220,11 @@ export default class EventEdit extends React.Component {
                                 value={new Date(this.state.start_at*1000)}
                                 onChange={this.handleStartAt}
                             />
-
+                            
                         </div>
+
+
+
                         <TextField
                             floatingLabelText="Budget:"
                             onChange={this.handleBudget}
