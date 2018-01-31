@@ -48,6 +48,13 @@ const styleLowerMain2 = {
     margin: '10px 10px',
 };
 
+const buttonStyle = {
+    border: '2px solid #B3E5FC',
+    margin: '1%',
+    width: '10%',
+    display: 'inline-block',
+};
+
 class Event extends React.Component {
 
     constructor(props) {
@@ -115,7 +122,7 @@ class Event extends React.Component {
 
         return (
             <div >
-                <RaisedButton label="Details" onClick={this.handleOpen} />
+                <RaisedButton label="Details" onClick={this.handleOpen} style={buttonStyle}/>
                 
                 <Dialog
                     title="Dialog With Actions"
