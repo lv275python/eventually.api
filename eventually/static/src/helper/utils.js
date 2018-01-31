@@ -12,4 +12,4 @@ export const getUserId = () => {
     return null;
 };
 
-export const apiUrl = 'api/v1/';
+export const apiUrl = '/api/v1/';

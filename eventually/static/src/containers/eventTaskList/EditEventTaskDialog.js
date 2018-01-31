@@ -47,8 +47,8 @@ export default class EditEventTaskDialog extends React.Component {
         for (let i = 0; i < this.props.assignment_users.length; i++)
             if (this.state.assignment.indexOf(this.props.assignment_users[i]) == -1) removeUsers.push(this.props.assignment_users[i]);
         if (this.state.assignment != this.props.assignment_users) {
-            data['add_users'] = addUsers;
-            data['remove_users'] = removeUsers;
+            if (addUsers.length !== 0) data['add_users'] = addUsers;
+            if (removeUsers.length !== 0) data['remove_users'] = removeUsers;
         }
         eventTaskServicePut(this.props.eventId, this.state.id, data);
         this.props.handleDialogClose;

@@ -1,4 +1,6 @@
 import axios from 'axios';
+import {apiUrl} from'../../helper/utils';
+
 
 const rootUrl = '/api/v1/';
 const eventPath = rootUrl + 'events/';
@@ -26,5 +28,11 @@ const eventTaskServicePut = (event_id, task_id, data) => {
     return axios.put(url, data);
 };
 
-export {eventTasksServiceGet, eventServiceGet, taskGetTeamService, eventTaskServicePut};
+const eventTaskServicePost = (eventId, data) => {
+    let url = eventPath + eventId + '/task/';
+    return axios.post(url, data);
+};
+
+
+export { eventTasksServiceGet, eventServiceGet, taskGetTeamService, eventTaskServicePut, eventTaskServicePost };
 

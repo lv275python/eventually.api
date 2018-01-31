@@ -1,7 +1,53 @@
 import React from 'react';
 import Sortable from 'sortablejs';
 import EventTaskItem from './EventTaskItem';
+import TaskDialog from './EventTaskDialog';
+import { withRouter } from 'react-router-dom';
 import {eventTasksServiceGet, eventServiceGet, eventTaskServicePut, taskGetTeamService} from './EventTaskService';
+
+const tableStyle = {
+    border: '2px solid #B3E5FC',
+    borderCollapse: 'separate',
+    width: '100%'
+};
+const thStyle = {
+    border: '2px solid #B3E5FC',
+    fontWeight: 'normal',
+    background: '#00BCD4',
+    color: '#FFFFFF',
+    padding: '8px'
+};
+const tdStyle = {
+    border: '2px solid #B3E5FC',
+    background: '#FFFFFF',
+    color: '#000000',
+    padding: '8px',
+    verticalAlign: 'top'
+};
+const ulStyle = {
+    marginLeft: '0',
+    listStyle: 'none',
+    counterReset: 'li',
+};
+const liStyle = {
+    position: 'relative',
+    marginBottom: '1.5em',
+    border: '3px solid #84FFFF',
+    padding: '0.6em',
+    borderRadius: '4px',
+    background: '#B2EBF2',
+    color: '#231F20',
+    fontFamily: 'Trebuchet MS, Lucida Sans'
+};
+const containerStyle = {
+    width: '80%',
+    margin: '0 auto',
+};
+const TaskDialogStyle = {
+    position: 'fixed',
+    right: '3%',
+    top: '85%'
+};
 
 export default class EventTaskList extends React.Component {
 
@@ -9,6 +55,7 @@ export default class EventTaskList extends React.Component {
         super(props);
         this.state = {
             eventId: this.props.match.params.eventId,
+            teamId: null,
             tasks: [],
             members: []
         };
@@ -30,6 +77,7 @@ export default class EventTaskList extends React.Component {
             let members_id = response.data['members_id'];
             members_id.map(member => {
                 members.push({'id': member.id, 'full_name': member.first_name + ' ' + member.last_name});
+
             });
         });
         this.setState({'members': members});
@@ -38,8 +86,10 @@ export default class EventTaskList extends React.Component {
     getEventName = () => {
         eventServiceGet(this.state.eventId).then(response => {
             this.setState({'event_name': response.data.name,
-                'event_descr': response.data.description
+                'event_descr': response.data.description,
+                'teamId': response.data.team,
             });
+
             this.getTeamMembers(response.data.team);
         });
     };
@@ -63,40 +113,6 @@ export default class EventTaskList extends React.Component {
     };
 
     render() {
-        var tableStyle = {
-            border: '2px solid #B3E5FC',
-            borderCollapse: 'separate',
-            width: '100%'
-        };
-        var thStyle = {
-            border: '2px solid #B3E5FC',
-            fontWeight: 'normal',
-            background: '#00BCD4',
-            color: '#FFFFFF',
-            padding: '8px'
-        };
-        var tdStyle = {
-            border: '2px solid #B3E5FC',
-            background: '#FFFFFF',
-            color: '#000000',
-            padding: '8px',
-            verticalAlign: 'top'
-        };
-        var ulStyle = {
-            marginLeft: '0',
-            listStyle: 'none',
-            counterReset: 'li',
-        };
-        var liStyle = {
-            position: 'relative',
-            marginBottom: '1.5em',
-            border: '3px solid #84FFFF',
-            padding: '0.6em',
-            borderRadius: '4px',
-            background: '#B2EBF2',
-            color: '#231F20',
-            fontFamily: 'Trebuchet MS, Lucida Sans'
-        };
         return (
             <div>
                 <h1>
@@ -175,8 +191,15 @@ export default class EventTaskList extends React.Component {
                         </tr>
                     </tbody>
                 </table>
+                {this.state.teamId && (<div style={containerStyle}>
+                    <TaskDialog
+                        eventId={this.state.eventId}
+                        teamId={this.state.teamId}
+                        style={TaskDialogStyle}/>
+                </div>)}
             </div>
         );
     }
 }
+
 
