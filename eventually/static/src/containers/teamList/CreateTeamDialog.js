@@ -173,6 +173,7 @@ export default class CreateTeamDialog extends React.Component {
                     modal={false}
                     open={this.state.open}
                     onRequestClose={this.handleClose}
+                    autoScrollBodyContent={true}
                 >
                     <TextField
                         hintText="Name"

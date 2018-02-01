@@ -188,4 +188,3 @@ class TestCustomUserModel(TestCase):
         expected_value = CustomUser.objects.all()
         current_value = CustomUser.get_all()
         self.assertEqual(list(current_value), list(expected_value))
-        
