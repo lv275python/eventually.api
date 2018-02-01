@@ -1,4 +1,6 @@
-const appItem = '/api/v1/user/1/';
+import {apiUrl} from './helper';
+
+const appItem = apiUrl + 'user/1/';
 
 const getData = id => {
     let data;

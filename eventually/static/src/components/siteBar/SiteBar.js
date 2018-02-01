@@ -2,7 +2,7 @@ import React from 'react';
 import Drawer from 'material-ui/Drawer';
 import SiteBarItem from './SiteBarItem';
 import {withRouter} from 'react-router-dom';
-import {getUserId} from '../../helper/utils';
+import {getUserId} from './helper';
 
 
 class SiteBar extends React.Component {

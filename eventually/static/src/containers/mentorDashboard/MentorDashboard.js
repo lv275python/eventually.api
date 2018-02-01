@@ -1,7 +1,6 @@
 import React from 'react';
-import MessagesBar from '../messagesBar/MessagesBar';
-import ProgressGraph from '../progressGraph/ProgressGraph';
-import StudentsTabsList from '../../components/studentsTabsList/StudentsTabsList';
+import {MessagesBar, ProgressGraph} from './containers';
+import {StudentsTabsList} from './components';
 
 const mentorDashboardStyle = {
     display: 'flex',

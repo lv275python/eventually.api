@@ -1,8 +1,7 @@
 import React from 'react';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
-import UsersList from '../usersList/UsersList';
-import AssignTopicModal from '../assignTopicModal/AssignTopicModal';
+import {UsersList, AssignTopicModal} from './components';
 import {getStudentsList, getCurriculumTopics, postStudentList} from './studentsTabsListService';
 import StudentsTabsFiltersBar from './StudentsTabsFiltersBar';
 import {isObjectsEqual} from './helper';

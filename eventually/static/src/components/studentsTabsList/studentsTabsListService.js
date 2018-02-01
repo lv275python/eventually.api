@@ -1,6 +1,7 @@
+import {apiUrl} from './helper';
 import axios from 'axios';
 
-const appPath = '/api/v1/mentor/students/';
+const appPath = apiUrl + 'mentor/students/';
 
 const getStudentsList = (chosenTopic, isTopicDone, fromDate, toDate) => {
     let getStudentsUrl = appPath;

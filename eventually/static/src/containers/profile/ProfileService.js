@@ -1,7 +1,8 @@
 import axios from 'axios';
+import {apiUrl} from './helper';
 
 
-export const appPath = '/api/v1/user/';
+export const appPath = apiUrl + 'user/';
 
 export const putProfileService = (id, first_name, middle_name, last_name, hobby, photo, birthday) => {
     let url = appPath + id + '/profile/';
