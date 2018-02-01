@@ -7,6 +7,11 @@ const eventPath = rootUrl + 'events/';
 const teamPath = rootUrl + 'team/';
 const userPath = rootUrl + 'user/';
 
+const eventServiceGet = event_id => {
+    let url = eventPath+event_id+'/';
+    return axios.get(url);
+};
+
 const eventTasksServiceGet = event_id => {
     let url = eventPath+event_id+'/task/';
     return axios.get(url);
@@ -29,5 +34,5 @@ const eventTaskServicePost = (eventId, data) => {
 };
 
 
-export { eventTasksServiceGet, taskGetTeamService, eventTaskServicePut, eventTaskServicePost };
+export { eventTasksServiceGet, taskGetTeamService, eventTaskServicePut, eventTaskServicePost, eventServiceGet };
 
