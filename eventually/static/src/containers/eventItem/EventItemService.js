@@ -6,5 +6,7 @@ const getOwner = (id) => {
 const getTeam = (id) => {
     return axios.get('/api/v1/team/'+id +'/');
 };
-
-export { getOwner, getTeam };
+const getEvent = (id) => {
+    return axios.get('/api/v1/events/'+id+'/');
+};
+export { getOwner, getTeam, getEvent };
