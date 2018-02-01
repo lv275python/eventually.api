@@ -8,7 +8,7 @@ export const getEvents = () => {
     return axios.get('/api/v1/events/');
 };
 
-export const putEventService = (eventId, teamId, name, description, start_at, budget, status) => {
+export const putEventService = (eventId, teamId, name, description, start_at, budget, status, duration) => {
 
     let url = eventURL + eventId + '/';
     return axios.put(url, {
@@ -18,6 +18,7 @@ export const putEventService = (eventId, teamId, name, description, start_at, bu
         start_at,
         budget,
         status,
+        duration
     });
 };
 

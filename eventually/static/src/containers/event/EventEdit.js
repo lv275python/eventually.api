@@ -20,42 +20,10 @@ const FlatButtonStyle = {
 };
 
 
-const style_main_div = {
-    display: 'flex',
-    justifyContent: 'center',
-};
-
-const style_card = {
-    display: 'flex',
-    justifyContent: 'center',
-};
-
-const style_name = {
-    margin: '10px 100px 0 100px',
-    height: '700px',
-    width: '400px',
-};
-
-const style_header = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-};
-
-const style_title = {
-    fontSize: '35px',
-};
-
-const date_style = {
-    width: '350px',
+const dateStyle = {
     display: 'inline-block',
+    width: '50%'
 };
-
-const time_style = {
-    width: '50px',
-    display: 'inline-block',
-};
-
 
 export default class EventEdit extends React.Component {
 
@@ -70,6 +38,7 @@ export default class EventEdit extends React.Component {
             name: this.props.name,
             description: this.props.description,
             start_at: this.props.start_at,
+            duration: this.props.duration,
             budget: this.props.budget,
             status: this.props.status,
         };
@@ -110,6 +79,10 @@ export default class EventEdit extends React.Component {
         this.setState({start_at:date/1000});
     };
 
+    handleDuration = (event,date) => {
+        this.setState({duration:(date/1000)-this.state.start_at});
+    };
+
     handleBudget = event => {
         this.setState({budget: event.target.value});
     };
@@ -124,15 +97,10 @@ export default class EventEdit extends React.Component {
         const start_at = this.state.start_at;
         const budget = this.state.budget;
         const status = this.state.status;
+        const duration = this.state.duration;
 
-        putEventService( this.state.eventId, teamId, name, description, start_at, budget, status)
-            .then(response => {
-                console.log(response);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-
+        putEventService( this.state.eventId, teamId, name, description, start_at, budget, status, duration);
+        this.handleClose();
     }
 
     render() {
@@ -152,99 +120,108 @@ export default class EventEdit extends React.Component {
             />,
         ];
         return (
-            <div style={style_main_div}>
+            <div>
+                <form>
 
-                <RaisedButton
-                    label="Edit"
-                    primary={true}
-                    keyboardFocused={true}
-                    onClick={this.handleOpen}
-                />
+                    <RaisedButton
+                        label="Edit"
+                        primary={true}
+                        keyboardFocused={true}
+                        onClick={this.handleOpen}
+                    />
 
-                <Dialog
-                    title={this.props.title}
-                    actions={actions}
-                    modal={false}
-                    open={this.state.open}
-                    onRequestClose={this.handleClose}
-                    autoScrollBodyContent={true}
-                >
+                    <Dialog
+                        title={this.props.title}
+                        actions={actions}
+                        modal={false}
+                        open={this.state.open}
+                        onRequestClose={this.handleClose}
+                        autoScrollBodyContent={true}
+                    >
 
-                    <div style={style_name}>
-
-                        <TextField
-                            floatingLabelText="Name:"
-                            onChange={this.handleName}
-                            hintText='Name'
-                            value={this.state.name}
-                            fullWidth={true}
-                        />
-
-                        <SelectField
-                            floatingLabelText="Teams:"
-                            hintText="Teams"
-                            fullWidth={true}
-                            value = {this.state.teamId}
-                            onChange={this.handleTeams}
-                        >
-                            {this.state.teams.map(teams => {
-                                return <MenuItem key={teams.id}  value = {teams.id} primaryText = {teams.name} />;
-                            })}
-                        </SelectField>
-
-
-                        <TextField
-                            floatingLabelText="Description:"
-                            onChange={this.handleDescription}
-                            hintText='Description'
-                            value={this.state.description}
-                            fullWidth={true}
-                        />
-
-
-
-                        <div style = {date_style}>
-                            <DatePicker
-                                floatingLabelText="The date and time the event will occur."
-                                onChange={this.handleStartAt}
-                                mode="landscape"
+                            <TextField
+                                floatingLabelText="Name:"
+                                onChange={this.handleName}
+                                hintText='Name'
+                                value={this.state.name}
                                 fullWidth={true}
-                                value={new Date(this.state.start_at*1000)}
                             />
-                        </div>
-                        <div style = {time_style}>
-                            <TimePicker
-                                textFieldStyle={{width: '100%'}}
-                                format="24hr"
-                                hintText="24hr Format"
-                                value={new Date(this.state.start_at*1000)}
-                                onChange={this.handleStartAt}
+
+                            <TextField
+                                floatingLabelText="Description:"
+                                onChange={this.handleDescription}
+                                hintText='Description'
+                                value={this.state.description}
+                                fullWidth={true}
                             />
-                            
-                        </div>
 
+                                <DatePicker
+                                    floatingLabelText="Start date and time."
+                                    onChange={this.handleStartAt}
+                                    mode="landscape"
+                                    style={dateStyle}
+                                    fullWidth={true}
+                                    value={new Date(this.state.start_at*1000)}
+                                />
 
+                                <TimePicker
+                                    textFieldStyle={{width: '100%'}}
+                                    format="24hr"
+                                    hintText="24hr Format"
+                                    style={dateStyle}
+                                    value={new Date(this.state.start_at*1000)}
+                                    onChange={this.handleStartAt}
+                                />
 
-                        <TextField
-                            floatingLabelText="Budget:"
-                            onChange={this.handleBudget}
-                            hintText='Budget in hryvnias'
-                            value={this.state.budget}
-                            fullWidth={true}
-                        />
+                                <DatePicker
+                                    floatingLabelText="End date and time."
+                                    onChange={this.handleDuration}
+                                    mode="landscape"
+                                    style={dateStyle}
+                                    fullWidth={true}
+                                    value={new Date((this.state.start_at+this.state.duration)*1000)}
+                                />
 
-                        <SelectField
-                            floatingLabelText="Status"
-                            value={this.state.status}
-                            onChange={this.handleStatus}
-                        >
-                            <MenuItem value={0} primaryText="Draft" />
-                            <MenuItem value={1} primaryText="Published" />
-                            <MenuItem value={2} primaryText="Going" />
-                            <MenuItem value={3} primaryText="Finished" />
-                        </SelectField>
-                    </div>
-                </Dialog>
+                                <TimePicker
+                                    textFieldStyle={{width: '100%'}}
+                                    format="24hr"
+                                    hintText="24hr Format"
+                                    style={dateStyle}
+                                    value={new Date((this.state.start_at+this.state.duration)*1000)}
+                                    onChange={this.handleDuration}
+                                />
+                            <SelectField
+                                floatingLabelText="Team:"
+                                hintText="Team"
+                                fullWidth={true}
+                                value = {this.state.teamId}
+                                onChange={this.handleTeams}
+                            >
+                                {this.state.teams.map(teams => {
+                                    return <MenuItem key={teams.id}  value = {teams.id} primaryText = {teams.name} />;
+                                })}
+                            </SelectField>
+
+                            <TextField
+                                floatingLabelText="Budget:"
+                                onChange={this.handleBudget}
+                                hintText='Budget'
+                                value={this.state.budget}
+                                fullWidth={true}
+                            />
+
+                            <SelectField
+                                floatingLabelText="Status"
+                                value={this.state.status}
+                                onChange={this.handleStatus}
+                            >
+                                <MenuItem value={0} primaryText="Draft" />
+                                <MenuItem value={1} primaryText="Published" />
+                                <MenuItem value={2} primaryText="Going" />
+                                <MenuItem value={3} primaryText="Finished" />
+                            </SelectField>
+                    </Dialog>
+                </form>
             </div>
 
         );
