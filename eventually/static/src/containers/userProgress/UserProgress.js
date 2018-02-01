@@ -27,7 +27,7 @@ const messagesBarStyle = {
     position: 'relative'
 };
 
-export default class Profile extends React.Component {
+export default class ProgressProfile extends React.Component {
 
     constructor(props) {
         super(props);
