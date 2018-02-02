@@ -105,7 +105,7 @@ export default class EventEdit extends React.Component {
 
     render() {
 
-        
+
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -139,87 +139,88 @@ export default class EventEdit extends React.Component {
                         autoScrollBodyContent={true}
                     >
 
-                            <TextField
-                                floatingLabelText="Name:"
-                                onChange={this.handleName}
-                                hintText='Name'
-                                value={this.state.name}
-                                fullWidth={true}
-                            />
+                        <TextField
+                            floatingLabelText="Name:"
+                            onChange={this.handleName}
+                            hintText='Name'
+                            value={this.state.name}
+                            fullWidth={true}
+                        />
 
-                            <TextField
-                                floatingLabelText="Description:"
-                                onChange={this.handleDescription}
-                                hintText='Description'
-                                value={this.state.description}
-                                fullWidth={true}
-                            />
+                        <TextField
+                            floatingLabelText="Description:"
+                            onChange={this.handleDescription}
+                            hintText='Description'
+                            value={this.state.description}
+                            fullWidth={true}
+                        />
 
-                                <DatePicker
-                                    floatingLabelText="Start date and time."
-                                    onChange={this.handleStartAt}
-                                    mode="landscape"
-                                    style={dateStyle}
-                                    fullWidth={true}
-                                    value={new Date(this.state.start_at*1000)}
-                                />
+                        <DatePicker
+                            floatingLabelText="Start date and time."
+                            onChange={this.handleStartAt}
+                            mode="landscape"
+                            style={dateStyle}
+                            fullWidth={true}
+                            value={new Date(this.state.start_at*1000)}
+                        />
 
-                                <TimePicker
-                                    textFieldStyle={{width: '100%'}}
-                                    format="24hr"
-                                    hintText="24hr Format"
-                                    style={dateStyle}
-                                    value={new Date(this.state.start_at*1000)}
-                                    onChange={this.handleStartAt}
-                                />
+                        <TimePicker
+                            textFieldStyle={{width: '100%'}}
+                            format="24hr"
+                            hintText="24hr Format"
+                            style={dateStyle}
+                            value={new Date(this.state.start_at*1000)}
+                            onChange={this.handleStartAt}
+                        />
 
-                                <DatePicker
-                                    floatingLabelText="End date and time."
-                                    onChange={this.handleDuration}
-                                    mode="landscape"
-                                    style={dateStyle}
-                                    fullWidth={true}
-                                    value={new Date((this.state.start_at+this.state.duration)*1000)}
-                                />
+                        <DatePicker
+                            floatingLabelText="End date and time."
+                            onChange={this.handleDuration}
+                            mode="landscape"
+                            style={dateStyle}
+                            fullWidth={true}
+                            value={new Date((this.state.start_at+this.state.duration)*1000)}
+                        />
 
-                                <TimePicker
-                                    textFieldStyle={{width: '100%'}}
-                                    format="24hr"
-                                    hintText="24hr Format"
-                                    style={dateStyle}
-                                    value={new Date((this.state.start_at+this.state.duration)*1000)}
-                                    onChange={this.handleDuration}
-                                />
-                            <SelectField
-                                floatingLabelText="Team:"
-                                hintText="Team"
-                                fullWidth={true}
-                                value = {this.state.teamId}
-                                onChange={this.handleTeams}
-                            >
-                                {this.state.teams.map(teams => {
-                                    return <MenuItem key={teams.id}  value = {teams.id} primaryText = {teams.name} />;
-                                })}
-                            </SelectField>
+                        <TimePicker
+                            textFieldStyle={{width: '100%'}}
+                            format="24hr"
+                            hintText="24hr Format"
+                            style={dateStyle}
+                            value={new Date((this.state.start_at+this.state.duration)*1000)}
+                            onChange={this.handleDuration}
+                        />
 
-                            <TextField
-                                floatingLabelText="Budget:"
-                                onChange={this.handleBudget}
-                                hintText='Budget'
-                                value={this.state.budget}
-                                fullWidth={true}
-                            />
+                        <SelectField
+                            floatingLabelText="Team:"
+                            hintText="Team"
+                            fullWidth={true}
+                            value = {this.state.teamId}
+                            onChange={this.handleTeams}
+                        >
+                            {this.state.teams.map(teams => {
+                                return <MenuItem key={teams.id}  value = {teams.id} primaryText = {teams.name} />;
+                            })}
+                        </SelectField>
 
-                            <SelectField
-                                floatingLabelText="Status"
-                                value={this.state.status}
-                                onChange={this.handleStatus}
-                            >
-                                <MenuItem value={0} primaryText="Draft" />
-                                <MenuItem value={1} primaryText="Published" />
-                                <MenuItem value={2} primaryText="Going" />
-                                <MenuItem value={3} primaryText="Finished" />
-                            </SelectField>
+                        <TextField
+                            floatingLabelText="Budget:"
+                            onChange={this.handleBudget}
+                            hintText='Budget'
+                            value={this.state.budget}
+                            fullWidth={true}
+                        />
+
+                        <SelectField
+                            floatingLabelText="Status"
+                            value={this.state.status}
+                            onChange={this.handleStatus}
+                        >
+                            <MenuItem value={0} primaryText="Draft" />
+                            <MenuItem value={1} primaryText="Published" />
+                            <MenuItem value={2} primaryText="Going" />
+                            <MenuItem value={3} primaryText="Finished" />
+                        </SelectField>
                     </Dialog>
                 </form>
             </div>
@@ -227,5 +228,3 @@ export default class EventEdit extends React.Component {
         );
     }
 }
-
-

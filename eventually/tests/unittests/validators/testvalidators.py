@@ -109,14 +109,6 @@ class ValidatorsTestCase(TestCase):
         my_str = string_validator('word', 1, 3)
         self.assertFalse(my_str)
 
-    def test_login_validator_success(self):
-        """Method that tests `login_validator`."""
-        password = 'fgh1DFvd2'
-
-        is_valid = password_validator(password)
-
-        self.assertTrue(is_valid)
-
     def test_password_validator_success(self):
         """Method that tests `password_validator`."""
         password = 'fgh1DFvd2'

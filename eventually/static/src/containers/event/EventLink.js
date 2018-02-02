@@ -4,7 +4,6 @@ import { Link } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import RaisedButton from 'material-ui/RaisedButton';
 import {lightGreen400} from 'material-ui/styles/colors';
-// import {createClient} from '@google/maps';
 import Event from '../eventItem/Event';
 
 
@@ -20,9 +19,6 @@ class EventLink extends React.Component {
             address: ''
         };
     }
-
-    // console.log(parseInt(this.props.match.params.eventId, 10)); //==> id
-    // console.log(this.props.location.state.event); // ==> event data
 
     goToTaskList = () => {
         this.props.history.push({
@@ -46,28 +42,25 @@ class EventLink extends React.Component {
         });
     };
 
-    // fetchAddress() {
-    //   const googleMaps = createClient({
-    //       key: 'AIzaSyDDuGt0E5IEGkcE6ZfrKfUtE9Ko_de66pA'
-    //   });
-    //   // var geocoder = googleMaps.Geocoder();
-    //   // var location = googleMaps.LatLng(this.props.latitude, this.props.longitude);
-    //
-    //   googleMaps.geocode({'bounds': [this.props.latitude, this.props.longitude]}, (results, status) => {
-    //       if (status == google.maps.GeocoderStatus.OK) {
-    //         var addressComponents = results[0].address_components;
-    //         // console.log(addressComponents);
-    //         var city = this.fetchAddressComponent(addressComponents, 'locality');
-    //         var city_name = city ? city.short_name : null;
-    //         var country = this.fetchAddressComponent(addressComponents, 'country');
-    //         var country_name = country ? country.long_name : null;
-    //
-    //         var formattedAddress = [country_name, city_name].filter(el => el).join(', ');
-    //         return this.setState({address: formattedAddress});
-    //       }
-    //     }
-    //   );
-    // }
+    fetchAddress() {
+        const googleMapsClient = require('@google/maps').createClient({
+            key: 'AIzaSyDDuGt0E5IEGkcE6ZfrKfUtE9Ko_de66pA'
+        });
+        let location = [this.props.latitude, this.props.longitude];
+
+        googleMapsClient.reverseGeocode({'latlng': location}, (err, response) => {
+            if (response.status == 200) {
+                let addressComponents = response.json.results[0].address_components;
+                let city = this.fetchAddressComponent(addressComponents, 'locality');
+                let city_name = city ? city.short_name : null;
+                let country = this.fetchAddressComponent(addressComponents, 'country');
+                let country_name = country ? country.long_name : null;
+
+                let formattedAddress = [country_name, city_name].filter(el => el).join(', ');
+                return this.setState({address: formattedAddress});
+            }
+        });
+    }
 
     fetchAddressComponent(addressComponents, componentType) {
         return addressComponents.find(component => {
@@ -75,9 +68,17 @@ class EventLink extends React.Component {
         });
     }
 
-    // componentWillMount() {
-    //     this.fetchAddress();
-    // }
+    showAddress = () => {
+        if (this.state.address) {
+            return 'Location: ' + this.state.address;
+        } else {
+            return '';
+        }
+    };
+
+    componentWillMount() {
+        this.fetchAddress();
+    }
 
     render() {
         return (
@@ -87,12 +88,15 @@ class EventLink extends React.Component {
                         actAsExpander={true}
                         showExpandableButton={false}
                         title={this.props.name}
-                        subtitle={this.props.longitude + ', ' + this.props.latitude}
+                        subtitle={this.showAddress()}
                     />
+                    <CardText>
+                        {this.props.description}
+                    </CardText>
 
-                    <CardActions>                
+                    <CardActions>
                         <RaisedButton label="Tasks" onClick={this.goToTaskList} />
-                        <Event 
+                        <Event
                             key={this.props.id.toString()}
                             team={this.props.team}
                             owner={this.props.owner}

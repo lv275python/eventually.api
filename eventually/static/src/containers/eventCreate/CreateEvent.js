@@ -96,7 +96,7 @@ class CreateEvent extends React.Component {
             'team': this.state.team,
             'status': this.state.status
         };
-        PostEventService(data)
+        PostEventService(data);
         this.handleClose();
     }
 
