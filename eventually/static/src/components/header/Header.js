@@ -1,7 +1,7 @@
 import React from 'react';
 import AppBar from 'material-ui/AppBar';
-import {Logout} from './containers';
-import {SiteBar} from './component';
+import {Logout} from 'src/containers';
+import {SiteBar} from 'src/components';
 
 export default class Header extends React.Component {
 

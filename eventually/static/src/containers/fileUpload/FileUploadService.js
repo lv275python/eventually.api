@@ -1,4 +1,4 @@
-import {apiUrl} from './helper';
+import {apiUrl} from 'src/helper';
 import axios from 'axios';
 
 const request_path = apiUrl + 'img/handle/';

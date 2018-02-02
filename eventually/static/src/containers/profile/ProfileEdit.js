@@ -4,8 +4,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import DatePicker from 'material-ui/DatePicker';
 import {Card, CardHeader} from 'material-ui/Card';
 import {putProfileService, getProfileService} from './ProfileService';
-import {getImageUrl} from './helper';
-import {FileUpload} from './containers';
+import {getImageUrl} from 'src/helper';
+import {FileUpload} from 'src/containers';
 
 const style_card = {
     display: 'flex',

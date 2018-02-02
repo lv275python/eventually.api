@@ -1,4 +1,4 @@
-import {apiUrl} from './helper';
+import {apiUrl} from 'src/helper';
 import axios from 'axios';
 
 const appPath = apiUrl + 'mentor/students/';

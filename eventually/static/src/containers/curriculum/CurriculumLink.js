@@ -2,7 +2,7 @@ import React from 'react';
 import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 import {withRouter} from 'react-router-dom';
 import {getTopicListService} from './CurriculumService';
-import {TopicList, TopicDialog} from './containers';
+import {TopicList, TopicDialog} from 'src/containers';
 
 const cardHeaderStyle = {
     cursor: 'pointer'

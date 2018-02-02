@@ -1,4 +1,4 @@
-import {apiUrl} from './helper';
+import {apiUrl} from 'src/helper';
 
 const appItem = apiUrl + 'user/1/';
 

@@ -3,7 +3,7 @@ import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import ItemUnit from './ItemUnit';
 import getItemsList from './itemsListService';
-import {SendAnswer} from './components';
+import {SendAnswer} from 'src/components';
 
 export default class ItemsList extends React.Component {
 

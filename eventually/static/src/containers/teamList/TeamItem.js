@@ -2,7 +2,7 @@ import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import Subheader from 'material-ui/Subheader';
 import EditTeamDialog from './EditTeamDialog';
-import {getImageUrl} from './helper';
+import {getImageUrl} from 'src/helper';
 import {teamServiceGet} from './teamService';
 
 const styles = {

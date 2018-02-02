@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
 import {lightGreen400} from 'material-ui/styles/colors';
-import {TopicDialog} from './containers';
+import {TopicDialog} from 'src/containers';
 
 const cardTextstyle = {
     color: '#455A64',

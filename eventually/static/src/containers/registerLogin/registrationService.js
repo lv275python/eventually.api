@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {apiUrl} from './helper';
+import {apiUrl} from 'src/helper';
 
 const appPath = apiUrl + 'user/',
     loginUrl = appPath + 'login/',

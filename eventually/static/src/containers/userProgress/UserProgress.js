@@ -1,5 +1,5 @@
 import React from 'react';
-import {ItemsList, MessagesBar, ProgressGraph} from './containers';
+import {ItemsList, MessagesBar, ProgressGraph} from 'src/containers';
 
 const userProgressStyle = {
     display: 'flex',

@@ -1,7 +1,7 @@
 import React from 'react';
 import ProfileEdit from './ProfileEdit';
 import ProfileView from './ProfileView';
-import {getUserId} from './helper';
+import {getUserId} from 'src/helper';
 import {getProfileService, putProfileService} from './ProfileService';
 
 export default class Profile extends React.Component {

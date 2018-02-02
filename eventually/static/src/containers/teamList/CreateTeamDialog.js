@@ -9,8 +9,8 @@ import MenuItem from 'material-ui/MenuItem';
 import {orange500} from 'material-ui/styles/colors';
 
 import {teamServicePost, usersServiceGet} from './teamService';
-import {FileUpload} from './containers';
-import {getUserId} from './helper';
+import {FileUpload} from 'src/containers';
+import {getUserId} from 'src/helper';
 
 const FlatButtonStyle = {
     position: 'fixed',
