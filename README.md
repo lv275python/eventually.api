@@ -99,6 +99,10 @@ npm run build
 ```
 npm start
 ```
+* For run eslint 
+```
+npm run lint 
+```
 
 
 ### Django
@@ -122,3 +126,22 @@ def show_urls(urllist, depth=""):
 
 show_urls(urlpatterns)
 ```
+
+# Developer info:
+  * **Lv-275.WebUI/Python team**:
+    - @dmytrorevak
+    - @IvanAndrukh
+    - @JjuliaP
+    - @makarman
+    - @noobhunters
+    - @Silent777
+    - @Staryj812
+  * **Lv-288.WebUI/Python team**:
+    - @ashatna
+    - @ChristinaPastushchak
+    - @dotiurin
+    - @iryn34
+    - @tarassito
+    - @VasilHamulyak
+    - @VitalyiKhlivnyi
+    - @YurijH
