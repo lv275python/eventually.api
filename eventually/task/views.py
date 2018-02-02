@@ -78,6 +78,9 @@ class TaskView(View):
             if not task:
                 return RESPONSE_404_OBJECT_NOT_FOUND
             task = task.to_dict()
+            if request.GET.get('full_name', None):
+                members = [user.to_dict() for user in task.members.all()]
+                task['members_id'] = members
             return JsonResponse(task, status=200)
 
         event = Event.get_by_id(event_id)
