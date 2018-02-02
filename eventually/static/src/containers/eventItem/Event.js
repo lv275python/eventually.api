@@ -86,9 +86,9 @@ class Event extends React.Component {
                         <p style={styleInp}><span style={styleSpan}>Name :</span>{this.state.name}</p>
                         <p style={styleInp}><span style={styleSpan}>Description :</span>{this.state.description}</p>
                         <p style={styleInp}><span style={styleSpan}>Owner :</span>{this.state.owner}</p>
-                        <p style={styleInp}><span style={styleSpan}>Start at :</span>{(new Date(this.state.start_at)).toDateString()}</p>
-                        <p style={styleInp}><span style={styleSpan}>Created at :</span>{(new Date(this.state.created_at)).toDateString()}</p>
-                        <p style={styleInp}><span style={styleSpan}>Updated at :</span>{(new Date(this.state.updated_at)).toDateString()}</p>
+                        <p style={styleInp}><span style={styleSpan}>Start at :</span>{(new Date(this.state.start_at*1000)).toDateString()}</p>
+                        <p style={styleInp}><span style={styleSpan}>Created at :</span>{(new Date(this.state.created_at*1000)).toDateString()}</p>
+                        <p style={styleInp}><span style={styleSpan}>Updated at :</span>{(new Date(this.state.updated_at*1000)).toDateString()}</p>
                         <p style={styleInp}><span style={styleSpan}>Duration :</span>{Math.floor(this.state.duration / 3600) + ':' + Math.floor(this.state.duration % 3600 / 60) }</p>
                         <p style={styleInp}><span style={styleSpan}>Budget :</span>{this.state.budget}</p>
                         <p style={styleInp}><span style={styleSpan}>Status :</span>{STATUS_CHOICES [this.state.status]}</p>

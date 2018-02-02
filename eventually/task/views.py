@@ -77,11 +77,11 @@ class TaskView(View):
             task = Task.get_by_id(task_id)
             if not task:
                 return RESPONSE_404_OBJECT_NOT_FOUND
-            task = task.to_dict()
+            data = task.to_dict()
             if request.GET.get('full_name', None):
-                members = [user.to_dict() for user in task.members.all()]
-                task['members_id'] = members
-            return JsonResponse(task, status=200)
+                members = [user.to_dict() for user in task.users.all()]
+                data['users_id'] = members
+            return JsonResponse(data, status=200)
 
         event = Event.get_by_id(event_id)
         if not event:

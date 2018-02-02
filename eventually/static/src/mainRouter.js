@@ -12,7 +12,7 @@ import EventList from './containers/event/EventList';
 import EventTaskList from './containers/eventTaskList/EventTaskList';
 import EventEditButton from './containers/event/EventEditButton';
 import Event from './containers/eventItem/Event';
-
+import Task from './containers/taskItem/Task';
 
 export default class MainRouter extends React.Component {
     render() {
@@ -27,6 +27,7 @@ export default class MainRouter extends React.Component {
                     <Route path='/mentoritem' component={MentorItem}/>
                     <Route path='/dashboard' component={MentorDashboard}/>
                     <Route path='/teamlist' component={TeamList}/>
+                    <Route path='/events/:eventId/task/:taskId' component={Task}/>
                     <Route path='/events/:eventId' component={EventTaskList}/>
                     <Route path='/events' component={EventList}/>
                     <Route path='/eventedit/' component={EventEditButton}/>

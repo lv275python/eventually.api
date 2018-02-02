@@ -194,7 +194,7 @@ export default class EventTaskList extends React.Component {
                             <td style={tdStyle}>
                                 <ul  id='1' key='1' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
                                     {this.state.tasks.map(task => (task.status == 1 &&
-                                        <li key={task.id.toString()} style={liStyle}>
+                                        <li style={liStyle}>
                                             <EventTaskItem
                                                 key={task.id.toString()}
                                                 id={task.id}
@@ -211,7 +211,7 @@ export default class EventTaskList extends React.Component {
                             <td style={tdStyle}>
                                 <ul  id='2' key='2' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
                                     {this.state.tasks.map(task => (task.status == 2 &&
-                                        <li key={task.id.toString()} style={liStyle}>
+                                        <li style={liStyle}>
                                             <EventTaskItem
                                                 key={task.id.toString()}
                                                 id={task.id}
