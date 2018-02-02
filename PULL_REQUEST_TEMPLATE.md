@@ -1,22 +1,24 @@
 ## JIRA
 
-* [Main JIRA ticket](https://ssu-jira.softserveinc.com/secure/RapidBoard.jspa?rapidView=738)
+* [Main JIRA ticket](https://ssu-jira.softserveinc.com/secure/RapidBoard.jspa?rapidView=777)
 
 
 ## Code reviewers
 
-- [ ] @dmytrorevak
-- [ ] @IvanAndrukh
-- [ ] @JjuliaP
-- [ ] @makarman
-- [ ] @noobhunters
-- [ ] @Silent777
-- [ ] @Staryj812
+- [ ] @ashatna
+- [ ] @ChristinaPastushchak
+- [ ] @dotiurin
+- [ ] @iryn34
+- [ ] @tarassito
+- [ ] @VasilHamulyak
+- [ ] @VitalyiKhlivnyi
+- [ ] @YurijH
 
 ### Second Level Review
 
-- [ ] @ssOleg
+- [ ] @ushevtsiv
 - [ ] @lhalam
+- [ ] @ssOleg
 
 ## Summary of issue
 
