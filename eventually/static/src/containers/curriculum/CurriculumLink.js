@@ -1,9 +1,8 @@
 import React from 'react';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
-import { withRouter } from 'react-router-dom';
-import TopicList from '../topicList/TopicList';
-import { getTopicListService } from './CurriculumService';
-import TopicDialog from '../topicList/TopicDialog';
+import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
+import {withRouter} from 'react-router-dom';
+import {getTopicListService} from './CurriculumService';
+import {TopicList, TopicDialog} from 'src/containers';
 
 const cardHeaderStyle = {
     cursor: 'pointer'

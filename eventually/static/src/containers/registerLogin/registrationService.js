@@ -1,6 +1,7 @@
 import axios from 'axios';
+import {apiUrl} from 'src/helper';
 
-const appPath = '/api/v1/user/',
+const appPath = apiUrl + 'user/',
     loginUrl = appPath + 'login/',
     logoutUrl = appPath + 'logout/',
     registerUrl = appPath + 'register/',

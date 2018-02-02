@@ -1,13 +1,11 @@
 import React from 'react';
-import {putProfileService, getProfileService} from './ProfileService.js';
-import {getImageUrl} from '../../helper';
-import FileUpload from '../fileUpload/FileUpload';
-
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import DatePicker from 'material-ui/DatePicker';
 import {Card, CardHeader} from 'material-ui/Card';
-
+import {putProfileService, getProfileService} from './ProfileService';
+import {getImageUrl} from 'src/helper';
+import {FileUpload} from 'src/containers';
 
 const style_card = {
     display: 'flex',
