@@ -17,7 +17,7 @@ const textStyle = {
     fontSize: '14px'
 };
 
-export default class MessagesList extends React.Component {
+export default class MessagesItem extends React.Component {
 
     constructor(props) {
         super(props);

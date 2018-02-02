@@ -1,13 +1,13 @@
 import React from 'react';
 import StudentItem from './tmpStudentItem';
-import MessagesList from './MessagesList';
+import MentorMessagesList from './MessagesList';
 import {messagesListService, studentService} from './MentorItemService';
 
 const mentorsListStyle = {
     'paddingTop': 10
 };
 
-export default class MessagesBar extends React.Component {
+export default class MentorMessagesBar extends React.Component {
 
     constructor(props) {
         super(props);

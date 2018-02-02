@@ -1,7 +1,7 @@
 import React from 'react';
 import AssignmentInfo from './AssignmentInfo';
 import AnswerInfo from './AnswerInfo';
-import MessagesBar from './MessagesBar';
+import MentorMessagesBar from './MessagesBar';
 import SetGrade from './SetGrade';
 import {itemInfoService,answerInfoService} from './MentorItemService';
 

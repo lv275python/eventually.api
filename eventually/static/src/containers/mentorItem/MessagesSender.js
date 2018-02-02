@@ -16,7 +16,7 @@ const buttonStyle = {
     alignSelf: 'flex-end'
 };
 
-export default class MessagesSender extends React.Component {
+export default class MentorMessagesSender extends React.Component {
 
     constructor(props) {
         super(props);

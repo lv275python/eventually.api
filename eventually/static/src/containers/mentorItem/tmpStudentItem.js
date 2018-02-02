@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, CardHeader, CardText} from 'material-ui/Card';
+import {Card, CardHeader} from 'material-ui/Card';
 import Avatar from 'material-ui/Avatar';
 
 const cardHeaderStyle = {
@@ -10,32 +10,30 @@ const cardHeaderStyle = {
 
 const titleStyle = {
     'fontWeight': 'bold',
-    'fontSize': '16px'
+    'fontSize': '18px'
 };
 
-const textStyle = {
-    'fontSize': '14px'
-};
-
-export default class MessagesList extends React.Component {
+export default class TmpMentorItem extends React.Component {
 
     constructor(props) {
         super(props);
     }
+
+    handleClick = () => {
+        this.props.onStudentClick(this.props.id);
+    };
 
     render() {
         return (
             <div>
                 <Card>
                     <CardHeader
-                        title={this.props.author}
-                        avatar={<Avatar src={'https://robohash.org/' + this.props.avatar}/>}
                         style={cardHeaderStyle}
+                        title={`${this.props.firstName} ${this.props.lastName}`}
+                        avatar={<Avatar src={'https://robohash.org/' + this.props.avatar}/>}
                         titleStyle={titleStyle}
+                        onClick={this.handleClick}
                     />
-                    <CardText style={textStyle}>
-                        {this.props.text}
-                    </CardText>
                 </Card>
             </div>
         );
