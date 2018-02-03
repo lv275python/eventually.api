@@ -1,14 +1,17 @@
 import React from 'react';
 import {Link} from 'react-router';
 import {getTask} from './TaskService';
-import FlatButton from 'material-ui/FlatButton';
 const STATUS_CHOICES = {
     0: 'ToDo',
     1: 'In Progress',
     2: 'Done',
 };
 
-
+const liStyle ={
+    margin: '20px 20px',
+    fontSize: '19px',
+    fontFamily: 'Roboto, sans-serif',
+};
 const styleLowerMain1 = {
     display: 'flex',
     justifyContent: 'center',
@@ -33,15 +36,14 @@ class Event extends React.Component {
 
         super(props);
         this.state = {
-
-            id:'1', //this.props.match.params.taskId,
+            id: this.props.match.params.taskId,
             team: '',
             name: '',
             description: '',
             created_at: '',
             updated_at: '',
-            event_id: '1',//this.props.match.params.eventId,
-            users:['user1','user',],
+            event_id: this.props.match.params.eventId,
+            users:[],
         };
     }
 
@@ -59,21 +61,12 @@ class Event extends React.Component {
                 created_at: response.data['created_at'],
                 updated_at: response.data['updated_at'],
                 status: response.data['status'],
-                users: response.data['user']
+                users: response.data['users_id']
 
             });
-            console.log(response);
         });
     }
     render(){
-        const user = userInf=>{
-            return (
-                <div>
-                    {/*<li style={styleInp}>{userInf['first_name']}+''+{userInf['last_name']}</li>*/}
-                    <li style={styleInp}>{userInf}</li>
-                </div>
-            );
-        };
         return (
             <div >
 
@@ -85,11 +78,12 @@ class Event extends React.Component {
                         <p style={styleInp}><span style={styleSpan}>Updated at :</span>{(new Date(this.state.updated_at*1000)).toDateString()}</p>
                         <p style={styleInp}><span style={styleSpan}>Status :</span>{STATUS_CHOICES [this.state.status]}</p>
                         <p style={styleInp}><span style={styleSpan}>Users :</span></p>
-                        {this.state.users && <ul>
-                            <p> something </p>
-                         this.state.users.map(usr => user(usr));
+                        <ul key='0'>
+                            {
+                                this.state.users.map(usr => <li key={usr['id']} style={liStyle}>{usr['first_name']+'  '+usr['last_name']}</li>)
+                            }
+
                         </ul>
-                        }
                     </div>
                 </div>
             </div>

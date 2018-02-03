@@ -76,8 +76,8 @@ class EventLink extends React.Component {
                         {this.props.description}
                     </CardText>
 
-                    <CardActions>
-                        <RaisedButton label="Tasks" onClick={this.goToTaskList} style={buttonStyle}/>
+                    <CardActions>                
+                        <RaisedButton label="Details" onClick={this.goToTaskList} />
                     </CardActions>
                 </Card>
             </div >

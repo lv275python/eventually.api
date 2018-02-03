@@ -70,7 +70,9 @@ export default class EventTaskList extends React.Component {
         this.getEventTaskItem();
         this.getEventName();
     }
-
+    goToTask=(taskId)=>{
+        this.props.history.push('/events/'+this.state.eventId+'/task/'+taskId);
+    }
     getEventTaskItem = () => {
         eventTasksServiceGet(this.state.eventId).
             then(response => this.setState({'tasks': response.data.tasks}));
@@ -86,7 +88,7 @@ export default class EventTaskList extends React.Component {
 
             });
         });
-        this.setState({'members': members, 'team': team});
+        this.setState({'members': members, 'team': team_id});
         this.getOwnerName();
     }
 
@@ -186,6 +188,7 @@ export default class EventTaskList extends React.Component {
                                                 assignment_users={task.users}
                                                 members={this.state.members}
                                                 eventId={this.state.eventId}
+                                                goToTask={this.goToTask}
                                             />
                                         </li>
                                     ))}
@@ -203,6 +206,7 @@ export default class EventTaskList extends React.Component {
                                                 assignment_users={task.users}
                                                 members={this.state.members}
                                                 eventId={this.state.eventId}
+                                                goToTask={this.goToTask}
                                             />
                                         </li>
                                     ))}
@@ -220,6 +224,7 @@ export default class EventTaskList extends React.Component {
                                                 assignment_users={task.users}
                                                 members={this.state.members}
                                                 eventId={this.state.eventId}
+                                                goToTask={this.goToTask}
                                             />
                                         </li>
                                     ))}

@@ -39,7 +39,7 @@ export default class EventEdit extends React.Component {
             description: this.props.description,
             start_at: this.props.start_at,
             duration: this.props.duration,
-            budget: this.props.budget,
+            budget: this.props.budget ? this.props.budget : 0,
             status: this.props.status,
         };
     }
@@ -80,7 +80,8 @@ export default class EventEdit extends React.Component {
     };
 
     handleDuration = (event,date) => {
-        this.setState({duration:(date/1000)-this.state.start_at});
+        const duration = (date/1000)-this.state.start_at;
+        this.setState({duration:duration });
     };
 
     handleBudget = event => {
