@@ -1,8 +1,9 @@
+import {apiUrl} from 'src/helper';
 import axios from 'axios';
 
-const appPath = '/api/v1/team/';
-const getMembers = '/api/v1/user/';
-const getUsers = '/api/v1/user/all/';
+const appPath = apiUrl + 'team/';
+const getMembers = apiUrl +  'user/';
+const getUsers = apiUrl +'user/all/';
 
 const teamServicePost = (data) => {
     let url = appPath + 'new/';

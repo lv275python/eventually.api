@@ -2,14 +2,15 @@ import React, {Component} from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
-import FileUpload from '../fileUpload/FileUpload';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import {teamServicePost, usersServiceGet} from './teamService';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-import {getUserId} from '../../helper/utils';
 import {orange500} from 'material-ui/styles/colors';
+
+import {teamServicePost, usersServiceGet} from './teamService';
+import {FileUpload} from 'src/containers';
+import {getUserId} from 'src/helper';
 
 const FlatButtonStyle = {
     position: 'fixed',
@@ -172,6 +173,7 @@ export default class CreateTeamDialog extends React.Component {
                     modal={false}
                     open={this.state.open}
                     onRequestClose={this.handleClose}
+                    autoScrollBodyContent={true}
                 >
                     <TextField
                         hintText="Name"

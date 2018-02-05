@@ -1,9 +1,9 @@
 import React from 'react';
-import MessageItem from './MessageItem';
-import MessagesSender from './MessagesSender';
+import MentorMessageItem from './MessageItem';
+import MentorMessagesSender from './MessagesSender';
 import Paper from 'material-ui/Paper';
 
-export default class MessagesList extends React.Component {
+export default class MentorMessagesList extends React.Component {
 
     constructor(props) {
         super(props);

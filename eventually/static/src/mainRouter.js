@@ -5,7 +5,7 @@ import Profile from './containers/profile/Profile';
 import UserProgress from './containers/userProgress/UserProgress';
 import Item from './containers/item/Item';
 import CurriculumList from './containers/curriculum/CurriculumList';
-import MentorItem from './containers/mentor_item/MentorItem';
+import MentorItem from './containers/mentorItem/MentorItem';
 import MentorDashboard from './containers/mentorDashboard/MentorDashboard';
 import TeamList from './containers/teamList/TeamList';
 

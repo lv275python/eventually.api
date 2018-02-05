@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "webpack -d --watch --config webpack.config.js",
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js",
+    "lint": "eslint --config .eslintrc.js eventually/static/src/;exit 0"
   },
   "keywords": [],
   "author": "",

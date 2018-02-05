@@ -104,10 +104,9 @@ class UtilsTeamViewsFunctionsTestCase(TestCase):
             'members_id_del': []
         }
 
-        expect_tuple = (user, None, [members_add])
+        expect_tuple = (user, None, [members_add, user])
 
         get_users_tuple = team_views_functions.get_users(data, user)
-
         self.assertTupleEqual(get_users_tuple, expect_tuple)
 
     def test_get_users_not_add_members_id_add_is_empty(self):
@@ -260,12 +259,11 @@ class UtilsTeamViewsFunctionsTestCase(TestCase):
         expect_dict = {
             'description': 'description',
             'image': 'link',
-            'members_add': [member],
+            'members_add': [member, user],
             'members_del': None,
             'name': 'name',
             'owner': user
         }
-
         team_update_dict = team_views_functions.update_team_dict(data, user)
 
         self.assertDictEqual(team_update_dict, expect_dict)
