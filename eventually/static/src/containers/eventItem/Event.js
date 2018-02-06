@@ -5,6 +5,7 @@ import {getOwner, getTeam} from './EventItemService';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import EventEdit from '../event/EventEdit';
+import EventTaskList from '../eventTaskList/EventTaskList';
 
 const STATUS_CHOICES = {
     0: 'draft',
@@ -48,13 +49,19 @@ const styleLowerMain2 = {
     margin: '10px 10px',
 };
 
+const buttonStyle = {
+    border: '2px solid #B3E5FC',
+    margin: '1%',
+    width: '10%',
+    display: 'inline-block',
+};
+
 class Event extends React.Component {
 
     constructor(props) {
 
         super(props);
         this.state = {
-            open: false,
             team: this.props.team,
             owner: this.props.owner,
             name: this.props.name,
@@ -71,75 +78,25 @@ class Event extends React.Component {
         };
     }
 
-    handleOpen = () => {
-        this.setState({open: true});
-    };
-
-    handleClose = () => {
-        this.setState({open: false});
-    };
-
-    componentWillMount() {
-
-        getOwner(this.state.owner).then(response => {
-            const name = (response.data['first_name'] + ' ' + response.data['last_name']);
-            this.setState({
-                owner: name
-            });
-        });
-
-        getTeam(this.state.team).then(response => {
-            const name = (response.data['name']);
-            this.setState({
-                team: name
-            });
-        });
-
-    }
-
     render() {
-
-        const actions = [
-            <FlatButton
-                label="Cancel"
-                primary={true}
-                onClick={this.handleClose}
-            />,
-            <FlatButton
-                label="Submit"
-                primary={true}
-                keyboardFocused={true}
-                onClick={this.handleClose}
-            />,
-        ];
-
         return (
             <div >
-                <RaisedButton label="Details" onClick={this.handleOpen} />
-                
-                <Dialog
-                    title="Dialog With Actions"
-                    actions={actions}
-                    modal={false}
-                    open={this.state.open}
-                    onRequestClose={this.handleClose}
-                    autoScrollBodyContent={true}
-                >
-                    <div style={styleLowerMain1}>
-                        <div>
-                            <p style={styleInp}><span style={styleSpan}>Name :</span>{this.state.name}</p>
-                            <p style={styleInp}><span style={styleSpan}>Description :</span>{this.state.description}</p>
-                            <p style={styleInp}><span style={styleSpan}>Owner :</span>{this.state.owner}</p>
-                            <p style={styleInp}><span style={styleSpan}>Start at :</span>{(new Date(this.state.start_at)).toDateString()}</p>
-                            <p style={styleInp}><span style={styleSpan}>Created at :</span>{(new Date(this.state.created_at)).toDateString()}</p>
-                            <p style={styleInp}><span style={styleSpan}>Updated at :</span>{(new Date(this.state.updated_at)).toDateString()}</p>
-                            <p style={styleInp}><span style={styleSpan}>Duration :</span>{Math.floor(this.state.duration / 3600) + ':' + Math.floor(this.state.duration % 3600 / 60) }</p>
-                            <p style={styleInp}><span style={styleSpan}>Budget :</span>{this.state.budget}</p>
-                            <p style={styleInp}><span style={styleSpan}>Status :</span>{STATUS_CHOICES [this.state.status]}</p>
-                        </div>
+                <div style={styleLowerMain1}>
+                    <div>
+                        <p style={styleInp}><span style={styleSpan}>Name :</span>{this.state.name}</p>
+                        <p style={styleInp}><span style={styleSpan}>Description :</span>{this.state.description}</p>
+                        <p style={styleInp}><span style={styleSpan}>Owner :</span>{this.state.owner}</p>
+                        <p style={styleInp}><span style={styleSpan}>Start at :</span>{(new Date(this.state.start_at*1000)).toDateString()}</p>
+                        <p style={styleInp}><span style={styleSpan}>Created at :</span>{(new Date(this.state.created_at*1000)).toDateString()}</p>
+                        <p style={styleInp}><span style={styleSpan}>Updated at :</span>{(new Date(this.state.updated_at*1000)).toDateString()}</p>
+                        <p style={styleInp}><span style={styleSpan}>Duration :</span>{Math.floor(this.state.duration / 3600) + ':' + Math.floor(this.state.duration % 3600 / 60) }</p>
+                        <p style={styleInp}><span style={styleSpan}>Budget :</span>{this.state.budget}</p>
+                        <p style={styleInp}><span style={styleSpan}>Status :</span>{STATUS_CHOICES [this.state.status]}</p>
                     </div>
+                </div>
+                {this.state.id && (
                     <div style={styleLowerMain2}>
-                        <EventEdit 
+                        <EventEdit
                             key={this.props.id.toString()}
                             team={this.props.team}
                             owner={this.props.owner}
@@ -156,7 +113,7 @@ class Event extends React.Component {
                             id={this.props.id}
                         />
                     </div>
-                </Dialog>
+                )}
             </div>
         );
     }

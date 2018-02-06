@@ -4,6 +4,8 @@ import EventTaskItem from './EventTaskItem';
 import TaskDialog from './EventTaskDialog';
 import { withRouter } from 'react-router-dom';
 import {eventTasksServiceGet, eventServiceGet, eventTaskServicePut, taskGetTeamService} from './EventTaskService';
+import Event from '../eventItem/Event';
+import {getOwner} from '../eventItem/EventItemService';
 
 const tableStyle = {
     border: '2px solid #B3E5FC',
@@ -56,6 +58,9 @@ export default class EventTaskList extends React.Component {
         this.state = {
             eventId: this.props.match.params.eventId,
             teamId: null,
+            owner: null,
+            event_name: '',
+            event_descr: '',
             tasks: [],
             members: []
         };
@@ -65,14 +70,17 @@ export default class EventTaskList extends React.Component {
         this.getEventTaskItem();
         this.getEventName();
     }
-
+    goToTask=(taskId)=>{
+        this.props.history.push('/events/'+this.state.eventId+'/task/'+taskId);
+    }
     getEventTaskItem = () => {
         eventTasksServiceGet(this.state.eventId).
             then(response => this.setState({'tasks': response.data.tasks}));
     };
 
-    getTeamMembers = team_id => {
+    getTeamMembers = () => {
         let members = [];
+        let team_id = this.state.teamId;
         taskGetTeamService(team_id, true).then(response => {
             let members_id = response.data['members_id'];
             members_id.map(member => {
@@ -80,19 +88,37 @@ export default class EventTaskList extends React.Component {
 
             });
         });
-        this.setState({'members': members});
+        this.setState({'members': members, 'team': team_id});
+        this.getOwnerName();
     }
 
     getEventName = () => {
         eventServiceGet(this.state.eventId).then(response => {
-            this.setState({'event_name': response.data.name,
+            this.setState({
+                'event_name': response.data.name,
                 'event_descr': response.data.description,
                 'teamId': response.data.team,
+                'ownerId': response.data.owner,
+                'start_at': response.data.start_at,
+                'created_at': response.data.created_at,
+                'updated_at': response.data.updated_at,
+                'duration': response.data.duration,
+                'longitude': response.data.longitude,
+                'latitude': response.data.latitude,
+                'budget': response.data.budget,
+                'status': response.data.status,
             });
 
             this.getTeamMembers(response.data.team);
         });
     };
+
+    getOwnerName = () => {
+        getOwner(this.state.ownerId).then(response => {
+            const name = (response.data.first_name + ' ' + response.data.last_name);
+            this.setState({'owner': name});
+        });
+    }
 
     sortableGroupDecorator = (sortableGroup) => {
         if (sortableGroup) {
@@ -115,12 +141,25 @@ export default class EventTaskList extends React.Component {
     render() {
         return (
             <div>
-                <h1>
-                    {this.state.event_name}
-                </h1>
-                <h3>
-                    {this.state.event_descr}
-                </h3>
+                {this.state.owner && (
+                    <div style={containerStyle}>
+                        <Event
+                            team={this.state.team}
+                            owner={this.state.owner}
+                            name={this.state.event_name}
+                            description={this.state.event_descr}
+                            start_at={this.state.start_at}
+                            created_at={this.state.created_at}
+                            updated_at={this.state.updated_at}
+                            duration={this.state.duration}
+                            longitude={this.state.longitude}
+                            latitude={this.state.latitude}
+                            budget={this.state.budget}
+                            status={this.state.status}
+                            id={this.state.eventId}
+                        />
+                    </div>
+                )}
                 <table style={tableStyle}>
                     <thead>
                         <tr>
@@ -138,9 +177,9 @@ export default class EventTaskList extends React.Component {
                     <tbody>
                         <tr>
                             <td style={tdStyle}>
-                                <ul  id='0' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
+                                <ul  id='0' key='0' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
                                     {this.state.tasks.map(task => (task.status == 0 &&
-                                        <li style={liStyle}>
+                                        <li key={task.id.toString()} style={liStyle}>
                                             <EventTaskItem
                                                 key={task.id.toString()}
                                                 id={task.id}
@@ -149,13 +188,14 @@ export default class EventTaskList extends React.Component {
                                                 assignment_users={task.users}
                                                 members={this.state.members}
                                                 eventId={this.state.eventId}
+                                                goToTask={this.goToTask}
                                             />
                                         </li>
                                     ))}
                                 </ul>
                             </td>
                             <td style={tdStyle}>
-                                <ul  id='1' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
+                                <ul  id='1' key='1' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
                                     {this.state.tasks.map(task => (task.status == 1 &&
                                         <li style={liStyle}>
                                             <EventTaskItem
@@ -166,13 +206,14 @@ export default class EventTaskList extends React.Component {
                                                 assignment_users={task.users}
                                                 members={this.state.members}
                                                 eventId={this.state.eventId}
+                                                goToTask={this.goToTask}
                                             />
                                         </li>
                                     ))}
                                 </ul>
                             </td>
                             <td style={tdStyle}>
-                                <ul  id='2' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
+                                <ul  id='2' key='2' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
                                     {this.state.tasks.map(task => (task.status == 2 &&
                                         <li style={liStyle}>
                                             <EventTaskItem
@@ -183,6 +224,7 @@ export default class EventTaskList extends React.Component {
                                                 assignment_users={task.users}
                                                 members={this.state.members}
                                                 eventId={this.state.eventId}
+                                                goToTask={this.goToTask}
                                             />
                                         </li>
                                     ))}

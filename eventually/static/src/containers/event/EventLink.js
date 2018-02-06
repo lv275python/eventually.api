@@ -21,25 +21,7 @@ class EventLink extends React.Component {
     }
 
     goToTaskList = () => {
-        this.props.history.push({
-            pathname: '/events/' + this.props.id + '/task',
-            state: {
-                event: {
-                    team: this.props.team,
-                    owner: this.props.owner,
-                    name: this.props.name,
-                    description: this.props.description,
-                    start_at: this.props.start_at,
-                    created_at: this.props.created_at,
-                    updated_at: this.props.updated_at,
-                    duration: this.props.duration,
-                    longitude: this.props.longitude,
-                    latitude: this.props.latitude,
-                    budget: this.props.budget,
-                    status: this.props.status
-                }
-            }
-        });
+        this.props.history.push('/events/' + this.props.id);
     };
 
     fetchAddress() {
@@ -94,24 +76,8 @@ class EventLink extends React.Component {
                         {this.props.description}
                     </CardText>
 
-                    <CardActions>
-                        <RaisedButton label="Tasks" onClick={this.goToTaskList} />
-                        <Event
-                            key={this.props.id.toString()}
-                            team={this.props.team}
-                            owner={this.props.owner}
-                            name={this.props.name}
-                            description={this.props.description}
-                            start_at={this.props.start_at}
-                            created_at={this.props.created_at}
-                            updated_at={this.props.updated_at}
-                            duration={this.props.duration}
-                            longitude={this.props.longitude}
-                            latitude={this.props.latitude}
-                            budget={this.props.budget}
-                            status={this.props.status}
-                            id={this.props.id}
-                        />
+                    <CardActions>                
+                        <RaisedButton label="Details" onClick={this.goToTaskList} />
                     </CardActions>
                 </Card>
             </div >

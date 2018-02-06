@@ -19,7 +19,6 @@ export default class EditEventTaskDialog extends React.Component {
         };
     }
 
-
     handleChangeState = () => {
         let newOpenState = this.state.openDialog?false:true;
         this.setState({openDialog: newOpenState});

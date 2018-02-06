@@ -3,11 +3,13 @@ import RaisedButton from 'material-ui/RaisedButton';
 import {Card, CardHeader, CardActions, CardText} from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import EditEventTaskDialog from './EditEventTaskDialog';
-
+import { Link } from 'react-router';
+import { withRouter } from 'react-router-dom';
 export default class EventTaskItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            goToTask:this.props.goToTask,
             title: this.props.title,
             description: this.props.description.slice(0,300)+'...',
             openDialog: false
@@ -33,6 +35,7 @@ export default class EventTaskItem extends React.Component {
                     />
                     <CardActions>
                         <FlatButton label="Edit" onClick={this.handleDialogOpen}/>
+                        <FlatButton label="Details" onClick={()=>this.state.goToTask(this.props.id)}/>
                     </CardActions>
                     <CardText expandable={true}>
                         {this.state.description}
