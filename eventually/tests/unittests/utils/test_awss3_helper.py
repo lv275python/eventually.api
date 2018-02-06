@@ -18,34 +18,36 @@ BAD_IMAGE_SIZE = 9 * 1024 * 1024
 IMAGE_FORMAT = "png"
 BUCKET_ADDRESS = "https://s3.eu-west-2.amazonaws.com/eventually-photos/"
 
+IMAGE_KEY = "image_key"
 
-class MockObjects():
-    key = "image_key"
+
+class MockObjectsLoadRaiseClientError():
+    key = IMAGE_KEY
 
     def load(self):
         error_response = {'Error': {'Code': '500', 'Message': 'Error Uploading'}}
         raise ClientError(error_response, 'create_stream')
 
 
-class MockBOTO_S3():
-    """ Class for simulate BOTO_S3 """
-
-    @staticmethod
-    def Object(*args, **kwargs):
-        return MockObjects()
-
-
-class MockObjectsTrue():
-    key = "image_key"
+class MockObjectsLoadReturnTrue():
+    key = IMAGE_KEY
 
     def load(self):
         return True
 
 
-class MockBOTO_S3True():
+class MockBOTO_S3LoadRaiseClientError():
+    """ Class for simulate BOTO_S3 """
+
     @staticmethod
     def Object(*args, **kwargs):
-        return MockObjectsTrue()
+        return MockObjectsLoadRaiseClientError()
+
+
+class MockBOTO_S3TLoadReturnTrue():
+    @staticmethod
+    def Object(*args, **kwargs):
+        return MockObjectsLoadReturnTrue()
 
 
 class MockBUCKET():
@@ -53,7 +55,7 @@ class MockBUCKET():
 
     @staticmethod
     def put_object(*args, **kwargs):
-        response = MockObjects()
+        response = MockObjectsLoadReturnTrue()
         return response
 
     @staticmethod
@@ -118,7 +120,7 @@ class UtilsAwss3HelperTestCase(TestCase):
         response = awss3_helper.upload(request)
         self.assertFalse(response)
 
-    @mock.patch('utils.awss3_helper.BOTO_S3', MockBOTO_S3)
+    @mock.patch('utils.awss3_helper.BOTO_S3', MockBOTO_S3LoadRaiseClientError)
     @mock.patch('utils.awss3_helper.BUCKET', MockBUCKET)
     def test_upload_success(self):
         """Method that test success `upload` method."""
@@ -130,7 +132,7 @@ class UtilsAwss3HelperTestCase(TestCase):
         response = awss3_helper.upload(request)
         self.assertDictEqual(response, {'image_key': 'image_key'})
 
-    @mock.patch('utils.awss3_helper.BOTO_S3', MockBOTO_S3True)
+    @mock.patch('utils.awss3_helper.BOTO_S3', MockBOTO_S3TLoadReturnTrue)
     @mock.patch('utils.awss3_helper.BUCKET', MockBUCKET)
     def test_upload_not_success(self):
         """Method that test is not success `upload` method."""
@@ -165,7 +167,7 @@ class UtilsAwss3HelperTestCase(TestCase):
         self.assertFalse(response)
 
     @mock.patch('utils.awss3_helper.BUCKET', MockBUCKET)
-    @mock.patch('utils.awss3_helper.BOTO_S3', MockBOTO_S3)
+    @mock.patch('utils.awss3_helper.BOTO_S3', MockBOTO_S3LoadRaiseClientError)
     def test_delete_success(self):
         """Method that test success `delete` method."""
 
@@ -179,7 +181,7 @@ class UtilsAwss3HelperTestCase(TestCase):
         self.assertTrue(response)
 
     @mock.patch('utils.awss3_helper.BUCKET', MockBUCKET)
-    @mock.patch('utils.awss3_helper.BOTO_S3', MockBOTO_S3True)
+    @mock.patch('utils.awss3_helper.BOTO_S3', MockBOTO_S3TLoadReturnTrue)
     def test_delete_not_success(self):
         """Method that test is not success `delete` method."""
 
