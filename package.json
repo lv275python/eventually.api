@@ -6,7 +6,8 @@
   "scripts": {
     "start": "webpack -d --watch --config webpack.config.js",
     "build": "webpack --config webpack.config.js",
-    "test": "webpack --config webpack-test.config.js"
+    "test": "webpack --config webpack-test.config.js",
+    "lint": "eslint --config .eslintrc.js eventually/static/src/;exit 0"
   },
   "keywords": [],
   "author": "",

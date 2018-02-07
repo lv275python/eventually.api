@@ -300,3 +300,25 @@ class AuthenticationViewTest(TestCase):
 
         resp_logout = self.client.patch((reverse('logout_user')))
         self.assertEqual(resp_logout.status_code, 400)
+
+
+    def test_get_all_users_success(self):
+        """ get_all_users request success """
+
+        user = json.dumps({'email':'mail@mail.co', 'password':'1234'})
+        response = self.client.post(reverse('login_user'), user, content_type='application/json')
+        url = reverse('all_users')
+        request = self.client.get(url)
+
+        self.assertEqual(request.status_code, 200)
+
+
+    def test_get_all_users_fail(self):
+        """ get_all_users request fail, wrong request method """
+
+        user = json.dumps({'email':'mail@mail.co', 'password':'1234'})
+        response = self.client.post(reverse('login_user'), user, content_type='application/json')
+        url = reverse('all_users')
+        request = self.client.post(url, json.dumps({'blank':'testblankbody'}),  content_type='application/json')
+
+        self.assertEqual(request.status_code, 400)

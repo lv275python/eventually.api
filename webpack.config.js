@@ -8,6 +8,11 @@ const config = {
         path: path.join(__dirname,'eventually/static/public'),
         filename: 'bundle.js'
     },
+    resolve: {
+        alias: {
+            src: path.join(__dirname, 'eventually/static/src')
+        }
+    },
     module: {
         loaders: [
         {

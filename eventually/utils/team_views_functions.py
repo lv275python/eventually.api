@@ -24,7 +24,7 @@ def find_users(members_id):
             members.append(member)
         else:
             return None
-        return members
+    return members
 
 
 def create_team_dict(data, user):

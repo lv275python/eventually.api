@@ -1,7 +1,5 @@
 import React from 'react';
-import ItemsList from '../itemsList/ItemsList';
-import MessagesBar from '../messagesBar/MessagesBar';
-import ProgressGraph from '../progressGraph/ProgressGraph';
+import {ItemsList, MessagesBar, ProgressGraph} from 'src/containers';
 
 const userProgressStyle = {
     display: 'flex',
@@ -27,7 +25,7 @@ const messagesBarStyle = {
     position: 'relative'
 };
 
-export default class Profile extends React.Component {
+export default class ProgressProfile extends React.Component {
 
     constructor(props) {
         super(props);

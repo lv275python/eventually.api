@@ -207,3 +207,11 @@ class CustomUser(AbstractBaseUser):
         if is_active is not None:
             self.is_active = is_active
         self.save()
+
+    @staticmethod
+    def get_all():
+        """
+        returns data for json request with querysets of all users
+        """
+        all_users = CustomUser.objects.all()
+        return all_users

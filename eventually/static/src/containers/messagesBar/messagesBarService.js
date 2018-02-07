@@ -1,14 +1,15 @@
+import {apiUrl} from 'src/helper';
 import axios from 'axios';
 
-const appPath = '/api/v1/chat/';
+const appPath = apiUrl + 'chat/';
 
 const getMentorsListService = () => {
-    const url = '/api/v1/mentor/mentors_list/';
+    const url = apiUrl + 'mentor/mentors_list/';
     return axios.get(url);
 };
 
 const getStudentsListService = () => {
-    const url = '/api/v1/mentor/students_list/';
+    const url = apiUrl +'mentor/students_list/';
     return axios.get(url);
 };
 
