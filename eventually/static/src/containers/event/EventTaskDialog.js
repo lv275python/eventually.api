@@ -7,7 +7,7 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import {eventTaskServicePost, taskGetTeamService} from './EventTaskService';
+import {eventTaskServicePost, taskGetTeamService} from './EventService';
 
 
 const FlatButtonStyle = {
@@ -138,7 +138,6 @@ export default class TaskDialog extends React.Component {
                         floatingLabelText="Select users"
                         value={this.state.assignment}
                         onChange={this.handleChange}
-                        // selectionRenderer={this.selectionRenderer}
                     >
                         {this.menuItems(this.state.members)}
                     </SelectField>

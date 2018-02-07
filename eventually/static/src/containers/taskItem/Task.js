@@ -1,4 +1,6 @@
 import React from 'react';
+import RaisedButton from 'material-ui/RaisedButton';
+import Dialog from 'material-ui/Dialog';
 import {Link} from 'react-router';
 import {getTask} from './TaskService';
 const STATUS_CHOICES = {
@@ -30,20 +32,21 @@ const styleSpan = {
     fontFamily: 'Roboto, sans-serif',
     width: '117px',
 };
-class Event extends React.Component {
+class Task extends React.Component {
 
     constructor(props) {
 
         super(props);
         this.state = {
-            id: this.props.match.params.taskId,
+            id: this.props.taskId,
             team: '',
             name: '',
             description: '',
             created_at: '',
             updated_at: '',
-            event_id: this.props.match.params.eventId,
+            event_id: this.props.eventId,
             users:[],
+            open: false
         };
     }
 
@@ -51,6 +54,14 @@ class Event extends React.Component {
     componentWillMount() {
         this.getDataTask();
 
+    }
+
+    handleDialogOpen = () =>{
+        this.setState({'open': true});
+    }
+
+    handleDialogClose = () =>{
+        this.setState({'open': false});
     }
 
     getDataTask=()=>{
@@ -67,28 +78,45 @@ class Event extends React.Component {
         });
     }
     render(){
+        const actions = [
+            <RaisedButton
+                label="Ok"
+                primary={true}
+                onClick={this.handleDialogClose}
+            />,
+        ];
         return (
             <div >
-
+                <RaisedButton label="Details" onClick = {this.handleDialogOpen} />
                 <div style={styleLowerMain1}>
-                    <div>
-                        <p style={styleInp}><span style={styleSpan}>Title :</span>{this.state.Title}</p>
-                        <p style={styleInp}><span style={styleSpan}>Description :</span>{this.state.description}</p>
-                        <p style={styleInp}><span style={styleSpan}>Created at :</span>{(new Date(this.state.created_at*1000)).toDateString()}</p>
-                        <p style={styleInp}><span style={styleSpan}>Updated at :</span>{(new Date(this.state.updated_at*1000)).toDateString()}</p>
-                        <p style={styleInp}><span style={styleSpan}>Status :</span>{STATUS_CHOICES [this.state.status]}</p>
-                        <p style={styleInp}><span style={styleSpan}>Users :</span></p>
-                        <ul key='0'>
-                            {
-                                this.state.users.map(usr => <li key={usr['id']} style={liStyle}>{usr['first_name']+'  '+usr['last_name']}</li>)
-                            }
-
-                        </ul>
-                    </div>
+                   {this.state.open &&
+                       <Dialog
+                            title="Task Details"
+                            actions={actions}
+                            modal={false}
+                            open={this.state.open}
+                            onRequestClose={this.handleDialogClose}
+                       >
+                            <div>
+                                <p style={styleInp}><span style={styleSpan}>Title :</span>{this.state.Title}</p>
+                                <p style={styleInp}><span style={styleSpan}>Description :</span>{this.state.description}</p>
+                                <p style={styleInp}><span style={styleSpan}>Created at :</span>{(new Date(this.state.created_at*1000)).toDateString()}</p>
+                                <p style={styleInp}><span style={styleSpan}>Updated at :</span>{(new Date(this.state.updated_at*1000)).toDateString()}</p>
+                                <p style={styleInp}><span style={styleSpan}>Status :</span>{STATUS_CHOICES [this.state.status]}</p>
+                                <p style={styleInp}><span style={styleSpan}>Users :</span></p>
+                                <ul key='0'>
+                                    {
+                                        console.log(this.state.users),
+                                        this.state.users.map(usr => <li key={usr['id']} style={liStyle}>{usr['first_name']+'  '+usr['last_name']}</li>)
+                                    }
+                           </ul>
+                           </div>
+                       </Dialog>
+                   }
                 </div>
             </div>
         );
     }
 }
 
-export default Event;
+export default Task;

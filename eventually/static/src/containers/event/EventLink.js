@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import RaisedButton from 'material-ui/RaisedButton';
 import {lightGreen400} from 'material-ui/styles/colors';
-import Event from '../eventItem/Event';
+import Event from './Event';
 
 
 const raiseButtonStyle = {

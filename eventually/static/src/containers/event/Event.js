@@ -1,11 +1,11 @@
 import React from 'react';
 import {Link} from 'react-router';
 import RaisedButton from 'material-ui/RaisedButton';
-import {getOwner, getTeam} from './EventItemService';
+import {getOwner, getTeam} from './EventService';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import EventEdit from '../event/EventEdit';
-import EventTaskList from '../eventTaskList/EventTaskList';
+import EventTaskList from './EventTaskList';
 
 const STATUS_CHOICES = {
     0: 'draft',
@@ -77,6 +77,13 @@ class Event extends React.Component {
             id: this.props.id,
         };
     }
+    componentWillMount(){
+        let durationString = '';
+        durationString += Math.trunc(this.state.duration/(3600*24)) + 'd ';
+        durationString += Math.trunc((this.state.duration%(3600*24))/3600) + 'h ';
+        durationString += Math.trunc((this.state.duration%3600)/60) + 'm';
+        this.setState({durationString: durationString})
+    }
 
     render() {
         return (
@@ -89,7 +96,7 @@ class Event extends React.Component {
                         <p style={styleInp}><span style={styleSpan}>Start at :</span>{(new Date(this.state.start_at*1000)).toDateString()}</p>
                         <p style={styleInp}><span style={styleSpan}>Created at :</span>{(new Date(this.state.created_at*1000)).toDateString()}</p>
                         <p style={styleInp}><span style={styleSpan}>Updated at :</span>{(new Date(this.state.updated_at*1000)).toDateString()}</p>
-                        <p style={styleInp}><span style={styleSpan}>Duration :</span>{Math.floor(this.state.duration / 3600) + ':' + Math.floor(this.state.duration % 3600 / 60) }</p>
+                        <p style={styleInp}><span style={styleSpan}>Duration :</span>{this.state.durationString}</p>
                         <p style={styleInp}><span style={styleSpan}>Budget :</span>{this.state.budget}</p>
                         <p style={styleInp}><span style={styleSpan}>Status :</span>{STATUS_CHOICES [this.state.status]}</p>
                     </div>

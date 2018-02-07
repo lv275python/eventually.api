@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 import EventLink from './EventLink';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import CreateEvent from '../eventCreate/CreateEvent';
+import CreateEvent from './CreateEvent';
 
 const containerStyle = {
     width: '80%',

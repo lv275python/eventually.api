@@ -5,23 +5,17 @@ import FlatButton from 'material-ui/FlatButton';
 import EditEventTaskDialog from './EditEventTaskDialog';
 import { Link } from 'react-router';
 import { withRouter } from 'react-router-dom';
+import Task from '../taskItem/Task'
+
 export default class EventTaskItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            goToTask:this.props.goToTask,
+            eventId: null,
             title: this.props.title,
             description: this.props.description.slice(0,300)+'...',
             openDialog: false
         };
-    }
-
-    handleDialogOpen = () =>{
-        this.setState({'openDialog': true});
-    }
-
-    handleDialogClose = () =>{
-        this.setState({'openDialog': false});
     }
 
     render() {
@@ -34,23 +28,23 @@ export default class EventTaskItem extends React.Component {
                         showExpandableButton={true}
                     />
                     <CardActions>
-                        <FlatButton label="Edit" onClick={this.handleDialogOpen}/>
-                        <FlatButton label="Details" onClick={()=>this.state.goToTask(this.props.id)}/>
+                        <EditEventTaskDialog
+                            title = {this.state.title}
+                            description = {this.state.description}
+                            members = {this.props.members}
+                            id = {this.props.id}
+                            assignment_users = {this.props.assignment_users}
+                            eventId = {this.props.eventId}
+                        />
+                        <Task
+                            eventId = {this.state.eventId}
+                            taskid = {this.props.id}
+                        />
                     </CardActions>
                     <CardText expandable={true}>
                         {this.state.description}
                     </CardText>
                 </Card>
-                <EditEventTaskDialog
-                    open = {this.state.openDialog}
-                    title = {this.state.title}
-                    description = {this.state.description}
-                    members = {this.props.members}
-                    id = {this.props.id}
-                    assignment_users = {this.props.assignment_users}
-                    handleDialogClose = {this.handleDialogClose}
-                    eventId = {this.props.eventId}
-                />
             </div>
         );
     }
