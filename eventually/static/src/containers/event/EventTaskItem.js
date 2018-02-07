@@ -5,13 +5,13 @@ import FlatButton from 'material-ui/FlatButton';
 import EditEventTaskDialog from './EditEventTaskDialog';
 import { Link } from 'react-router';
 import { withRouter } from 'react-router-dom';
-import Task from '../taskItem/Task'
+import Task from '../taskItem/Task';
 
 export default class EventTaskItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            eventId: null,
+            eventId: this.props.eventId,
             title: this.props.title,
             description: this.props.description.slice(0,300)+'...',
             openDialog: false
@@ -38,7 +38,7 @@ export default class EventTaskItem extends React.Component {
                         />
                         <Task
                             eventId = {this.state.eventId}
-                            taskid = {this.props.id}
+                            taskId = {this.props.id}
                         />
                     </CardActions>
                     <CardText expandable={true}>

@@ -17,7 +17,8 @@ const thStyle = {
     fontWeight: 'normal',
     background: '#00BCD4',
     color: '#FFFFFF',
-    padding: '8px'
+    padding: '8px',
+    width: '33%'
 };
 const tdStyle = {
     border: '2px solid #B3E5FC',

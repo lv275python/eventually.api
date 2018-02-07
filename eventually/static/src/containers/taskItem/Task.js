@@ -30,7 +30,7 @@ const styleSpan = {
     display: 'inline-block',
     fontSize: '20px',
     fontFamily: 'Roboto, sans-serif',
-    width: '117px',
+    width: '20%',
 };
 class Task extends React.Component {
 
@@ -46,17 +46,13 @@ class Task extends React.Component {
             updated_at: '',
             event_id: this.props.eventId,
             users:[],
+            status: null,
             open: false
         };
     }
 
-
-    componentWillMount() {
-        this.getDataTask();
-
-    }
-
     handleDialogOpen = () =>{
+        this.getDataTask();
         this.setState({'open': true});
     }
 
@@ -86,33 +82,32 @@ class Task extends React.Component {
             />,
         ];
         return (
-            <div >
+            <div style={{display: 'inline-block', margin: '1%'}}>
                 <RaisedButton label="Details" onClick = {this.handleDialogOpen} />
-                <div style={styleLowerMain1}>
-                   {this.state.open &&
-                       <Dialog
+                <div>
+                    {this.state.status !== null &&
+                        <Dialog
                             title="Task Details"
                             actions={actions}
                             modal={false}
                             open={this.state.open}
                             onRequestClose={this.handleDialogClose}
-                       >
+                        >
                             <div>
-                                <p style={styleInp}><span style={styleSpan}>Title :</span>{this.state.Title}</p>
-                                <p style={styleInp}><span style={styleSpan}>Description :</span>{this.state.description}</p>
-                                <p style={styleInp}><span style={styleSpan}>Created at :</span>{(new Date(this.state.created_at*1000)).toDateString()}</p>
-                                <p style={styleInp}><span style={styleSpan}>Updated at :</span>{(new Date(this.state.updated_at*1000)).toDateString()}</p>
-                                <p style={styleInp}><span style={styleSpan}>Status :</span>{STATUS_CHOICES [this.state.status]}</p>
-                                <p style={styleInp}><span style={styleSpan}>Users :</span></p>
+                                <p style={styleInp}><span style={styleSpan}>Title:</span>{this.state.Title}</p>
+                                <p style={styleInp}><span style={styleSpan}>Description:</span>{this.state.description}</p>
+                                <p style={styleInp}><span style={styleSpan}>Created at:</span>{(new Date(this.state.created_at*1000)).toDateString()}</p>
+                                <p style={styleInp}><span style={styleSpan}>Updated at:</span>{(new Date(this.state.updated_at*1000)).toDateString()}</p>
+                                <p style={styleInp}><span style={styleSpan}>Status:</span>{STATUS_CHOICES [this.state.status]}</p>
+                                <p style={styleInp}><span style={styleSpan}>Users:</span></p>
                                 <ul key='0'>
                                     {
-                                        console.log(this.state.users),
                                         this.state.users.map(usr => <li key={usr['id']} style={liStyle}>{usr['first_name']+'  '+usr['last_name']}</li>)
                                     }
-                           </ul>
-                           </div>
-                       </Dialog>
-                   }
+                                </ul>
+                            </div>
+                        </Dialog>
+                    }
                 </div>
             </div>
         );

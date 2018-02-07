@@ -53,8 +53,7 @@ export default class EditEventTaskDialog extends React.Component {
             if (addUsers.length !== 0) data['add_users'] = addUsers;
             if (removeUsers.length !== 0) data['remove_users'] = removeUsers;
         }
-        eventTaskServicePut(this.props.eventId, this.state.id, data);
-        this.handleDialogClose;
+        eventTaskServicePut(this.props.eventId, this.state.id, data).then(response => this.handleDialogClose());
     };
 
     render() {
@@ -71,7 +70,7 @@ export default class EditEventTaskDialog extends React.Component {
             />,
         ];
         return (
-            <div>
+            <div style={{display: 'inline-block', margin: '1%'}}>
                 <RaisedButton label="Edit" onClick = {this.handleDialogOpen} />
                 <Dialog
                     title="Task Edit"
