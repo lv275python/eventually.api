@@ -3,7 +3,7 @@ import Sortable from 'sortablejs';
 import EventTaskItem from './EventTaskItem';
 import TaskDialog from './EventTaskDialog';
 import { withRouter } from 'react-router-dom';
-import {eventTasksServiceGet, eventServiceGet, eventTaskServicePut, taskGetTeamService, getOwner} from './EventService';
+import { eventTasksServiceGet, eventServiceGet, eventTaskServicePut, taskGetTeamService, getOwner } from './EventService';
 import Event from './Event';
 
 
@@ -12,6 +12,7 @@ const tableStyle = {
     borderCollapse: 'separate',
     width: '100%'
 };
+
 const thStyle = {
     border: '2px solid #B3E5FC',
     fontWeight: 'normal',
@@ -20,6 +21,7 @@ const thStyle = {
     padding: '8px',
     width: '33%'
 };
+
 const tdStyle = {
     border: '2px solid #B3E5FC',
     background: '#FFFFFF',
@@ -27,11 +29,13 @@ const tdStyle = {
     padding: '8px',
     verticalAlign: 'top'
 };
+
 const ulStyle = {
     marginLeft: '0',
     listStyle: 'none',
     counterReset: 'li',
 };
+
 const liStyle = {
     position: 'relative',
     marginBottom: '1.5em',
@@ -42,10 +46,12 @@ const liStyle = {
     color: '#231F20',
     fontFamily: 'Trebuchet MS, Lucida Sans'
 };
+
 const containerStyle = {
     width: '80%',
     margin: '0 auto',
 };
+
 const TaskDialogStyle = {
     position: 'fixed',
     right: '3%',
@@ -60,8 +66,8 @@ export default class EventTaskList extends React.Component {
             eventId: this.props.match.params.eventId,
             teamId: null,
             owner: null,
-            event_name: '',
-            event_descr: '',
+            eventName: '',
+            eventDescr: '',
             tasks: [],
             members: []
         };
@@ -79,35 +85,33 @@ export default class EventTaskList extends React.Component {
 
     getTeamMembers = () => {
         let members = [];
-        let team_id = this.state.teamId;
-        taskGetTeamService(team_id, true).then(response => {
-            let members_id = response.data['members_id'];
-            members_id.map(member => {
-                members.push({'id': member.id, 'full_name': member.first_name + ' ' + member.last_name});
-
+        let teamId = this.state.teamId;
+        taskGetTeamService(teamId, true).then(response => {
+            let membersId = response.data['members_id'];
+            membersId.map(member => {
+                members.push({'id': member.id, 'fullName': member.first_name + ' ' + member.last_name});
             });
         });
-        this.setState({'members': members, 'team': team_id});
+        this.setState({'members': members, 'team': teamId});
         this.getOwnerName();
     }
 
     getEventName = () => {
         eventServiceGet(this.state.eventId).then(response => {
             this.setState({
-                'event_name': response.data.name,
-                'event_descr': response.data.description,
+                'eventName': response.data.name,
+                'eventDescr': response.data.description,
                 'teamId': response.data.team,
                 'ownerId': response.data.owner,
-                'start_at': response.data.start_at,
-                'created_at': response.data.created_at,
-                'updated_at': response.data.updated_at,
+                'startAt': response.data.startAt,
+                'createdAt': response.data.createdAt,
+                'updatedAt': response.data.updatedAt,
                 'duration': response.data.duration,
                 'longitude': response.data.longitude,
                 'latitude': response.data.latitude,
                 'budget': response.data.budget,
                 'status': response.data.status,
             });
-
             this.getTeamMembers(response.data.team);
         });
     };
@@ -124,15 +128,14 @@ export default class EventTaskList extends React.Component {
             let options = {
                 group: 'Sortable',
                 onRemove: evt => {
-                    var task_id;
+                    var taskId;
                     this.state.tasks.map(task => {
-                        if (evt.item.innerText.search(task.title) > -1) task_id = task.id;
+                        if (evt.item.innerText.search(task.title) > -1) taskId = task.id;
                     });
                     let data = {status: +evt.to.id};
-                    eventTaskServicePut(this.state.eventId, task_id, data);
+                    eventTaskServicePut(this.state.eventId, taskId, data);
                 }
             };
-
             Sortable.create(sortableGroup, options);
         }
     };
@@ -145,11 +148,11 @@ export default class EventTaskList extends React.Component {
                         <Event
                             team={this.state.team}
                             owner={this.state.owner}
-                            name={this.state.event_name}
-                            description={this.state.event_descr}
-                            start_at={this.state.start_at}
-                            created_at={this.state.created_at}
-                            updated_at={this.state.updated_at}
+                            name={this.state.eventName}
+                            description={this.state.eventDescr}
+                            startAt={this.state.startAt}
+                            createdAt={this.state.createdAt}
+                            updatedAt={this.state.updatedAt}
                             duration={this.state.duration}
                             longitude={this.state.longitude}
                             latitude={this.state.latitude}
@@ -184,7 +187,7 @@ export default class EventTaskList extends React.Component {
                                                 id={task.id}
                                                 title={task.title}
                                                 description={task.description}
-                                                assignment_users={task.users}
+                                                assignmentUsers={task.users}
                                                 members={this.state.members}
                                                 eventId={this.state.eventId}
                                             />
@@ -201,7 +204,7 @@ export default class EventTaskList extends React.Component {
                                                 id={task.id}
                                                 title={task.title}
                                                 description={task.description}
-                                                assignment_users={task.users}
+                                                assignmentUsers={task.users}
                                                 members={this.state.members}
                                                 eventId={this.state.eventId}
                                             />
@@ -218,7 +221,7 @@ export default class EventTaskList extends React.Component {
                                                 id={task.id}
                                                 title={task.title}
                                                 description={task.description}
-                                                assignment_users={task.users}
+                                                assignmentUsers={task.users}
                                                 members={this.state.members}
                                                 eventId={this.state.eventId}
                                             />

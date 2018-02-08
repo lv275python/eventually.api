@@ -121,17 +121,6 @@ class TaskViewTest(TestCase):
         response = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
-    # def test_invalid_team_post(self):
-    #     """Method that tests unsuccessful post request with invalid team id."""
-    #
-    #     data = {'users': [11,],
-    #             'title': 'do something else',
-    #             'description': 'give me pan',
-    #             'status': 1}
-    #     url = reverse('event:task:index', args=[14 ,11])
-    #     response = self.client.post(url, json.dumps(data), content_type='application/json')
-    #     self.assertEqual(response.status_code, 404)
-
     def test_invalid_event_post(self):
         """Method that tests unsuccessful post request with invalid event id."""
 

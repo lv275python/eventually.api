@@ -2,7 +2,7 @@ import React from 'react';
 import {Route, Switch, Redirect} from 'react-router-dom';
 import Home from './containers/Home';
 import Profile from './containers/profile/Profile';
-import UserProgress from './containers/userProgress/UserProgress';
+import UserProgress from './containers/userProgress/ProgressProfile';
 import Item from './containers/item/Item';
 import CurriculumList from './containers/curriculum/CurriculumList';
 import MentorItem from './containers/mentorItem/MentorItem';

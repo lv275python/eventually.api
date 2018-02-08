@@ -7,7 +7,7 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import {eventTaskServicePost, taskGetTeamService} from './EventService';
+import { eventTaskServicePost, taskGetTeamService } from './EventService';
 
 
 const FlatButtonStyle = {
@@ -120,7 +120,6 @@ export default class TaskDialog extends React.Component {
                         hintText="Description"
                         onChange = {this.handleDescription}
                         multiLine={true}
-                        rows={2}
                         rowsMax={4}
                         fullWidth={true} />
                     <SelectField

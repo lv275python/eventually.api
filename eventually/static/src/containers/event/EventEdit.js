@@ -1,6 +1,6 @@
 import React from 'react';
-import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-import {getEventService, putEventService, GetTeamsListService} from './EventService';
+import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card';
+import { getEventService, putEventService, GetTeamsListService } from './EventService';
 import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
 import TextField from 'material-ui/TextField';
@@ -12,12 +12,12 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 
+
 const FlatButtonStyle = {
     position: 'fixed',
     right: '3%',
     top: '85%',
 };
-
 
 const dateStyle = {
     display: 'inline-block',
@@ -36,7 +36,7 @@ export default class EventEdit extends React.Component {
             owner: this.props.owner,
             name: this.props.name,
             description: this.props.description,
-            start_at: this.props.start_at,
+            startAt: this.props.startAt,
             duration: this.props.duration,
             budget: this.props.budget ? this.props.budget : 0,
             status: this.props.status,
@@ -74,13 +74,13 @@ export default class EventEdit extends React.Component {
         this.setState({description: event.target.value});
     };
 
-    handleStartAt = (event,date) => {
-        this.setState({start_at:date/1000});
+    handleStartAt = (event, date) => {
+        this.setState({startAt: date/1000});
     };
 
-    handleDuration = (event,date) => {
-        const duration = (date/1000)-this.state.start_at;
-        this.setState({duration:duration });
+    handleDuration = (event, date) => {
+        const duration = (date/1000)-this.state.startAt;
+        this.setState({duration: duration });
     };
 
     handleBudget = event => {
@@ -89,23 +89,20 @@ export default class EventEdit extends React.Component {
 
     handleStatus = (event, index, status) => this.setState({status});
 
-
     handleSave = () => {
         const teamId = this.state.teamId;
         const name = this.state.name;
         const description = this.state.description;
-        const start_at = this.state.start_at;
+        const startAt = this.state.startAt;
         const budget = this.state.budget;
         const status = this.state.status;
         const duration = this.state.duration;
 
-        putEventService( this.state.eventId, teamId, name, description, start_at, budget, status, duration);
+        putEventService( this.state.eventId, teamId, name, description, startAt, budget, status, duration);
         this.handleClose();
     }
 
     render() {
-
-
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -122,14 +119,12 @@ export default class EventEdit extends React.Component {
         return (
             <div>
                 <form>
-
                     <RaisedButton
                         label="Edit"
                         primary={true}
                         keyboardFocused={true}
                         onClick={this.handleOpen}
                     />
-
                     <Dialog
                         title={this.props.title}
                         actions={actions}
@@ -138,7 +133,6 @@ export default class EventEdit extends React.Component {
                         onRequestClose={this.handleClose}
                         autoScrollBodyContent={true}
                     >
-
                         <TextField
                             floatingLabelText="Name:"
                             onChange={this.handleName}
@@ -146,7 +140,6 @@ export default class EventEdit extends React.Component {
                             value={this.state.name}
                             fullWidth={true}
                         />
-
                         <TextField
                             floatingLabelText="Description:"
                             onChange={this.handleDescription}
@@ -154,43 +147,38 @@ export default class EventEdit extends React.Component {
                             value={this.state.description}
                             fullWidth={true}
                         />
-
                         <DatePicker
                             floatingLabelText="Start date and time."
                             onChange={this.handleStartAt}
                             mode="landscape"
                             style={dateStyle}
                             fullWidth={true}
-                            value={new Date(this.state.start_at*1000)}
+                            value={new Date(this.state.startAt*1000)}
                         />
-
                         <TimePicker
                             textFieldStyle={{width: '100%'}}
                             format="24hr"
                             hintText="24hr Format"
                             style={dateStyle}
-                            value={new Date(this.state.start_at*1000)}
+                            value={new Date(this.state.startAt*1000)}
                             onChange={this.handleStartAt}
                         />
-
                         <DatePicker
                             floatingLabelText="End date and time."
                             onChange={this.handleDuration}
                             mode="landscape"
                             style={dateStyle}
                             fullWidth={true}
-                            value={new Date((this.state.start_at+this.state.duration)*1000)}
+                            value={new Date((this.state.startAt+this.state.duration)*1000)}
                         />
-
                         <TimePicker
                             textFieldStyle={{width: '100%'}}
                             format="24hr"
                             hintText="24hr Format"
                             style={dateStyle}
-                            value={new Date((this.state.start_at+this.state.duration)*1000)}
+                            value={new Date((this.state.startAt+this.state.duration)*1000)}
                             onChange={this.handleDuration}
                         />
-
                         <SelectField
                             floatingLabelText="Team:"
                             hintText="Team"
@@ -202,7 +190,6 @@ export default class EventEdit extends React.Component {
                                 return <MenuItem key={teams.id}  value = {teams.id} primaryText = {teams.name} />;
                             })}
                         </SelectField>
-
                         <TextField
                             floatingLabelText="Budget:"
                             onChange={this.handleBudget}
@@ -210,7 +197,6 @@ export default class EventEdit extends React.Component {
                             value={this.state.budget}
                             fullWidth={true}
                         />
-
                         <SelectField
                             floatingLabelText="Status"
                             value={this.state.status}
@@ -224,7 +210,6 @@ export default class EventEdit extends React.Component {
                     </Dialog>
                 </form>
             </div>
-
         );
     }
 }

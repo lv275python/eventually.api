@@ -5,6 +5,7 @@ import EditTeamDialog from './EditTeamDialog';
 import {getImageUrl} from 'src/helper';
 import {teamServiceGet} from './teamService';
 
+
 const styles = {
     container: {},
     team: {
@@ -47,7 +48,7 @@ export default class TeamItem extends React.Component {
         };
     }
     /*update old prop*/
-    componentWillReceiveProps (nextProps){
+    componentWillReceiveProps(nextProps){
         this.setState({
             name: nextProps.name,
             description: nextProps.description.slice(0,300)+'...',

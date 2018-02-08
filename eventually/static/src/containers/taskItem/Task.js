@@ -3,6 +3,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Dialog from 'material-ui/Dialog';
 import {Link} from 'react-router';
 import {getTask} from './TaskService';
+
+
 const STATUS_CHOICES = {
     0: 'ToDo',
     1: 'In Progress',
@@ -14,6 +16,7 @@ const liStyle ={
     fontSize: '19px',
     fontFamily: 'Roboto, sans-serif',
 };
+
 const styleLowerMain1 = {
     display: 'flex',
     justifyContent: 'center',
@@ -32,10 +35,10 @@ const styleSpan = {
     fontFamily: 'Roboto, sans-serif',
     width: '20%',
 };
+
 class Task extends React.Component {
 
     constructor(props) {
-
         super(props);
         this.state = {
             id: this.props.taskId,
@@ -69,10 +72,10 @@ class Task extends React.Component {
                 updated_at: response.data['updated_at'],
                 status: response.data['status'],
                 users: response.data['users_id']
-
             });
         });
     }
+
     render(){
         const actions = [
             <RaisedButton

@@ -13,7 +13,6 @@ import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
 
 
-
 const FlatButtonStyle = {
     position: 'fixed',
     right: '3%',
@@ -32,8 +31,8 @@ class CreateEvent extends React.Component {
             name: '',
             team: 0,
             description: '',
-            start_at: new Date() / 1000,
-            time_end: new Date() / 1000,
+            startAt: new Date() / 1000,
+            timeEnd: new Date() / 1000,
             budget: 0,
             status: 0,
             teams: [],
@@ -41,27 +40,26 @@ class CreateEvent extends React.Component {
         };
     }
 
-     getData = () => {
-         GetTeamsListService().then(response => {
-             this.setState({teams: response.data.teams});
-         });
+    getData = () => {
+        GetTeamsListService().then(response => {
+            this.setState({teams: response.data.teams});
+        });
+    }
 
-     }
-
-     componentWillMount() {
-         this.getData();
-     }
+    componentWillMount() {
+        this.getData();
+    }
 
     handleChangeName = event => {
         this.setState({name: event.target.value});
     };
 
-    handleChangeStart_at = (event, date) => {
-        this.setState({start_at: date / 1000});
+    handleChangeStartAt = (event, date) => {
+        this.setState({startAt: date / 1000});
     };
 
-    handleChangeTime_end = (event, date) => {
-        this.setState({time_end: date / 1000});
+    handleChangeTimeEnd = (event, date) => {
+        this.setState({timeEnd: date / 1000});
     };
 
     handleChangeDuration = event => {
@@ -90,8 +88,8 @@ class CreateEvent extends React.Component {
         const data = {
             'name': this.state.name,
             'description': this.state.description,
-            'start_at': this.state.start_at,
-            'duration': this.state.time_end - this.state.start_at,
+            'start_at': this.state.startAt,
+            'duration': this.state.timeEnd - this.state.startAt,
             'budget': Number(this.state.budget),
             'team': this.state.team,
             'status': this.state.status
@@ -107,6 +105,7 @@ class CreateEvent extends React.Component {
     handleClose = () => {
         this.setState({ open: false });
     }
+
     render() {
         const actions = [
             <FlatButton
@@ -146,7 +145,6 @@ class CreateEvent extends React.Component {
                             value={this.state.description}
                             hintText="Description"
                             multiLine={true}
-                            rows={2}
                             rowsMax={4}
                             fullWidth={true}
                             onChange={this.handleChangeDescription}/>
@@ -154,24 +152,24 @@ class CreateEvent extends React.Component {
                             floatingLabelText="Start date and time"
                             style={dateStyle}
                             mode="landscape"
-                            value={new Date(this.state.start_at * 1000)}
-                            onChange={this.handleChangeStart_at}/>
+                            value={new Date(this.state.startAt * 1000)}
+                            onChange={this.handleChangeStartAt}/>
                         <TimePicker hintText="12hr Format"
                             style={dateStyle}
-                            value={new Date(this.state.start_at * 1000)}
+                            value={new Date(this.state.startAt * 1000)}
                             format="24hr"
-                            onChange={this.handleChangeStart_at}/>
+                            onChange={this.handleChangeStartAt}/>
                         <DatePicker hintText="Portrait Dialog"
                             floatingLabelText="End date and time"
                             style={dateStyle}
                             mode="landscape"
-                            value={new Date(this.state.time_end * 1000)}
-                            onChange={this.handleChangeTime_end}/>
+                            value={new Date(this.state.timeEnd * 1000)}
+                            onChange={this.handleChangeTimeEnd}/>
                         <TimePicker hintText="12hr Format"
                             style={dateStyle}
-                            value={new Date(this.state.time_end * 1000)}
+                            value={new Date(this.state.timeEnd * 1000)}
                             format="24hr"
-                            onChange={this.handleChangeTime_end}/>
+                            onChange={this.handleChangeTimeEnd}/>
                         <SelectField
                             floatingLabelText="Team"
                             value={this.state.team}
@@ -180,8 +178,7 @@ class CreateEvent extends React.Component {
                             {
                                 this.state.teams.map(team => {
                                     return <MenuItem value={team.id} key={team.id} primaryText={team.name} />;
-                                }
-                                )
+                                })
                             }
                         </SelectField>
                         <TextField

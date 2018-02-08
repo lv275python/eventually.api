@@ -3,7 +3,7 @@ import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { Link } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import RaisedButton from 'material-ui/RaisedButton';
-import {lightGreen400} from 'material-ui/styles/colors';
+import { lightGreen400 } from 'material-ui/styles/colors';
 import Event from './Event';
 
 
@@ -34,11 +34,11 @@ class EventLink extends React.Component {
             if (response.status == 200) {
                 let addressComponents = response.json.results[0].address_components;
                 let city = this.fetchAddressComponent(addressComponents, 'locality');
-                let city_name = city ? city.short_name : null;
+                let cityName = city ? city.short_name : null;
                 let country = this.fetchAddressComponent(addressComponents, 'country');
-                let country_name = country ? country.long_name : null;
+                let countryName = country ? country.long_name : null;
 
-                let formattedAddress = [country_name, city_name].filter(el => el).join(', ');
+                let formattedAddress = [countryName, cityName].filter(el => el).join(', ');
                 return this.setState({address: formattedAddress});
             }
         });

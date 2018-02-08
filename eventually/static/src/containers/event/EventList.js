@@ -8,6 +8,7 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import CreateEvent from './CreateEvent';
 
+
 const containerStyle = {
     width: '80%',
     margin: '0 auto'
@@ -19,7 +20,6 @@ const FloatingButtonStyle = {
     top: '85%'
 };
 
-
 class EventList extends React.Component {
 
     constructor(props) {
@@ -27,7 +27,6 @@ class EventList extends React.Component {
         this.state = {
             events: []
         };
-
     }
 
     getData = () => {
@@ -40,7 +39,6 @@ class EventList extends React.Component {
         this.getData();
     }
 
-
     render() {
         return (
             <div style={containerStyle}>
@@ -52,9 +50,9 @@ class EventList extends React.Component {
                             owner={event.owner}
                             name={event.name}
                             description={event.description}
-                            start_at={event.start_at}
-                            created_at={event.created_at}
-                            updated_at={event.updated_at}
+                            startAt={event.startAt}
+                            createdAt={event.createdAt}
+                            updatedAt={event.updatedAt}
                             duration={event.duration}
                             longitude={event.longitude}
                             latitude={event.latitude}

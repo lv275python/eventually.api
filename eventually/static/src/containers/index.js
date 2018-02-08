@@ -24,14 +24,14 @@ export {
     studentService,
     itemInfoService,
     answerInfoService} from './mentorItem/MentorItemService';
-export MentorMessagesItem from './mentorItem/MessageItem';
-export MentorMessagesBar from './mentorItem/MessagesBar';
-export MentorMessagesList from './mentorItem/MessagesList';
-export MentorMessagesSender from './mentorItem/MessagesSender';
+export MentorMessagesItem from './mentorItem/MentorMessagesItem';
+export MentorMessagesBar from './mentorItem/MentorMessagesBar';
+export MentorMessagesList from './mentorItem/MentorMessagesList';
+export MentorMessagesSender from './mentorItem/MentorMessagesSender';
 export SetGrade from './mentorItem/SetGrade';
 export TmpMentorItem from './mentorItem/tmpStudentItem';
 export MentorDashboard from './mentorDashboard/MentorDashboard';
-export MessagesItem from './messagesBar/MessageItem';
+export MessagesItem from './messagesBar/MessagesItem';
 export MessagesBar from './messagesBar/MessagesBar';
 export {
     getMessagesSet,
@@ -75,6 +75,6 @@ export {
     usersServiceGet} from './teamList/teamService';
 export TopicDialog from './topicList/TopicDialog';
 export TopicItem from './topicList/TopicItem';
-export TopicsList from './topicList/TopicList';
-export ProgressProfile from './userProgress/UserProgress';
+export TopicsList from './topicList/TopicsList';
+export ProgressProfile from './userProgress/ProgressProfile';
 export Home from './Home';

@@ -107,14 +107,10 @@ class TaskView(View):
         """
 
         data = request.body
-        # team = Team.get_by_id(team_id)
         event = Event.get_by_id(event_id)
 
         if not data:
             return RESPONSE_400_EMPTY_JSON
-
-        # if not team:
-        #     return RESPONSE_404_OBJECT_NOT_FOUND
 
         if not event:
             return RESPONSE_404_OBJECT_NOT_FOUND

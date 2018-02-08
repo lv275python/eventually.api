@@ -1,11 +1,12 @@
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import {Card, CardHeader, CardActions, CardText} from 'material-ui/Card';
+import { Card, CardHeader, CardActions, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import EditEventTaskDialog from './EditEventTaskDialog';
 import { Link } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import Task from '../taskItem/Task';
+
 
 export default class EventTaskItem extends React.Component {
     constructor(props) {
@@ -33,7 +34,7 @@ export default class EventTaskItem extends React.Component {
                             description = {this.state.description}
                             members = {this.props.members}
                             id = {this.props.id}
-                            assignment_users = {this.props.assignment_users}
+                            assignmentUsers = {this.props.assignmentUsers}
                             eventId = {this.props.eventId}
                         />
                         <Task
