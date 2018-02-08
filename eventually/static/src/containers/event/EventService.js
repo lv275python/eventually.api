@@ -62,5 +62,3 @@ export const PostEventService = (data) => {
     const url = teamPath + data.team + '/event/';
     axios.post(url, data);
 };
-
-
