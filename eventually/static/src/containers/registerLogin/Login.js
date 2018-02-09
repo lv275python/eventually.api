@@ -2,10 +2,16 @@ import React from 'react';
 import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
+import {orange500} from 'material-ui/styles/colors';
+
 import {loginService} from './registrationService';
 
 const style = {
     margin: 12,
+};
+
+const errorStyle = {
+    color: orange500,
 };
 
 class Login extends React.Component {
@@ -14,16 +20,30 @@ class Login extends React.Component {
         this.state = {
             email: '',
             password: '',
+            MessageEmail: '',
+            MessagePassword: '',
         };
     }
 
     handleEmail = event => {
-        this.setState({email: event.target.value});
+        const regex = /^\S+@\S+\.\S+$/;
+        if(regex.test(event.target.value) === true) {
+            this.setState({MessageEmail: '', email: event.target.value});
+        }
+        else {
+            this.setState({ MessageEmail: 'Error Email'});
+        }
     };
 
-    handlePassword = event => {
-        this.setState({password: event.target.value});
-    };
+     handlePassword = event => {
+         const regexp = /^(?=.*[0-9])(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+         if(regexp.test(event.target.value) === true) {
+             this.setState({MessagePassword: '', password: event.target.value});
+         }
+         else {
+             this.setState({ MessagePassword: 'Error Password' });
+         }
+     };
 
     handleSubmit = event => {
         const email = this.state.email;
@@ -42,12 +62,16 @@ class Login extends React.Component {
                 <TextField
                     onChange={this.handleEmail}
                     hintText='email'
+                    errorText={this.state.MessageEmail}
+                    errorStyle={errorStyle}
                 /><br/>
                 <br/>
                 <h2>Password</h2>
                 <TextField
                     onChange={this.handlePassword}
                     hintText='password'
+                    errorText={this.state.MessagePassword}
+                    errorStyle={errorStyle}
                     type="password"
                 /><br/>
                 <RaisedButton

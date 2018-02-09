@@ -3,9 +3,14 @@ import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import {forgetPasswordService} from './registrationService.js';
+import {orange500} from 'material-ui/styles/colors';
 
 const style = {
     margin: 12,
+};
+
+const errorStyle = {   
+    color: orange500,
 };
 
 class Forget extends React.Component {
@@ -14,12 +19,21 @@ class Forget extends React.Component {
         super(props);
         this.state = {
             email: '',
+            MessageEmail: '',
         };
     }
 
-    handleEmail = event => {
-        this.setState({email: event.target.value});
-    };
+     handleEmail = event => {
+
+         const regex = /^\S+@\S+\.\S+$/;
+         if(regex.test(event.target.value) === true )
+         {
+             this.setState({MessageEmail: '', email: event.target.value});
+         }
+         else {
+             this.setState({ MessageEmail: 'Error Email'});
+         }
+     };
 
     handleSubmit = event => {
         const email = this.state.email;
@@ -32,6 +46,8 @@ class Forget extends React.Component {
                 <h2>Email</h2>
                 <TextField onChange={this.handleEmail}
                     hintText='example@example.com'
+                    errorText={this.state.MessageEmail}
+                    errorStyle={errorStyle}
                 /><br />
                 <br />
                 <RaisedButton label='Send mail to email'
