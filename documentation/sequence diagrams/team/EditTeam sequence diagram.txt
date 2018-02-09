@@ -1,0 +1,26 @@
+title Edit Team sequence diagram
+participant User
+participant TeamList component
+participant EditTeamDialog
+participant Server
+participant Database
+User->+TeamList component: open page "TeamList"
+TeamList component->+Server: teamServiceGet()
+Server->TeamList component: JsonResponse(data, status=200)
+deactivate Server
+User->TeamList component: click button "Edit"
+TeamList component->+EditTeamDialog: open "EditTeamDialog"
+User->EditTeamDialog: edit form
+User->EditTeamDialog: click button "Save"
+EditTeamDialog->+Server: teamServicePut()
+Server->Server: request validation
+alt request validation False
+Server->EditTeamDialog: JsonResponse(status=400)
+else request validation True
+Server->+Database: Team.save()
+Database->Server:  "team.id"
+deactivate Database
+Server->EditTeamDialog: JsonResponse(data, status=201)
+deactivate EditTeamDialog
+deactivate Server
+end
