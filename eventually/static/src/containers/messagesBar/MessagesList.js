@@ -1,5 +1,5 @@
 import React from 'react';
-import MessageItem from './MessageItem';
+import MessagesItem from './MessagesItem';
 import MessagesSender from './MessagesSender';
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -38,7 +38,7 @@ export default class MessagesList extends React.Component {
             <div style={this.props.style}>
                 <Paper zDepth={2} style={messagesListStyle}>
                     {this.props.messages.map(message => (
-                        <MessageItem
+                        <MessagesItem
                             key={message.id.toString()}
                             author={message.author}
                             avatar={message.avatar}

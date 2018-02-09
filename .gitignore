@@ -111,3 +111,9 @@ ENV/
 node_modules/
 package-lock.json
 bundle.js
+
+#Mocha Test
+testBundle.js
+
+#Private keys
+keys.js

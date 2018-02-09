@@ -2,7 +2,7 @@ import React from 'react';
 import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import {loginService} from './registrationService.js';
+import {loginService} from './registrationService';
 
 const style = {
     margin: 12,
