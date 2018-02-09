@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 import RaisedButton from 'material-ui/RaisedButton';
 import {lightGreen400} from 'material-ui/styles/colors';
 import Event from './Event';
-
+import { googleMapsAPIKey } from '../../helper/keys';
 
 const raiseButtonStyle = {
     display: 'flex',
@@ -26,7 +26,7 @@ class EventLink extends React.Component {
 
     fetchAddress() {
         const googleMapsClient = require('@google/maps').createClient({
-            key: 'AIzaSyDDuGt0E5IEGkcE6ZfrKfUtE9Ko_de66pA'
+            key: googleMapsAPIKey
         });
         let location = [this.props.latitude, this.props.longitude];
 
@@ -76,7 +76,7 @@ class EventLink extends React.Component {
                         {this.props.description}
                     </CardText>
 
-                    <CardActions>                
+                    <CardActions>
                         <RaisedButton label="Details" onClick={this.goToTaskList} />
                     </CardActions>
                 </Card>

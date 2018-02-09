@@ -82,7 +82,7 @@ class Event extends React.Component {
         durationString += Math.trunc(this.state.duration/(3600*24)) + 'd ';
         durationString += Math.trunc((this.state.duration%(3600*24))/3600) + 'h ';
         durationString += Math.trunc((this.state.duration%3600)/60) + 'm';
-        this.setState({durationString: durationString})
+        this.setState({durationString: durationString});
     }
 
     render() {

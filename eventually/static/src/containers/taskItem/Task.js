@@ -84,7 +84,7 @@ class Task extends React.Component {
         return (
             <div style={{display: 'inline-block', margin: '1%'}}>
                 <RaisedButton label="Details" onClick = {this.handleDialogOpen} />
-                <div style={styleLowerMain1}>
+                <div>
                     {this.state.status !== null &&
                         <Dialog
                             title="Task Details"
