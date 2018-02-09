@@ -33,7 +33,7 @@ const dropzoneStyle = { height : '100%',
     padding: '0px 10px 0px 10px',
     textAlign: 'center'};
 
-export default class FileHandler extends React.Component {
+export default class FileUpload extends React.Component {
 
     constructor(props){
         super(props);

@@ -4,7 +4,6 @@ import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { Link } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import EventLink from './EventLink';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import CreateEvent from './CreateEvent';
 
@@ -39,29 +38,31 @@ class EventList extends React.Component {
         this.getData();
     }
 
+    getEventLinks() {
+        return this.state.events.map(event => {
+            return <EventLink
+                key={event.id.toString()}
+                team={event.team}
+                owner={event.owner}
+                name={event.name}
+                description={event.description}
+                start_at={event.start_at}
+                created_at={event.created_at}
+                updated_at={event.updated_at}
+                duration={event.duration}
+                longitude={event.longitude}
+                latitude={event.latitude}
+                budget={event.budget}
+                status={event.status}
+                id={event.id}
+            />;
+        });
+    }
+
     render() {
         return (
             <div style={containerStyle}>
-                {
-                    this.state.events.map(event => (
-                        <EventLink
-                            key={event.id.toString()}
-                            team={event.team}
-                            owner={event.owner}
-                            name={event.name}
-                            description={event.description}
-                            startAt={event.startAt}
-                            createdAt={event.createdAt}
-                            updatedAt={event.updatedAt}
-                            duration={event.duration}
-                            longitude={event.longitude}
-                            latitude={event.latitude}
-                            budget={event.budget}
-                            status={event.status}
-                            id={event.id}
-                        />)
-                    )
-                }
+                {this.getEventLinks()}
                 <CreateEvent />
             </div>
         );
