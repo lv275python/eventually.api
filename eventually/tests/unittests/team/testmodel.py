@@ -251,3 +251,9 @@ class TeamModelTestCase(TestCase):
         actual_members = list(team.members.all())
         expected_members = list([second_member])
         self.assertListEqual(actual_members, expected_members)
+
+    def test_get_all(self):
+        """ Test of the Team.get_all() method """
+        expected_value = Team.objects.all()
+        current_value = Team.get_all()
+        self.assertEqual(list(current_value), list(expected_value))

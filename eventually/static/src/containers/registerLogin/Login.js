@@ -2,8 +2,9 @@ import React from 'react';
 import {withRouter} from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import {loginService} from './registrationService.js';
-import {orange500, blue500, green700} from 'material-ui/styles/colors';
+import {orange500} from 'material-ui/styles/colors';
+
+import {loginService} from './registrationService';
 
 const style = {
     margin: 12,
@@ -26,8 +27,7 @@ class Login extends React.Component {
 
     handleEmail = event => {
         const regex = /^\S+@\S+\.\S+$/;
-        if(regex.test(event.target.value) === true )
-        {
+        if(regex.test(event.target.value) === true) {
             this.setState({MessageEmail: '', email: event.target.value});
         }
         else {
@@ -37,8 +37,7 @@ class Login extends React.Component {
 
      handlePassword = event => {
          const regexp = /^(?=.*[0-9])(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
-         if(regexp.test(event.target.value) === true )
-         {
+         if(regexp.test(event.target.value) === true) {
              this.setState({MessagePassword: '', password: event.target.value});
          }
          else {

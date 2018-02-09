@@ -182,3 +182,10 @@ class CustomProfileTestCase(TestCase):
                   "'updated_at': 1509351312"
 
         self.assertEqual(actual_str, new_str)
+
+    def test_get_all(self):
+        """ Test of the CustomProfile.get_all() method """
+
+        expected_value = CustomProfile.objects.all()
+        current_value = CustomProfile.get_all()
+        self.assertEqual(list(current_value), list(expected_value))

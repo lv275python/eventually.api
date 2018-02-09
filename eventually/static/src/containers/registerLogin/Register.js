@@ -26,8 +26,7 @@ class Register extends React.Component {
 
     handleEmail = event => {
         const regex = /^\S+@\S+\.\S+$/;
-        if(regex.test(event.target.value) === true )
-        {
+        if(regex.test(event.target.value) === true) {
             this.setState({MessageEmail: '', email: event.target.value});
         }
         else {
@@ -37,8 +36,7 @@ class Register extends React.Component {
 
     handlePassword = event => {
         const regexp = /^(?=.*[0-9])(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
-        if(regexp.test(event.target.value) === true )
-        {
+        if(regexp.test(event.target.value) === true) {
             this.setState({MessagePassword: '', password: event.target.value});
         }
         else {
@@ -65,7 +63,6 @@ class Register extends React.Component {
                     hintText='email'
                     errorText={this.state.MessageEmail}
                     errorStyle={errorStyle}
-                    
                     type="email"
                 /><br/>
                 <br/>
@@ -73,10 +70,8 @@ class Register extends React.Component {
                 <TextField
                     onChange={this.handlePassword}
                     hintText='password'
-                    
                     errorText={this.state.MessagePassword}
                     errorStyle={errorStyle}
-
                     type="password"
                 /><br/>
                 <RaisedButton

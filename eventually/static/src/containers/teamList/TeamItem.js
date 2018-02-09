@@ -5,6 +5,7 @@ import EditTeamDialog from './EditTeamDialog';
 import {getImageUrl} from 'src/helper';
 import {teamServiceGet} from './teamService';
 
+
 const styles = {
     container: {},
     team: {

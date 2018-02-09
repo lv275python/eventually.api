@@ -1,6 +1,6 @@
 import React from 'react';
 import StudentItem from './tmpStudentItem';
-import MentorMessagesList from './MessagesList';
+import MentorMessagesList from './MentorMessagesList';
 import {messagesListService, studentService} from './MentorItemService';
 
 const mentorsListStyle = {

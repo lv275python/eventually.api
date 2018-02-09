@@ -164,3 +164,11 @@ class Team(AbstractModel):
         if image:
             self.image = image
         self.save()
+
+    @staticmethod
+    def get_all():
+        """
+        returns querysets of all teams
+        """
+        all_teams = Team.objects.all()
+        return all_teams

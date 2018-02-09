@@ -1,6 +1,6 @@
 import React from 'react';
-import MentorMessageItem from './MessageItem';
-import MentorMessagesSender from './MessagesSender';
+import MentorMessagesItem from './MentorMessagesItem';
+import MentorMessagesSender from './MentorMessagesSender';
 import Paper from 'material-ui/Paper';
 
 export default class MentorMessagesList extends React.Component {
@@ -16,7 +16,7 @@ export default class MentorMessagesList extends React.Component {
                 <Paper zDepth={2}>
                     {
                         this.props.messages.map(message => (
-                            <MessageItem key={message.id.toString()}
+                            <MentorMessagesItem key={message.id.toString()}
                                 author={message.author}
                                 avatar={message.avatar}
                                 text={message.text}

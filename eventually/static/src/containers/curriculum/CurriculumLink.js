@@ -2,7 +2,7 @@ import React from 'react';
 import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 import {withRouter} from 'react-router-dom';
 import {getTopicListService} from './CurriculumService';
-import {TopicList, TopicDialog} from 'src/containers';
+import {TopicsList, TopicDialog} from 'src/containers';
 
 const cardHeaderStyle = {
     cursor: 'pointer'
@@ -35,10 +35,10 @@ class CurriculumLink extends React.Component {
                         title={this.props.title}
                         subtitle={this.props.description}
                     />
-                    <TopicList 
+                    <TopicsList
                         topics={this.state.topics}
                         expandable={true} />
-                    <TopicDialog 
+                    <TopicDialog
                         expandable={true} />
                 </Card>
             </div >

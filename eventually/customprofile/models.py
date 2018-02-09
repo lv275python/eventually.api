@@ -123,3 +123,12 @@ class CustomProfile(AbstractModel):
             self.birthday = birthday
 
         self.save()
+
+
+    @staticmethod
+    def get_all():
+        """
+        returns querysets of all customprofiles
+        """
+        all_customprofiles = CustomProfile.objects.all()
+        return all_customprofiles
