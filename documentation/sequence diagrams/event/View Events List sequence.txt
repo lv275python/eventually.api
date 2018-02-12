@@ -1,0 +1,20 @@
+﻿title View Event List
+participant User
+participant UI SideBar
+participant UI Event List
+participant Server
+participant Db
+
+
+User->UI SideBar: Click Events Item
+UI SideBar->+UI Event List: Open Events List
+UI Event List->+Server: get Events List
+alt Not success
+Server->+Db: team.event_set.all()
+Server-->UI Event List: RESPONSE_404_OBJECT_NOT_FOUND
+else Success
+Db->Server: data
+deactivate Db
+Server->UI Event List: JsonResponse(data, status=200)
+deactivate Server
+end
