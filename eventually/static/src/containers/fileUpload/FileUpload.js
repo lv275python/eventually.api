@@ -24,8 +24,10 @@ import LinearProgress from 'material-ui/LinearProgress';
 import Snackbar from 'material-ui/Snackbar';
 import {imageValidator} from './FileUploadHelper';
 import {sendFile} from './FileUploadService';
+import {s3Root} from 'src/helper';
 
 const dialogStyle = {opacity: '0.98'};
+
 const dropzoneStyle = { height : '100%', 
     border : '1px dotted lightgrey',
     borderRadius: '5px',
@@ -33,13 +35,16 @@ const dropzoneStyle = { height : '100%',
     padding: '0px 10px 0px 10px',
     textAlign: 'center'};
 
+const buttonStyle = {
+    margin: '1% 15% -5%' };
+
 export default class FileUpload extends React.Component {
 
     constructor(props){
         super(props);
         this.state = {
-            image_name: '',
-            image_src: 'https://s3.eu-west-2.amazonaws.com/eventually-photos/',
+            imageName: '',
+            imageSrc: s3Root,
             open: false,
             snackbarOpen: false,
             snackbarMessage: '',
@@ -92,8 +97,8 @@ export default class FileUpload extends React.Component {
             sendFile(data).then( (response)=>{
                 if (response.status == 200) {
                     this.setState({
-                        'image_name': response.data['image_key'],
-                        'image_src': this.state.image_src.slice(0,53)+response.data['image_key'],
+                        'imageName': response.data['image_key'],
+                        'imageSrc': this.state.imageSrc.slice(0,53)+response.data['image_key'],
                         'snackbarMessage': 'Image uploaded'});
                     this.hideLinearProgress();
                     this.dialogClose();
@@ -129,8 +134,8 @@ export default class FileUpload extends React.Component {
         const linearProgressWrapperStyle = {position: 'relative', top:'20px'};
 
         return (
-            <div>
-                <RaisedButton label='Upload image' primary={true} onClick={this.dialogOpen} />
+            <div style={buttonStyle}>
+                <RaisedButton label='Upload image' primary={true} onClick={this.dialogOpen}/>
                 <Dialog
                     title='File Upload'
                     actions={actions}
