@@ -1,8 +1,10 @@
 import React from 'react';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
-import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import {lightGreen400} from 'material-ui/styles/colors';
 import {TopicDialog} from 'src/containers';
+import { postTopicAssignService, getTopicStudentsService, deleteMenteeService, getIsMentorService } from './TopicServices';
+import {getUserId} from 'src/helper';
 
 const cardTextstyle = {
     color: '#455A64',
@@ -25,6 +27,9 @@ export default class TopicItem extends React.Component {
         super(props);
         this.state = {
             expanded: this.props.isActive,
+            isAuthor: false,
+            isMentor: false,
+            isStudent: false
         };
     }
 
@@ -32,11 +37,45 @@ export default class TopicItem extends React.Component {
         this.props.change(this.props.id);
     };
 
+    componentWillMount(){
+        getTopicStudentsService(this.props.id).then(response => {
+            this.setState({isStudent: response.data['is_student']});
+        });
+        getIsMentorService(this.props.curriculumId, this.props.id).then(response => {
+            this.setState({isMentor: response.data['is_mentor']});
+        });
+    }
+
     componentWillReceiveProps(nextProps) {
         this.setState({ expanded: nextProps.isActive });
     }
 
+    handleAssign = () => {
+        const data = {'topicId': this.props.id};
+        postTopicAssignService(data).then(response => {
+            this.setState({'isStudent': !this.state.isStudent});
+        });
+    };
+
+    handleLeave = () => {
+        deleteMenteeService (this.props.id).then(response => {
+            this.setState({'isStudent': !this.state.isStudent});
+        });
+    };
+
     render() {
+        let label, click;
+        if (this.state.isStudent){
+            label = 'Leave topic';
+            click = this.handleLeave;
+        } else if (this.state.isMentor){
+            label = 'Edit topic';
+            click = this.handleEdit;
+        } else {
+            label = 'Assign to topic';
+            click = this.handleAssign;
+        }
+
         return (
             <div>
                 <Card
@@ -56,9 +95,10 @@ export default class TopicItem extends React.Component {
                         {this.props.description}
                         <CardActions>
                             <div style={raiseButtonStyle}>
-                                <RaisedButton 
-                                    label="Assign" 
-                                    backgroundColor={lightGreen400} />
+                                <FlatButton
+                                    label={label}
+                                    backgroundColor={lightGreen400}
+                                    onClick={click} />
                             </div>
                         </CardActions>
                     </CardText>

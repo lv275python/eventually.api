@@ -18,9 +18,8 @@ class CurriculumLink extends React.Component {
     }
 
     componentWillMount() {
-        const data = getTopicListService(+this.props.id);
-        this.setState({
-            topics: data
+        getTopicListService(+this.props.id).then(response => {
+            this.setState({'topics': response.data['topics']});
         });
     }
 
@@ -39,10 +38,12 @@ class CurriculumLink extends React.Component {
                         topics={this.state.topics}
                         expandable={true} />
                     <TopicDialog
-                        expandable={true} />
+                        expandable={true}
+                        curriculumId = {this.props.id} />
                 </Card>
             </div >
         );
     }
 }
 export default CurriculumLink;
+

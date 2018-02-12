@@ -102,7 +102,7 @@ class MentorStudentViewTestCase(TestCase):
                              'last_name': 'shulga',
                              'middle_name': 'frensis',
                              'updated_at': 1508044512}],
-            'all_students': [],
+            'assigned_students': [],
             'available_students': []
         }
 
@@ -131,7 +131,7 @@ class MentorStudentViewTestCase(TestCase):
         data = {
 
             'student': 103,
-            'topic': 201
+            'topicId': 200
         }
         url = reverse('mentor')
         response = self.client.post(url, json.dumps(data), content_type='application/json')
@@ -161,7 +161,7 @@ class MentorStudentViewTestCase(TestCase):
             'topic': 200
         }
         url = reverse('mentor')
-        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
     def test_invalid_student_post(self):
@@ -175,7 +175,7 @@ class MentorStudentViewTestCase(TestCase):
         }
         url = reverse('mentor')
         response = self.client.post(url, json.dumps(data), content_type='application/json')
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 400)
 
     def test_invalid_mentor_post(self):
         """Method that tests the unsuccessful post request with invalid mentor."""

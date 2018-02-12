@@ -1,5 +1,5 @@
 import React from 'react';
-import { getCurriculums } from './CurriculumService';
+import { getCurriculumsService } from './CurriculumService';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { Link } from 'react-router';
 import { withRouter } from 'react-router-dom';
@@ -29,8 +29,8 @@ class CurriculumList extends React.Component {
     }
 
     componentWillMount() {
-        this.setState({
-            curriculums: getCurriculums()
+        getCurriculumsService().then(response => {
+            this.setState({'curriculums': response.data['curriculums']});
         });
     }
 

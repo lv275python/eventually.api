@@ -171,7 +171,7 @@ class AssignmentModelTestCase(TestCase):
                            title='HTML',
                            description='My another awesome topic')
         new_topic.save()
-        new_topic.authors.add(new_custom_user)
+        new_topic.mentors.add(new_custom_user)
 
         new_item = Item(id=1020,
                         name='some name',
