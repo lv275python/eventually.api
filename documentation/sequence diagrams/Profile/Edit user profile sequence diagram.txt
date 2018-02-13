@@ -1,0 +1,21 @@
+title  Edit user profile sequence diagram         
+User-> +Profile : click 'Edit' button
+Profile->+ Profile Edit : open Edit
+deactivate Profile
+User-> Profile Edit: change data
+User-> Profile Edit: click 'Save' button 
+Profile Edit -> +customprofile/view : putProfileService
+customprofile/view -> +validators :validate
+alt 
+validators --> customprofile/view:return true
+customprofile/view ->+model: update
+model->+database: change data in db
+deactivate model
+customprofile/view-->Profile Edit : response(status200)
+deactivate database
+else
+validators --> customprofile/view:return false
+deactivate validators 
+customprofile/view -->Profile Edit : response(status 400)
+deactivate customprofile/view
+deactivate Profile Edit 

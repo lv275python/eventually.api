@@ -1,0 +1,22 @@
+title View Task sequence diagram
+participant User
+participant Event
+participant Task Dialog 
+participant Model
+participant Database
+User->+Event : click on task 'Details' button
+Event ->+Task Dialog : open dialog "Task Item"
+Task Dialog ->+Model:getTask(event_id, id, true)
+Model->+ Database:get(id)
+alt
+Database-->Model:obj
+Model-->Task Dialog: JsonResponse(data, status=200)
+else
+Model-->Task Dialog: RESPONSE_404_OBJECT_NOT_FOUND
+end 
+deactivate Database
+deactivate Model
+User->Task Dialog: click 'Ok' button
+Task Dialog -->Event: close dialog "Task Item"
+deactivate Task Dialog 
+
