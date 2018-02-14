@@ -1,0 +1,37 @@
+title Create Event
+participant User
+participant UI EventList
+participant UI CreateEvent Dialog
+participant EventView
+participant HttpRequest
+participant Event
+
+User->+UI EventList: Click button Create
+UI EventList->+UI CreateEvent Dialog: open CreateEvent Dialog
+User->UI CreateEvent Dialog: Enter data for creating a new event
+User->UI CreateEvent Dialog: Click button Submit
+UI CreateEvent Dialog->+EventView: post(request: HttpRequest, team_id: int)
+alt not success
+EventView->+HttpRequest: user
+HttpRequest->-EventView: user: CustomUser
+EventView->+HttpRequest: body
+HttpRequest->-EventView: data: Json
+EventView-->UI CreateEvent Dialog: RESPONSE_400_INVALID_DATA
+else success
+EventView->+*Team: get_by_id(team_id: int)
+alt not success
+Team-->EventView: team: Team
+EventView-->UI CreateEvent Dialog: RESPONSE_404_OBJECT_NOT_FOUND
+destroy Team
+else success
+EventView->+*Event: create(team: Team, data: dict)
+alt not success
+Event->Event: save()
+Event-->-EventView: event: Event
+EventView-->UI CreateEvent Dialog: RESPONSE_400_DB_OPERATION_FAILED
+else success
+EventView->+Event: to_dict()
+Event-->EventView: event: dict
+destroy Event
+EventView-->UI CreateEvent Dialog: JsonResponse(event: dict, status=201)
+end

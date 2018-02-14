@@ -1,0 +1,31 @@
+title Create Team
+participant User
+participant UI TeamList
+participant UI CreateTeam Dialog
+participant TeamView
+participant HttpRequest
+participant Team
+
+User->+UI TeamList: Click button Create
+UI TeamList->+UI CreateTeam Dialog: open CreateTeam Dialog
+User->UI CreateTeam Dialog: Enter data for creating a new team
+User->UI CreateTeam Dialog: Click button Submit
+UI CreateTeam Dialog->+TeamView: post(request: HttpRequest)
+alt not success
+TeamView->+HttpRequest: body
+HttpRequest->-TeamView: data: Json
+TeamView-->UI CreateTeam Dialog: RESPONSE_400_EMPTY_JSON
+else success
+TeamView->+HttpRequest: user
+HttpRequest->-TeamView: user: CustomUser
+TeamView->+*Team: create(dict_data: dict)
+alt not success
+Team->Team: save()
+Team-->-TeamView: team: Team
+TeamView-->UI CreateTeam Dialog: RESPONSE_400_INVALID_DATA
+else success
+TeamView->+Team: to_dict()
+Team-->TeamView: team: dict
+destroy Team
+TeamView-->UI CreateTeam Dialog: JsonResponse(team: dict, status=201)
+end
