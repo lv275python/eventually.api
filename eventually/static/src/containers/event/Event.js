@@ -5,7 +5,6 @@ import { getOwner, getTeam } from './EventService';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import EventEdit from '../event/EventEdit';
-import EventTaskList from './EventTaskList';
 
 const STATUS_CHOICES = {
     0: 'draft',

@@ -1,55 +1,74 @@
 import React from 'react';
 import Sortable from 'sortablejs';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import { eventTaskServicePut } from './EventService';
 import EventTaskItem from './EventTaskItem';
-import TaskDialog from './EventTaskDialog';
-import { withRouter } from 'react-router-dom';
-import { eventTasksServiceGet, eventServiceGet, eventTaskServicePut, taskGetTeamService, getOwner } from './EventService';
-import Event from './Event';
 
 
 const tableStyle = {
-    border: '2px solid #B3E5FC',
-    borderCollapse: 'separate',
     width: '100%'
 };
 
 const thStyle = {
-    border: '2px solid #B3E5FC',
-    fontWeight: 'normal',
-    background: '#00BCD4',
-    color: '#FFFFFF',
-    padding: '8px',
-    width: '33%'
+    toDoHeadStyle: {
+        fontWeight: 'normal',
+        background: '#BDBDBD',
+        color: '#000000',
+        padding: '8px',
+        width: '33%'
+    },
+    inProgressHeadStyle: {
+        fontWeight: 'normal',
+        background: '#D4E157',
+        color: '#000000',
+        padding: '8px',
+        width: '33%'
+    },
+    doneHeadStyle: {
+        fontWeight: 'normal',
+        background: '#66BB6A',
+        color: '#000000',
+        padding: '8px',
+        width: '33%'
+    },
 };
 
 const tdStyle = {
-    border: '2px solid #B3E5FC',
-    background: '#FFFFFF',
-    color: '#000000',
-    padding: '8px',
-    verticalAlign: 'top'
+    toDoBodyStyle: {
+        background: '#F5F5F5',
+        color: '#000000',
+        padding: '8px',
+        verticalAlign: 'top'
+    },
+    inProgressBodyStyle: {
+        background: '#FFF9C4',
+        color: '#000000',
+        padding: '8px',
+        verticalAlign: 'top'
+    },
+    doneBodyStyle: {
+        background: '#C8E6C9',
+        color: '#000000',
+        padding: '8px',
+        verticalAlign: 'top'
+    }
 };
 
 const ulStyle = {
     marginLeft: '0',
     listStyle: 'none',
     counterReset: 'li',
+    minHeight: '300px',
+    padding: '0px',
 };
 
 const liStyle = {
     position: 'relative',
     marginBottom: '1.5em',
-    border: '3px solid #84FFFF',
     padding: '0.6em',
-    borderRadius: '4px',
-    background: '#B2EBF2',
     color: '#231F20',
     fontFamily: 'Trebuchet MS, Lucida Sans'
-};
-
-const containerStyle = {
-    width: '80%',
-    margin: '0 auto',
 };
 
 const TaskDialogStyle = {
@@ -63,181 +82,146 @@ export default class EventTaskList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            eventId: this.props.match.params.eventId,
-            teamId: null,
-            owner: null,
-            eventName: '',
-            eventDescr: '',
-            tasks: [],
-            members: []
+            eventId: this.props.eventId,
+            tasks: this.props.eventTasks,
+            members: this.props.members,
+            openDoneDialog: false,
+            tasksChangeStatus: 0,
+            toDoneTaskId: null
         };
     }
 
-    componentWillMount(){
-        this.getEventTaskItem();
-        this.getEventName();
+    shouldComponentUpdate(nextProps, nextState){
+        return this.props != nextProps || this.state.openDoneDialog != nextState.openDoneDialog || (this.state.tasks == nextState.tasks && this.state.toDoneTaskId == nextState.toDoneTaskId);
     }
 
-    getEventTaskItem = () => {
-        eventTasksServiceGet(this.state.eventId).
-            then(response => this.setState({'tasks': response.data.tasks}));
+    handleOpen = () => {
+        this.setState({openDoneDialog: true});
+        return true;
     };
 
-    getTeamMembers = () => {
-        let members = [];
-        let teamId = this.state.teamId;
-        taskGetTeamService(teamId, true).then(response => {
-            let membersId = response.data['members_id'];
-            membersId.map(member => {
-                members.push({'id': member.id, 'fullName': member.first_name + ' ' + member.last_name});
-            });
-        });
-        this.setState({'members': members, 'team': teamId});
-        this.getOwnerName();
-    }
-
-    getEventName = () => {
-        eventServiceGet(this.state.eventId).then(response => {
-            this.setState({
-                'eventName': response.data.name,
-                'eventDescr': response.data.description,
-                'teamId': response.data.team,
-                'ownerId': response.data.owner,
-                'startAt': response.data.start_at,
-                'createdAt': response.data.created_at,
-                'updatedAt': response.data.updated_at,
-                'duration': response.data.duration,
-                'longitude': response.data.longitude,
-                'latitude': response.data.latitude,
-                'budget': response.data.budget,
-                'status': response.data.status,
-            });
-            this.getTeamMembers(response.data.team);
-        });
+    handleClose = () => {
+        this.setState({openDoneDialog: false});
     };
 
-    getOwnerName = () => {
-        getOwner(this.state.ownerId).then(response => {
-            const name = (response.data.first_name + ' ' + response.data.last_name);
-            this.setState({'owner': name});
-        });
-    }
+    handleDialogNo = () => {
+        this.setState({'tasksChangeStatus': this.state.tasksChangeStatus+1});
+        this.handleClose();
+    };
 
-    sortableGroupDecorator = (sortableGroup) => {
+    handleDialogYes = () => {
+        let data = {status: 2};
+        eventTaskServicePut(this.state.eventId, this.state.toDoneTaskId, data);
+        let nextTasks = this.state.tasks.map(
+            task => {
+                if (task.id == this.state.toDoneTaskId) task.status = 2;
+                return task;
+            }
+        );
+        this.setState({tasks: nextTasks});
+        this.setState({'tasksChangeStatus': this.state.tasksChangeStatus+1});
+        this.handleClose();
+    };
+
+    sortableGroupDecorator = sortableGroup => {
         if (sortableGroup) {
             let options = {
                 group: 'Sortable',
+                animation: 150,
                 onRemove: evt => {
-                    var taskId;
-                    this.state.tasks.map(task => {
-                        if (evt.item.innerText.search(task.title) > -1) taskId = task.id;
-                    });
+                    let taskId = evt.item.id;
                     let data = {status: +evt.to.id};
-                    eventTaskServicePut(this.state.eventId, taskId, data);
-                }
+                    if (evt.to.id == '2') {
+                        this.handleOpen(taskId);
+                        this.setState({'toDoneTaskId': taskId});
+                    }
+                    else {
+                        eventTaskServicePut(this.state.eventId, taskId, data);
+                        let nextTasks = this.state.tasks.map(
+                            task => {
+                                if (task.id == taskId) task.status = +evt.to.id;
+                                return task;
+                            }
+                        );
+                        this.setState({tasks: nextTasks});
+                        this.setState({'tasksChangeStatus': this.state.tasksChangeStatus+1});
+                    }
+                },
             };
             Sortable.create(sortableGroup, options);
         }
     };
 
     render() {
+        const actions = [
+            <FlatButton
+                label="No"
+                primary={true}
+                onClick={this.handleDialogNo}
+            />,
+            <FlatButton
+                label="Yes"
+                primary={true}
+                onClick={this.handleDialogYes}
+            />,
+        ];
+
+        let taskTable = [];
+        for(let counter = 0; counter < 3; counter++){
+            let strCounter = counter.toString() + this.state.tasksChangeStatus;
+            const styleName = ['toDoBodyStyle', 'inProgressBodyStyle', 'doneBodyStyle'];
+            taskTable.push(
+                <td style={tdStyle[styleName[counter]]} key={strCounter}>
+                    <ul  id={counter} key={strCounter} type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
+                        {this.state.tasks.map(task => (task.status == counter &&
+                            <li key={task.id.toString()} id={task.id.toString()} style={liStyle}>
+                                <EventTaskItem
+                                    key={task.id.toString()}
+                                    id={task.id}
+                                    title={task.title}
+                                    description={task.description}
+                                    assignmentUsers={task.users}
+                                    members={this.state.members}
+                                    eventId={this.state.eventId}
+                                    status={task.status}
+                                />
+                            </li>
+                        ))}
+                    </ul>
+                </td>
+            );
+        }
+
         return (
             <div>
-                {this.state.owner && (
-                    <div style={containerStyle}>
-                        <Event
-                            team={this.state.team}
-                            owner={this.state.owner}
-                            name={this.state.eventName}
-                            description={this.state.eventDescr}
-                            startAt={this.state.startAt}
-                            createdAt={this.state.createdAt}
-                            updatedAt={this.state.updatedAt}
-                            duration={this.state.duration}
-                            longitude={this.state.longitude}
-                            latitude={this.state.latitude}
-                            budget={this.state.budget}
-                            status={this.state.status}
-                            id={this.state.eventId}
-                        />
-                    </div>
-                )}
                 <table style={tableStyle}>
                     <thead>
                         <tr>
-                            <th style={thStyle}>
+                            <th style={thStyle.toDoHeadStyle}>
                                 ToDo
                             </th>
-                            <th style={thStyle}>
+                            <th style={thStyle.inProgressHeadStyle}>
                                 InProgress
                             </th>
-                            <th style={thStyle}>
+                            <th style={thStyle.doneHeadStyle}>
                                 Done
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style={tdStyle}>
-                                <ul  id='0' key='0' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
-                                    {this.state.tasks.map(task => (task.status == 0 &&
-                                        <li key={task.id.toString()} key={task.id.toString()} style={liStyle}>
-                                            <EventTaskItem
-                                                key={task.id.toString()}
-                                                id={task.id}
-                                                title={task.title}
-                                                description={task.description}
-                                                assignmentUsers={task.users}
-                                                members={this.state.members}
-                                                eventId={this.state.eventId}
-                                            />
-                                        </li>
-                                    ))}
-                                </ul>
-                            </td>
-                            <td style={tdStyle}>
-                                <ul  id='1' key='1' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
-                                    {this.state.tasks.map(task => (task.status == 1 &&
-                                        <li key={task.id.toString()} style={liStyle}>
-                                            <EventTaskItem
-                                                key={task.id.toString()}
-                                                id={task.id}
-                                                title={task.title}
-                                                description={task.description}
-                                                assignmentUsers={task.users}
-                                                members={this.state.members}
-                                                eventId={this.state.eventId}
-                                            />
-                                        </li>
-                                    ))}
-                                </ul>
-                            </td>
-                            <td style={tdStyle}>
-                                <ul  id='2' key='2' type='none' ref={this.sortableGroupDecorator} style={ulStyle}>
-                                    {this.state.tasks.map(task => (task.status == 2 &&
-                                        <li key={task.id.toString()} style={liStyle}>
-                                            <EventTaskItem
-                                                key={task.id.toString()}
-                                                id={task.id}
-                                                title={task.title}
-                                                description={task.description}
-                                                assignmentUsers={task.users}
-                                                members={this.state.members}
-                                                eventId={this.state.eventId}
-                                            />
-                                        </li>
-                                    ))}
-                                </ul>
-                            </td>
+                            {taskTable}
                         </tr>
                     </tbody>
                 </table>
-                {this.state.teamId && (<div style={containerStyle}>
-                    <TaskDialog
-                        eventId={this.state.eventId}
-                        teamId={this.state.teamId}
-                        style={TaskDialogStyle}/>
-                </div>)}
+                <Dialog
+                    title="Are you sure?"
+                    actions={actions}
+                    modal={true}
+                    open={this.state.openDoneDialog}
+                >
+                    Do you really want to change status of this task to Done?
+                </Dialog>
             </div>
         );
     }

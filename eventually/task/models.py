@@ -150,7 +150,7 @@ class Task(AbstractModel):
             self.title = title
         if description:
             self.description = description
-        if status:
+        if status is not None:
             self.status = status
 
         self.save()
