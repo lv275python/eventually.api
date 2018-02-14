@@ -32,10 +32,13 @@ const styleLowerMain2 = {
 };
 
 const styleContainer = {
-    width: '30%',
-    height: '50%',
+    width: '250px',
+    height: '250px',
     fontSize: '10px',
-    margin: '5% 5% 5% 0%',
+    margin: '10% 5% 5% 5%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
 };
 
 const styleInp = {

@@ -52,7 +52,9 @@ export default class CreateTeamDialog extends React.Component {
     }
 
     getAllUsers = () => {
-        usersServiceGet().then(response => this.setState({'users': response.data.users}));
+        usersServiceGet().then(response => {
+            this.setState({'users': response.data.users});
+        });
     };
 
     /*set description to state after validation*/
@@ -69,7 +71,6 @@ export default class CreateTeamDialog extends React.Component {
             this.setState({ DescriptionIsValid: false});
         }
     };
-
 
     /*set name to state after validation*/
     handleName = event => {
@@ -124,7 +125,6 @@ export default class CreateTeamDialog extends React.Component {
                 'owner': getUserId(),
                 'members_id': this.state.values
             };
-
             teamServicePost(data).then(response => {
                 this.handleClose();
             });
@@ -138,7 +138,7 @@ export default class CreateTeamDialog extends React.Component {
                 insetChildren={true}
                 checked={values && values.indexOf(user.id) > -1}
                 value={user.id}
-                primaryText={user.email}
+                primaryText={user.first_name + ' ' + user.last_name}
             />
         ));
     }

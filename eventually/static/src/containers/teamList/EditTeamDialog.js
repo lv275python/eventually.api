@@ -2,8 +2,9 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
-import FileUpload from 'src/containers';
+import {FileUpload} from 'src/containers';
 import {teamServicePut} from './teamService';
+
 
 export default class EditTeamDialog extends React.Component {
     constructor(props) {
@@ -13,7 +14,7 @@ export default class EditTeamDialog extends React.Component {
             description: this.props.description,
             image: this.props.image,
             open: false,
-            open_more:false
+            openMore:false
         };
     }
     /*upload image to state*/

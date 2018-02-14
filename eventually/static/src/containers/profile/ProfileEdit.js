@@ -44,11 +44,14 @@ const styleContainer = {
     width: '150px',
     height: '150px',
     margin:'0% 15%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
 };
 
 const imageStyle = {
     maxWidth: '100%',
-    maxHeight: '100%'
+    maxHeight: '100%',
 };
 
 
