@@ -1,0 +1,31 @@
+title Activation CustomUser
+
+participant User
+participant Email
+participant Authentication views
+participant Models
+participant UI component
+participant Validators
+participant DataBase
+
+User->+Email: click link
+Email->+Authentication views: Get request
+deactivate Email
+alt valid HTTP metod
+    alt valid token
+        alt valid email
+            Authentication views->+Models: User update
+            Authentication views->Models: CustomerProfile create
+            Models->+DataBase: writes CustomProfile object into the DB
+            DataBase->-Models: Set id
+            Models->Authentication views: CustomProfile object
+            Authentication views->UI component: RESPONSE_200_ACTIVATED
+            deactivate Models
+        else invalid email
+            Authentication views->UI component: RESPONSE_400_INVALID_EMAIL
+    else invalid token(handle_token)
+        Authentication views->UI component: RESPONSE_498_INVALID_TOKEN
+else invalid HTTP metod
+    Authentication views->UI component: RESPONSE_400_INVALID_HTTP_METHOD
+    deactivate Authentication views
+end

@@ -1,0 +1,31 @@
+title User Registration
+
+participant User
+participant UI component
+participant Authentication/views
+participant Validators
+participant Models
+participant User email
+participant DataBase
+
+User->+UI component: input data
+User->UI component: click 'register' button
+UI component->+Authentication/views: registration(post request)
+Authentication/views->+Validators: registration_validate
+alt not registration_validate
+    Validators->Authentication/views: return False
+    Authentication/views->UI component: response (status 400)
+else succesfull validation
+    Validators->Authentication/views: return True
+    deactivate Validators
+    Authentication/views->+Models: create_user
+    Models->+DataBase:writes User object into the DB
+    DataBase->-Models: Set id
+    Models->Authentication/views: User object
+    deactivate Models
+    Authentication/views->User email: send_mail(activation)
+    Authentication/views-->UI component: response (status 201)
+    deactivate UI component
+    deactivate Authentication/views
+end
+
