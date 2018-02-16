@@ -63,3 +63,8 @@ export const PostEventService = (data) => {
     const url = teamPath + data.team + '/event/';
     axios.post(url, data);
 };
+
+export const deleteTeamService = (eventId, taskId) => {
+    const url =eventPath + eventId + '/task/'+taskId + '/';
+    axios.delete(url);
+};
