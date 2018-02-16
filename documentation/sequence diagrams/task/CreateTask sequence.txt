@@ -1,0 +1,26 @@
+title Create Task sequence diagram
+participant User
+participant Task list component
+participant CreateTaskDialog
+participant Server
+participant Database
+User->+Task list component: open page "EventTaskList"
+Task list component->+Server: taskGetTeamService()
+Server->Task list component: JsonResponse(data, status=200)
+deactivate Server
+User->Task list component: click "CreateTaskDialogButton"
+Task list component->+CreateTaskDialog: open "CreateTaskDialog"
+User->CreateTaskDialog: fill form
+User->CreateTaskDialog: click button "SubmitCreateTaskDialog"
+CreateTaskDialog->+Server: eventTaskServicePost()
+Server->Server: request validation
+alt request validation False
+Server->CreateTaskDialog: JsonResponse(status=400)
+else request validation True
+Server->+Database: Task.create()
+Database->Server:  "task.id"
+deactivate Database
+Server->CreateTaskDialog: JsonResponse(data, status=201)
+deactivate CreateTaskDialog
+deactivate Server
+end
