@@ -1,0 +1,28 @@
+﻿title Edit Event
+participant User
+participant UI Details
+participant UI Edit Event Dialog
+participant Server
+participant Db
+
+
+UI Details->+Server: get Event from Id
+Server->Db: Event.get_by_id(event_id)
+deactivate Db
+Server->-UI Details: return JsonResponse(data, status=200)
+deactivate Server
+User->+UI Details: Click button Edit
+UI Details->+UI Edit Event Dialog: open Edit Event Dialog
+User->UI Edit Event Dialog: Edit data
+User->UI Edit Event Dialog: Click button Save
+alt not success
+UI Edit Event Dialog->+Server: put request
+Server-->UI Edit Event Dialog: RESPONSE_404_OBJECT_NOT_FOUND
+Server-->UI Edit Event Dialog: RESPONSE_403_ACCESS_DENIED
+Server-->UI Edit Event Dialog:RESPONSE_400_INVALID_DATA
+else success
+Server->Db: Update
+deactivate Db
+Server->-UI Details: RESPONSE_200_UPDATED
+deactivate Server
+end
