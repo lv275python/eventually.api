@@ -23,4 +23,8 @@ const forgetPasswordService = email => {
     return axios.post(forgetPasswordUrl, {email});
 };
 
-export {loginService, forgetPasswordService, registerService, logoutService};
+const putNewPasswordService = (token, newPassword) => {
+    return axios.put(forgetPasswordUrl+token, {'new_password' : newPassword});
+};
+
+export {loginService, forgetPasswordService, registerService, logoutService, putNewPasswordService};

@@ -1,0 +1,37 @@
+title Edit Task Diagramm
+
+participant User
+participant TaskList Component
+participant EditTask Dialog
+participant Task View
+participant Task Model
+participant DataBase
+
+
+User->+TaskList Component: clicks "Edit" button on taskItem
+TaskList Component->+EditTask Dialog: opens edit dialog
+User->EditTask Dialog: input data
+EditTask Dialog->EditTask Dialog: checks the difference \nand set new state 
+EditTask Dialog->+Task View: PUT request
+alt not task_data_validate
+    Task View->EditTask Dialog: RESPONSE_400_INVALID_DATA
+else task_data_validate
+    Task View-Task View: validates recieved data
+    Task View->+Task Model: task.add_users if add_users
+    Task Model->+DataBase: add users to task in DB
+    DataBase->Task Model: return task id
+    deactivate DataBase
+    deactivate Task Model
+    Task View->+Task Model: task.remove_users if remove_users
+    Task Model->+DataBase: remove users from task in DB
+    DataBase->Task Model: return task id
+    deactivate DataBase
+    deactivate Task Model
+    Task View->+Task Model: updates title, description, status
+    Task Model->+DataBase: set changes into DB
+    DataBase->Task Model: return task id
+    deactivate DataBase
+    deactivate Task Model
+    Task View->EditTask Dialog: RESPONSE_200_UPDATED
+    deactivate Task View
+    deactivate EditTask Dialog

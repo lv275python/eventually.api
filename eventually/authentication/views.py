@@ -247,7 +247,7 @@ class ForgetPassword(View):
             data = request.body
             if updating_password_validate(data, 'new_password'):
                 new_password = data.get('new_password')
-                user.set_password(new_password)
+                user.update(password=new_password)
                 send_successful_update_letter(user)
                 return RESPONSE_200_OK
             return RESPONSE_400_INVALID_DATA
