@@ -1,0 +1,11 @@
+title  View User Profile Sequence Diagram
+
+ProfileView Component->+CustomProfileView: get(user_id)
+CustomProfileView->+CustomUser: get_by_id
+alt user fail
+CustomUser-->CustomProfileView:return False
+CustomProfileView-->ProfileView Component: return RESPONSE_404_OBJECT_NOT_FOUND
+else user success
+CustomUser-->-CustomProfileView:return True
+CustomProfileView -> CustomProfileView: information: profile combine
+CustomProfileView-->-ProfileView Component:return JsonResponse(information, status=200)
