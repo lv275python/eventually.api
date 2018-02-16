@@ -4,9 +4,19 @@ import {Tab, Tabs} from 'material-ui/Tabs';
 
 
 class Sign extends React.Component {
+
     constructor(props) {
         super(props);
+        this.state = {
+            value: 'login',
+        };
     }
+
+    handleChange = (value) => {
+        this.setState({
+            value: value,
+        });
+    };
 
     toRegister = () => {
         this.props.history.push('/register');
@@ -20,14 +30,20 @@ class Sign extends React.Component {
         this.props.history.push('/forget');
     };
 
+    componentWillMount(){
+        this.toLogin();
+    }
+
     render() {
         return (
-            <Tabs>
-                <Tab label='Register' onActive={this.toRegister}>
+            <Tabs onChange={this.handleChange}
+                value={this.state.value}
+            >
+                <Tab label='Register' value ='register' onActive={this.toRegister}>
                 </Tab>
-                <Tab label='Login' onActive={this.toLogin}>
+                <Tab label='Login' value ='login' onActive={this.toLogin}>
                 </Tab>
-                <Tab label='Forget password' onActive={this.toForgetPassword}>
+                <Tab label='Forget password' value ='forget' onActive={this.toForgetPassword}>
                 </Tab>
             </Tabs>
 
