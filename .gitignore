@@ -114,6 +114,7 @@ bundle.js
 
 #Mocha Test
 testBundle.js
+.nyc_output/
 
 #Private keys
 keys.js

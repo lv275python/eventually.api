@@ -1,5 +1,6 @@
-import axios from 'axios';
 import { apiUrl } from 'src/helper';
+import axios from 'axios';
+
 
 
 const eventPath = apiUrl + 'events/';
