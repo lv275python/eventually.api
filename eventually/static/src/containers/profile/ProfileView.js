@@ -31,11 +31,11 @@ const styleLowerMain2 = {
     margin: '10px 10px',
 };
 
-const style_container = {
-    width: '250px',
-    height: '250px',
+const styleContainer = {
+    width: '30%',
+    height: '50%',
     fontSize: '10px',
-    margin: '0 15px 0 0',
+    margin: '5% 5% 5% 0%',
 };
 
 const styleInp = {
@@ -47,6 +47,11 @@ const styleSpan = {
     display: 'inline-block',
     fontSize: '15px',
     width: '117px',
+};
+
+const imageStyle = {
+    maxWidth: '100%',
+    maxHeight: '100%'
 };
 
 
@@ -67,16 +72,16 @@ export default class ProfileView extends React.Component {
         return(
             <div style={styleMain}>
                 <div style={styleLowerMain1}>
-                    <div style={style_container}>
+                    <div style={styleContainer}>
                         <img src={this.props.profileData.photo && getImageUrl(this.props.profileData.photo)}
                             alt=""
-                            style={{maxHeight: '100%'}}
+                            style={imageStyle}
                         />
                     </div>
                     <div>
-                        <p style={styleInp}><span style={styleSpan}>First Name:</span>{this.props.profileData.first_name}</p>
-                        <p style={styleInp}><span style={styleSpan}>Middle Name:</span>{this.props.profileData.middle_name}</p> 
-                        <p style={styleInp}><span style={styleSpan}>Last Name:</span>{this.props.profileData.last_name}</p> 
+                        <p style={styleInp}><span style={styleSpan}>First Name:</span>{this.props.profileData.firstName}</p>
+                        <p style={styleInp}><span style={styleSpan}>Middle Name:</span>{this.props.profileData.middleName}</p>
+                        <p style={styleInp}><span style={styleSpan}>Last Name:</span>{this.props.profileData.lastName}</p>
                         <p style={styleInp}><span style={styleSpan}>Hobby:</span>{this.props.profileData.hobby}</p>
                         <p style={styleInp}><span style={styleSpan}>Birthday:</span>{this.props.profileData.birthday.toDateString()}</p>
                     </div>

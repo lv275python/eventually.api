@@ -7,43 +7,48 @@ import {putProfileService, getProfileService} from './ProfileService';
 import {getImageUrl} from 'src/helper';
 import {FileUpload} from 'src/containers';
 
-const style_card = {
+const styleCard = {
     display: 'flex',
     justifyContent: 'center',
 };
 
-const style_name = {
+const styleName = {
     margin: '10px 100px 0 100px',
     height: '400px',
     width: '400px',
 };
 
-const style_main_div = {
+const styleMainDiv = {
     display: 'flex',
     justifyContent: 'center',
 };
-const style_title = {      
+const styleTitle = {
     fontSize: '35px',     
 };
 
-const style_header = {        
+const styleHeader = {
     display: 'flex',      
     alignItems: 'center',     
     justifyContent: 'center',     
 };
 
-const style_buttons = {        
-    display: 'flex',      
+const styleButtons = {
+    display: 'flex',
     alignItems: 'flex-end',     
     justifyContent: 'space-around',    
     margin: '20px 20px 40px 350px' , 
     width: '40%',
 };
 
-const style_container = {
+const styleContainer = {
     width: '150px',
     height: '150px',
-    margin:'0px 100px',
+    margin:'0% 15%',
+};
+
+const imageStyle = {
+    maxWidth: '100%',
+    maxHeight: '100%'
 };
 
 
@@ -54,32 +59,32 @@ export default class ProfileEdit extends React.Component {
 
     render() {
         return (
-            <div style={style_main_div}>
-                <Card style={style_card}>
-                    <CardHeader style = {style_header}      
+            <div style={styleMainDiv}>
+                <Card style={styleCard}>
+                    <CardHeader style = {styleHeader}
                         title="Edit profile"      
-                        titleStyle={style_title}        
+                        titleStyle={styleTitle}
                     />
-                    <div style={style_name}>
+                    <div style={styleName}>
                         <TextField
                             floatingLabelText="First Name:"
                             onChange={this.props.onFirstNameChange}
                             hintText='First Name'
-                            value={this.props.profileData.first_name}
+                            value={this.props.profileData.firstName}
                             fullWidth={true}
                         />
                         <TextField
                             floatingLabelText="Middle Name:"
                             onChange={this.props.onMiddleNameChange}
                             hintText='Middle Name'
-                            value={this.props.profileData.middle_name}
+                            value={this.props.profileData.middleName}
                             fullWidth={true}
                         />
                         <TextField
                             floatingLabelText="Last Name:"
                             onChange={this.props.onLastNameChange}
                             hintText='Last Name'
-                            value={this.props.profileData.last_name}
+                            value={this.props.profileData.lastName}
                             fullWidth={true}
                         />
                         <TextField
@@ -101,17 +106,16 @@ export default class ProfileEdit extends React.Component {
                             value={this.props.profileData.birthday}
                         />
                     </div>
-                    <div style={style_container}>
+                    <div style={styleContainer}>
                         <img src={this.props.profileData.photo && getImageUrl(this.props.profileData.photo)}
                             alt=""
-                            style={{maxHeight: '100%'}}
-                        />
-                        <FileUpload 
-                            updateImageNameInDb={this.props.uploadImage}
+                            style={imageStyle}
                         />
                     </div>
-                        
-                    <div style={style_buttons}>
+                    <FileUpload
+                        updateImageNameInDb={this.props.uploadImage}
+                    />
+                    <div style={styleButtons}>
                         <RaisedButton
                             label="Cancel"
                             secondary={true}

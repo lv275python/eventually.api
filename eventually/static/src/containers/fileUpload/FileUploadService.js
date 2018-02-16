@@ -1,11 +1,11 @@
 import {apiUrl} from 'src/helper';
 import axios from 'axios';
 
-const request_path = apiUrl + 'img/handle/';
-const request_timeout = 30000;
+const requestPath = apiUrl + 'img/handle/';
+const requestTimeout = 30000;
 
 const sendFile = data => {
-    return axios.post(request_path, data, {timeout: request_timeout});
+    return axios.post(requestPath, data, {timeout: requestTimeout});
 };
 
 export {sendFile};

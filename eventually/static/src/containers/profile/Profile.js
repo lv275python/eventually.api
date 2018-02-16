@@ -11,9 +11,9 @@ export default class Profile extends React.Component {
             isEdit: false,
             isMyProfile: +this.props.match.params.profileId === getUserId(),
             id: '', 
-            first_name: '',
-            middle_name: '', 
-            last_name: '',
+            firstName: '',
+            middleName: '',
+            lastName: '',
             hobby: '',
             photo: '',
             birthday: new Date()    
@@ -28,9 +28,9 @@ export default class Profile extends React.Component {
         getProfileService(profileId).then(response => {
             this.setState({
                 id: response.data['user'],   
-                first_name: response.data['first_name'],
-                middle_name: response.data['middle_name'], 
-                last_name: response.data['last_name'],
+                firstName: response.data['first_name'],
+                middleName: response.data['middle_name'],
+                lastName: response.data['last_name'],
                 hobby: response.data['hobby'],
                 photo: response.data['photo'],
                 birthday: new Date(response.data['birthday'])
@@ -53,19 +53,19 @@ export default class Profile extends React.Component {
 
     handleFirstNameChange = event => {
         this.setState({
-            first_name: event.target.value
+            firstMame: event.target.value
         });
     };
 
     handleMiddleNameChange = event => {
         this.setState({
-            middle_name: event.target.value
+            middleName: event.target.value
         });
     };
 
     handleLastNameChange = event => {
         this.setState({
-            last_name: event.target.value
+            lastName: event.target.value
         });
     };
 
@@ -86,15 +86,15 @@ export default class Profile extends React.Component {
     }
 
     handleSave = () => {
-        const first_name = this.state.first_name;
-        const middle_name = this.state.middle_name;
-        const last_name = this.state.last_name;
+        const firstName = this.state.firstName;
+        const middleName = this.state.middleName;
+        const lastName = this.state.lastName;
         const hobby = this.state.hobby;
         const photo = this.state.photo;
         const birthday = this.state.birthday.getFullYear() + '-' +(this.state.birthday.getMonth() + 1) + '-' +  this.state.birthday.getDate();
         
 
-        putProfileService(this.state.id, first_name, middle_name, last_name, hobby, photo, birthday)
+        putProfileService(this.state.id, firstName, middleName, lastName, hobby, photo, birthday)
             .then(response => {
                 this.handleClose();
             });
@@ -105,9 +105,9 @@ export default class Profile extends React.Component {
 
         const profileData = {
             id: this.state.id,
-            first_name: this.state.first_name,
-            middle_name: this.state.middle_name,
-            last_name: this.state.last_name,
+            firstName: this.state.firstName,
+            middleName: this.state.middleName,
+            lastName: this.state.lastName,
             hobby: this.state.hobby,
             photo: this.state.photo,
             birthday: this.state.birthday
