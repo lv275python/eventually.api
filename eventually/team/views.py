@@ -26,13 +26,10 @@ class TeamView(View):
         Handles GET request, retrieves team from the database
         :param request: request from the web page
         :type request: http Request
-
         :param team_id: id of a team to return.
         :type team_id: int
-
         :param full_name: parametr to return.
         :type full_name: Boolean value
-
         :return: if not full_name return team dictionary
             E.G.
             |    {
@@ -94,7 +91,6 @@ class TeamView(View):
         |          1
         |      ]
         |  }
-
         :return: status 200 if team has been created, status 400 if team hasn't been created,
         """
 
@@ -115,7 +111,6 @@ class TeamView(View):
     def put(self, request, team_id):
         """
         Handles PUT request, modifies the team in the datatbase.
-
         :param request: request from the web page with a json containing changes to be applied
         :type request: http Request
         :Example: incoming JSON request:
@@ -123,10 +118,8 @@ class TeamView(View):
         |   "description":"some description",
         |   "owner": 1
         | }
-
         :param team_id: id of a team which has to be changed
         :type team_id: int
-
         :return: status 200 if team has been updated,
                  status 400 if team hasn't been updated,
                  status 403 if current user is not owner of team.
@@ -146,13 +139,10 @@ class TeamView(View):
         return RESPONSE_400_INVALID_DATA
 
     def delete(self, request, team_id):
-         #pylint: disable=unused-argument
         """
         Handles delete request
-
         :param team_id: id of a team to delete
         :type team_id: int
-
         :return: status 200 if team was deleted and status=400 if it was not
         """
         if not Team.get_by_id(team_id):

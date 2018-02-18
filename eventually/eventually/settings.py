@@ -171,6 +171,12 @@ LOGGING = {
 
 SESSION_COOKIE_HTTPONLY = False
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
+
 try:
     from .local_settings import *
 except ImportError:

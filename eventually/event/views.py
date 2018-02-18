@@ -7,9 +7,11 @@ of event's model objects.
 """
 
 import datetime
-from django.views.generic.base import View
+from django.core.cache import cache
 from django.http import JsonResponse
+from django.views.generic.base import View
 from team.models import Team
+from utils.cache_helper import del_cache_events
 from utils.validators import event_data_validate
 from utils.responsehelper import (RESPONSE_200_DELETED,
                                   RESPONSE_200_UPDATED,
@@ -46,11 +48,16 @@ class EventView(View):
         """
         if not event_id and not team_id:
             user = request.user
-            teams = user.teams.all()
-            events = []
-            for team in teams:
-                events.extend(team.event_set.all())
-            data = {'events': [event.to_dict() for event in events]}
+            hash_events_key = 'all_events_ofuser_{0}'.format(user.id)
+            if hash_events_key in cache:
+                data = cache.get(hash_events_key)
+            else:
+                teams = user.teams.all()
+                events = []
+                for team in teams:
+                    events.extend(team.event_set.all())
+                data = {'events': [event.to_dict() for event in events]}
+                cache.set(hash_events_key, data)
             return JsonResponse(data, status=200)
         if event_id:
             event = Event.get_by_id(event_id)
@@ -111,6 +118,8 @@ class EventView(View):
 
         event = Event.create(team, **data)
         if event:
+            if team.id:
+                del_cache_events(event.id)
             return JsonResponse(event.to_dict(), status=201)
 
         return RESPONSE_400_DB_OPERATION_FAILED
@@ -162,6 +171,7 @@ class EventView(View):
                 'status': data.get('status')}
 
         event.update(**data)
+        del_cache_events(event_id)
         return RESPONSE_200_UPDATED
 
     def delete(self, request, team_id, event_id=None):  # pylint: disable=unused-argument
@@ -189,7 +199,9 @@ class EventView(View):
         if user.id is not event.owner.id:
             return RESPONSE_403_ACCESS_DENIED
 
+        del_cache_events(event_id)
         is_deleted = Event.delete_by_id(event_id)
+
         if is_deleted:
             return RESPONSE_200_DELETED
 

@@ -2,10 +2,10 @@
 Auth views module
 =================
 """
-
-from django.views.generic.base import View
 from django.contrib.auth import authenticate, login, logout
+from django.core.cache import cache
 from django.http import HttpResponse, JsonResponse
+from django.views.generic.base import View
 from authentication.models import CustomUser
 from customprofile.models import CustomProfile
 from eventually.settings import FRONT_HOST
@@ -34,6 +34,7 @@ from utils.validators import (updating_password_validate,
 TTL_SEND_PASSWORD_TOKEN = 60 * 60
 USER_TTL_NOTIFICATOR = TTL_SEND_PASSWORD_TOKEN / 60
 TTL_USER_ID_COOKIE = 60 * 60 * 24 * 14
+
 
 class UserView(View):
     """    A class to handle GET, PUT and DELETE operations    """
@@ -111,6 +112,7 @@ class UserView(View):
                     last_name=last_name,
                     middle_name=middle_name,
                     password=new_password)
+        cache.delete("all_users")
         return RESPONSE_200_UPDATED
 
     def delete(self, request, user_id):
@@ -129,6 +131,7 @@ class UserView(View):
             return RESPONSE_404_OBJECT_NOT_FOUND
         if user.id == request.user.id:
             if CustomUser.delete_by_id(user_id):
+                cache.delete("all_users")
                 return RESPONSE_200_DELETED
         return RESPONSE_403_ACCESS_DENIED
 
@@ -161,6 +164,7 @@ def registration(request):
         mail_subject = 'Activate account'
         send_email(mail_subject, message, [user.email], 'registration.html', ctx)
         msg = 'Please confirm your email address to complete the registration'
+        cache.delete("all_users")
         return HttpResponse(msg, status=201)
     return RESPONSE_400_INVALID_HTTP_METHOD
 
@@ -258,8 +262,11 @@ def get_all_users(request):
     returns JSON response with all users querysets
     """
     if request.method == "GET":
-        users = CustomUser.get_all()
-        data = {'users': [user.to_dict() for user in users]}
+        if 'all_users' in cache:
+            data = cache.get('all_users')
+        else:
+            users = CustomUser.get_all()
+            data = {'users': [user.to_dict() for user in users]}
+            cache.set("all_users", data)
         return JsonResponse(data, status=200)
     return RESPONSE_400_INVALID_HTTP_METHOD
-    
