@@ -6,12 +6,16 @@ This module implements class that represents the event entity.
 """
 # pylint: disable=arguments-differ
 
+import pickle
+from django.conf import settings
+from django.core.cache import cache
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
 from team.models import Team
 from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
+CACHE_TTL = settings.CACHE_TTL
 
 class Event(AbstractModel):
     """
@@ -250,5 +254,24 @@ class Event(AbstractModel):
             self.budget = budget
         if status:
             self.status = status
-
         self.save()
+        redis_key = 'event_by_id_{0}'.format(self.id)
+        if redis_key in cache:
+            cache.delete(redis_key)
+
+    @staticmethod
+    def get_by_id(event_id):
+        """
+        returns object of Event by id
+        """
+        redis_key = 'event_by_id_{0}'.format(event_id)
+        if redis_key in cache:
+            event = pickle.loads(cache.get(redis_key))
+            return event
+        try:
+            event = Event.objects.get(id=event_id)
+        except Event.DoesNotExist:
+            return None
+        cached_event = pickle.dumps(event)
+        cache.set(redis_key, cached_event, CACHE_TTL)
+        return event

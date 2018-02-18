@@ -7,10 +7,14 @@ This file contains models for the postgresql database.
 #Method 'get_full_name' is abstract in class 'AbstractBaseUser'/'get_short_name'
 #but is not overridden (abstract-method)
 
+import pickle
+from django.conf import settings
+from django.core.cache import cache
 from django.db import models, IntegrityError
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from utils.utils import LOGGER
 
+CACHE_TTL = settings.CACHE_TTL
 
 class CustomUser(AbstractBaseUser):
     """
@@ -73,9 +77,14 @@ class CustomUser(AbstractBaseUser):
         :param user_id: SERIAL: the id of a user to be found in the DB
         :return: user object or None if a user with such ID does not exist
         """
-
+        redis_key = 'custom_user_by_id_{0}'.format(user_id)
+        if redis_key in cache:
+            user = cache.get(redis_key)
+            return user
         try:
-            return CustomUser.objects.get(id=user_id)
+            user = CustomUser.objects.get(id=user_id)
+            cache.set(redis_key, user, CACHE_TTL)
+            return user
         except CustomUser.DoesNotExist:
             LOGGER.error("User does not exist")
 
@@ -88,9 +97,14 @@ class CustomUser(AbstractBaseUser):
 
         :return: user object or None if a user with such ID does not exist
         """
-
+        redis_key = 'custom_user_by_email_{0}'.format(email)
+        if redis_key in cache:
+            user = cache.get(redis_key)
+            return user
         try:
-            return CustomUser.objects.get(email=email)
+            user = CustomUser.objects.get(email=email)
+            cache.set(redis_key, user, CACHE_TTL)
+            return user
         except CustomUser.DoesNotExist:
             LOGGER.error("User does not exist")
 
@@ -105,6 +119,11 @@ class CustomUser(AbstractBaseUser):
         try:
             user = CustomUser.objects.get(id=_id)
             user.delete()
+            redis_key = 'custom_user_by_id_{0}'.format(_id)
+            if redis_key in cache:
+                cache.delete(redis_key)
+            if "all_users" in cache:
+                cache.delete("all_users")
             return True
         except CustomUser.DoesNotExist:
             LOGGER.error("User does not exist")
@@ -139,6 +158,8 @@ class CustomUser(AbstractBaseUser):
         user.set_password(password)
         try:
             user.save()
+            if "all_users" in cache:
+                cache.delete("all_users")
             return user
         except (IntegrityError, AttributeError):
             LOGGER.error("Wrong attributes or relational integrity error")
@@ -207,11 +228,23 @@ class CustomUser(AbstractBaseUser):
         if is_active is not None:
             self.is_active = is_active
         self.save()
+        if "all_users" in cache:
+            cache.delete("all_users")
+        redis_key = 'custom_user_by_id_{0}'.format(self.id)
+        if redis_key in cache:
+            cache.delete(redis_key)
 
     @staticmethod
     def get_all():
         """
         returns data for json request with querysets of all users
         """
+        redis_key = "all_users"
+        if redis_key in cache:
+            all_users = cache.get(redis_key)
+            all_users = pickle.loads(all_users)
+            return all_users
         all_users = CustomUser.objects.all()
+        cached_all_users = pickle.dumps(all_users)
+        cache.set(redis_key, cached_all_users, CACHE_TTL)
         return all_users

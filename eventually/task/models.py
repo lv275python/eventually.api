@@ -5,14 +5,16 @@ Task module.
 This module implements class that represents the task entity.
 """
 # pylint: disable=arguments-differ
-
-from django.db import models, IntegrityError
+import pickle
+from django.conf import settings
+from django.core.cache import cache
+from django.db import IntegrityError, models
 from authentication.models import CustomUser
 from event.models import Event
-
 from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
+CACHE_TTL = settings.CACHE_TTL
 
 class Task(AbstractModel):
     """
@@ -152,17 +154,42 @@ class Task(AbstractModel):
             self.description = description
         if status is not None:
             self.status = status
-
         self.save()
+        redis_key = 'task_by_id_{0}'.format(self.id)
+        if redis_key in cache:
+            cache.delete(redis_key)
 
     def add_users(self, users_list):
         """Method that add users to task"""
 
         if users_list:
             self.users.add(*users_list)
+            redis_key = 'task_by_id_{0}'.format(self.id)
+            if redis_key in cache:
+                cache.delete(redis_key)
 
     def remove_users(self, users_list):
         """Method that remove users from task"""
 
         if users_list:
             self.users.remove(*users_list)
+            redis_key = 'task_by_id_{0}'.format(self.id)
+            if redis_key in cache:
+                cache.delete(redis_key)
+
+    @staticmethod
+    def get_by_id(task_id):
+        """
+        returns object of Task by id
+        """
+        redis_key = 'task_by_id_{0}'.format(task_id)
+        if redis_key in cache:
+            task = pickle.loads(cache.get(redis_key))
+            return task
+        try:
+            task = Task.objects.get(id=task_id)
+        except Task.DoesNotExist:
+            return None
+        cached_task = pickle.dumps(task)
+        cache.set(redis_key, cached_task, CACHE_TTL)
+        return task
