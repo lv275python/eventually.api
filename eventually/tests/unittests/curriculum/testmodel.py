@@ -21,17 +21,19 @@ class TestCurriculumApp(TestCase):
         with mock.patch('django.utils.timezone.now') as mock_time:
             mock_time.return_value = TEST_DATE
 
-            self.custom_user = CustomUser.objects.create(id=1,
+            custom_user = CustomUser.objects.create(id=1,
                                                          email='email1@mail.com',
                                                          password='1234',
                                                          first_name='1fname',
                                                          middle_name='1mname',
                                                          last_name='1lname')
+            custom_user.set_password('1234')
+            custom_user.save()
 
             self.team = Team.objects.create(id=11,
                                             name="testteam",
                                             description="t_descr",
-                                            owner=self.custom_user,
+                                            owner=custom_user,
                                             image="ADSS3JHDF6DSF4JJDF")
 
             Curriculum.objects.create(id=111,

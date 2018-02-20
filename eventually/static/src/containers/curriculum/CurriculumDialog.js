@@ -90,7 +90,7 @@ export default class CurriculumDialog extends React.Component {
                         rows={2}
                         rowsMax={4}
                         fullWidth={true}
-                        onChange = {this.handleDescription} />
+                        onChange={this.handleDescription} />
                 </Dialog>
             </div>
         );

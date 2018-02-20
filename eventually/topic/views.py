@@ -107,7 +107,7 @@ class TopicView(View):
         :rtype: `HttpResponse object."""
 
 
-def is_topic_mentor(request, curriculum_id, topic_id):
+def is_topic_mentor(request, curriculum_id, topic_id):   # pylint: disable=unused-argument
     """
     Function that handle get request for mentor belonging to the certain topic.
 
