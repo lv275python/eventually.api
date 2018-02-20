@@ -54,7 +54,8 @@ class TopicModelTestCase(TestCase):
 
             topic = Topic(id=11,
                           curriculum=test_curriculum,
-                          authors=[custom_user_first, custom_user_second],
+                          author = custom_user_first,
+                          mentors=[custom_user_first, custom_user_second],
                           title='Topic title',
                           description='My awesome topic')
             topic.save()
@@ -70,7 +71,8 @@ class TopicModelTestCase(TestCase):
             'created_at': 1486029612,
             'updated_at': 1486029612,
             'curriculum': 111,
-            'authors': [11, 12]
+            'author': 11,
+            'mentors': [11, 12]
         }
 
         actual_topic_dict = topic.to_dict()
@@ -95,10 +97,10 @@ class TopicModelTestCase(TestCase):
     def test_topic_success_create(self):
         """Method that tests succeeded `create` method of Topic class object."""
 
-        authors = CustomUser.objects.get(id=11)
+        author = CustomUser.objects.get(id=11)
         curriculum = Curriculum.objects.get(id=111)
         created_topic = Topic.create(curriculum=curriculum,
-                                     authors=[authors],
+                                     author=author,
                                      title='My awesome title',
                                      description='Hello i`m description')
 
@@ -107,10 +109,10 @@ class TopicModelTestCase(TestCase):
     def test_topic_none_create(self):
         """Method that tests unsucceeded `create` method of Topic class object."""
 
-        authors = CustomUser.objects.get(id=11)
+        author = CustomUser.objects.get(id=11)
         curriculum = Curriculum.objects.get(id=111)
         created_topic = Topic.create(curriculum=curriculum,
-                                     authors=authors)
+                                     author=author)
 
         self.assertIsNone(created_topic)
 
@@ -161,12 +163,13 @@ class TopicModelTestCase(TestCase):
                        "'created_at': 1486029612, " \
                        "'updated_at': 1486029612, " \
                        "'curriculum': 111, " \
-                       "'authors': [11, 12]"
+                       "'author': 11, " \
+                       "'mentors': [11, 12]"
         self.assertMultiLineEqual(actual_str, expected_str)
 
-    def test_topic_add_authors(self):
+    def test_topic_add_mentors(self):
         """
-        Method that tests `update_authors` method of the certain Topic instance.
+        Method that tests `update_mentors` method of the certain Topic instance.
         Test for adding authors.
         """
 
@@ -174,11 +177,11 @@ class TopicModelTestCase(TestCase):
         user_first = CustomUser.objects.get(id=11)
         user_second = CustomUser.objects.get(id=12)
         users = [user_first, user_second]
-        actual_topic.add_authors(authors_list=users)
+        actual_topic.add_mentors(mentors_list=users)
         expected_topic = Topic.objects.get(id=11)
-        self.assertListEqual(list(actual_topic.authors.all()), list(expected_topic.authors.all()))
+        self.assertListEqual(list(actual_topic.mentors.all()), list(expected_topic.mentors.all()))
 
-    def test_topic_remove_authors(self):
+    def test_topic_remove_mentors(self):
         """
         Method that tests `update_authors` method of the certain Topic instance.
         Test for removing authors.
@@ -188,6 +191,6 @@ class TopicModelTestCase(TestCase):
         user_first = CustomUser.objects.get(id=12)
         user_second = CustomUser.objects.get(id=11)
         users = [user_first, user_second]
-        actual_topic.remove_authors(authors_list=users)
+        actual_topic.remove_mentors(mentors_list=users)
         expected_topic = Topic.objects.get(id=11)
-        self.assertListEqual(list(actual_topic.authors.all()), list(expected_topic.authors.all()))
+        self.assertListEqual(list(actual_topic.mentors.all()), list(expected_topic.mentors.all()))

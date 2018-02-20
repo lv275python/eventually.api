@@ -12,6 +12,7 @@ from curriculum.models import Curriculum
 from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
+
 class Topic(AbstractModel):
     """
      Describing of topic entity.
@@ -43,7 +44,8 @@ class Topic(AbstractModel):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
     curriculum = models.ForeignKey(Curriculum, on_delete=models.CASCADE, null=True)
-    authors = models.ManyToManyField(CustomUser)
+    author = models.ForeignKey(CustomUser, null=True, related_name='topic_author')
+    mentors = models.ManyToManyField(CustomUser, related_name='topic_mentors')
 
     def to_dict(self):
         """
@@ -60,7 +62,8 @@ class Topic(AbstractModel):
         |    'created_at': 1509540116,
         |    'updated_at': 1509540116,
         |    'curriculum' : 13,
-        |    'authors' : [21, 33]
+        |    'author' : 5,
+        |    'mentors' : [21, 33],
         | }
         """
 
@@ -70,10 +73,11 @@ class Topic(AbstractModel):
                 'created_at': int(self.created_at.timestamp()),
                 'updated_at': int(self.updated_at.timestamp()),
                 'curriculum': self.curriculum.id,
-                'authors': sorted([author.id for author in self.authors.all()])}
+                'author': self.author.id,
+                'mentors': sorted([mentor.id for mentor in self.mentors.all()])}
 
     @staticmethod
-    def create(curriculum, authors=None, title=None, description=None):
+    def create(curriculum, author, title=None, description=None, mentors=()):
         """
         Static method that creates instance of Topic class and creates database
         row with the accepted info.
@@ -81,8 +85,8 @@ class Topic(AbstractModel):
         :param: curriculum: Certain Curriculum's object. Is required.
         :type curriculum: Curriculum model.
 
-        :param: authors: Certain tuple CustomUser's objects. Is required.
-        :type tuple<authors>: CustomUser model.
+        :param: author: Topic's author. Is required.
+        :type author: CustomUser model.
 
         :param title: Title of the certain topic.
         :type title: string
@@ -90,17 +94,21 @@ class Topic(AbstractModel):
         :param description: Describing topic.
         :type description: string
 
+        :param mentors: Topic's mentors.
+        :type description: list
+
         :return: topic object or None if topic have not created
         """
 
         topic = Topic()
         topic.curriculum = curriculum
+        topic.author = author
         topic.title = title
         topic.description = description
 
         try:
             topic.save()
-            topic.authors.add(*authors)
+            topic.mentors.add(author, *mentors)
             return topic
         except (ValueError, IntegrityError):
             LOGGER.error('Inappropriate value or relational integrity fail')
@@ -125,14 +133,14 @@ class Topic(AbstractModel):
 
         self.save()
 
-    def add_authors(self, authors_list):
-        """Method that add authors to topic"""
+    def add_mentors(self, mentors_list):
+        """Method that add mentors to topic"""
 
-        if authors_list:
-            self.authors.add(*authors_list)
+        if mentors_list:
+            self.mentors.add(*mentors_list)
 
-    def remove_authors(self, authors_list):
-        """Method that remove authors from topic"""
+    def remove_mentors(self, mentors_list):
+        """Method that remove mentors from topic"""
 
-        if authors_list:
-            self.authors.remove(*authors_list)
+        if mentors_list:
+            self.mentors.remove(*mentors_list)

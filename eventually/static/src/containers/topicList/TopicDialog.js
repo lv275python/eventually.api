@@ -7,6 +7,7 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
+import { postTopicService } from './TopicServices';
 
 
 const FlatButtonStyle = {
@@ -19,6 +20,8 @@ export default class TopicDialog extends React.Component {
         super(props);
         this.state = {
             open: false,
+            title: '',
+            description: '',
         };
     }
 
@@ -29,6 +32,24 @@ export default class TopicDialog extends React.Component {
 
     handleClose = () => {
         this.setState({ open: false });
+    };
+
+    handleTitle = event => {
+        this.setState({title: event.target.value});
+    };
+
+    handleDescription = event => {
+        this.setState({description: event.target.value});
+    };
+
+    handleSubmit = () => {
+        const data = {
+            'title': this.state.title,
+            'description': this.state.description,
+        };
+        postTopicService(this.props.curriculumId, data).then(response => {
+            this.handleClose();
+        });
     };
 
     render() {
@@ -42,7 +63,7 @@ export default class TopicDialog extends React.Component {
                 label="Submit"
                 primary={true}
                 keyboardFocused={true}
-                onClick={this.handleClose}
+                onClick={this.handleSubmit}
             />,
         ];
 
@@ -63,13 +84,15 @@ export default class TopicDialog extends React.Component {
                 >
                     <TextField
                         hintText="Title"
-                        fullWidth={true} />
+                        fullWidth={true}
+                        onChange = {this.handleTitle} />
                     <TextField
                         hintText="Description"
                         multiLine={true}
                         rows={2}
                         rowsMax={4}
-                        fullWidth={true} />
+                        fullWidth={true}
+                        onChange = {this.handleDescription} />
                 </Dialog>
             </div>
         );

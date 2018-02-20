@@ -14,9 +14,13 @@ from authentication.models import CustomUser
 from mentor.models import MentorStudent
 from topic.models import Topic
 from utils.responsehelper import (RESPONSE_200_UPDATED,
+                                  RESPONSE_200_DELETED,
                                   RESPONSE_400_INVALID_DATA,
+                                  RESPONSE_400_DB_OPERATION_FAILED,
+                                  RESPONSE_403_ACCESS_DENIED,
                                   RESPONSE_404_OBJECT_NOT_FOUND)
 from utils.validators import mentor_validator
+
 
 class MentorView(View):
     """Mentor view handles GET, POST, PUT, DELETE requests."""
@@ -30,8 +34,9 @@ class MentorView(View):
 
         :return: return JsonResponse within filtered students data
         """
+
         mentor = CustomUser.get_by_id(request.user.id)
-        topics_id = [record.id for record in mentor.topic_set.all()]
+        topics_id = [record.id for record in MentorStudent.get_all()]
 
         filters = {}
         if request.GET.get('topic', None):
@@ -47,13 +52,13 @@ class MentorView(View):
             to_date = datetime.fromtimestamp(int(to_date), tz=pytz.UTC)
             filters['created_at__lte'] = to_date
 
-        all_students = MentorStudent.get_all_students(mentor.id).filter(**filters)
+        assigned_students = MentorStudent.get_assigned_students(mentor.id).filter(**filters)
         my_students = MentorStudent.get_my_students(mentor.id).filter(**filters)
         available_students = MentorStudent.get_available_students().filter(**filters)
 
-        all_students = [record for record in all_students if record.topic_id in topics_id]
-        all_students = set([record.student_id for record in all_students])
-        all_students = [CustomUser.get_by_id(id).to_dict() for id in all_students]
+        assigned_students = [record for record in assigned_students if record.topic_id in topics_id]
+        assigned_students = set([record.student_id for record in assigned_students])
+        assigned_students = [CustomUser.get_by_id(id).to_dict() for id in assigned_students]
 
         my_students = set([item.student_id for item in my_students])
         my_students = [CustomUser.get_by_id(id).to_dict() for id in my_students]
@@ -62,12 +67,10 @@ class MentorView(View):
         available_students = [CustomUser.get_by_id(id).to_dict() for id in available_students]
 
         response = {'my_students': my_students,
-                    'all_students': all_students,
+                    'assigned_students': assigned_students,
                     'available_students': available_students}
 
         return JsonResponse(response, status=200)
-
-
 
     def post(self, request):
         """
@@ -76,8 +79,37 @@ class MentorView(View):
         :param request: the accepted HTTP request.
         :type request: `HttpRequest object`
 
-        :param mentor_id: ID of the certain mentor.
-        :type mentor_id: `int`
+        :return: return JsonResponse within record data with status 201 if record was successfully
+                create
+        """
+
+        data = request.body
+        if not data:
+            return RESPONSE_400_INVALID_DATA
+        topic_id = data.get('topicId')
+        topic = Topic.get_by_id(topic_id)
+        if not topic:
+            return RESPONSE_400_INVALID_DATA
+
+        user = request.user
+        if user in topic.mentors.all() or user == topic.author:
+            return RESPONSE_403_ACCESS_DENIED
+        if MentorStudent.topic_student_belonging(topic_id=topic_id, student_id=user.id):
+            return RESPONSE_403_ACCESS_DENIED
+
+        mentee = MentorStudent.create(student=user, topic=topic)
+        if mentee:
+            mentee = mentee.to_dict()
+            return JsonResponse(mentee, status=201)
+
+        return RESPONSE_400_INVALID_DATA
+
+    def put(self, request):
+        """
+        Method that handles PUT request.
+
+        :param request: the accepted HTTP request.
+        :type request: `HttpRequest object`
 
         :param student_id: ID of the certain student.
         :type student_id: `int`
@@ -100,20 +132,37 @@ class MentorView(View):
         if not student or not topic:
             return RESPONSE_404_OBJECT_NOT_FOUND
 
-        record = list(MentorStudent.objects.filter(student_id=student.id, topic_id=topic.id))
+        record = MentorStudent.topic_student_belonging(topic_id=topic.id, student_id=user.id)
 
         if record:
-            record[0].update(mentor=user)
+            record.update(mentor=user, is_done=data.get('is_done'))
             return RESPONSE_200_UPDATED
-
-        mentor = MentorStudent.create(mentor=user,
-                                      student=student,
-                                      topic=topic)
-
-        if mentor:
-            mentor = mentor.to_dict()
-            return JsonResponse(mentor, status=201)
         return RESPONSE_400_INVALID_DATA
+
+    def delete(self, request, topic_id):
+        """
+        Method that handles DELETE request.
+
+        :param request: the accepted HTTP request.
+        :type request: `HttpRequest object`
+
+        :param topic_id: ID of the certain topic.
+        :type topic_id: `int`
+
+        :return: response with status code 200 when mentee was successfully deleted or response with
+                 403 or 404 failed status code.
+        :rtype: `HttpResponse object."""
+
+        user = request.user
+        mentee = MentorStudent.topic_student_belonging(topic_id=topic_id, student_id=user.id)
+        if not mentee:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+        is_deleted = MentorStudent.delete_by_id(mentee.id)
+        if is_deleted:
+            return RESPONSE_200_DELETED
+
+        return RESPONSE_400_DB_OPERATION_FAILED
+
 
 def get_mentors(request):
     """
@@ -128,6 +177,7 @@ def get_mentors(request):
     mentors = set([record.mentor_id for record in MentorStudent.get_my_mentors(user_id)])
     mentors = [CustomUser.get_by_id(id).to_dict() for id in mentors]
     return JsonResponse({'receivers': mentors}, status=200)
+
 
 def get_students(request):
     """
@@ -144,3 +194,22 @@ def get_students(request):
     students = [CustomUser.get_by_id(id).to_dict() for id in students]
 
     return JsonResponse({'receivers': students}, status=200)
+
+
+def is_topic_student(request, topic_id):
+    """
+        Function that handle get request for students belonging to the certain topic.
+
+        :param request: The accepted HTTP request.
+        :type request: HTTPRequest objects.
+
+        :param topic_id: Id of certain topic.
+        :type topic_id: integer.
+
+        :return: Boolean
+        """
+    student = request.user
+    is_student = False
+    if MentorStudent.topic_student_belonging(topic_id=topic_id, student_id=student.id):
+        is_student = True
+    return JsonResponse({'is_student': is_student}, status=200)

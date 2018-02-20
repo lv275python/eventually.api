@@ -38,7 +38,9 @@ export default class TopicsList extends React.Component {
                         description={topic.description}
                         isActive={topic.id == this.state.isActive ? true : false}
                         change={this.change}
-                        id={topic.id} />
+                        id={topic.id}
+                        mentors={topic.mentors}
+                        curriculumId={topic.curriculum} />
                 ))}
             </div>
         );

@@ -68,14 +68,14 @@ class ItemModelTestCase(TestCase):
                           title='Python',
                           description='My awesome topic')
             topic_python.save()
-            topic_python.authors.add(custom_user_first, custom_user_third)
+            topic_python.mentors.add(custom_user_first, custom_user_third)
 
             topic_html = Topic(id=102,
                           curriculum=curriculum,
                           title='HTML',
                           description='My another awesome topic')
             topic_html.save()
-            topic_html.authors.add(custom_user_third)
+            topic_html.mentors.add(custom_user_third)
 
             item_first = Item(id=101,
                               name='read documentation',

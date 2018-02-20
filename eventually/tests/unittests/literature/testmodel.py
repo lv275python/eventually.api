@@ -41,7 +41,7 @@ class LiteratureItemTestCase(TestCase):
 
             topic = Topic(id=111,
                           curriculum=curriculum,
-                          authors=[user],
+                          author=user,
                           title='Topic title',
                           description='My awesome topic')
             topic.save()
