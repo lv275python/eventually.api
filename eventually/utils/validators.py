@@ -9,6 +9,7 @@ import re
 import imghdr
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.utils.datastructures import MultiValueDictKeyError
 
 PASSWORD_REG_EXP = r'^(?=.*?\d)(?=.*?[A-Z])(?=.*?[a-z])[A-Za-z\d]*$'
 STR_MIN_LENGTH = 0
@@ -267,6 +268,43 @@ def event_data_validate(data, required_keys):
     is_data_valid = len(errors) == 0
     return is_data_valid
 
+def event_paginator_validate_limit(request):
+    """
+    Function that provides event paginator limit validation
+
+    :param request: the data with events limit for pagination
+    that is received from event view.
+    :type request: QueryDict
+
+    :return: `True` if valid data, else `False`
+    :rtype `bool`
+    """
+    try:
+        int(request['limit'])
+    except MultiValueDictKeyError:
+        return False
+
+    return True
+
+
+def event_paginator_validate_number(request):
+    """
+    Function that provides event paginator number validation
+
+    :param request: the data with number for pagination
+    that is received from event view.
+    :type request: QueryDict
+
+    :return: `True` if valid data, else `False`
+    :rtype `bool`
+    """
+    try:
+        int(request['number'])
+    except MultiValueDictKeyError:
+        return False
+
+    return True
+
 def login_validate(data):
     """
     Function that provides login data validation.
@@ -424,7 +462,7 @@ def answer_data_validator(data, required_keys):
 
     validation_rules = {'vote': lambda val: isinstance(val, int),
                         'text': lambda val: string_validator(val, min_length=1, max_length=100),
-                        'members': list_of_int_validator}
+                        'members': lambda val: True if not val else list_of_int_validator(val)}
 
     for key, value in filtered_data.items():
         if value is not None:

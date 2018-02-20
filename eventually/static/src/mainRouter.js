@@ -12,6 +12,7 @@ import EventList from './containers/event/EventList';
 import EventDetails from './containers/event/EventDetails';
 import Event from './containers/event/Event';
 import Task from './containers/taskItem/Task';
+import VoteBox from './containers/voting/VoteBox';
 
 export default class MainRouter extends React.Component {
     render() {
@@ -27,6 +28,7 @@ export default class MainRouter extends React.Component {
                     <Route path='/dashboard' component={MentorDashboard}/>
                     <Route path='/teamlist' component={TeamList}/>
                     <Route path='/events/:eventId/task/:taskId' component={Task}/>
+                    <Route path='/events/:eventId/vote' component={VoteBox}/>
                     <Route path='/events/:eventId' component={EventDetails}/>
                     <Route path='/events' component={EventList}/>
                     <Redirect path='*' to='/home' />

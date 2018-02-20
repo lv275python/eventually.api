@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card';
-import { putEventService, GetTeamsListService } from './EventService';
+import { putEventService, getTeamsListService, getEvent } from './EventService';
 import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
 import TextField from 'material-ui/TextField';
@@ -46,7 +46,7 @@ export default class EventEdit extends React.Component {
     }
 
     getTeamItem = () => {
-        GetTeamsListService().then(response => {
+        getTeamsListService().then(response => {
             this.setState({
                 teams: response.data.teams
             });
@@ -97,8 +97,11 @@ export default class EventEdit extends React.Component {
         const budget = this.state.budget;
         const status = this.state.status;
         const duration = this.state.duration;
-
-        putEventService( this.state.eventId, teamId, name, description, startAt, budget, status, duration);
+        putEventService( this.state.eventId, teamId, name, description, startAt, budget, status, duration).then(response => {
+            getEvent(this.state.eventId).then(response =>{
+                this.props.editEvent(response.data);
+            });
+        });
         this.handleClose();
     }
 

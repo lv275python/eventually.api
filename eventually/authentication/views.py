@@ -262,4 +262,3 @@ def get_all_users(request):
         data = {'users': [user.to_dict() for user in users]}
         return JsonResponse(data, status=200)
     return RESPONSE_400_INVALID_HTTP_METHOD
-    

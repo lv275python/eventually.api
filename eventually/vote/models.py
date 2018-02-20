@@ -241,7 +241,7 @@ class Answer(AbstractModel):
 
         :return: none
         """
-        if members:
+        if members is not None:
             self.members = members
         if text:
             self.text = text

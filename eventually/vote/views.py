@@ -11,6 +11,7 @@ from vote.models import Vote, Answer
 from utils.responsehelper import (RESPONSE_200_DELETED,
                                   RESPONSE_200_UPDATED,
                                   RESPONSE_400_INVALID_DATA,
+                                  RESPONSE_400_INVALID_HTTP_METHOD,
                                   RESPONSE_403_ACCESS_DENIED,
                                   RESPONSE_404_OBJECT_NOT_FOUND)
 from utils.validators import (string_validator,
@@ -41,13 +42,15 @@ class VoteView(View):
         """
 
         user = request.user
-        team = Team.get_by_id(team_id)
+
         event = Event.get_by_id(event_id)
 
         if not vote_id:
             votes = event.vote_set.all()
             data = {'votes': [vote.to_dict() for vote in votes]}
             return JsonResponse(data, status=200)
+
+        team = Team.get_by_id(team_id)
 
         members = [user.id for user in team.members.all()]
         if user.id not in members:
@@ -210,13 +213,24 @@ class AnswerView(View):
         """
 
         user = request.user
-        team = Team.get_by_id(team_id)
+
         vote = Vote.get_by_id(vote_id)
 
         if not answer_id:
             answers = vote.answer_set.all()
-            data = {'answers': [answer.to_dict() for answer in answers]}
+            updated_answers = []
+
+            for answer in answers:
+                answer_dict = answer.to_dict()
+                answer_dict['checked'] = False
+                if user.id in answer_dict['members']:
+                    answer_dict['checked'] = True
+
+                updated_answers.append(answer_dict)
+            data = {'answers': updated_answers}
             return JsonResponse(data, status=200)
+
+        team = Team.get_by_id(team_id)
 
         team_members = [user.id for user in team.members.all()]
         if user.id not in team_members:
@@ -304,14 +318,14 @@ class AnswerView(View):
         if not answer:
             return RESPONSE_404_OBJECT_NOT_FOUND
 
-        if data.get('text') and string_validator(data['text']):
-            set_text = data.get('text')
-
-        data = {
-            'text': set_text,
+        final_data = {
             'members': data.get("members")
         }
-        answer.update(**data)
+
+        if data.get('text') and string_validator(data['text']):
+            final_data['text'] = data.get('text')
+
+        answer.update(**final_data)
         answer.to_dict()
         return RESPONSE_200_UPDATED
 
@@ -353,3 +367,28 @@ class AnswerView(View):
 
         Answer.delete_by_id(answer_id)
         return RESPONSE_200_DELETED
+
+    @staticmethod
+    def get_answers_with_members(request, event_id, vote_id):
+        """
+        returns JSON response with answers data for specific vote
+        """
+        if request.method == "GET":
+            if event_id:
+                vote = Vote.get_by_id(vote_id)
+                if not vote:
+                    return RESPONSE_404_OBJECT_NOT_FOUND
+
+                answers = vote.answer_set.all()
+
+                answers_members = []
+                for answer in answers:
+                    names = [member.first_name for member in answer.members.all()]
+                    data = {
+                        'id': answer.id,
+                        'text': answer.text,
+                        'members': {'names': names}
+                    }
+                    answers_members.append(data)
+                return JsonResponse({'answers_members': answers_members})
+        return RESPONSE_400_INVALID_HTTP_METHOD

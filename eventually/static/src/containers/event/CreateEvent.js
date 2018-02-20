@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { GetTeamsListService, PostEventService } from './EventService';
+import { getTeamsListService, postEventService } from './EventService';
 import Location from './GoogleLocation';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -50,7 +50,7 @@ class CreateEvent extends React.Component {
     }
 
     getData = () => {
-        GetTeamsListService().then(response => {
+        getTeamsListService().then(response => {
             this.setState({ teams: response.data.teams });
         });
     }
@@ -141,7 +141,9 @@ class CreateEvent extends React.Component {
             'longitude': this.state.longitude,
             'latitude': this.state.latitude
         };
-        PostEventService(data);
+        postEventService(data).then(response => {
+            this.props.addEvent(response.data);
+        });
         this.handleClose();
     };
 

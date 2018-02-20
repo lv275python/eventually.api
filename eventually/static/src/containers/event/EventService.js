@@ -7,8 +7,17 @@ const eventPath = apiUrl + 'events/';
 const teamPath = apiUrl + 'team/';
 const userPath = apiUrl + 'user/';
 
-export const getEvents = () => {
-    return axios.get(eventPath);
+export const getEvent = (eventId) => {
+    return axios.get(eventPath + eventId + '/');
+};
+
+export const getEvents = (limit, number) => {
+    return axios.get(eventPath, {
+        params: {
+            limit: limit,
+            number: number
+        }
+    });
 };
 
 export const putEventService = (eventId, teamId, name, description, startAt, budget, status, duration) => {
@@ -58,11 +67,11 @@ export const getOwner = (id) => {
     return axios.get(userPath+id+'/');
 };
 
-export const GetTeamsListService = () => axios.get(teamPath);
+export const getTeamsListService = () => axios.get(teamPath);
 
-export const PostEventService = (data) => {
+export const postEventService = (data) => {
     const url = teamPath + data.team + '/event/';
-    axios.post(url, data);
+    return axios.post(url, data);
 };
 
 export const deleteTaskService = (eventId, taskId) => {

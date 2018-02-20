@@ -7,16 +7,20 @@ of event's model objects.
 """
 
 import datetime
+from django.core.paginator import Paginator
 from django.views.generic.base import View
 from django.http import JsonResponse
 from team.models import Team
 from utils.validators import event_data_validate
+from utils.validators import event_paginator_validate_limit
+from utils.validators import event_paginator_validate_number
 from utils.responsehelper import (RESPONSE_200_DELETED,
                                   RESPONSE_200_UPDATED,
                                   RESPONSE_400_DB_OPERATION_FAILED,
                                   RESPONSE_400_INVALID_DATA,
                                   RESPONSE_403_ACCESS_DENIED,
                                   RESPONSE_404_OBJECT_NOT_FOUND)
+from vote.models import Vote, Answer
 from .models import Event
 
 
@@ -50,8 +54,26 @@ class EventView(View):
             events = []
             for team in teams:
                 events.extend(team.event_set.all())
-            data = {'events': [event.to_dict() for event in events]}
+
+            if not ((event_paginator_validate_limit(request.GET) is True \
+                and event_paginator_validate_number(request.GET) is True) \
+                or (event_paginator_validate_limit(request.GET) is False \
+                and event_paginator_validate_number(request.GET) is False)):
+                return RESPONSE_400_INVALID_DATA
+            if request.GET:
+                new_dict = {'get_limit': int(request.GET['limit']),
+                            'get_number': int(request.GET['number'])}
+                paginator = Paginator(events, new_dict['get_limit'])
+                page = paginator.page(new_dict['get_number'])
+                selected_events = page.object_list
+                data = {
+                    'events': [event.to_dict() for event in selected_events],
+                    'full_length': len(events)
+                }
+            else:
+                data = {'events': [event.to_dict() for event in events]}
             return JsonResponse(data, status=200)
+
         if event_id:
             event = Event.get_by_id(event_id)
             if not event:
@@ -111,6 +133,10 @@ class EventView(View):
 
         event = Event.create(team, **data)
         if event:
+            vote = Vote.create(event=event, title="Would you like to visit?")
+            Answer.create(members=[], vote=vote, text="I will go")
+            Answer.create(members=[], vote=vote, text="Maybe I will come")
+            Answer.create(members=[], vote=vote, text="No, I have another plans")
             return JsonResponse(event.to_dict(), status=201)
 
         return RESPONSE_400_DB_OPERATION_FAILED
@@ -147,7 +173,7 @@ class EventView(View):
         if not event_data_validate(data, required_keys=[]):
             return RESPONSE_400_INVALID_DATA
 
-        start_at = data.get('start_at')
+        start_at = data.get('startAt')
         start_at = datetime.datetime.fromtimestamp(start_at) if start_at else None
         duration = data.get('duration')
         duration = datetime.timedelta(seconds=duration) if duration else None
