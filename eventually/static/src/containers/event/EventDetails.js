@@ -1,4 +1,6 @@
 import React from 'react';
+import Snackbar from 'material-ui/Snackbar';
+import isEqual from 'lodash/isequal';
 import { eventTasksServiceGet, eventServiceGet, eventTaskServicePut, taskGetTeamService, getOwner } from './EventService';
 import Event from './Event';
 import EventTaskList from './EventTaskList';
@@ -28,17 +30,30 @@ export default class EventDetails extends React.Component {
             eventDescription: '',
             tasks: [],
             members: [],
+            tasksChanged: false,
         };
     }
 
     componentWillMount(){
         this.getEventTaskItem();
         this.getEventName();
+        let requestCycle = setInterval(this.getEventTaskItemInCycle, 3000);
     }
 
     getEventTaskItem = () => {
         eventTasksServiceGet(this.state.eventId).
             then(response => this.setState({'tasks': response.data.tasks}));
+    };
+
+    getEventTaskItemInCycle = () => {
+        eventTasksServiceGet(this.state.eventId).
+            then(response => {
+                if (!isEqual(response.data.tasks, this.state.tasks))
+                    this.setState({
+                        'tasks': response.data.tasks,
+                        'tasksChanged': !this.state.tasksChanged
+                    });
+            });
     };
 
     getTeamMembers = () => {
@@ -104,7 +119,7 @@ export default class EventDetails extends React.Component {
                     </div>
                 )}
                 {this.state.owner && (
-                    <div style={containerStyle}>
+                    <div style={containerStyle} key={this.state.tasksChanged.toString()}>
                         <EventTaskList
                             eventId={this.state.eventId}
                             eventTasks={this.state.tasks}
