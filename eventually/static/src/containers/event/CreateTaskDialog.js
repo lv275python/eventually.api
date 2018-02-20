@@ -27,7 +27,9 @@ export default class TaskDialog extends React.Component {
             eventId: props.eventId,
             teamId: props.teamId,
             members: [],
-            assignment: []
+            assignment: [],
+            messageTitle: '',
+            titleIsValid: false,
         };
     }
 
@@ -42,11 +44,28 @@ export default class TaskDialog extends React.Component {
     };
 
     handleClose = () => {
-        this.setState({ open: false });
+        this.setState({
+            open: false,
+            messageTitle: '',
+            titleIsValid: false,
+            assignment: []
+        });
     };
 
     handleTitle = event => {
-        this.setState({title: event.target.value});
+        const regex = /^.{4,255}$/;
+        if(regex.test(event.target.value) === true ) {
+            this.setState({
+                messageTitle: '',
+                title: event.target.value,
+                titleIsValid: true,
+            });
+        } else {
+            this.setState({
+                messageTitle: 'Required a minimum length of 4 characters',
+                titleIsValid: false,
+            });
+        }
     };
 
     handleDescription = event => {
@@ -72,15 +91,17 @@ export default class TaskDialog extends React.Component {
     }
 
     handleSubmit = () => {
-        const data = {
-            'title': this.state.title,
-            'description': this.state.description,
-            'status': this.state.status,
-            'users': this.state.assignment
-        };
-        eventTaskServicePost(this.state.eventId, data).then(response => {
-            this.handleClose();
-        });
+        if(this.state.titleIsValid === true){
+            const data = {
+                'title': this.state.title,
+                'description': this.state.description,
+                'status': this.state.status,
+                'users': this.state.assignment
+            };
+            eventTaskServicePost(this.state.eventId, data).then(response => {
+                this.handleClose();
+            });
+        }
     };
 
     render() {
@@ -106,7 +127,7 @@ export default class TaskDialog extends React.Component {
                     <ContentAdd />
                 </FloatingActionButton>
                 <Dialog
-                    title={this.props.title}
+                    title="Add task"
                     actions={actions}
                     modal={false}
                     open={this.state.open}
@@ -115,7 +136,8 @@ export default class TaskDialog extends React.Component {
                     <TextField
                         hintText="Name"
                         fullWidth={true}
-                        onChange = {this.handleTitle} />
+                        onChange = {this.handleTitle}
+                        errorText={this.state.messageTitle} />
                     <TextField
                         hintText="Description"
                         onChange = {this.handleDescription}
@@ -126,11 +148,11 @@ export default class TaskDialog extends React.Component {
                         floatingLabelText="Status"
                         fullWidth={true}
                         value={this.state.status}
-                        onChange = {this.handleStatus}
+                        onChange={this.handleStatus}
                     >
-                        <MenuItem value = {0} primaryText = 'To do' />
-                        <MenuItem value = {1} primaryText = 'In Progress' />
-                        <MenuItem value = {2} primaryText = 'Done' />
+                        <MenuItem value={0} primaryText='To do' />
+                        <MenuItem value={1} primaryText='In Progress' />
+                        <MenuItem value={2} primaryText='Done' />
                     </SelectField>
                     <SelectField
                         multiple={true}
