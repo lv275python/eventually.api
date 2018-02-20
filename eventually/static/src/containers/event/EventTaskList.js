@@ -1,7 +1,7 @@
 import React from 'react';
 import Sortable from 'sortablejs';
 import EventTaskItem from './EventTaskItem';
-import TaskDialog from './EventTaskDialog';
+import TaskDialog from './CreateTaskDialog';
 import { withRouter } from 'react-router-dom';
 import { eventTasksServiceGet, eventServiceGet, eventTaskServicePut, taskGetTeamService, getOwner } from './EventService';
 import Event from './Event';
