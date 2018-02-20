@@ -1,11 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router';
-import RaisedButton from 'material-ui/RaisedButton';
-import { getOwner, getTeam } from './EventService';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
+import {Link} from 'react-router';
+import {getTeam} from './EventService';
 import EventEdit from '../event/EventEdit';
-import EventTaskList from './EventTaskList';
+import MapComponent from 'src/containers/event/Map';
+import Paper from 'material-ui/Paper';
+
 
 const STATUS_CHOICES = {
     0: 'draft',
@@ -14,40 +13,42 @@ const STATUS_CHOICES = {
     3: 'finished'
 };
 
-const styleMain = {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    width: '100%',
-    maxWidth: '640px',
-    alignItems: 'center',
-    boxShadow: '0px 0px 31px 2px rgba(0,0,0,0.53)',
-    margin: '20px auto',
+const styleTextDiv = {
+    display: 'inline-block',
+    width: '45%',
 };
 
-const styleLowerMainOne = {
+const stylePaper = {
     display: 'flex',
-    justifyContent: 'center',
-    width: '100%',
-    margin: '10px 10px',
+    margin: '1% 0%',
 };
 
 const styleInp = {
-    fontSize: '25px',
+    fontSize: '15px',
     fontFamily: 'Roboto, sans-serif',
+    fontWeight: 'normal',
 };
 
 const styleSpan = {
+    margin_left: ' 0%',
     display: 'inline-block',
     fontSize: '15px',
-    width: '117px',
+    width: '35%',
+    fontWeight: 'bold',
+
 };
 
-const styleLowerMainTwo = {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    width: '85%',
-    margin: '10px 10px',
+const styleMain = {
+    width: '100%',
+    margin: '1% 4%',
+    paddingLeft: '10%',
+    paddingRight: '0%',
+    paddingBottom: '1%',
+};
+
+const styleMap = {
+    display: 'inline-block',
+    width: '50%',
 };
 
 class Event extends React.Component {
@@ -69,53 +70,72 @@ class Event extends React.Component {
             budget: this.props.budget,
             status: this.props.status,
             id: this.props.id,
+            isMarkerShown: false,
         };
     }
-    componentWillMount(){
+
+    componentWillMount() {
         let durationString = '';
-        durationString += Math.trunc(this.state.duration/(3600*24)) + 'd ';
-        durationString += Math.trunc((this.state.duration%(3600*24))/3600) + 'h ';
-        durationString += Math.trunc((this.state.duration%3600)/60) + 'm';
+        durationString += Math.trunc(this.state.duration / (3600 * 24)) + 'd ';
+        durationString += Math.trunc((this.state.duration % (3600 * 24)) / 3600) + 'h ';
+        durationString += Math.trunc((this.state.duration % 3600) / 60) + 'm';
         this.setState({durationString: durationString});
     }
 
+
     render() {
         return (
-            <div >
-                <div style={styleLowerMainOne}>
-                    <div>
-                        <p style={styleInp}><span style={styleSpan}>Name :</span>{this.state.name}</p>
-                        <p style={styleInp}><span style={styleSpan}>Description :</span>{this.state.description}</p>
-                        <p style={styleInp}><span style={styleSpan}>Owner :</span>{this.state.owner}</p>
-                        <p style={styleInp}><span style={styleSpan}>Start at :</span>{(new Date(this.state.startAt*1000)).toDateString()}</p>
-                        <p style={styleInp}><span style={styleSpan}>Created at :</span>{(new Date(this.state.createdAt*1000)).toDateString()}</p>
-                        <p style={styleInp}><span style={styleSpan}>Updated at :</span>{(new Date(this.state.updatedAt*1000)).toDateString()}</p>
-                        <p style={styleInp}><span style={styleSpan}>Duration :</span>{this.state.durationString}</p>
-                        <p style={styleInp}><span style={styleSpan}>Budget :</span>{this.state.budget}</p>
-                        <p style={styleInp}><span style={styleSpan}>Status :</span>{STATUS_CHOICES [this.state.status]}</p>
+            <div>
+                <Paper style={stylePaper} zDepth={4}>
+                    <div style={styleMain}>
+                        <div style={styleTextDiv}>
+                            <p style={styleInp}><span style={styleSpan}>Name :</span>{this.state.name}</p>
+                            <p style={styleInp}><span style={styleSpan}>Description :</span>{this.state.description}</p>
+                            <p style={styleInp}><span style={styleSpan}>Owner :</span>{this.state.owner}</p>
+                            <p style={styleInp}><span
+                                style={styleSpan}>Start at :</span>{(new Date(this.state.startAt * 1000)).toDateString()}
+                            </p>
+                            <p style={styleInp}><span
+                                style={styleSpan}>Created at :</span>{(new Date(this.state.createdAt * 1000)).toDateString()}
+                            </p>
+                            <p style={styleInp}><span
+                                style={styleSpan}>Updated at :</span>{(new Date(this.state.updatedAt * 1000)).toDateString()}
+                            </p>
+                            <p style={styleInp}><span style={styleSpan}>Duration :</span>{this.state.durationString}</p>
+                            <p style={styleInp}><span style={styleSpan}>Budget :</span>{this.state.budget}</p>
+                            <p style={styleInp}><span
+                                style={styleSpan}>Status :</span>{STATUS_CHOICES [this.state.status]}
+                            </p>
+                            {this.state.id && (
+                                <EventEdit
+                                    key={this.props.id.toString()}
+                                    team={this.props.team}
+                                    owner={this.props.owner}
+                                    name={this.props.name}
+                                    description={this.props.description}
+                                    startAt={this.props.startAt}
+                                    createdAt={this.props.createdAt}
+                                    updatedAt={this.props.updatedAt}
+                                    duration={this.props.duration}
+                                    longitude={this.props.longitude}
+                                    latitude={this.props.latitude}
+                                    budget={this.props.budget}
+                                    status={this.props.status}
+                                    id={this.props.id}
+                                />
+                            )}
+                        </div>
+                        <div style={styleMap}>
+                            <MapComponent
+                                longitude={this.props.longitude}
+                                latitude={this.props.latitude}
+                                name ={this.props.name}
+                            />
+                        </div>
                     </div>
-                </div>
-                {this.state.id && (
-                    <div style={styleLowerMainTwo}>
-                        <EventEdit
-                            key={this.props.id.toString()}
-                            team={this.props.team}
-                            owner={this.props.owner}
-                            name={this.props.name}
-                            description={this.props.description}
-                            startAt={this.props.startAt}
-                            createdAt={this.props.createdAt}
-                            updatedAt={this.props.updatedAt}
-                            duration={this.props.duration}
-                            longitude={this.props.longitude}
-                            latitude={this.props.latitude}
-                            budget={this.props.budget}
-                            status={this.props.status}
-                            id={this.props.id}
-                        />
-                    </div>
-                )}
+                </Paper>
             </div>
+
         );
     }
 }
