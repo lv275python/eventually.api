@@ -1,14 +1,12 @@
 import React from 'react';
 import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card';
-import { getEventService, putEventService, GetTeamsListService } from './EventService';
+import { putEventService, GetTeamsListService } from './EventService';
 import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 
@@ -87,7 +85,9 @@ export default class EventEdit extends React.Component {
         this.setState({budget: +event.target.value});
     };
 
-    handleStatus = (event, index, status) => this.setState({status});
+    handleStatus = (event, index, status) => {
+        this.setState({status});
+    };
 
     handleSave = () => {
         const teamId = this.state.teamId;
@@ -105,11 +105,13 @@ export default class EventEdit extends React.Component {
     render() {
         const actions = [
             <FlatButton
+                id = "cancel-button"
                 label="Cancel"
                 primary={true}
                 onClick={this.handleClose}
             />,
             <FlatButton
+                id = "save-button"
                 label="Save"
                 primary={true}
                 keyboardFocused={true}
@@ -120,12 +122,14 @@ export default class EventEdit extends React.Component {
             <div>
                 <form>
                     <RaisedButton
+                        id = "edit-button"
                         label="Edit"
                         primary={true}
                         keyboardFocused={true}
                         onClick={this.handleOpen}
                     />
                     <Dialog
+                        id = "dialog-buttons"
                         title={this.props.title}
                         actions={actions}
                         modal={false}
@@ -134,6 +138,7 @@ export default class EventEdit extends React.Component {
                         autoScrollBodyContent={true}
                     >
                         <TextField
+                            id = "name-input"
                             floatingLabelText="Name:"
                             onChange={this.handleName}
                             hintText='Name'
@@ -141,6 +146,7 @@ export default class EventEdit extends React.Component {
                             fullWidth={true}
                         />
                         <TextField
+                            id = "description-input"
                             floatingLabelText="Description:"
                             onChange={this.handleDescription}
                             hintText='Description'
@@ -148,6 +154,7 @@ export default class EventEdit extends React.Component {
                             fullWidth={true}
                         />
                         <DatePicker
+                            id ="start-date-input"
                             floatingLabelText="Start date and time."
                             onChange={this.handleStartAt}
                             mode="landscape"
@@ -164,6 +171,7 @@ export default class EventEdit extends React.Component {
                             onChange={this.handleStartAt}
                         />
                         <DatePicker
+                            id = "end-date-input"
                             floatingLabelText="End date and time."
                             onChange={this.handleDuration}
                             mode="landscape"
@@ -180,6 +188,7 @@ export default class EventEdit extends React.Component {
                             onChange={this.handleDuration}
                         />
                         <SelectField
+                            id = "teams-input"
                             floatingLabelText="Team:"
                             hintText="Team"
                             fullWidth={true}
@@ -191,6 +200,7 @@ export default class EventEdit extends React.Component {
                             })}
                         </SelectField>
                         <TextField
+                            id = "budget-input"
                             floatingLabelText="Budget:"
                             onChange={this.handleBudget}
                             hintText='Budget'
@@ -198,9 +208,10 @@ export default class EventEdit extends React.Component {
                             fullWidth={true}
                         />
                         <SelectField
+                            id = "status-input"
                             floatingLabelText="Status"
-                            value={this.state.status}
                             onChange={this.handleStatus}
+                            value={this.state.status}
                         >
                             <MenuItem value={0} primaryText="Draft" />
                             <MenuItem value={1} primaryText="Published" />
