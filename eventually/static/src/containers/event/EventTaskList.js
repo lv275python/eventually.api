@@ -1,8 +1,9 @@
 import React from 'react';
 import Sortable from 'sortablejs';
+import isEqual from 'lodash/isequal';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import { eventTaskServicePut } from './EventService';
+import { eventTaskServicePut, eventTasksServiceGet } from './EventService';
 import EventTaskItem from './EventTaskItem';
 
 
@@ -83,21 +84,42 @@ export default class EventTaskList extends React.Component {
         super(props);
         this.state = {
             eventId: this.props.eventId,
-            tasks: this.props.eventTasks,
+            tasks: [],
             members: this.props.members,
             openDoneDialog: false,
-            tasksChangeStatus: 0,
-            toDoneTaskId: null
+            tasksChangeStatus: false,
+            toDoneTaskId: null,
         };
     }
 
+    componentWillMount(){
+        this.getEventTaskItem();
+        console.log(this.state.tasksChangeStatus);
+        this.setState({'tasksChangeStatus': !this.state.tasksChangeStatus});
+        console.log(, this.state.tasksChangeStatus);
+    }
+
+    getEventTaskItem = () => {
+        eventTasksServiceGet(this.state.eventId).
+            then(response => {
+                if (!isEqual(response.data.tasks, this.state.tasks)){
+                    this.setState({
+                        'tasks': response.data.tasks,
+                    });
+                };
+            });
+    };
+
+    componentDidMount(){
+         console.log(this.state.tasksChangeStatus);
+    }
+
     shouldComponentUpdate(nextProps, nextState){
-        return this.props != nextProps || this.state.openDoneDialog != nextState.openDoneDialog || (this.state.tasks == nextState.tasks && this.state.toDoneTaskId == nextState.toDoneTaskId);
+        return this.state.tasksChangeStatus != nextState.tasksChangeStatus || this.state.openDoneDialog != nextState.openDoneDialog
     }
 
     handleOpen = () => {
         this.setState({openDoneDialog: true});
-        return true;
     };
 
     handleClose = () => {
@@ -105,21 +127,14 @@ export default class EventTaskList extends React.Component {
     };
 
     handleDialogNo = () => {
-        this.setState({'tasksChangeStatus': this.state.tasksChangeStatus+1});
+        this.setState({'tasksChangeStatus': !this.state.tasksChangeStatus});
         this.handleClose();
     };
 
     handleDialogYes = () => {
         let data = {status: 2};
-        eventTaskServicePut(this.state.eventId, this.state.toDoneTaskId, data);
-        let nextTasks = this.state.tasks.map(
-            task => {
-                if (task.id == this.state.toDoneTaskId) task.status = 2;
-                return task;
-            }
-        );
-        this.setState({tasks: nextTasks});
-        this.setState({'tasksChangeStatus': this.state.tasksChangeStatus+1});
+        eventTaskServicePut(this.state.eventId, this.state.toDoneTaskId, data).
+            then(response => this.getEventTaskItem());
         this.handleClose();
     };
 
@@ -132,19 +147,16 @@ export default class EventTaskList extends React.Component {
                     let taskId = evt.item.id;
                     let data = {status: +evt.to.id};
                     if (evt.to.id == '2') {
-                        this.handleOpen(taskId);
-                        this.setState({'toDoneTaskId': taskId});
+                        eventTaskServicePut(this.state.eventId, taskId, data).
+                            then(response => {
+                                this.getEventTaskItem();
+                                this.setState({'toDoneTaskId': taskId});
+                            });
+                        this.handleOpen();
                     }
                     else {
-                        eventTaskServicePut(this.state.eventId, taskId, data);
-                        let nextTasks = this.state.tasks.map(
-                            task => {
-                                if (task.id == taskId) task.status = +evt.to.id;
-                                return task;
-                            }
-                        );
-                        this.setState({tasks: nextTasks});
-                        this.setState({'tasksChangeStatus': this.state.tasksChangeStatus+1});
+                        eventTaskServicePut(this.state.eventId, taskId, data).
+                            then(response => this.getEventTaskItem());
                     }
                 },
             };
@@ -168,7 +180,8 @@ export default class EventTaskList extends React.Component {
 
         let taskTable = [];
         for(let counter = 0; counter < 3; counter++){
-            let strCounter = counter.toString() + this.state.tasksChangeStatus;
+            console.log(this.state.tasks);
+            let strCounter = counter.toString() + this.state.tasksChangeStatus.toString();
             const styleName = ['toDoBodyStyle', 'inProgressBodyStyle', 'doneBodyStyle'];
             taskTable.push(
                 <td style={tdStyle[styleName[counter]]} key={strCounter}>
