@@ -50,7 +50,7 @@ export default class StudentsTabsList extends React.Component {
                 this.setState({
                     studentsList: {
                         myStudents: data.my_students,
-                        allStudents: data.all_students,
+                        allStudents: data.assigned_students,
                         availableStudents: data.available_students
                     }
                 });
