@@ -1,0 +1,28 @@
+title User Login Model
+
+participant User
+participant UI component
+participant Authentication/views
+participant Validators
+participant Django authentication services
+
+User->+UI component: input data
+User->UI component: click 'login' button
+UI component->+Authentication/views: login(request)
+Authentication/views->+Validators: if request method is "POST": login_validate
+Authentication/views->UI component: if request method is not "POST": response (status 400)
+Validators->Authentication/views: return False
+Authentication/views->UI component: if data not valid: response (status 400)
+Validators->Authentication/views: return True
+deactivate Validators
+Authentication/views->+Django authentication services: authenticate(email, password)
+Django authentication services->Authentication/views: user
+deactivate Django authentication services
+Authentication/views->UI component: if user is not active: response (status 400)
+Authentication/views->Django authentication services: if user is active: login(request, user)
+activate Django authentication services
+Authentication/views->UI component: response (status 200)
+deactivate Django authentication services
+deactivate Authentication/views
+UI component->User: Home Page
+deactivate UI component
