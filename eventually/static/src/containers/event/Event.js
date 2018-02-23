@@ -15,41 +15,58 @@ const STATUS_CHOICES = {
 
 const styleTextDiv = {
     display: 'inline-block',
-    width: '45%',
+    width: '40%',
+    marginBottom: '0%',
 };
 
 const stylePaper = {
+    width: '70%',
     display: 'flex',
     margin: '1% 0%',
+    marginLeft: 'auto',
+    marginRight: 'auto',
 };
 
 const styleInp = {
-    fontSize: '15px',
+    fontSize: '17px',
+    margin: '0px',
     fontFamily: 'Roboto, sans-serif',
     fontWeight: 'normal',
 };
 
 const styleSpan = {
+    margin: '0px',
     margin_left: ' 0%',
     display: 'inline-block',
-    fontSize: '15px',
-    width: '35%',
+    fontSize: '17px',
     fontWeight: 'bold',
-
+    marginBottom: '0%',
 };
 
 const styleMain = {
     width: '100%',
-    margin: '1% 4%',
-    paddingLeft: '10%',
-    paddingRight: '0%',
-    paddingBottom: '1%',
+    margin: '0% 4%',
 };
 
 const styleMap = {
     display: 'inline-block',
-    width: '50%',
+    width: '45%',
+    margin: '5% 5%',
+    marginTop: '0',
 };
+
+const styleButton = {
+    margin: '5% 5%',
+};
+
+const styleHeader = {
+    textAlign: 'center',
+};
+
+const styleDescription = {
+    fontWeight: 'normal',
+};
+
 
 class Event extends React.Component {
 
@@ -82,60 +99,60 @@ class Event extends React.Component {
         this.setState({durationString: durationString});
     }
 
-
     render() {
         return (
             <div>
                 <Paper style={stylePaper} zDepth={4}>
                     <div style={styleMain}>
+                        <div style={styleHeader}><h1>{this.state.name}</h1></div>
+                        <h3>Description:<span style={styleDescription}>{'  ' +this.state.description}</span></h3>
                         <div style={styleTextDiv}>
-                            <p style={styleInp}><span style={styleSpan}>Name :</span>{this.state.name}</p>
-                            <p style={styleInp}><span style={styleSpan}>Description :</span>{this.state.description}</p>
-                            <p style={styleInp}><span style={styleSpan}>Owner :</span>{this.state.owner}</p>
-                            <p style={styleInp}><span
-                                style={styleSpan}>Start at :</span>{(new Date(this.state.startAt * 1000)).toDateString()}
-                            </p>
-                            <p style={styleInp}><span
-                                style={styleSpan}>Created at :</span>{(new Date(this.state.createdAt * 1000)).toDateString()}
-                            </p>
-                            <p style={styleInp}><span
-                                style={styleSpan}>Updated at :</span>{(new Date(this.state.updatedAt * 1000)).toDateString()}
-                            </p>
-                            <p style={styleInp}><span style={styleSpan}>Duration :</span>{this.state.durationString}</p>
-                            <p style={styleInp}><span style={styleSpan}>Budget :</span>{this.state.budget}</p>
-                            <p style={styleInp}><span
-                                style={styleSpan}>Status :</span>{STATUS_CHOICES [this.state.status]}
-                            </p>
-                            {this.state.id && (
-                                <EventEdit
-                                    key={this.props.id.toString()}
-                                    team={this.props.team}
-                                    owner={this.props.owner}
-                                    name={this.props.name}
-                                    description={this.props.description}
-                                    startAt={this.props.startAt}
-                                    createdAt={this.props.createdAt}
-                                    updatedAt={this.props.updatedAt}
-                                    duration={this.props.duration}
-                                    longitude={this.props.longitude}
-                                    latitude={this.props.latitude}
-                                    budget={this.props.budget}
-                                    status={this.props.status}
-                                    id={this.props.id}
-                                />
-                            )}
+                            <p style={styleInp}><span style={styleSpan}>Start at:</span>
+                                {'  ' + (new Date(this.state.startAt * 1000)).toTimeString().slice(0, 5) + '  ' +
+                                (new Date(this.state.startAt * 1000)).toDateString()}</p>
+                            <p style={styleInp}><span style={styleSpan}>Duration:</span>
+                                {'  ' + this.state.durationString}</p>
+                            <p style={styleInp}><span style={styleSpan}>Budget:</span>
+                                {'  ' + this.state.budget}</p>
+                            <p style={styleInp}><span style={styleSpan}>Status:</span>
+                                {'  ' + STATUS_CHOICES [this.state.status]}</p>
+                            <p style={styleInp}><span style={styleSpan}>Owner:</span>
+                                {'  ' + this.state.owner}</p>
+                            <p style={styleInp}><span style={styleSpan}>Created at:</span>
+                                {'  ' + (new Date(this.state.createdAt * 1000)).toDateString()}</p>
+                            <p style={styleInp}><span style={styleSpan}>Updated at: </span>
+                                {'  ' + (new Date(this.state.updatedAt * 1000)).toDateString()}</p>
+                            <div style={styleButton}>
+                                {this.state.id && (
+                                    <EventEdit
+                                        key={this.props.id.toString()}
+                                        team={this.props.team}
+                                        owner={this.props.owner}
+                                        name={this.props.name}
+                                        description={this.props.description}
+                                        startAt={this.props.startAt}
+                                        createdAt={this.props.createdAt}
+                                        updatedAt={this.props.updatedAt}
+                                        duration={this.props.duration}
+                                        longitude={this.props.longitude}
+                                        latitude={this.props.latitude}
+                                        budget={this.props.budget}
+                                        status={this.props.status}
+                                        id={this.props.id}
+                                    />
+                                )}
+                            </div>
                         </div>
                         <div style={styleMap}>
                             <MapComponent
                                 longitude={this.props.longitude}
                                 latitude={this.props.latitude}
-                                name ={this.props.name}
+                                name={this.props.name}
                             />
                         </div>
                     </div>
                 </Paper>
             </div>
-
         );
     }
 }
