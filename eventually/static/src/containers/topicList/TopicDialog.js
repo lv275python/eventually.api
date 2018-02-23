@@ -22,6 +22,10 @@ export default class TopicDialog extends React.Component {
             open: false,
             title: '',
             description: '',
+            messageTitle: '',
+            titleIsValid: false,
+            messageDescription: '',
+            descriptionIsValid: false
         };
     }
 
@@ -31,28 +35,61 @@ export default class TopicDialog extends React.Component {
     };
 
     handleClose = () => {
-        this.setState({ open: false });
-    };
-
-    handleTitle = event => {
-        this.setState({title: event.target.value});
-    };
-
-    handleDescription = event => {
-        this.setState({description: event.target.value});
-    };
-
-    handleSubmit = () => {
-        const data = {
-            'title': this.state.title,
-            'description': this.state.description,
-        };
-        postTopicService(this.props.curriculumId, data).then(response => {
-            this.handleClose();
+        this.setState({
+            open: false,
+            messageTitle: '',
+            messageDescription: '',
+            titleIsValid: false,
+            descriptionIsValid: false
         });
     };
 
+    handleTitle = event => {
+        const regex = /^.{4,255}$/;
+        if(regex.test(event.target.value) === true ) {
+            this.setState({
+                messageTitle: '',
+                title: event.target.value,
+                titleIsValid: true,
+            });
+        } else {
+            this.setState({
+                messageTitle: 'Required a minimum length of 4 characters, maximum length of 255 characters',
+                titleIsValid: false,
+            });
+        }
+    };
+
+    handleDescription = event => {
+        const regex = /^.{10,1024}$/;
+        if(regex.test(event.target.value) === true ) {
+            this.setState({
+                messageDescription: '',
+                description: event.target.value,
+                descriptionIsValid: true,
+            });
+        } else {
+            this.setState({
+                messageDescription: 'Required a minimum length of 10 characters, maximum length of 1024 characters',
+                descriptionIsValid: false,
+            });
+        }
+    };
+
+    handleSubmit = () => {
+        if(this.state.titleIsValid&this.state.descriptionIsValid){
+            const data = {
+                'title': this.state.title,
+                'description': this.state.description,
+            };
+            postTopicService(this.props.curriculumId, data).then(response => {
+                this.handleClose();
+            });
+        }
+    };
+
     render() {
+        const disable = !(this.state.titleIsValid&this.state.descriptionIsValid);
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -64,6 +101,7 @@ export default class TopicDialog extends React.Component {
                 primary={true}
                 keyboardFocused={true}
                 onClick={this.handleSubmit}
+                disabled={disable}
             />,
         ];
 
@@ -85,14 +123,16 @@ export default class TopicDialog extends React.Component {
                     <TextField
                         hintText="Title"
                         fullWidth={true}
-                        onChange = {this.handleTitle} />
+                        onChange={this.handleTitle}
+                        errorText={this.state.messageTitle} />
                     <TextField
                         hintText="Description"
                         multiLine={true}
                         rows={2}
                         rowsMax={4}
                         fullWidth={true}
-                        onChange = {this.handleDescription} />
+                        onChange={this.handleDescription}
+                        errorText={this.state.messageDescription} />
                 </Dialog>
             </div>
         );

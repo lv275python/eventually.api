@@ -23,7 +23,6 @@ export default class TaskDialog extends React.Component {
             open: false,
             title: '',
             description: '',
-            status: 0,
             eventId: props.eventId,
             teamId: props.teamId,
             members: [],
@@ -72,10 +71,6 @@ export default class TaskDialog extends React.Component {
         this.setState({description: event.target.value});
     };
 
-    handleStatus = (event, index, value) => {
-        this.setState({'status': value});
-    };
-
     handleChange = (event, index, values) => this.setState({'assignment': values});
 
     menuItems(values) {
@@ -95,7 +90,6 @@ export default class TaskDialog extends React.Component {
             const data = {
                 'title': this.state.title,
                 'description': this.state.description,
-                'status': this.state.status,
                 'users': this.state.assignment
             };
             eventTaskServicePost(this.state.eventId, data).then(response => {
@@ -105,6 +99,7 @@ export default class TaskDialog extends React.Component {
     };
 
     render() {
+        const disable = !this.state.titleIsValid;
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -114,11 +109,10 @@ export default class TaskDialog extends React.Component {
             <FlatButton
                 label="Submit"
                 primary={true}
-                keyboardFocused={true}
                 onClick={this.handleSubmit}
+                disabled={disable}
             />,
         ];
-        const {values} = this.state;
         return (
             <div>
                 <FloatingActionButton
@@ -136,24 +130,14 @@ export default class TaskDialog extends React.Component {
                     <TextField
                         hintText="Name"
                         fullWidth={true}
-                        onChange = {this.handleTitle}
+                        onChange={this.handleTitle}
                         errorText={this.state.messageTitle} />
                     <TextField
                         hintText="Description"
-                        onChange = {this.handleDescription}
+                        onChange={this.handleDescription}
                         multiLine={true}
                         rowsMax={4}
                         fullWidth={true} />
-                    <SelectField
-                        floatingLabelText="Status"
-                        fullWidth={true}
-                        value={this.state.status}
-                        onChange={this.handleStatus}
-                    >
-                        <MenuItem value={0} primaryText='To do' />
-                        <MenuItem value={1} primaryText='In Progress' />
-                        <MenuItem value={2} primaryText='Done' />
-                    </SelectField>
                     <SelectField
                         multiple={true}
                         floatingLabelText="Select users"
