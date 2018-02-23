@@ -1,7 +1,6 @@
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 const WebpackShellPlugin = require('webpack-shell-plugin');
-const IstanbulPlugin = require ('webpack-istanbul-plugin');
 const path = require('path');
 
 const config = {
@@ -34,19 +33,7 @@ const config = {
     plugins: [
         new WebpackShellPlugin({
             onBuildExit: 'mocha testBundle.js'
-        }),
-
-        new IstanbulPlugin({
-                    test: /\.js$/,
-                    include: [
-                        path.join(__dirname, 'eventually/static/'),
-                    ],
-                    exclude: [
-                        path.resolve('node_modules'),
-                        path.resolve('test/index.js'),
-                        /\.spec\.js$/,
-                    ],
-                }),
+        })
     ]
 };
 

@@ -4,6 +4,7 @@ import sinon from 'sinon';
 import {shallow, configure, render, mount} from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import EventEdit from '../../event/EventEdit';
+import * as EventService from '../../event/EventService';
 
 
 configure({ adapter: new Adapter() });
@@ -11,7 +12,7 @@ configure({ adapter: new Adapter() });
 describe('Component EventEdit Tests', () => {
     const renderComponent = (props) => {
         const defaultProps = {
-            eventId: 1,
+            id: 1,
             teams: [1,2,3],
             open: false,
             teamId: 1,
@@ -105,7 +106,6 @@ describe('Component EventEdit Tests', () => {
             wrapper.find('#status-input').simulate('Change', event,2,2);
             expect(wrapper.state().status).toEqual(2);
         });
-
     });
 
     describe ('Check if handleFunctions called', () =>{
@@ -206,6 +206,25 @@ describe('Component EventEdit Tests', () => {
             expect(spy.called).toEqual(true);
         });
 
+        it('check getTeamItem called and change the state', () => {
+            const promise = Promise.resolve(
+                {
+                    data: {
+                        teams: [
+                            {'id':1, name: 'ProstoTeam'},
+                            {'id':2, name: 'SuperTeam'}
+                        ]
+                    }
+                });
+            sinon.stub(EventService, 'GetTeamsListService').callsFake(() => promise);
+            const wrapper = renderComponent();
+            return promise
+                .then(() => {
+                    expect(wrapper.update().state().teams).toEqual(
+                        [{'id': 1, 'name': 'ProstoTeam'}, {'id': 2, 'name': 'SuperTeam'}]
+                    );
+                });
+        });
     });
 
     describe('Check Buttons click', () => {
@@ -227,4 +246,3 @@ describe('Component EventEdit Tests', () => {
     });
 
 });
-
