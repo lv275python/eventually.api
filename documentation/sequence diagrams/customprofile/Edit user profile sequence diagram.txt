@@ -1,4 +1,4 @@
-title  Edit user profile sequence diagram         
+title  Edit user profile sequence diagram
 User-> +Profile : click 'Edit' button
 Profile->+ Profile Edit : open Edit
 deactivate Profile
