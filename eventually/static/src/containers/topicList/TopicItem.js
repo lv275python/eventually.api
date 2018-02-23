@@ -1,17 +1,18 @@
 import React from 'react';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import {lightGreen400} from 'material-ui/styles/colors';
 import {TopicDialog} from 'src/containers';
 import { postTopicAssignService, getTopicStudentsService, deleteMenteeService, getIsMentorService } from './TopicServices';
 import {getUserId} from 'src/helper';
 
-const cardTextstyle = {
+const cardTextStyle = {
     color: '#455A64',
     fontSize: '15px'
 };
 
-const cardHederStyle= {
+const cardHeaderStyle= {
     fontSize: '25px'
 };
 
@@ -29,7 +30,9 @@ export default class TopicItem extends React.Component {
             expanded: this.props.isActive,
             isAuthor: false,
             isMentor: false,
-            isStudent: false
+            isStudent: false,
+            leaveDialogOpen:false,
+            leaveTopic: false
         };
     }
 
@@ -57,10 +60,27 @@ export default class TopicItem extends React.Component {
         });
     };
 
-    handleLeave = () => {
+    handleOpen = () => {
+        this.setState({ leaveDialogOpen: true });
+    };
+
+    handleClose = () => {
+        this.setState({ leaveDialogOpen: false });
+    };
+
+    handleYes = () => {
         deleteMenteeService (this.props.id).then(response => {
             this.setState({'isStudent': !this.state.isStudent});
+            this.handleClose();
         });
+    };
+
+    handleNo = () => {
+        this.handleClose();
+    };
+
+    handleLeave = () => {
+        this.handleOpen();
     };
 
     render() {
@@ -76,6 +96,19 @@ export default class TopicItem extends React.Component {
             click = this.handleAssign;
         }
 
+        const actionsDialog = [
+            <FlatButton
+                label="No"
+                primary={true}
+                onClick={this.handleNo}
+            />,
+            <FlatButton
+                label="Yes"
+                primary={true}
+                onClick={this.handleYes}
+            />,
+        ];
+
         return (
             <div>
                 <Card
@@ -83,14 +116,14 @@ export default class TopicItem extends React.Component {
                     expanded={this.state.expanded}
                 >
                     <CardHeader
-                        style={cardHederStyle}
+                        style={cardHeaderStyle}
                         title={this.props.title}
                         actAsExpander={true}
                         showExpandableButton={true}
                     />
 
                     <CardText
-                        style={cardTextstyle}
+                        style={cardTextStyle}
                         expandable={true}>
                         {this.props.description}
                         <CardActions>
@@ -102,6 +135,13 @@ export default class TopicItem extends React.Component {
                             </div>
                         </CardActions>
                     </CardText>
+                    <Dialog
+                        actions={actionsDialog}
+                        modal={true}
+                        open={this.state.leaveDialogOpen}
+                    >
+                        Do you really want to leave this topic?
+                    </Dialog>
                 </Card>
             </div>
         );
