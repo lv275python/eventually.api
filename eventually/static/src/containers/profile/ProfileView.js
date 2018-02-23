@@ -11,7 +11,7 @@ const styleMain = {
     flexDirection: 'column',
     justifyContent: 'center',
     width: '100%',
-    maxWidth: '640px',
+    maxWidth: '700px',
     alignItems: 'center',
     boxShadow: '0px 0px 31px 2px rgba(0,0,0,0.53)',
     margin: '20px auto',

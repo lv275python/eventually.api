@@ -2,7 +2,7 @@ import React from 'react';
 import ProfileEdit from './ProfileEdit';
 import ProfileView from './ProfileView';
 import {getUserId} from 'src/helper';
-import {getProfileService, putProfileService} from './ProfileService';
+import {getProfileService} from './ProfileService';
 
 export default class Profile extends React.Component {
     constructor(props){
@@ -38,7 +38,6 @@ export default class Profile extends React.Component {
         });                 
     }
 
-
     handleEditClick = () => {
         this.setState({
             isEdit: true
@@ -46,61 +45,12 @@ export default class Profile extends React.Component {
     }
 
     handleClose = () => {
+        this.componentWillMount();
         this.setState({
             isEdit: false
         });
-    }
-
-    handleFirstNameChange = event => {
-        this.setState({
-            firstMame: event.target.value
-        });
     };
 
-    handleMiddleNameChange = event => {
-        this.setState({
-            middleName: event.target.value
-        });
-    };
-
-    handleLastNameChange = event => {
-        this.setState({
-            lastName: event.target.value
-        });
-    };
-
-    handleHobbyChange = event => {
-        this.setState({
-            hobby: event.target.value
-        });
-    };
-
-    handleBirthdayChange = (event, date) => {
-        this.setState({
-            birthday: date
-        });
-    };
-
-    uploadImage = imageName => {
-        this.setState({photo: imageName});
-    }
-
-    handleSave = () => {
-        const firstName = this.state.firstName;
-        const middleName = this.state.middleName;
-        const lastName = this.state.lastName;
-        const hobby = this.state.hobby;
-        const photo = this.state.photo;
-        const birthday = this.state.birthday.getFullYear() + '-' +(this.state.birthday.getMonth() + 1) + '-' +  this.state.birthday.getDate();
-        
-
-        putProfileService(this.state.id, firstName, middleName, lastName, hobby, photo, birthday)
-            .then(response => {
-                this.handleClose();
-            });
-    };
-
-    
     render(){
 
         const profileData = {
@@ -117,16 +67,12 @@ export default class Profile extends React.Component {
             (<ProfileEdit 
                 profileData={profileData} 
                 onCloseClick={this.handleClose}
-                onEditClick={this.handleEditClick} 
-                onFirstNameChange={this.handleFirstNameChange} 
-                onMiddleNameChange={this.handleMiddleNameChange} 
-                onLastNameChange={this.handleLastNameChange} 
-                onHobbyChange={this.handleHobbyChange} 
-                onBirthdayChange={this.handleBirthdayChange}
-                uploadImage={this.uploadImage}
-                onSaveClick={this.handleSave} 
             />) : 
-            (<ProfileView profileData={profileData} isMyProfile={this.state.isMyProfile} onEditClick={this.handleEditClick} />);
+            (<ProfileView
+                profileData={profileData}
+                isMyProfile={this.state.isMyProfile}
+                onEditClick={this.handleEditClick}
+            />);
         return(
             <div>
                 {view}
