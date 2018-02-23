@@ -19,7 +19,7 @@ export default class TopicsList extends React.Component {
         };
     }
 
-    change = (id) => {
+    change = id => {
 
         if (this.state.isActive === id) {
             this.setState({isActive: -1});
@@ -46,4 +46,3 @@ export default class TopicsList extends React.Component {
         );
     }
 }
-

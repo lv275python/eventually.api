@@ -29,11 +29,14 @@ class CurriculumList extends React.Component {
     }
 
     componentWillMount() {
+        this.getCurriculumsData();
+    }
+
+    getCurriculumsData = () => {
         getCurriculumsService().then(response => {
             this.setState({'curriculums': response.data['curriculums']});
         });
     }
-
 
     render() {
         return (
@@ -48,9 +51,12 @@ class CurriculumList extends React.Component {
                         />)
                     )
                 }
-                <CurriculumDialog style={CurriculumDialogStyle}/>
+                <CurriculumDialog
+                    style={CurriculumDialogStyle}
+                    getCurriculumsData={this.getCurriculumsData}/>
             </div>
         );
     }
 }
+
 export default CurriculumList;
