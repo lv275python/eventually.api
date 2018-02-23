@@ -83,6 +83,7 @@ export default class TopicDialog extends React.Component {
                 'description': this.state.description,
             };
             postTopicService(this.props.curriculumId, data).then(response => {
+                this.props.getTopicListData();
                 this.handleClose();
             });
         }
