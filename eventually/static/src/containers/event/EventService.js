@@ -67,5 +67,5 @@ export const PostEventService = (data) => {
 
 export const deleteTaskService = (eventId, taskId) => {
     const url = eventPath + eventId + '/task/' + taskId + '/';
-    axios.delete(url);
+    return axios.delete(url);
 };

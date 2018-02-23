@@ -4,18 +4,11 @@ import isEqual from 'lodash/isEqual';
 import { eventTasksServiceGet, eventServiceGet, eventTaskServicePut, taskGetTeamService, getOwner } from './EventService';
 import Event from './Event';
 import EventTaskList from './EventTaskList';
-import TaskDialog from './CreateTaskDialog';
 
 
 const containerStyle = {
     width: '99%',
     margin: '0 auto',
-};
-
-const taskDialogStyle = {
-    position: 'fixed',
-    right: '3%',
-    top: '85%'
 };
 
 export default class EventDetails extends React.Component {
@@ -103,17 +96,11 @@ export default class EventDetails extends React.Component {
                         <EventTaskList
                             eventId={this.state.eventId}
                             eventTasks={this.state.tasks}
-                            getEventTaskItem={this.getEventTaskItem}
                             members={this.state.members}
+                            teamId={this.state.teamId}
                         />
                     </div>
                 )}
-                {this.state.teamId && (<div style={containerStyle}>
-                    <TaskDialog
-                        eventId={this.state.eventId}
-                        teamId={this.state.teamId}
-                        style={taskDialogStyle}/>
-                </div>)}
             </div>
         );
     }

@@ -9,10 +9,6 @@ import {deleteTaskService} from 'src/containers/event/EventService';
 
 
 export default class EventTaskItem extends React.Component {
-    handleDelete = () => {
-        deleteTaskService(this.state.eventId, this.state.id);
-    }
-
     constructor(props) {
         super(props);
         this.state = {
@@ -22,6 +18,13 @@ export default class EventTaskItem extends React.Component {
             description: this.props.description.slice(0, 300) + '...',
             openDialog: false
         };
+    }
+
+    handleDelete = () => {
+        deleteTaskService(this.state.eventId, this.state.id).
+            then(response => {
+                this.props.getEventTaskItem();
+            });
     }
 
     render() {
@@ -46,6 +49,7 @@ export default class EventTaskItem extends React.Component {
                                 id = {this.props.id}
                                 assignmentUsers = {this.props.assignmentUsers}
                                 eventId = {this.props.eventId}
+                                getEventTaskItem = {this.props.getEventTaskItem}
                             />
                             <RaisedButton label="Delete" onClick={this.handleDelete} style = {{margin: '1%'}}/>
                         </CardActions>
