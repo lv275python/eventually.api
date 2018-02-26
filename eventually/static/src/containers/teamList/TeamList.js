@@ -22,7 +22,12 @@ export default class TeamList extends React.Component {
     }
 
     getTeamItem = () => {
-        teamServiceGet().then(response => this.setState({'teams': response.data.teams}));
+        teamServiceGet(true).then(response => this.setState({'teams': response.data.teams}));
+    };
+
+    goToUserProfile = (id) =>
+    {
+        this.props.history.push('/profile/'+id);
     };
 
     updateTeamItem = (id, name, description, image) => {
@@ -51,6 +56,7 @@ export default class TeamList extends React.Component {
                         updateItem={this.updateTeamItem}
                         listOfMembers={team.members_id}
                         owner={team.owner_id}
+                        goToUserProfile={this.goToUserProfile}
                     />
                 ))}
                 <CreateTeamDialog

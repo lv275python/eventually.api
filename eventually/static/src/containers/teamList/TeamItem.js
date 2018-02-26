@@ -1,9 +1,11 @@
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import Subheader from 'material-ui/Subheader';
 import EditTeamDialog from './EditTeamDialog';
 import {getImageUrl, getUserId} from 'src/helper';
 import {teamServiceGet} from './teamService';
+import {Card, CardHeader, CardText} from 'material-ui/Card';
+import Avatar from 'material-ui/Avatar';
+import Chip from 'material-ui/Chip';
 import DeleteTeamDialog from './DeleteTeamDialog';
 
 const styles = {
@@ -14,7 +16,8 @@ const styles = {
         padding: 7,
     },
     header: {
-        fontSize: '21px',
+        fontSize: '20px',
+        fontWeight: 'bold',
         color: 'black',
     },
     description: {
@@ -23,6 +26,7 @@ const styles = {
     members: {
         paddingTop: 20,
         float: 'left',
+        width: '100%',
     },
     button: {
         float: 'right',
@@ -31,6 +35,13 @@ const styles = {
     footer: {
         clear: 'both'
     },
+    member: {
+        marginTop: '1%',
+        marginLeft: '2%',
+    },
+    list: {
+        display: 'inline-block',
+    }
 };
 
 export default class TeamItem extends React.Component {
@@ -38,26 +49,19 @@ export default class TeamItem extends React.Component {
         super(props);
         this.state = {
             name: this.props.name,
-            description: this.props.description.slice(0,300)+'...',
+            description: this.props.description.slice(0, 50) + '...',
             image: this.props.image,
             members:this.props.members,/*count of members*/
             listOfMembers:this.props.listOfMembers,/*list with id of members*/
             listOfNamesMembers:[],
             open: false,
-            open_more:false,
             openDel: false,
             teamDeleted: false,
-            owner: this.props.owner
+            owner: this.props.owner,
+            expanded: false,
         };
     }
-    /*update old prop*/
-    componentWillReceiveProps(nextProps){
-        this.setState({
-            name: nextProps.name,
-            description: nextProps.description.slice(0,300)+'...',
-            image: nextProps.image,
-        });
-    }
+
     /*open dialog for editing*/
     handleOpen = () => {
         this.setState({open: true});
@@ -66,6 +70,31 @@ export default class TeamItem extends React.Component {
     handleClose = () => {
         this.setState({open: false});
     };
+    /*expand card*/
+    handleExpandChange = (expanded) => {
+        this.setState({expanded: expanded});
+        if (this.state.expanded == false) {
+            this.setState({
+                description: this.props.description,
+                open_more: !this.state.expanded
+            });
+        } else {
+            this.setState({
+                description: this.props.description.slice(0, 50) + '...',
+                open_more: !this.state.expanded
+            });
+        }
+    };
+
+
+    /*update old prop*/
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            name: nextProps.name,
+            description: nextProps.description.slice(0, 50) + '...',
+            image: nextProps.image,
+        });
+    }
     /*open dialog for deleting*/
     handleOpenDel = () => {
         this.setState({openDel: true});
@@ -74,20 +103,6 @@ export default class TeamItem extends React.Component {
     handleCloseDel = () => {
         this.setState({openDel: false});
     };
-    /*button `More info`*/
-    handleToggle = () => {
-        if (this.state.open_more == false){
-            this.setState({
-                description: this.props.description,
-                open_more: !this.state.open_more
-            });
-        }else{
-            this.setState({
-                description: this.props.description.slice(0,300)+'...',
-                open_more: !this.state.open_more
-            });
-        }
-    }
     /*checks if user is owner of team*/
     ownerCheck = () => {
         if (getUserId() == this.state.owner){
@@ -95,11 +110,11 @@ export default class TeamItem extends React.Component {
         } else {
             return false;
         }
-    }
+    };
     /*changes state when team is deleted*/
     comfirmDeleteTeam = () => {
         this.setState({teamDeleted: true});
-    }
+    };
 
     render() {
         styles.container = {
@@ -118,56 +133,88 @@ export default class TeamItem extends React.Component {
         };
 
         let delButton;
-        if (this.ownerCheck()==true) {
+        if (this.ownerCheck() == true) {
             delButton = <RaisedButton
-                label="Delete" 
+                label="Delete"
                 style={styles.button}
                 backgroundColor="#D50000"
                 labelColor="#FFF"
                 onClick={this.handleOpenDel}
             />;
-        } else{
+        } else {
             delButton = '';
         }
 
         let teamView;
-        if (this.state.teamDeleted==false) {
+        if (this.state.teamDeleted == false) {
             teamView = (
                 <div>
-                    <Subheader style={styles.header}>{this.state.name}</Subheader>  
-                    <div style={styles.description}>{this.state.description}</div>
-                    <div style={styles.members}>Members:<span>{this.props.members}</span></div>
-                    <RaisedButton label="More info" primary={true} onClick={this.handleToggle} style={styles.button}/>
-                    <RaisedButton label="Edit" onClick={this.handleOpen} style={styles.button}/>
-                    {delButton}
+                    <Card style={styles.team} expanded={this.state.expanded} onExpandChange={this.handleExpandChange}>
+                        <CardHeader title={this.state.name}
+                            actAsExpander={true}
+                            showExpandableButton={true}
+                            style={styles.header}/>
+                        <CardText>
+                            <div style={styles.description}>{this.state.description}</div>
+                            <div style={styles.members}>Members:<span>{this.props.members}</span></div>
+                        </CardText>
+                        <CardText expandable={true} style={styles.list}>
+                            {
+                                this.state.listOfMembers.map(usr => (
+                                    <div key={usr['id']} style={styles.member}>
+                                        <Chip onClick={() => this.props.goToUserProfile(usr['id'])}>
+                                            <Avatar src={(usr['photo']) && getImageUrl(usr['photo'])}/>
+                                            {usr['first_name'] + '  ' + usr['last_name']}
+                                        </Chip>
+                                    </div>
+                                ))
+                            }
+                        </CardText>
+                        <RaisedButton label="Edit" onClick={this.handleOpen} style={styles.button}/>
+                        {delButton}
+                        <div style={styles.footer}></div>
+                        <EditTeamDialog
+                            open={this.state.open}
+                            handleClose={this.handleClose}
+                            name={this.props.name}
+                            description={this.props.description}
+                            image={this.props.image}
+                            updateItem={this.props.updateItem}
+                            id={this.props.id}
+                        />
+                    </Card>
                 </div>
             );
         } else {
-            teamView = <p>Team '{this.state.name}' successfully deleted</p>;
+            teamView = (
+                <div style={styles.team}>
+                    <p>Team '{this.state.name}' successfully deleted</p>
+                </div>
+            );
         }
 
         return (
-            <div style={styles.container}>
-                <div style={styles.team}>
+            <div>
+                <div style={styles.container}>
                     {teamView}
                     <div style={styles.footer}></div>
                 </div>
                 <EditTeamDialog
-                    open = {this.state.open}
-                    handleClose = {this.handleClose}
-                    name = {this.props.name}
-                    description = {this.props.description}
-                    image = {this.props.image}
-                    updateItem = {this.props.updateItem}
-                    id = {this.props.id}
+                    open={this.state.open}
+                    handleClose={this.handleClose}
+                    name={this.props.name}
+                    description={this.props.description}
+                    image={this.props.image}
+                    updateItem={this.props.updateItem}
+                    id={this.props.id}
                 />
                 <DeleteTeamDialog
-                    openDel = {this.state.openDel}
-                    handleCloseDel = {this.handleCloseDel}
-                    name = {this.props.name}
-                    description = {this.props.description}
-                    id = {this.props.id}
-                    comfirmDeleteTeam = {this.comfirmDeleteTeam}
+                    openDel={this.state.openDel}
+                    handleCloseDel={this.handleCloseDel}
+                    name={this.props.name}
+                    description={this.props.description}
+                    id={this.props.id}
+                    comfirmDeleteTeam={this.comfirmDeleteTeam}
                 />
             </div>
         );

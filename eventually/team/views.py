@@ -78,6 +78,16 @@ class TeamView(View):
         current_user = request.user
         teams = current_user.teams.all()
         data = {'teams': [teama.to_dict() for teama in teams]}
+        if request.GET.get('full_name', None):
+            for i, team in enumerate(teams):
+                members = team.members.all()
+                for j, member in enumerate(members):
+                    data['teams'][i]['members_id'][j] = {
+                        'id': member.id,
+                        'first_name': member.first_name,
+                        'last_name': member.last_name,
+                        'photo': member.customprofile.photo
+                    }
         return JsonResponse(data, status=200)
 
     def post(self, request):
@@ -146,7 +156,7 @@ class TeamView(View):
         return RESPONSE_400_INVALID_DATA
 
     def delete(self, request, team_id):
-         #pylint: disable=unused-argument
+        # pylint: disable=unused-argument
         """
         Handles delete request
 
