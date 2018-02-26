@@ -81,6 +81,7 @@ export default class CurriculumDialog extends React.Component {
                 'description': this.state.description
             };
             postCurriculumService(data).then(response => {
+                this.props.getCurriculumsData();
                 this.handleClose();
             });
         }

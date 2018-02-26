@@ -45,5 +45,5 @@ class CurriculumLink extends React.Component {
         );
     }
 }
-export default CurriculumLink;
 
+export default CurriculumLink;

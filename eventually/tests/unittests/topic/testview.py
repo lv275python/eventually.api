@@ -72,8 +72,7 @@ class TestTopicApp(TestCase):
                                      'updated_at': 1509344112,
                                      'title': 'Topic #1',
                                      'description': "t_descr",
-                                     'mentors': ()}
-                                         ]}
+                                     'mentors': ()}]}
 
         url = reverse('curriculums:topics:index', args=[111])
         response = self.client.get(url)
