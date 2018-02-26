@@ -52,7 +52,10 @@ export default class TeamList extends React.Component {
                         listOfMembers={team.members_id}
                     />
                 ))}
-                <CreateTeamDialog style={CreateTeamDialogStyle}/>
+                <CreateTeamDialog
+                    style={CreateTeamDialogStyle}
+                    getTeamItem={this.getTeamItem}
+                />
             </div>
         );
     }
