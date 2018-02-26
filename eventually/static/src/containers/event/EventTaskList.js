@@ -5,6 +5,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { eventTaskServicePut, eventTasksServiceGet } from './EventService';
 import EventTaskItem from './EventTaskItem';
+import TaskDialog from './CreateTaskDialog';
 
 
 const tableStyle = {
@@ -72,10 +73,10 @@ const liStyle = {
     fontFamily: 'Trebuchet MS, Lucida Sans'
 };
 
-const TaskDialogStyle = {
+const taskDialogStyle = {
     position: 'fixed',
     right: '3%',
-    top: '85%'
+    top: '90%'
 };
 
 export default class EventTaskList extends React.Component {
@@ -188,6 +189,7 @@ export default class EventTaskList extends React.Component {
                                     members={this.state.members}
                                     eventId={this.state.eventId}
                                     status={task.status}
+                                    getEventTaskItem={this.getEventTaskItem}
                                 />
                             </li>
                         ))}
@@ -226,6 +228,13 @@ export default class EventTaskList extends React.Component {
                 >
                     Do you really want to change status of this task to Done?
                 </Dialog>
+                {this.props.teamId && (<div>
+                    <TaskDialog
+                        eventId={this.state.eventId}
+                        teamId={this.props.teamId}
+                        getEventTaskItem={this.getEventTaskItem}
+                        style={taskDialogStyle}/>
+                </div>)}
             </div>
         );
     }

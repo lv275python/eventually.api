@@ -90,9 +90,11 @@ export default class TaskDialog extends React.Component {
             const data = {
                 'title': this.state.title,
                 'description': this.state.description,
+                'status': 0,
                 'users': this.state.assignment
             };
             eventTaskServicePost(this.state.eventId, data).then(response => {
+                this.props.getEventTaskItem();
                 this.handleClose();
             });
         }
