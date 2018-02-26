@@ -13,15 +13,21 @@ class CurriculumLink extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            topics: [],
+            topics: []
         };
     }
 
     componentWillMount() {
-        getTopicListService(+this.props.id).then(response => {
-            this.setState({'topics': response.data['topics']});
-        });
+        this.getTopicListData();
     }
+
+    getTopicListData = () => {
+        getTopicListService(+this.props.id).then(response => {
+            this.setState({
+                'topics': response.data['topics']
+            });
+        });
+    };
 
     render() {
         return (
@@ -32,14 +38,14 @@ class CurriculumLink extends React.Component {
                         showExpandableButton={true}
                         style={cardHeaderStyle}
                         title={this.props.title}
-                        subtitle={this.props.description}
-                    />
+                        subtitle={this.props.description} />
                     <TopicsList
                         topics={this.state.topics}
                         expandable={true} />
                     <TopicDialog
                         expandable={true}
-                        curriculumId = {this.props.id} />
+                        curriculumId = {this.props.id}
+                        getTopicListData={this.getTopicListData} />
                 </Card>
             </div >
         );

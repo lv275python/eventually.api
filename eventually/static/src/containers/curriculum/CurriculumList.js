@@ -25,7 +25,6 @@ class CurriculumList extends React.Component {
         this.state = {
             curriculums: []
         };
-
     }
 
     componentWillMount() {
@@ -41,16 +40,13 @@ class CurriculumList extends React.Component {
     render() {
         return (
             <div style={containerStyle}>
-                {
-                    this.state.curriculums.map(curriculum => (
-                        <CurriculumLink
-                            key={curriculum.id.toString()}
-                            title={curriculum.name}
-                            description={curriculum.description}
-                            id={curriculum.id}
-                        />)
-                    )
-                }
+                {this.state.curriculums.map(curriculum => (
+                    <CurriculumLink
+                        key={curriculum.id.toString()}
+                        title={curriculum.name}
+                        description={curriculum.description}
+                        id={curriculum.id} />
+                ))}
                 <CurriculumDialog
                     style={CurriculumDialogStyle}
                     getCurriculumsData={this.getCurriculumsData}/>
