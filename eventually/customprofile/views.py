@@ -5,17 +5,18 @@ The module that provides basic logic for getting, updating and deleting
 of profile's model objects.
 """
 
+from django.core.cache import cache
 from django.contrib.auth import logout
 from django.views.generic.base import View
 from django.http import JsonResponse
 from authentication.models import CustomUser
+from utils.cache_helper import del_cache_profile
 from utils.responsehelper import (RESPONSE_400_INVALID_DATA,
                                   RESPONSE_200_UPDATED,
                                   RESPONSE_200_DELETED,
                                   RESPONSE_404_OBJECT_NOT_FOUND,
                                   RESPONSE_403_ACCESS_DENIED)
 from utils.validators import profile_data_validator
-
 
 class CustomProfileView(View):
     """
@@ -38,19 +39,39 @@ class CustomProfileView(View):
 
         :rtype: `HttpResponse object`.
         """
+
+        
         user = request.user
 
         if user_id:
             user = CustomUser.get_by_id(user_id)
             if not user:
                 return RESPONSE_404_OBJECT_NOT_FOUND
-
         profile = user.customprofile
         profile = profile.to_dict()
         user = user.to_dict()
         information = user.copy()
         information.update(profile)
         return JsonResponse(information, status=200)
+
+        """
+        user = request.user
+        if user_id:
+            hash_profile_key = 'current_profile_{0}'.format(user.id)
+            if hash_profile_key in cache:
+                information = cache.get(hash_profile_key)
+            else:
+                user = CustomUser.get_by_id(user_id)
+                if not user:
+                    return RESPONSE_404_OBJECT_NOT_FOUND
+                profile = user.customprofile
+                profile = profile.to_dict()
+                user = user.to_dict()
+                information = user.copy()
+                cache.set(hash_profile_key, information)
+                information.update(profile)
+            return JsonResponse(information, status=200)
+        """
 
     def put(self, request, user_id=None):
         """
@@ -82,7 +103,7 @@ class CustomProfileView(View):
 
         user.update(**data_user)
         profile.update(**data_profile)
-
+        del_cache_profile(user_id)
         return RESPONSE_200_UPDATED
 
     def delete(self, request):
@@ -96,5 +117,6 @@ class CustomProfileView(View):
         :rtype: `HttpResponse object."""
         user = request.user
         user.update(is_active=False)
+        del_cache_profile(user.id)
         logout(request)
         return RESPONSE_200_DELETED

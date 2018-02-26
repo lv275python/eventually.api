@@ -6,11 +6,12 @@ This module implements class that represents the team entity.
 """
 # pylint: disable=arguments-differ
 
+from django.core.cache import cache
 from django.db import models, IntegrityError
 from authentication.models import CustomUser
 from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
-
+import pickle
 
 class Team(AbstractModel):
 
@@ -68,17 +69,23 @@ class Team(AbstractModel):
             |   'members': [1, 4]
             | }
         """
+        redis_key = 'cache_team_to_dict_{0}'.format(self.id)
+        if redis_key in cache:
+            return cache.get(redis_key)
 
         members = [user.id for user in self.members.all()] if self.members else []
 
-        return {'id': self.id,
-                'name': self.name,
-                'description': self.description,
-                'image': self.image,
-                'created_at': int(self.created_at.timestamp()),
-                'updated_at': int(self.updated_at.timestamp()),
-                'owner_id': self.owner.id if self.owner else None,
-                'members_id': members}
+        team_dict = {'id': self.id,
+                    'name': self.name,
+                    'description': self.description,
+                    'image': self.image,
+                    'created_at': int(self.created_at.timestamp()),
+                    'updated_at': int(self.updated_at.timestamp()),
+                    'owner_id': self.owner.id if self.owner else None,
+                    'members_id': members}
+        cache.set(redis_key, team_dict)
+        return team_dict
+
 
     @staticmethod
     def create(owner, members, name=None, description='', image=''):
@@ -112,6 +119,8 @@ class Team(AbstractModel):
         try:
             team.save()
             team.members.add(*members)
+            redis_key = 'cache_team_to_dict_{0}'.format(self.id)
+            cache.delete(redis_key)
             return team
         except (ValueError, IntegrityError):
             LOGGER.error('Inappropriate value or relational integrity fail')
@@ -120,11 +129,15 @@ class Team(AbstractModel):
         """Method that adds members to team"""
         if members_add:
             self.members.add(*members_add)
+            redis_key = 'cache_team_to_dict_{0}'.format(self.id)
+            cache.delete(redis_key)
 
     def del_users(self, members_del):
         """Method that removes members from team"""
         if members_del:
             self.members.remove(*members_del)
+            redis_key = 'cache_team_to_dict_{0}'.format(self.id)
+            cache.delete(redis_key)
 
     def update(self, owner=None,
                members_del=None,
@@ -163,6 +176,8 @@ class Team(AbstractModel):
             self.description = description
         if image:
             self.image = image
+        redis_key = 'cache_team_to_dict_{0}'.format(self.id)
+        cache.delete(redis_key)
         self.save()
 
     @staticmethod
@@ -170,5 +185,31 @@ class Team(AbstractModel):
         """
         returns querysets of all teams
         """
+        redis_key = "all_teams"
+        if redis_key in cache:
+            all_teams = cache.get(redis_key)
+            all_teams = pickle.loads(all_teams)
+            print("red")
+            return all_teams
+
         all_teams = Team.objects.all()
+        cached_teams = pickle.dumps(team)
+        cache.set(redis_key, cached_teams)
+        print("db")
         return all_teams
+
+    @staticmethod
+    def get_by_id(team_id):
+        """
+        returns object of Team by id
+        """
+        redis_key = 'team_by_id_{0}'.format(team_id)
+        if redis_key in cache:
+            redis_key = cache.get(redis_key)
+            redis_key = pickle.loads(redis_key)
+            return redis_key
+
+        team = Team.objects.get(id=team_id)
+        cached_team = pickle.dumps(team)
+        cache.set(redis_key, cached_team)
+        return team
