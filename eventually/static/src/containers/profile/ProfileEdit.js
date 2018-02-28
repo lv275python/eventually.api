@@ -3,7 +3,7 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import DatePicker from 'material-ui/DatePicker';
 import {Card, CardHeader} from 'material-ui/Card';
-import {putProfileService, getProfileService} from './ProfileService';
+import {putProfileService} from './ProfileService';
 import {getImageUrl} from 'src/helper';
 import {FileUpload} from 'src/containers';
 
@@ -58,7 +58,64 @@ const imageStyle = {
 export default class ProfileEdit extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            id: this.props.profileData.id,
+            firstName: this.props.profileData.firstName,
+            middleName: this.props.profileData.middleName,
+            lastName: this.props.profileData.lastName,
+            hobby: this.props.profileData.hobby,
+            photo: this.props.profileData.photo,
+            birthday: new Date(this.props.profileData.birthday)
+        };
     }
+
+    handleFirstNameChange = event => {
+        this.setState({
+            firstName: event.target.value
+        });
+    };
+
+    handleMiddleNameChange = event => {
+        this.setState({
+            middleName: event.target.value
+        });
+    };
+
+    handleLastNameChange = event => {
+        this.setState({
+            lastName: event.target.value
+        });
+    };
+
+    handleHobbyChange = event => {
+        this.setState({
+            hobby: event.target.value
+        });
+    };
+
+    handleBirthdayChange = (event, date) => {
+        this.setState({
+            birthday: date
+        });
+    };
+
+    uploadImage = imageName => {
+        this.setState({photo: imageName});
+    }
+
+    handleSave = () => {
+        const firstName = this.state.firstName;
+        const middleName = this.state.middleName;
+        const lastName = this.state.lastName;
+        const hobby = this.state.hobby;
+        const photo = this.state.photo;
+        const birthday = this.state.birthday.getFullYear() + '-' + (this.state.birthday.getMonth() + 1) + '-' + this.state.birthday.getDate();
+
+        putProfileService(this.state.id, firstName, middleName, lastName, hobby, photo, birthday)
+            .then(response => {
+                this.props.onCloseClick();
+            });
+    };
 
     render() {
         return (
@@ -71,33 +128,33 @@ export default class ProfileEdit extends React.Component {
                     <div style={styleName}>
                         <TextField
                             floatingLabelText="First Name:"
-                            onChange={this.props.onFirstNameChange}
+                            onChange={this.handleFirstNameChange}
                             hintText='First Name'
-                            value={this.props.profileData.firstName}
+                            value={this.state.firstName}
                             fullWidth={true}
                         />
                         <TextField
                             floatingLabelText="Middle Name:"
-                            onChange={this.props.onMiddleNameChange}
+                            onChange={this.handleMiddleNameChange}
                             hintText='Middle Name'
-                            value={this.props.profileData.middleName}
+                            value={this.state.middleName}
                             fullWidth={true}
                         />
                         <TextField
                             floatingLabelText="Last Name:"
-                            onChange={this.props.onLastNameChange}
+                            onChange={this.handleLastNameChange}
                             hintText='Last Name'
-                            value={this.props.profileData.lastName}
+                            value={this.state.lastName}
                             fullWidth={true}
                         />
                         <TextField
                             floatingLabelText="Hobby:"
                             hintText='Hobby'
-                            onChange={this.props.onHobbyChange}
+                            onChange={this.handleHobbyChange}
                             fullWidth={true}
                             multiLine={true}
                             rowsMax={3}
-                            value={this.props.profileData.hobby}
+                            value={this.state.hobby}
                         />
                         <DatePicker 
                             floatingLabelText="Birthday:"
@@ -105,18 +162,18 @@ export default class ProfileEdit extends React.Component {
                             mode="landscape"
                             openToYearSelection={true}
                             fullWidth={true}
-                            onChange={this.props.onBirthdayChange}
-                            value={this.props.profileData.birthday}
+                            onChange={this.handleBirthdayChange}
+                            value={this.state.birthday}
                         />
                     </div>
                     <div style={styleContainer}>
-                        <img src={this.props.profileData.photo && getImageUrl(this.props.profileData.photo)}
+                        <img src={this.state.photo && getImageUrl(this.state.photo)}
                             alt=""
                             style={imageStyle}
                         />
                     </div>
                     <FileUpload
-                        updateImageNameInDb={this.props.uploadImage}
+                        updateImageNameInDb={this.uploadImage}
                     />
                     <div style={styleButtons}>
                         <RaisedButton
@@ -129,7 +186,7 @@ export default class ProfileEdit extends React.Component {
                             label="Save"
                             primary={true}
                             keyboardFocused={true}
-                            onClick={this.props.onSaveClick}
+                            onClick={this.handleSave}
                         />
                     </div>
                 </Card>
