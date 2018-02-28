@@ -36,7 +36,7 @@ const dropzoneStyle = { height : '100%',
     textAlign: 'center'};
 
 const buttonStyle = {
-    margin: '1% 15% -5%' };
+    margin: '1% 15% -3%'};
 
 export default class FileUpload extends React.Component {
 

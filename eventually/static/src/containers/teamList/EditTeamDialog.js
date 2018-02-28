@@ -61,7 +61,6 @@ export default class EditTeamDialog extends React.Component {
                 actions={actions}
                 modal={false}
                 open={this.props.open}
-                autoScrollBodyContent={true}
                 autoDetectWindowHeight={true}
                 onRequestClose={this.props.handleClose}
             >

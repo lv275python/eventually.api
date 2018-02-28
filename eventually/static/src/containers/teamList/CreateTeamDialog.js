@@ -126,6 +126,7 @@ export default class CreateTeamDialog extends React.Component {
                 'members_id': this.state.values
             };
             teamServicePost(data).then(response => {
+                this.props.getTeamItem();
                 this.handleClose();
             });
         }
@@ -172,8 +173,8 @@ export default class CreateTeamDialog extends React.Component {
                     actions={actions}
                     modal={false}
                     open={this.state.open}
+                    autoDetectWindowHeight={true}
                     onRequestClose={this.handleClose}
-                    autoScrollBodyContent={true}
                 >
                     <TextField
                         hintText="Name"
