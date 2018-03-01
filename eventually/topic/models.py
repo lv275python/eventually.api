@@ -5,13 +5,16 @@ Topic module.
 This module implements class that represents the topic entity.
 """
 # pylint: disable=arguments-differ
-
+import pickle
 from django.db import models, IntegrityError
+from django.conf import settings
+from django.core.cache import cache
 from authentication.models import CustomUser
 from curriculum.models import Curriculum
 from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
+CACHE_TTL = settings.CACHE_TTL
 
 class Topic(AbstractModel):
     """
@@ -130,17 +133,42 @@ class Topic(AbstractModel):
             self.title = title
         if description:
             self.description = description
-
         self.save()
+        redis_key = 'topic_by_id_{0}'.format(self.id)
+        if redis_key in cache:
+            cache.delete(redis_key)
 
     def add_mentors(self, mentors_list):
         """Method that add mentors to topic"""
 
         if mentors_list:
             self.mentors.add(*mentors_list)
+            redis_key = 'topic_by_id_{0}'.format(self.id)
+            if redis_key in cache:
+                cache.delete(redis_key)
 
     def remove_mentors(self, mentors_list):
         """Method that remove mentors from topic"""
 
         if mentors_list:
             self.mentors.remove(*mentors_list)
+            redis_key = 'topic_by_id_{0}'.format(self.id)
+            if redis_key in cache:
+                cache.delete(redis_key)
+
+    @staticmethod
+    def get_by_id(topic_id):
+        """
+        returns object of Topic by id
+        """
+        redis_key = 'topic_by_id_{0}'.format(topic_id)
+        if redis_key in cache:
+            topic = pickle.loads(cache.get(redis_key))
+            return topic
+        try:
+            topic = Topic.objects.get(id=topic_id)
+        except Topic.DoesNotExist:
+            return None
+        cached_topic = pickle.dumps(topic)
+        cache.set(redis_key, cached_topic, CACHE_TTL)
+        return topic

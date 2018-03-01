@@ -5,12 +5,15 @@ Team model
 This module implements class that represents the team entity.
 """
 # pylint: disable=arguments-differ
-
-from django.db import models, IntegrityError
+import pickle
+from django.conf import settings
+from django.core.cache import cache
+from django.db import IntegrityError, models
 from authentication.models import CustomUser
 from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
+CACHE_TTL = settings.CACHE_TTL
 
 class Team(AbstractModel):
 
@@ -112,6 +115,8 @@ class Team(AbstractModel):
         try:
             team.save()
             team.members.add(*members)
+            if "all_teams" in cache:
+                cache.delete("all_teams")
             return team
         except (ValueError, IntegrityError):
             LOGGER.error('Inappropriate value or relational integrity fail')
@@ -120,11 +125,21 @@ class Team(AbstractModel):
         """Method that adds members to team"""
         if members_add:
             self.members.add(*members_add)
+            redis_key = 'team_by_id_{0}'.format(self.id)
+            if redis_key in cache:
+                cache.delete(redis_key)
+            if "all_teams" in cache:
+                cache.delete("all_teams")
 
     def del_users(self, members_del):
         """Method that removes members from team"""
         if members_del:
             self.members.remove(*members_del)
+            redis_key = 'team_by_id_{0}'.format(self.id)
+            if redis_key in cache:
+                cache.delete(redis_key)
+            if "all_teams" in cache:
+                cache.delete("all_teams")
 
     def update(self, owner=None,
                members_del=None,
@@ -163,6 +178,11 @@ class Team(AbstractModel):
             self.description = description
         if image:
             self.image = image
+        redis_key = 'team_by_id_{0}'.format(self.id)
+        if redis_key in cache:
+            cache.delete(redis_key)
+        if "all_teams" in cache:
+            cache.delete("all_teams")
         self.save()
 
     @staticmethod
@@ -170,5 +190,29 @@ class Team(AbstractModel):
         """
         returns querysets of all teams
         """
+        redis_key = "all_teams"
+        if redis_key in cache:
+            all_teams = cache.get(redis_key)
+            all_teams = pickle.loads(all_teams)
+            return all_teams
         all_teams = Team.objects.all()
+        cached_teams = pickle.dumps(all_teams)
+        cache.set(redis_key, cached_teams, CACHE_TTL)
         return all_teams
+
+    @staticmethod
+    def get_by_id(team_id):
+        """
+        returns object of Team by id
+        """
+        redis_key = 'team_by_id_{0}'.format(team_id)
+        if redis_key in cache:
+            team = pickle.loads(cache.get(redis_key))
+            return team
+        try:
+            team = Team.objects.get(id=team_id)
+        except Team.DoesNotExist:
+            return None
+        cached_team = pickle.dumps(team)
+        cache.set(redis_key, cached_team, CACHE_TTL)
+        return team
