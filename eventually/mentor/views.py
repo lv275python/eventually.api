@@ -175,8 +175,11 @@ def get_mentors(request):
     """
     user_id = request.user.id
     mentors = set([record.mentor_id for record in MentorStudent.get_my_mentors(user_id)])
-    mentors = [CustomUser.get_by_id(id).to_dict() for id in mentors]
-    return JsonResponse({'receivers': mentors}, status=200)
+    receivers = []
+    if mentors:
+        receivers = [CustomUser.get_by_id(mentor_id).to_dict()
+                     for mentor_id in mentors if mentor_id]
+    return JsonResponse({'receivers': receivers}, status=200)
 
 
 def get_students(request):
@@ -191,25 +194,34 @@ def get_students(request):
 
     user_id = request.user.id
     students = set([record.student_id for record in MentorStudent.get_my_students(user_id)])
-    students = [CustomUser.get_by_id(id).to_dict() for id in students]
+    receivers = []
+    if students:
+        receivers = [CustomUser.get_by_id(student_id).to_dict() for student_id in students]
+    return JsonResponse({'receivers': receivers}, status=200)
 
-    return JsonResponse({'receivers': students}, status=200)
 
-
-def is_topic_student(request, topic_id):
+def topic_student_permissions(request, topic_id):
     """
-        Function that handle get request for students belonging to the certain topic.
+    Function that handle get request for students belonging to the certain topic.
 
-        :param request: The accepted HTTP request.
-        :type request: HTTPRequest objects.
+    :param request: The accepted HTTP request.
+    :type request: HTTPRequest objects.
 
-        :param topic_id: Id of certain topic.
-        :type topic_id: integer.
+    :param topic_id: Id of certain topic.
+    :type topic_id: integer.
 
-        :return: Boolean
-        """
+    :return: JsonResponse with data whether student made request for studying topic and
+    whether he have mentor approve
+    """
     student = request.user
-    is_student = False
-    if MentorStudent.topic_student_belonging(topic_id=topic_id, student_id=student.id):
-        is_student = True
-    return JsonResponse({'is_student': is_student}, status=200)
+    mentee_instance = MentorStudent.topic_student_belonging(topic_id=topic_id,
+                                                            student_id=student.id)
+    is_requested_student = False
+    have_mentor = False
+    if mentee_instance:
+        is_requested_student = True
+        if mentee_instance.mentor:
+            have_mentor = True
+    return JsonResponse({'is_requested_student': is_requested_student,
+                         'have_mentor': have_mentor},
+                        status=200)

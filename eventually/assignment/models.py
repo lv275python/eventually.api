@@ -56,7 +56,6 @@ class Assignment(AbstractModel):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 
-
     def to_dict(self):
         """
         Method that converts assignment object to dictionary.
