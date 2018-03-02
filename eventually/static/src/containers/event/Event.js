@@ -71,7 +71,6 @@ const styleDescription = {
 class Event extends React.Component {
 
     constructor(props) {
-
         super(props);
         this.state = {
             team: this.props.team,
@@ -90,6 +89,24 @@ class Event extends React.Component {
             isMarkerShown: false,
         };
     }
+
+    editEvent = (editedEvent) => {
+        this.setState({
+            team: editedEvent.team,
+            owner: editedEvent.owner,
+            name: editedEvent.name,
+            description: editedEvent.description,
+            startAt: editedEvent.start_at,
+            createdAt: editedEvent.created_at,
+            updatedAt: editedEvent.updated_at,
+            duration: editedEvent.duration,
+            longitude: editedEvent.longitude,
+            latitude: editedEvent.latitude,
+            budget: editedEvent.budget,
+            status: editedEvent.status,
+            id: editedEvent.id
+        });
+    };
 
     componentWillMount() {
         let durationString = '';
@@ -139,6 +156,7 @@ class Event extends React.Component {
                                         budget={this.props.budget}
                                         status={this.props.status}
                                         id={this.props.id}
+                                        editEvent={this.editEvent}
                                     />
                                 )}
                             </div>

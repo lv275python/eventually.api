@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@google/maps": "^0.4.5",
+    "material-ui-pagination": "^1.1.6",
     "react": "^16.1.1",
     "react-countdown-now": "^1.2.0",
     "react-dom": "^16.1.1",
@@ -46,6 +47,7 @@
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-swipeable-views": "^0.12.12",
+    "react-tap-event-plugin": "^3.0.2",
     "recompose": "^0.26.0",
     "sortablejs": "^1.7.0",
     "watch": "^1.0.2",

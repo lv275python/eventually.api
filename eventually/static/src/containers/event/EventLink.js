@@ -7,21 +7,35 @@ import { lightGreen400 } from 'material-ui/styles/colors';
 import Event from './Event';
 import { googleMapsAPIKey } from '../../helper/keys';
 
-const raiseButtonStyle = {
+const raisedButtonDivStyle = {
     display: 'flex',
     justifyContent: 'flex-end'
+};
+
+const raisedButtonStyle = {
+    marginLeft: 10
 };
 
 class EventLink extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            address: ''
+            address: '',
+            teamId: this.props.team
         };
     }
 
     goToTaskList = () => {
         this.props.history.push('/events/' + this.props.id);
+    };
+
+    goToVoting = () => {
+        this.props.history.push({
+            pathname: '/events/' + this.props.id + '/vote',
+            state: {
+                teamId: this.state.teamId
+            }
+        });
     };
 
     fetchAddress() {
@@ -77,7 +91,20 @@ class EventLink extends React.Component {
                     </CardText>
 
                     <CardActions>
-                        <RaisedButton label="Details" onClick={this.goToTaskList} />
+                        <div style={raisedButtonDivStyle}>
+                            <RaisedButton
+                                style={raisedButtonStyle}
+                                label="Details"
+                                backgroundColor={lightGreen400}
+                                onClick={this.goToTaskList}
+                            />
+                            <RaisedButton
+                                style={raisedButtonStyle}
+                                label="Voting"
+                                backgroundColor={lightGreen400}
+                                onClick={this.goToVoting}
+                            />
+                        </div>
                     </CardActions>
                 </Card>
             </div >

@@ -6,17 +6,30 @@ import { withRouter } from 'react-router-dom';
 import EventLink from './EventLink';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import CreateEvent from './CreateEvent';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+import Pagination from 'material-ui-pagination';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 
+injectTapEventPlugin();
 
-const containerStyle = {
-    width: '80%',
-    margin: '0 auto'
-};
-
-const FloatingButtonStyle = {
-    position: 'fixed',
-    right: '3%',
-    top: '85%'
+const styles = {
+    fullContainer: {
+        width: '90%',
+        margin: '0 auto'
+    },
+    container: {
+        width: '75%',
+        float: 'left'
+    },
+    pagination: {
+        margin: '0 auto',
+        textAlign: 'center'
+    },
+    customWidth: {
+        width: 180,
+        marginLeft: '3%'
+    }
 };
 
 class EventList extends React.Component {
@@ -24,18 +37,38 @@ class EventList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            events: []
+            events: [],
+            fullLength: 0,
+            total: 0,
+            display: 5,
+            number: 1,
+            value: 2,
+            limit: 2
         };
     }
 
-    getData = () => {
-        getEvents().then(response => {
-            this.setState(response.data);
+    getData = (limit, number) => {
+        getEvents(limit, number).then(response => {
+            this.setState({
+                events: response.data.events,
+                fullLength: response.data.full_length,
+                total: this.getPagesAmount(response.data.full_length),
+                limit: limit
+            });
         });
     };
 
+    getPagesAmount = (fullLength) => {
+        const limit = this.state.limit;
+        if (fullLength % limit == 0) {
+            return fullLength / limit;
+        } else {
+            return Math.ceil(fullLength / limit);
+        }
+    };
+
     componentWillMount() {
-        this.getData();
+        this.getData(this.state.limit, 1);
     }
 
     getEventLinks() {
@@ -59,11 +92,61 @@ class EventList extends React.Component {
         });
     }
 
+    handleChangeSelectField = (event, index, value) => {
+        const number = 1;
+        this.getData(value, number);
+        this.setState({
+            value: value,
+            limit: value,
+            number: number
+        });
+    };
+
+    handleChangePagination = number => {
+        this.getData(this.state.limit, number);
+        this.setState({ number });
+    };
+
+    getPagination() {
+        if (this.state.fullLength > this.state.limit) {
+            return <Pagination
+                total = { this.state.total }
+                current = { this.state.number }
+                display = { this.state.display }
+                onChange = { this.handleChangePagination }
+            />;
+        }
+    }
+
+    addEvent = (newEvent) => {
+        this.state.events.unshift(newEvent);
+        this.setState({
+            events: this.state.events
+        });
+    };
+
     render() {
         return (
-            <div style={containerStyle}>
-                {this.getEventLinks()}
-                <CreateEvent />
+            <div style={styles.fullContainer}>
+                <div style={styles.container}>
+                    {this.getEventLinks()}
+                    <CreateEvent
+                        addEvent={this.addEvent}
+                    />
+                    <div style={styles.pagination}>
+                        {this.getPagination()}
+                    </div>
+                </div>
+                <SelectField
+                    floatingLabelText="Events per page:"
+                    value={this.state.value}
+                    onChange={this.handleChangeSelectField}
+                    style={styles.customWidth}
+                >
+                    <MenuItem value={2} primaryText="2" />
+                    <MenuItem value={5} primaryText="5" />
+                    <MenuItem value={10} primaryText="10" />
+                </SelectField>
             </div>
         );
     }
