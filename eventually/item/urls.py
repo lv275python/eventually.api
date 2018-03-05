@@ -1,6 +1,6 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
 from .views import ItemView
 
 urlpatterns = [
-    url(r'^$', ItemView.as_view())
+    url(r'^(?P<item_id>\d+)/literature/', include('literature.urls', namespace='literature'))
 ]

@@ -47,7 +47,7 @@ class LiteratureItem(AbstractModel):
     source = models.CharField(max_length=100)
     create_at = models.DateTimeField(auto_now_add=True, editable=False)
     update_at = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(CustomUser, null=True)
+    author = models.ForeignKey(CustomUser)
     item = models.ForeignKey(Item, null=True)
 
 

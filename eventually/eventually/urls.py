@@ -10,5 +10,7 @@ urlpatterns = [
     url(r'^api/v1/chat/', include('chat.urls')),
     url(r'^api/v1/mentor/', include('mentor.urls', namespace='mentor')),
     url(r'^api/v1/curriculums/', include('curriculum.urls', namespace='curriculums')),
+    url(r'^api/v1/literature/', include('literature.urls')),
+    url(r'^api/v1/item/', include('item.urls', namespace='item')),
     url(r'.*', include('home.urls')),
 ]
