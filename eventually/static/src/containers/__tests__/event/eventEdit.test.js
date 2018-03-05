@@ -216,7 +216,7 @@ describe('Component EventEdit Tests', () => {
                         ]
                     }
                 });
-            sinon.stub(EventService, 'GetTeamsListService').callsFake(() => promise);
+            sinon.stub(EventService, 'getTeamsListService').callsFake(() => promise);
             const wrapper = renderComponent();
             return promise
                 .then(() => {

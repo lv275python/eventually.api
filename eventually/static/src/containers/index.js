@@ -101,4 +101,6 @@ export TopicsList from './topicList/TopicsList';
 export ProgressProfile from './userProgress/ProgressProfile';
 export CancelDialog from './cancelDialog/CancelDialog';
 export Home from './Home';
-
+export SuggestedTopics from './suggestedtopics/SuggestedTopics';
+export SuggestedTopicsItem from './suggestedtopics/SuggestedTopicsItem';
+export {getSuggestedTopicsService} from './suggestedtopics/SuggestedTopicsService';
