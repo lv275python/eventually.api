@@ -8,7 +8,7 @@ class Sign extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: 'login',
+            value: props.history.location.pathname.split('/')[1],
         };
     }
 
@@ -29,10 +29,6 @@ class Sign extends React.Component {
     toForgetPassword = () => {
         this.props.history.push('/forget');
     };
-
-    componentWillMount(){
-        this.toLogin();
-    }
 
     render() {
         return (
