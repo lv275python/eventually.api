@@ -92,4 +92,7 @@ export {
 export TopicsList from './topicList/TopicsList';
 export ProgressProfile from './userProgress/ProgressProfile';
 export Home from './Home';
+export SuggestedTopics from './suggestedtopics/SuggestedTopics';
+export SuggestedTopicsItem from './suggestedtopics/SuggestedTopicsItem';
+export {getSuggestedTopicsService} from './suggestedtopics/SuggestedTopicsService';
 

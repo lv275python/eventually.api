@@ -14,6 +14,8 @@ import EventDetails from './containers/event/EventDetails';
 import Event from './containers/event/Event';
 import Task from './containers/taskItem/Task';
 import VoteBox from './containers/voting/VoteBox';
+import SuggestedTopics from './containers/suggestedtopics/SuggestedTopics';
+
 
 export default class MainRouter extends React.Component {
     render() {
@@ -33,6 +35,7 @@ export default class MainRouter extends React.Component {
                     <Route path='/events/:eventId/vote' component={VoteBox}/>
                     <Route path='/events/:eventId' component={EventDetails}/>
                     <Route path='/events' component={EventList}/>
+                    <Route path='/suggestedtopics' component={SuggestedTopics}/>
                     <Redirect path='*' to='/home' />
                 </Switch>
             </main>
