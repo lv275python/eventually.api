@@ -53,6 +53,7 @@ export {
     getProfileService} from './profile/ProfileService';
 export ProfileView from './profile/ProfileView';
 export ProgressGraph from './progressGraph/ProgressGraph';
+export GraphProgress from './graph/GraphProgress';
 export Forget from './registerLogin/Forget';
 export Login from './registerLogin/Login';
 export Logout from './registerLogin/Logout';
@@ -78,3 +79,4 @@ export TopicItem from './topicList/TopicItem';
 export TopicsList from './topicList/TopicsList';
 export ProgressProfile from './userProgress/ProgressProfile';
 export Home from './Home';
+
