@@ -1,5 +1,5 @@
 import React from 'react';
-import {ItemsList, MessagesBar, ProgressGraph} from 'src/containers';
+import {ItemsList, MessagesBar, ProgressGraph, GraphProgress} from 'src/containers';
 
 const userProgressStyle = {
     display: 'flex',
@@ -37,7 +37,9 @@ export default class ProgressProfile extends React.Component {
             <div style={userProgressStyle}>
                 <div style={itemsGraphWrapperStyle}>
                     <ItemsList items={this.state.items} style={itemsGraphStyle}/>
-                    <ProgressGraph style={itemsGraphStyle}/>
+                </div>
+                <div>
+                    <GraphProgress/>
                 </div>
                 <MessagesBar 
                     style={messagesBarStyle} 
