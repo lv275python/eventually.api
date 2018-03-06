@@ -50,6 +50,7 @@ export default class TeamList extends React.Component {
                         members={team.members_id.length}
                         updateItem={this.updateTeamItem}
                         listOfMembers={team.members_id}
+                        owner={team.owner_id}
                     />
                 ))}
                 <CreateTeamDialog
