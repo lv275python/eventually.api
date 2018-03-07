@@ -2,9 +2,9 @@ import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import Subheader from 'material-ui/Subheader';
 import EditTeamDialog from './EditTeamDialog';
-import {getImageUrl} from 'src/helper';
+import {getImageUrl, getUserId} from 'src/helper';
 import {teamServiceGet} from './teamService';
-
+import DeleteTeamDialog from './DeleteTeamDialog';
 
 const styles = {
     container: {},
@@ -44,7 +44,10 @@ export default class TeamItem extends React.Component {
             listOfMembers:this.props.listOfMembers,/*list with id of members*/
             listOfNamesMembers:[],
             open: false,
-            open_more:false
+            open_more:false,
+            openDel: false,
+            teamDeleted: false,
+            owner: this.props.owner
         };
     }
     /*update old prop*/
@@ -63,6 +66,14 @@ export default class TeamItem extends React.Component {
     handleClose = () => {
         this.setState({open: false});
     };
+    /*open dialog for deleting*/
+    handleOpenDel = () => {
+        this.setState({openDel: true});
+    };
+    /*close dialog for deleting*/
+    handleCloseDel = () => {
+        this.setState({openDel: false});
+    };
     /*button `More info`*/
     handleToggle = () => {
         if (this.state.open_more == false){
@@ -77,6 +88,19 @@ export default class TeamItem extends React.Component {
             });
         }
     }
+    /*checks if user is owner of team*/
+    ownerCheck = () => {
+        if (getUserId() == this.state.owner){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    /*changes state when team is deleted*/
+    comfirmDeleteTeam = () => {
+        this.setState({teamDeleted: true});
+    }
+
     render() {
         styles.container = {
             'background': 'url(' + getImageUrl(this.state.image) + ')',
@@ -93,17 +117,41 @@ export default class TeamItem extends React.Component {
             'marginTop': 37
         };
 
-        return (
-            <div style={styles.container}>
-                <div style={styles.team}>
-                    <Subheader style={styles.header}>{this.state.name}</Subheader>
+        let delButton;
+        if (this.ownerCheck()==true) {
+            delButton = <RaisedButton
+                label="Delete" 
+                style={styles.button}
+                backgroundColor="#D50000"
+                labelColor="#FFF"
+                onClick={this.handleOpenDel}
+            />;
+        } else{
+            delButton = '';
+        }
+
+        let teamView;
+        if (this.state.teamDeleted==false) {
+            teamView = (
+                <div>
+                    <Subheader style={styles.header}>{this.state.name}</Subheader>  
                     <div style={styles.description}>{this.state.description}</div>
                     <div style={styles.members}>Members:<span>{this.props.members}</span></div>
                     <RaisedButton label="More info" primary={true} onClick={this.handleToggle} style={styles.button}/>
                     <RaisedButton label="Edit" onClick={this.handleOpen} style={styles.button}/>
+                    {delButton}
+                </div>
+            );
+        } else {
+            teamView = <p>Team '{this.state.name}' successfully deleted</p>;
+        }
+
+        return (
+            <div style={styles.container}>
+                <div style={styles.team}>
+                    {teamView}
                     <div style={styles.footer}></div>
                 </div>
-
                 <EditTeamDialog
                     open = {this.state.open}
                     handleClose = {this.handleClose}
@@ -112,6 +160,14 @@ export default class TeamItem extends React.Component {
                     image = {this.props.image}
                     updateItem = {this.props.updateItem}
                     id = {this.props.id}
+                />
+                <DeleteTeamDialog
+                    openDel = {this.state.openDel}
+                    handleCloseDel = {this.handleCloseDel}
+                    name = {this.props.name}
+                    description = {this.props.description}
+                    id = {this.props.id}
+                    comfirmDeleteTeam = {this.comfirmDeleteTeam}
                 />
             </div>
         );
