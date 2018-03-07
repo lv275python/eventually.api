@@ -26,5 +26,10 @@ const teamServicePut = (id, name, description, image) => {
     return axios.put(appPath + id + '/', {name, description, image});
 };
 
+const teamServiceDelete = id => {
+    return axios.delete(appPath + id + '/')
+        .catch(error => {return(error.response);});
+};
 
-export {teamServiceGet, teamServicePut, teamServiceGetMembers, teamServicePost, usersServiceGet};
+
+export {teamServiceGet, teamServicePut, teamServiceGetMembers, teamServicePost, usersServiceGet, teamServiceDelete};

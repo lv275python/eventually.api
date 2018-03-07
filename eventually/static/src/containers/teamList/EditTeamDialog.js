@@ -13,7 +13,6 @@ export default class EditTeamDialog extends React.Component {
             name: this.props.name,
             description: this.props.description,
             image: this.props.image,
-            open: false,
             openMore:false
         };
     }
