@@ -5,6 +5,7 @@ import Profile from './containers/profile/Profile';
 import UserProgress from './containers/userProgress/ProgressProfile';
 import Item from './containers/item/Item';
 import CurriculumList from './containers/curriculum/CurriculumList';
+import TopicView from './containers/topicList/TopicView';
 import MentorItem from './containers/mentorItem/MentorItem';
 import MentorDashboard from './containers/mentorDashboard/MentorDashboard';
 import TeamList from './containers/teamList/TeamList';
@@ -22,6 +23,7 @@ export default class MainRouter extends React.Component {
                     <Route path='/home' component={Home} />
                     <Route path='/profile/:profileId' component={Profile}/>
                     <Route path='/progress' component={UserProgress}/>
+                    <Route path='/curriculums/:curriculumId/topics/:topicId' component={TopicView}/>
                     <Route path='/curriculums' component={CurriculumList}/>
                     <Route path='/item/:itemId' component={Item} />
                     <Route path='/mentoritem' component={MentorItem}/>

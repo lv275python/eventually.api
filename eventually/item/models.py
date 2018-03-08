@@ -50,11 +50,9 @@ class Item(AbstractModel):
         :type updated_at: datetime
     """
 
-    ITEM_FORMS = (
-        (0, 'theoretic'),
-        (1, 'practice'),
-        (2, 'group'),
-    )
+    ITEM_FORMS = ((0, 'theoretic'),
+                  (1, 'practice'),
+                  (2, 'group'))
 
     name = models.CharField(max_length=255)
     authors = models.ManyToManyField(CustomUser)
@@ -75,35 +73,31 @@ class Item(AbstractModel):
 
         :Example:
 
-        | {
-        |    'id': 4,
-        |    'name': 'read,
-        |    'authors': [12],
-        |    'topic': 23,
-        |    'form': 2,
-        |    'superiors': [2, 4, 12]
-        |    'description': 'description',
-        |    'estimation': 54000,
-        |    'created_at': 1509539867,
-        |    'updated_at': 1509539867,
-        | }
+        | {'id': 4,
+        |  'name': 'read,
+        |  'authors': [12],
+        |  'topic': 23,
+        |  'form': 2,
+        |  'superiors': [2, 4, 12]
+        |  'description': 'description',
+        |  'estimation': 54000,
+        |  'created_at': 1509539867,
+        |  'updated_at': 1509539867}
         """
 
-        return {
-            'id': self.id,
-            'name': self.name,
-            'authors': sorted([author.id for author in self.authors.all()]),
-            'topic': self.topic.id,
-            'form': self.form,
-            'superiors': sorted([superior.id for superior in self.superiors.all()]),
-            'description': self.description,
-            'estimation': int(self.estimation.total_seconds()) if self.estimation else None,
-            'created_at': int(self.created_at.timestamp()),
-            'updated_at': int(self.updated_at.timestamp()),
-        }
+        return {'id': self.id,
+                'name': self.name,
+                'authors': sorted([author.id for author in self.authors.all()]),
+                'topic': self.topic.id,
+                'form': self.form,
+                'superiors': sorted([superior.id for superior in self.superiors.all()]),
+                'description': self.description,
+                'estimation': int(self.estimation.total_seconds()) if self.estimation else None,
+                'created_at': int(self.created_at.timestamp()),
+                'updated_at': int(self.updated_at.timestamp())}
 
     @staticmethod
-    def create(name, authors, topic, form, superiors=None, description='', estimation=None):
+    def create(topic, authors, name, form, superiors=None, description='', estimation=None):
         """
         Static method that creates instance of Item class and creates database
         row with the accepted info.

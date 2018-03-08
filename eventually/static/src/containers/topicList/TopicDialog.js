@@ -4,7 +4,6 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import { postTopicService } from './TopicServices';
@@ -109,6 +108,7 @@ export default class TopicDialog extends React.Component {
         return (
             <div>
                 <FloatingActionButton
+                    mini={true}
                     onClick={this.handleOpen}
                     style={FlatButtonStyle}>
 
