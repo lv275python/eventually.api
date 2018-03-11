@@ -195,7 +195,7 @@ class EventView(View):
         event.update(**data)
         return RESPONSE_200_UPDATED
 
-    def delete(self, request, team_id, event_id=None):  # pylint: disable=unused-argument
+    def delete(self, request, event_id, team_id=None):  # pylint: disable=unused-argument
         """
         Method that handles DELETE request.
 
