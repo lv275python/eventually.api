@@ -1,6 +1,5 @@
 import React from 'react';
-import Divider from 'material-ui/Divider';
-import TopicItem from './TopicItem';
+import TopicLink from './TopicLink';
 
 
 const style = {
@@ -39,7 +38,7 @@ export default class TopicsList extends React.Component {
         return (
             <div style={style}>
                 {this.state.topics.map(topic => (
-                    <TopicItem
+                    <TopicLink
                         key={topic.id.toString()}
                         title={topic.title}
                         description={topic.description}

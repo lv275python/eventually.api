@@ -283,14 +283,15 @@ class MentorStudentViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
 
-    def test_mentor_success__is_topic_student(self):
-        """Method that tests the successful is_topic_student request."""
+    def test_mentor_success__topic_student_permissions(self):
+        """Method that tests the successful topic_student_permissions request."""
 
         self.client = Client()
         self.client.login(username='email2@gmail.com', password='Pas2')
-        expected_data = {'is_student': True}
+        expected_data = {'is_requested_student': True,
+                         'have_mentor': True}
 
-        url = reverse('mentor:is_topic_student', args=[200])
+        url = reverse('mentor:topic_student_permissions', args=[200])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))

@@ -15,8 +15,8 @@ from unittest import mock
 TEST_TIME = datetime.datetime(2017, 10, 30, 8, 15, 12)
 
 
-class TestTopicApp(TestCase):
-    """ Tests for Topic app model """
+class TestTopicView(TestCase):
+    """ Tests for Topic views """
 
     def setUp(self):
 
@@ -39,17 +39,17 @@ class TestTopicApp(TestCase):
 
             Topic.objects.create(id=212,
                                  curriculum=Curriculum.get_by_id(111),
-                                 author=CustomUser.get_by_id(123),
+                                 author=custom_user,
                                  title='Topic #1',
                                  description="t_descr",
-                                 mentors=())
+                                 mentors=(custom_user,))
 
             Topic.objects.create(id=213,
                                  curriculum=Curriculum.get_by_id(111),
-                                 author=CustomUser.get_by_id(123),
+                                 author=custom_user,
                                  title='Topic #2',
                                  description="t_descr",
-                                 mentors=())
+                                 mentors=(custom_user, ))
 
         self.client = Client()
         self.client.login(username='email1@mail.com', password='1111')
@@ -64,7 +64,7 @@ class TestTopicApp(TestCase):
                                      'updated_at': 1509344112,
                                      'title': 'Topic #2',
                                      'description': "t_descr",
-                                     'mentors': ()},
+                                     'mentors': [123]},
                                     {'id': 212,
                                      'curriculum': 111,
                                      'author': 123,
@@ -72,7 +72,7 @@ class TestTopicApp(TestCase):
                                      'updated_at': 1509344112,
                                      'title': 'Topic #1',
                                      'description': "t_descr",
-                                     'mentors': ()}]}
+                                     'mentors': [123]}]}
 
         url = reverse('curriculums:topics:index', args=[111])
         response = self.client.get(url)
@@ -89,7 +89,7 @@ class TestTopicApp(TestCase):
                          'updated_at': 1509344112,
                          'title': 'Topic #2',
                          'description': "t_descr",
-                         'mentors': ()}
+                         'mentors': [123]}
 
         url = reverse('curriculums:topics:detail', args=[111, 213])
         response = self.client.get(url)
@@ -146,9 +146,17 @@ class TestTopicApp(TestCase):
         """Method that tests unsuccessful post request when db creating is failed."""
         with mock.patch('topic.models.Topic.create') as topic_create:
             topic_create.return_value = None
-            data = {'title': 'some new curriculum',
-                    'description': 'short description',
-                    'mentors': ()}
+            data = {'name': 'some new curriculum',
+                    'mentors': (),
+                    'description': 'short description'}
             url = reverse('curriculums:topics:index', args=[111])
             response = self.client.post(url, json.dumps(data), content_type='application/json')
             self.assertEqual(response.status_code, 501)
+
+    def test_method_is_topic_mentor(self):
+        """Method that tests 'is_topic_mentor' function."""
+        expected_data = {'is_mentor': True}
+        url = reverse('curriculums:topics:is_topic_mentor', args=[111, 212])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))

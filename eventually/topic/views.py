@@ -9,7 +9,10 @@ from django.views.generic.base import View
 from django.http import JsonResponse
 from django.http import HttpResponse
 from curriculum.models import Curriculum
-from utils.responsehelper import (RESPONSE_400_INVALID_DATA,
+from utils.responsehelper import (RESPONSE_200_DELETED,
+                                  RESPONSE_400_INVALID_DATA,
+                                  RESPONSE_400_DB_OPERATION_FAILED,
+                                  RESPONSE_403_ACCESS_DENIED,
                                   RESPONSE_404_OBJECT_NOT_FOUND)
 from .models import Topic
 
@@ -106,6 +109,33 @@ class TopicView(View):
                  400, 403 or 404 failed status code.
         :rtype: `HttpResponse object."""
 
+    def delete(self, request, curriculum_id, topic_id):    # pylint: disable=unused-argument
+        """
+        Method that handles DELETE request.
+
+        :param request: the accepted HTTP request.
+        :type request: `HttpRequest object`
+
+        :param curriculum_id: ID of the certain curriculum.
+        :type curriculum_id: `int`
+
+        :param topic_id: ID of the certain topic.
+        :type topic_id: `int`
+
+        :return: response with status code 200 when topic was successfully deleted or response with
+                 403 or 404 failed status code.
+        :rtype: `HttpResponse object."""
+
+        user = request.user
+        topic = Topic.get_by_id(topic_id)
+        if not topic:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+        if user == topic.author:
+            is_deleted = Topic.delete_by_id(topic_id)
+            if is_deleted:
+                return RESPONSE_200_DELETED
+            return RESPONSE_400_DB_OPERATION_FAILED
+        return RESPONSE_403_ACCESS_DENIED
 
 def is_topic_mentor(request, curriculum_id, topic_id):   # pylint: disable=unused-argument
     """
