@@ -5,6 +5,7 @@
 
 from django.http import JsonResponse
 from django.views.generic.base import View
+from customprofile.models import CustomProfile
 from event.models import Event
 from team.models import Team
 from vote.models import Vote, Answer
@@ -383,11 +384,20 @@ class AnswerView(View):
 
                 answers_members = []
                 for answer in answers:
-                    names = [member.first_name for member in answer.members.all()]
+                    members = []
+                    for member in answer.members.all():
+                        profile = CustomProfile.objects.get(user=member.id)
+                        members.append({'name': member.first_name,
+                                        'photo': profile.photo,
+                                        'id': member.id})
+                    checked = False
+                    if request.user.id in answer.to_dict()['members']:
+                        checked = True
                     data = {
+                        'checked': checked,
                         'id': answer.id,
                         'text': answer.text,
-                        'members': {'names': names}
+                        'members': members
                     }
                     answers_members.append(data)
                 return JsonResponse({'answers_members': answers_members})

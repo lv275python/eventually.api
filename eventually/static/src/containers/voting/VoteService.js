@@ -10,7 +10,7 @@ export const getVotes = (eventId) => {
     return axios.get(apiUrl + 'events/' + eventId + '/vote/');
 };
 
-export const getParticipants = (eventId, voteId) => {
+export const getAnswersWithMembers = (eventId, voteId) => {
     return axios.get(eventPath + eventId + '/vote/' + voteId + '/answers_with_members/');
 };
 

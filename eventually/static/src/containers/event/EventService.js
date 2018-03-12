@@ -11,11 +11,12 @@ export const getEvent = (eventId) => {
     return axios.get(eventPath + eventId + '/');
 };
 
-export const getEvents = (limit, number) => {
+export const getEvents = (limit, number, dateInSeconds) => {
     return axios.get(eventPath, {
         params: {
             limit: limit,
-            number: number
+            number: number,
+            from_date: dateInSeconds
         }
     });
 };

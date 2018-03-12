@@ -80,7 +80,6 @@ class EventViewTest(TestCase):
         url = reverse('events:index')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
 
     def test_error_get_all(self):
         """

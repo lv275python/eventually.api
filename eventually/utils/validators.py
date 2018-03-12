@@ -283,15 +283,13 @@ def event_paginator_validate_limit(request):
         int(request['limit'])
     except MultiValueDictKeyError:
         return False
-
     return True
-
 
 def event_paginator_validate_number(request):
     """
-    Function that provides event paginator number validation
+    Function that provides event paginator limit validation
 
-    :param request: the data with number for pagination
+    :param request: the data with events limit for pagination
     that is received from event view.
     :type request: QueryDict
 
@@ -304,6 +302,56 @@ def event_paginator_validate_number(request):
         return False
 
     return True
+
+def event_paginator_validate(request):
+    """
+    Function that provides event paginator number validation
+
+    :param request: the data with number for pagination
+    that is received from event view.
+    :type request: QueryDict
+
+    :return: `True` if valid data, else `False`
+    :rtype `bool`
+    """
+    number = _request_get_param(request, "number")
+    limit = _request_get_param(request, "limit")
+    if (number and limit) or (not number and not limit):
+        return True
+    return False
+
+def event_from_date_param_validate(request):
+    """
+    Function that provides event paginator number validation
+
+    :param request: the data with number for pagination
+    that is received from event view.
+    :type request: QueryDict
+
+    :return: `True` if valid data, else `False`
+    :rtype `bool`
+    """
+    try:
+        request['from_date']
+    except MultiValueDictKeyError:
+        return False
+    return True
+
+def _request_get_param(request, key):
+    """
+    Function that provides event paginator number validation
+
+    :param request: the data with number for pagination
+    that is received from event view.
+    :type request: QueryDict
+
+    :return: `True` if valid data, else `False`
+    :rtype `bool`
+    """
+    try:
+        return request[key]
+    except MultiValueDictKeyError:
+        pass
 
 def login_validate(data):
     """

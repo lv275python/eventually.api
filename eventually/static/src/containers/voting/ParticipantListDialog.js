@@ -1,20 +1,13 @@
 import React from 'react';
+import Avatar from 'material-ui/Avatar';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import { lightGreen400 } from 'material-ui/styles/colors';
 import {List, ListItem} from 'material-ui/List';
-
-const styles = {
-    raisedButton: {
-        marginLeft: 16
-    }
-};
+import {getImageUrl} from 'src/helper';
 
 export default class ParticipantListDialog extends React.Component {
     state = {
-        open: false
+        open: this.props.open
     };
 
     handleOpen = () => {
@@ -23,7 +16,14 @@ export default class ParticipantListDialog extends React.Component {
 
     handleClose = () => {
         this.setState({open: false});
+        this.props.handleCloseParticipants();
     };
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            open: nextProps.open
+        });
+    }
 
     render() {
         const actions = [
@@ -34,25 +34,20 @@ export default class ParticipantListDialog extends React.Component {
                 onClick={this.handleClose}
             />
         ];
-
         const participantsCount = this.props.participants.length;
         const items = [];
         for (let i = 0; i < participantsCount; i++) {
             items.push(
                 <ListItem
                     key={i}
-                    primaryText={this.props.participants[i]}
+                    primaryText={this.props.participants[i].name}
+                    leftAvatar={<Avatar src={getImageUrl(this.props.participants[i].photo)} />}
                 />
             );
         }
 
         return (
             <div>
-                <RaisedButton
-                    label={this.props.text}
-                    onClick={this.handleOpen}
-                    style={styles.raisedButton}
-                    backgroundColor={lightGreen400}/>
                 <Dialog
                     title={this.props.text}
                     actions={actions}

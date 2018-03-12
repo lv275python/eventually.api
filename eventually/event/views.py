@@ -12,8 +12,8 @@ from django.views.generic.base import View
 from django.http import JsonResponse
 from team.models import Team
 from utils.validators import event_data_validate
-from utils.validators import event_paginator_validate_limit
-from utils.validators import event_paginator_validate_number
+from utils.validators import event_from_date_param_validate
+from utils.validators import event_paginator_validate
 from utils.responsehelper import (RESPONSE_200_DELETED,
                                   RESPONSE_200_UPDATED,
                                   RESPONSE_400_DB_OPERATION_FAILED,
@@ -50,19 +50,24 @@ class EventView(View):
         """
         if not event_id and not team_id:
             user = request.user
-            teams = user.teams.all()
-            events = []
-            for team in teams:
-                events.extend(team.event_set.all())
 
-            if not ((event_paginator_validate_limit(request.GET) is True \
-                and event_paginator_validate_number(request.GET) is True) \
-                or (event_paginator_validate_limit(request.GET) is False \
-                and event_paginator_validate_number(request.GET) is False)):
+            events = []
+            if not event_paginator_validate(request.GET):
                 return RESPONSE_400_INVALID_DATA
+
             if request.GET:
+                if event_from_date_param_validate(request.GET):
+                    from_date = request.GET['from_date']
+                    from_date = datetime.datetime.fromtimestamp(int(float(from_date)))
+                else:
+                    from_date = datetime.datetime.now()
                 new_dict = {'get_limit': int(request.GET['limit']),
-                            'get_number': int(request.GET['number'])}
+                            'get_number': int(request.GET['number']),
+                            'from_date': from_date}
+                teams = user.teams.all()
+                for team in teams:
+                    events.extend(team.event_set.all().filter(start_at__gte=new_dict['from_date']))
+
                 paginator = Paginator(events, new_dict['get_limit'])
                 page = paginator.page(new_dict['get_number'])
                 selected_events = page.object_list
@@ -136,7 +141,7 @@ class EventView(View):
             vote = Vote.create(event=event, title="Would you like to visit?")
             Answer.create(members=[], vote=vote, text="I will go")
             Answer.create(members=[], vote=vote, text="Maybe I will come")
-            Answer.create(members=[], vote=vote, text="No, I have another plans")
+            Answer.create(members=[], vote=vote, text="No, I have other plans")
             return JsonResponse(event.to_dict(), status=201)
 
         return RESPONSE_400_DB_OPERATION_FAILED

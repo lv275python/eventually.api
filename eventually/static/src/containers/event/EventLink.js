@@ -1,7 +1,7 @@
 import React from 'react';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { Link } from 'react-router';
 import { withRouter } from 'react-router-dom';
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
 import { lightGreen400 } from 'material-ui/styles/colors';
 import Event from './Event';
@@ -72,6 +72,15 @@ class EventLink extends React.Component {
         }
     };
 
+    showStartAt = () => {
+        if (this.props.start_at) {
+            const date = new Date(this.props.start_at * 1000);
+            return `Start at: ${date.toDateString()}`;
+        } else {
+            return '';
+        }
+    };
+
     componentWillMount() {
         this.fetchAddress();
     }
@@ -84,7 +93,12 @@ class EventLink extends React.Component {
                         actAsExpander={true}
                         showExpandableButton={false}
                         title={this.props.name}
-                        subtitle={this.showAddress()}
+                        subtitle={
+                            <div>
+                                <div>{this.showAddress()}</div>
+                                <div>{this.showStartAt()}</div>
+                            </div>
+                        }
                     />
                     <CardText>
                         {this.props.description}

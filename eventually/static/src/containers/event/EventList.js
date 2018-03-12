@@ -1,15 +1,16 @@
 import React from 'react';
-import { getEvents } from './EventService';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { Link } from 'react-router';
 import { withRouter } from 'react-router-dom';
-import EventLink from './EventLink';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import CreateEvent from './CreateEvent';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import Badge from 'material-ui/Badge';
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import DatePicker from 'material-ui/DatePicker';
+import MenuItem from 'material-ui/MenuItem';
 import Pagination from 'material-ui-pagination';
 import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
+import CreateEvent from './CreateEvent';
+import EventLink from './EventLink';
+import { getEvents } from './EventService';
 
 injectTapEventPlugin();
 
@@ -42,13 +43,13 @@ class EventList extends React.Component {
             total: 0,
             display: 5,
             number: 1,
-            value: 2,
-            limit: 2
+            limit: 2,
+            minDateInSeconds: new Date() / 1000
         };
     }
 
-    getData = (limit, number) => {
-        getEvents(limit, number).then(response => {
+    getData = (limit, number, minDateInSeconds) => {
+        getEvents(limit, number, minDateInSeconds).then(response => {
             this.setState({
                 events: response.data.events,
                 fullLength: response.data.full_length,
@@ -68,7 +69,7 @@ class EventList extends React.Component {
     };
 
     componentWillMount() {
-        this.getData(this.state.limit, 1);
+        this.getData(this.state.limit, 1, this.state.minDateInSeconds);
     }
 
     getEventLinks() {
@@ -94,17 +95,11 @@ class EventList extends React.Component {
 
     handleChangeSelectField = (event, index, value) => {
         const number = 1;
-        this.getData(value, number);
+        this.getData(value, number, this.state.minDateInSeconds);
         this.setState({
-            value: value,
             limit: value,
             number: number
         });
-    };
-
-    handleChangePagination = number => {
-        this.getData(this.state.limit, number);
-        this.setState({ number });
     };
 
     getPagination() {
@@ -125,6 +120,18 @@ class EventList extends React.Component {
         });
     };
 
+    handleChangePagination = number => {
+        this.getData(this.state.limit, number, this.state.minDateInSeconds);
+        this.setState({ number });
+    };
+
+    handleChangeMinDate = (event, date) => {
+        this.getData(this.state.limit, this.state.number, date / 1000);
+        this.setState({
+            minDateInSeconds: date / 1000
+        });
+    };
+
     render() {
         return (
             <div style={styles.fullContainer}>
@@ -137,16 +144,24 @@ class EventList extends React.Component {
                         {this.getPagination()}
                     </div>
                 </div>
-                <SelectField
-                    floatingLabelText="Events per page:"
-                    value={this.state.value}
-                    onChange={this.handleChangeSelectField}
-                    style={styles.customWidth}
-                >
-                    <MenuItem value={2} primaryText="2" />
-                    <MenuItem value={5} primaryText="5" />
-                    <MenuItem value={10} primaryText="10" />
-                </SelectField>
+                <div>
+                    <SelectField
+                        floatingLabelText="Events per page:"
+                        value={this.state.limit}
+                        onChange={this.handleChangeSelectField}
+                        style={styles.customWidth}
+                    >
+                        <MenuItem value={2} primaryText="2" />
+                        <MenuItem value={5} primaryText="5" />
+                        <MenuItem value={10} primaryText="10" />
+                    </SelectField>
+                    <DatePicker
+                        onChange={this.handleChangeMinDate}
+                        floatingLabelText="Min Date"
+                        defaultDate={new Date(this.state.minDateInSeconds * 1000)}
+                        textFieldStyle={styles.customWidth}
+                    />
+                </div>
             </div>
         );
     }

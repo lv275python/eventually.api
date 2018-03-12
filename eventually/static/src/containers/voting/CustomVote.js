@@ -1,14 +1,15 @@
 import React from 'react';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { Link } from 'react-router';
 import { withRouter } from 'react-router-dom';
+import Badge from 'material-ui/Badge';
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import { lightGreen400 } from 'material-ui/styles/colors';
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import {getUserId} from 'src/helper';
-import ParticipantListDialog from './ParticipantListDialog';
-import {getAnswers} from './VoteService';
+import {getAnswersWithMembers} from './VoteService';
 import {putAnswer} from './VoteService';
+import ParticipantListDialog from './ParticipantListDialog';
 
 const raisedButtonDivStyle = {
     display: 'flex',
@@ -26,13 +27,15 @@ class CustomVote extends React.Component {
         super(props);
         this.state = {
             answers: [],
-            teamId: this.props.teamId
+            teamId: this.props.teamId,
+            open: false,
+            currentAnswerMembers: []
         };
     }
 
     getData = () => {
-        getAnswers(this.props.eventId, this.props.voteId).then(response => {
-            this.setState(response.data);
+        getAnswersWithMembers(this.props.eventId, this.props.voteId).then(response => {
+            this.setState({answers: response.data['answers_members']});
         });
     }
 
@@ -42,10 +45,24 @@ class CustomVote extends React.Component {
         });
     };
 
+    handleOpen = answerMembers => {
+        this.setState({
+            open: true,
+            currentAnswerMembers: answerMembers
+        });
+    };
+
+    handleClose = () => {
+        this.setState({
+            open: false
+        });
+    };
+
     getRadioButtons() {
         let sortedAnswers = this.state.answers.sort((previousAnswer, nextAnswer) => {
             return previousAnswer.id - nextAnswer.id;
         });
+
         return sortedAnswers.map(answer => {
             let choice = 'checked' + answer.id;
             if (answer.checked) {
@@ -54,16 +71,29 @@ class CustomVote extends React.Component {
             return <RadioButton
                 key={answer.id.toString()}
                 value={choice}
-                label={answer.text + ' ' + answer.members.length}
+                label={
+                    <div>
+                        <div style={{float: 'left'}}>{answer.text}</div>
+                        <Badge
+                            key={answer.id.toString()}
+                            badgeContent={answer.members.length}
+                            primary={true}
+                            style={{float: 'right', zIndex: '100'}}
+                            onClick={() => this.handleOpen(answer.members)}
+                        >
+                        </Badge>
+                    </div>
+                }
                 style={styles.radioButton}
-                id={answer.id}
-            />;
+                id={answer.id}/>;
         });
     }
 
     getPreviousAnswer = userId => {
         return this.state.answers.find(function(answer) {
-            return answer.members.includes(userId);
+            return answer.members.find(function(member) {
+                return member.id == userId;
+            });
         });
     };
 
@@ -75,44 +105,48 @@ class CustomVote extends React.Component {
             previousAnswerId = previousAnswer.id;
         }
 
-        if (!this.getAnswer(answerId).members.includes(getUserId())) {
+        if (!this.getAnswer(answerId).members.find(member => {member.id == getUserId();})) {
             this.submitAnswer(
                 this.state.teamId,
                 this.props.eventId,
                 this.props.voteId,
                 answerId
             ).then(response => {
-                this.setState({answers: this.state.answers});
+                getAnswersWithMembers(this.props.eventId, this.props.voteId).then(response => {
+                    this.setState({answers: response.data['answers_members']});
 
-                if (previousAnswerId) {
-                    this.reSubmitAnswer(
-                        this.state.teamId,
-                        this.props.eventId,
-                        this.props.voteId,
-                        previousAnswerId
-                    ).then(response => {
-                        this.setState({answers: this.state.answers});
-                    });
-                }
+                    if (previousAnswerId) {
+                        this.reSubmitAnswer(
+                            this.state.teamId,
+                            this.props.eventId,
+                            this.props.voteId,
+                            previousAnswerId
+                        ).then(response => {
+                            getAnswersWithMembers(this.props.eventId, this.props.voteId).then(response => {
+                                this.setState({answers: response.data['answers_members']});
+                            });
+                        });
+                    }
+                });
             });
         }
-    }
+    };
 
     submitAnswer = (teamId, eventId, voteId, answerId) => {
         let answer = this.getAnswer(answerId);
-        answer.members.push(getUserId());
+        const memberIds = answer.members.map(member => member.id);
+        memberIds.push(getUserId());
 
-        const members = answer.members;
-        return putAnswer(teamId, eventId, voteId, answerId, members);
+        return putAnswer(teamId, eventId, voteId, answerId, memberIds);
     };
 
     reSubmitAnswer = (teamId, eventId, voteId, previousAnswerId) => {
         let previousAnswer = this.getAnswer(previousAnswerId);
-        const index = previousAnswer.members.indexOf(getUserId());
-        previousAnswer.members.splice(index, 1);
+        const memberIds = previousAnswer.members.map(member => member.id);
+        const index = memberIds.indexOf(getUserId());
+        memberIds.splice(index, 1);
 
-        const members = previousAnswer.members;
-        return putAnswer(teamId, eventId, voteId, previousAnswerId, members);
+        return putAnswer(teamId, eventId, voteId, previousAnswerId, memberIds);
     };
 
     componentWillMount() {
@@ -121,9 +155,7 @@ class CustomVote extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.answers.length != 0) {
-            this.setState({
-                answers: nextProps.answers
-            });
+            this.setState({answers: nextProps.answers});
         }
     }
 
@@ -138,10 +170,17 @@ class CustomVote extends React.Component {
                     />
                     <CardActions>
                         <div>
-                            <RadioButtonGroup name="shipSpeed" defaultSelected="checked"
+                            <RadioButtonGroup
+                                name="shipSpeed"
+                                valueSelected="checked"
                                 onChange={this.handleChangeButton}>
                                 {this.getRadioButtons()}
                             </RadioButtonGroup>
+                            <ParticipantListDialog
+                                participants={this.state.currentAnswerMembers}
+                                open={this.state.open}
+                                handleCloseParticipants={this.handleClose}
+                            />
                         </div>
                     </CardActions>
                 </Card>
