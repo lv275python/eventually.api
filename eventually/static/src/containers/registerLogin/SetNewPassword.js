@@ -10,8 +10,7 @@ const style = {
 };
 
 const errorStyle={
-    position: 'absolute',
-    bottom : '-10px',
+    position: 'relative',
     color: orange500,
 };
 
@@ -30,12 +29,13 @@ class SetNewPassword extends React.Component {
 
     handlePassword = event => {
         const regexp = /^(?=.*[0-9])(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
-        if(regexp.test(event.target.value) === true) {
-            this.setState({messagePassword: '', password: event.target.value});
-        } else {
-            this.setState({ messagePassword: 'Error Password' });
-        }
+        regexp.test(event.target.value) === true ? this.setState({
+            messagePassword: '', password: event.target.value}):
+            this.setState({messagePassword: `Password must contain at least 6 characters: uppercase characters (A-Z);
+                                             lowercase characters (a-z); digits (0-9)`
+            });
     };
+
 
     handleConfirmPassword = event => {
         this.setState({confirmPassword: event.target.value});
@@ -56,6 +56,7 @@ class SetNewPassword extends React.Component {
                 <TextField
                     onChange={this.handlePassword}
                     hintText='Enter password'
+                    type="password"
                     errorStyle = {errorStyle}
                     errorText={this.state.messagePassword}
                 />
@@ -64,8 +65,8 @@ class SetNewPassword extends React.Component {
                 <TextField
                     onChange={this.handleConfirmPassword}
                     hintText='Re-enter password'
+                    type="password"
                     errorStyle = {errorStyle}
-                    errorText={this.state.messagePassword}
                 />
                 <br />
                 <br />

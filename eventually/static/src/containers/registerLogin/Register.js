@@ -40,7 +40,8 @@ class Register extends React.Component {
             this.setState({MessagePassword: '', password: event.target.value});
         }
         else {
-            this.setState({ MessagePassword: 'Error Password' });
+            this.setState({ MessagePassword: `Password must contain at least 6 characters: uppercase characters (A-Z);
+                                              lowercase characters (a-z); digits (0-9)`});
         }
     };
 
