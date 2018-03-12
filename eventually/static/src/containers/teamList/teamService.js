@@ -14,8 +14,9 @@ const usersServiceGet = () => {
     return axios.get(getUsers);
 };
 
-const teamServiceGet = () => {
-    return axios.get(appPath);
+const teamServiceGet = (full_name) => {
+    const path = appPath + '?full_name='+full_name;
+    return axios.get(path);
 };
 
 const teamServiceGetMembers = id => {
