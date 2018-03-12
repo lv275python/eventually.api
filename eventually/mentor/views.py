@@ -132,10 +132,13 @@ class MentorView(View):
         if not student or not topic:
             return RESPONSE_404_OBJECT_NOT_FOUND
 
-        record = MentorStudent.topic_student_belonging(topic_id=topic.id, student_id=user.id)
+        if user not in topic.mentors.all():
+            return RESPONSE_403_ACCESS_DENIED
 
+        record = MentorStudent.topic_student_belonging(topic_id=topic.id, student_id=student.id)
         if record:
-            record.update(mentor=user, is_done=data.get('is_done'))
+            record.update(mentor=user,
+                          is_done=data.get('is_done') if data.get('is_done') else 0)
             return RESPONSE_200_UPDATED
         return RESPONSE_400_INVALID_DATA
 

@@ -31,6 +31,15 @@ class TestTopicView(TestCase):
             custom_user.set_password('1111')
             custom_user.save()
 
+            custom_user2 = CustomUser.objects.create(id=124,
+                                                    email='email2@mail.com',
+                                                    first_name='2fname',
+                                                    middle_name='2mname',
+                                                    last_name='2lname',
+                                                    is_active=True)
+            custom_user2.set_password('2222')
+            custom_user2.save()
+
             Curriculum.objects.create(id=111,
                                       name="testcurriculum",
                                       goals=["goal1", "goal2"],
@@ -103,7 +112,7 @@ class TestTopicView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
-    def test_unsuccess_get_by_invalid_topic_id(self):
+    def test_unsuccessful_get_by_invalid_topic_id(self):
         """Method that tests the unsuccessful get request for the topic with the certain id"""
 
         url = reverse('curriculums:topics:detail', args=[111, 215])
@@ -152,6 +161,34 @@ class TestTopicView(TestCase):
             url = reverse('curriculums:topics:index', args=[111])
             response = self.client.post(url, json.dumps(data), content_type='application/json')
             self.assertEqual(response.status_code, 501)
+
+    def test_topic_success_delete(self):
+        """Method that tests the successful delete request."""
+        url = reverse('curriculums:topics:delete', args=[111, 213])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_topic_error_delete_no_topic(self):
+        """Method that tests the unsuccessful delete request with invalid topic."""
+        url = reverse('curriculums:topics:delete', args=[111, 215])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_topic_error_delete_db_error(self):
+        """Method that tests the unsuccessful delete request with db error."""
+        with mock.patch('topic.models.Topic.delete_by_id') as topic_delete:
+            topic_delete.return_value = None
+            url = reverse('curriculums:topics:delete', args=[111, 213])
+            response = self.client.delete(url)
+            self.assertEqual(response.status_code, 400)
+
+    def test_topic_delete_error_access_denied(self):
+        """Method that tests the unsuccessful delete request with no rights."""
+        self.client = Client()
+        self.client.login(username='email2@mail.com', password='2222')
+        url = reverse('curriculums:topics:delete', args=[111, 213])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 403)
 
     def test_method_is_topic_mentor(self):
         """Method that tests 'is_topic_mentor' function."""

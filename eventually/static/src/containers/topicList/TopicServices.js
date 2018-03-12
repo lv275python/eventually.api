@@ -30,7 +30,7 @@ const getTopicDetailService = (curriculumId, topicId) => {
 };
 
 const deleteTopicService = (curriculumId, topicId) => {
-    let url = curriculumPath + curriculumId + '/topics/' + topicId + '/';
+    let url = curriculumPath + curriculumId + '/topics/' + topicId + '/delete/';
     return axios.delete(url);
 };
 
