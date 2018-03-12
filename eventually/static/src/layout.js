@@ -7,7 +7,6 @@ import Header from './components/header/Header';
 import Sign from './containers/registerLogin/Sign';
 
 const style = {
-    height: 300,
     width: '60%',
     margin: 'auto',
     marginLeft: '20%',

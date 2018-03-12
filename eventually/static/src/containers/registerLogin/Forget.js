@@ -31,7 +31,8 @@ class Forget extends React.Component {
              this.setState({MessageEmail: '', email: event.target.value});
          }
          else {
-             this.setState({ MessageEmail: 'Error Email'});
+             this.setState({ MessageEmail: `Password must contain at least 6 characters: uppercase characters (A-Z);
+                                            lowercase characters (a-z); digits (0-9)`});
          }
      };
 
