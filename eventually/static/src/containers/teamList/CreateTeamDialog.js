@@ -67,7 +67,7 @@ export default class CreateTeamDialog extends React.Component {
                 DescriptionIsValid: true,
             });
         } else {
-            this.setState({ MessageDescription: 'Invalid description'});
+            this.setState({ MessageDescription: 'Description must contain 0-1024 symbols'});
             this.setState({ DescriptionIsValid: false});
         }
     };
@@ -83,7 +83,7 @@ export default class CreateTeamDialog extends React.Component {
             });
         } else {
             this.setState({ 
-                MessageName: 'Invalid name',
+                MessageName: 'Name must contain 4-30 symbols',
                 NameIsValid: false,
             });
         }
