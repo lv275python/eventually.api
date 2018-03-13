@@ -1,17 +1,15 @@
 import React from 'react';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { Link } from 'react-router';
 import { withRouter } from 'react-router-dom';
+import { Card, CardActions, CardHeader } from 'material-ui/Card';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import { lightGreen400 } from 'material-ui/styles/colors';
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import ActionFavorite from 'material-ui/svg-icons/action/favorite';
-import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
-import {getUserId} from 'src/helper';
 import ParticipantListDialog from './ParticipantListDialog';
-import {getParticipants} from './VoteService';
 import {getAnswers} from './VoteService';
+import {getAnswersWithMembers} from './VoteService';
 import {putAnswer} from './VoteService';
+import {getUserId} from 'src/helper';
 
 const raisedButtonDivStyle = {
     display: 'flex',
@@ -21,6 +19,9 @@ const raisedButtonDivStyle = {
 const styles = {
     radioButton: {
         marginBottom: 16
+    },
+    raisedButton: {
+        marginLeft: 10
     }
 };
 
@@ -33,7 +34,9 @@ class StandardVote extends React.Component {
             radioButtons: [],
             teamId: this.props.teamId,
             participants: [],
-            potentialParticipants: []
+            potentialParticipants: [],
+            openParticipants: false,
+            openPotentialParticipants: false
         };
     }
 
@@ -50,20 +53,20 @@ class StandardVote extends React.Component {
     }
 
     setParticipants = () => {
-        getParticipants(this.props.eventId, this.props.voteId).then(response => {
+        getAnswersWithMembers(this.props.eventId, this.props.voteId).then(response => {
             const answer = response.data['answers_members'].find(answer => {
                 return answer['text'] == 'I will go';
             });
-            this.setState({participants: answer.members['names']});
+            this.setState({participants: answer.members});
         });
     };
 
     setPotentialParticipants = () => {
-        getParticipants(this.props.eventId, this.props.voteId).then(response => {
+        getAnswersWithMembers(this.props.eventId, this.props.voteId).then(response => {
             const answer = response.data['answers_members'].find(answer => {
                 return answer['text'] == 'Maybe I will come';
             });
-            this.setState({potentialParticipants: answer.members['names']});
+            this.setState({potentialParticipants: answer.members});
         });
     };
 
@@ -160,6 +163,22 @@ class StandardVote extends React.Component {
         this.getData();
     }
 
+    handleOpenParticipants = () => {
+        this.setState({openParticipants: true});
+    }
+
+    handleOpenPotentialParticipants = () => {
+        this.setState({openPotentialParticipants: true});
+    }
+
+    handleCloseParticipants = () => {
+        this.setState({openParticipants: false});
+    };
+
+    handleClosePotentialParticipants = () => {
+        this.setState({openPotentialParticipants: false});
+    };
+
     render() {
         return (
             <div>
@@ -177,13 +196,25 @@ class StandardVote extends React.Component {
                             </RadioButtonGroup>
                         </div>
                         <div style={raisedButtonDivStyle}>
+                            <RaisedButton
+                                label={'Participants'}
+                                onClick={this.handleOpenParticipants}
+                                style={styles.raisedButton}
+                                backgroundColor={lightGreen400}/>
                             <ParticipantListDialog
-                                text="Participants"
                                 participants={this.state.participants}
+                                open={this.state.openParticipants}
+                                handleCloseParticipants={this.handleCloseParticipants}
                             />
+                            <RaisedButton
+                                label={'Potential Participants'}
+                                onClick={this.handleOpenPotentialParticipants}
+                                style={styles.raisedButton}
+                                backgroundColor={lightGreen400}/>
                             <ParticipantListDialog
-                                text="Potential Participants"
                                 participants={this.state.potentialParticipants}
+                                open={this.state.openPotentialParticipants}
+                                handleCloseParticipants={this.handleClosePotentialParticipants}
                             />
                         </div>
                     </CardActions>
