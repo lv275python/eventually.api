@@ -64,13 +64,14 @@ export default class ProfileView extends React.Component {
     }
 
     render(){
-        const editBtn = this.props.isMyProfile ? 
+        const editBtn = this.props.isMyProfile ?
             (<RaisedButton
                 label="Edit"
+                disabled={this.props.profileData.id===''}
                 primary={true}
                 keyboardFocused={true}
                 onClick={this.props.onEditClick}
-            />) : 
+            />) :
             null;
         return(
             <div style={styleMain}>

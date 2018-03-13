@@ -9,7 +9,7 @@ const style = {
     margin: 12,
 };
 
-const errorStyle = {   
+const errorStyle = {
     color: orange500,
 };
 
@@ -31,8 +31,7 @@ class Forget extends React.Component {
              this.setState({MessageEmail: '', email: event.target.value});
          }
          else {
-             this.setState({ MessageEmail: `Password must contain at least 6 characters: uppercase characters (A-Z);
-                                            lowercase characters (a-z); digits (0-9)`});
+             this.setState({ MessageEmail: 'Invalid email.'});
          }
      };
 
