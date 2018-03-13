@@ -81,12 +81,26 @@ class MentorStudentViewTestCase(TestCase):
                                 description='My awesome topic')
             topic_react.save()
 
+            topic_js = Topic(id=202,
+                             curriculum=curriculum,
+                             author=custom_user_first,
+                             title='JS',
+                             description='My awesome topic',
+                             mentors=(custom_user_first, ))
+            topic_js.save()
+
             mentor = MentorStudent(id=500,
                                    mentor=custom_user_first,
                                    student=custom_user_second,
                                    topic=topic_python,
                                    is_done=0)
             mentor.save()
+
+            mentee = MentorStudent(id=502,
+                                   student=custom_user_third,
+                                   topic=topic_js,
+                                   is_done=0)
+            mentee.save()
 
         self.client = Client()
         self.client.login(username='email0@gmail.com', password='Pas0')
@@ -96,14 +110,21 @@ class MentorStudentViewTestCase(TestCase):
 
         expected_data = {'my_students': [{'created_at': 1508044512,
                                           'email': 'email2@gmail.com',
-                                           'first_name': 'anton',
-                                           'id': 102,
-                                           'is_active': True,
-                                           'last_name': 'shulga',
-                                           'middle_name': 'frensis',
-                                           'updated_at': 1508044512}],
+                                          'first_name': 'anton',
+                                          'id': 102,
+                                          'is_active': True,
+                                          'last_name': 'shulga',
+                                          'middle_name': 'frensis',
+                                          'updated_at': 1508044512}],
                          'assigned_students': [],
-                         'available_students': []}
+                         'available_students': [{'created_at': 1508044512,
+                                                 'email': 'email3@gmail.com',
+                                                 'first_name': 'fedir',
+                                                 'id': 103,
+                                                 'is_active': True,
+                                                 'last_name': 'bogolubov',
+                                                 'middle_name': 'sergiy',
+                                                 'updated_at': 1508044512}]}
 
         url = reverse('mentor:index')
         response = self.client.get(url)
@@ -184,20 +205,35 @@ class MentorStudentViewTestCase(TestCase):
 
     def test_mentor_updated_put(self):
         """Method that tests the success put request to update mentor."""
-        with mock.patch('mentor.models.MentorStudent.create') as mentor_create:
-            self.client = Client()
-            self.client.login(username='email2@gmail.com', password='Pas2')
-            data = {'mentor': 100,
-                    'student': 102,
-                    'topic': 200}
-            url = reverse('mentor:index')
-            response = self.client.put(url, json.dumps(data), content_type='application/json')
-            self.assertEqual(response.status_code, 200)
+        data = {'student': 103,
+                'topic': 202}
+        url = reverse('mentor:index')
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_mentor_put_error_access_denied(self):
+        """Method that tests the success put request to update mentor."""
+        self.client = Client()
+        self.client.login(username='email2@gmail.com', password='Pas2')
+        data = {'student': 103,
+                'topic': 202}
+        url = reverse('mentor:index')
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 403)
+
+    def test_mentor_error_put_no_data(self):
+        """Method that tests the unsuccessful put request to update mentor with invalid data."""
+
+        data = {}
+        url = reverse('mentor:index')
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
 
     def test_mentor_error_put_invalid_data(self):
         """Method that tests the unsuccessful put request to update mentor with invalid data."""
 
-        data = {}
+        data = {'student': 100,
+                'topic': 202}
         url = reverse('mentor:index')
         response = self.client.put(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
@@ -216,9 +252,7 @@ class MentorStudentViewTestCase(TestCase):
 
         self.client = Client()
         self.client.login(username='email2@gmail.com', password='Pas2')
-
         data = {'topic': 200}
-
         url = reverse('mentor:delete', args=[200])
         response = self.client.delete(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
