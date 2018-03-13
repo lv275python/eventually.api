@@ -32,10 +32,13 @@ class CreateEvent extends React.Component {
             validationField: {
                 failNameMessage: '',
                 failDescriptionMessage: '',
-                failBudgetMessage: ''
+                failBudgetMessage: '',
+                nameIsValid: false,
+                descriptionIsValid: false,
+                budgetIsValid: false
             },
             name: '',
-            team: 0,
+            team: null,
             description: '',
             startAt: new Date() / 1000,
             timeEnd: new Date() / 1000,
@@ -61,14 +64,15 @@ class CreateEvent extends React.Component {
 
     handleChangeName = event => {
         const regex = /^.{4,64}$/;
-        if(regex.test(event.target.value) === true ) {
+        if(regex.test(event.target.value) === true) {
             this.setState({
                 failNameMessage: '',
-                name: event.target.value,
+                nameIsValid: true,
+                name: event.target.value
             });
         } else {
             this.setState({
-                failNameMessage: 'Invalid name',
+                failNameMessage: 'Name must be greater than 4 and less 64 any symbols'
             });
         }
     };
@@ -87,12 +91,15 @@ class CreateEvent extends React.Component {
 
     handleChangeBudget = event => {
         const regex = /^[0-9]{0,6}$/;
-        if(regex.test(event.target.value) === false) {
-            this.setState({ failBudgetMessage: 'Value must be a number and maximum be less 1000000' });
-        } else {
+        if(regex.test(event.target.value) === true) {
             this.setState({
                 failBudgetMessage: '',
+                budgetIsValid: true,
                 budget: event.target.value
+            });
+        } else {
+            this.setState({
+                failBudgetMessage: 'Value must be a number and maximum be less 1000000'
             });
         }
     };
@@ -111,14 +118,15 @@ class CreateEvent extends React.Component {
 
     handleChangeDescription = event => {
         const regex = /^[\S\s.]{0,1024}$/;
-        if(regex.test(event.target.value) === true ) {
+        if(regex.test(event.target.value) === true) {
             this.setState({
                 failDescriptionMessage: '',
+                descriptionIsValid: true,
                 description: event.target.value
             });
         } else {
             this.setState({
-                failDescriptionMessage: 'Invalid description'
+                failDescriptionMessage: 'Description must be less 1024 any symbols'
             });
         }
     };
@@ -130,21 +138,24 @@ class CreateEvent extends React.Component {
     handleSubmit = event => {
         event.preventDefault();
 
-        const data = {
-            'name': this.state.name,
-            'description': this.state.description,
-            'start_at': this.state.startAt,
-            'duration': this.state.timeEnd - this.state.startAt,
-            'budget': Number(this.state.budget),
-            'team': this.state.team,
-            'status': this.state.status,
-            'longitude': this.state.longitude,
-            'latitude': this.state.latitude
-        };
-        postEventService(data).then(response => {
-            this.props.addEvent(response.data);
-        });
-        this.handleClose();
+        if(this.state.nameIsValid === true && this.state.descriptionIsValid === true &&
+            this.state.budgetIsValid === true && this.state.team !== null){
+            const data = {
+                'name': this.state.name,
+                'description': this.state.description,
+                'start_at': this.state.startAt,
+                'duration': this.state.timeEnd - this.state.startAt,
+                'budget': Number(this.state.budget),
+                'team': this.state.team,
+                'status': this.state.status,
+                'longitude': this.state.longitude,
+                'latitude': this.state.latitude
+            };
+            postEventService(data).then(response => {
+                this.props.addEvent(response.data);
+            });
+            this.handleClose();
+        }
     };
 
     handleOpen = () => {
