@@ -115,8 +115,11 @@ class EventList extends React.Component {
 
     addEvent = (newEvent) => {
         this.state.events.unshift(newEvent);
+        this.state.events.pop();
         this.setState({
-            events: this.state.events
+            events: this.state.events,
+            fullLength: this.state.fullLength + 1,
+            total: this.getPagesAmount(this.state.fullLength + 1)
         });
     };
 
