@@ -94,7 +94,8 @@ class SuggestedTopicsView(View):
         data = {
             'name': data.get('name'),
             'description': data.get('description'),
-            'interested_user': data.get('interested_user')
+            'interested_user': data.get('interested_user'),
+            'remove_interest': data.get('remove_interest')
         }
         suggested_topic.update(**data)
         return RESPONSE_200_UPDATED

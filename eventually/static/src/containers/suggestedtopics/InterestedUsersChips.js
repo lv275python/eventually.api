@@ -29,4 +29,4 @@ class InterestedUsersChips extends React.Component {
     }
 }
 
-export default InterestedUsersChips;
+export default withRouter(InterestedUsersChips);

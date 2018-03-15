@@ -53,7 +53,6 @@ const styles = {
 };
 
 
-
 export default class SuggestedTopicsItem extends React.Component {
     constructor(props) {
         super(props);
@@ -63,14 +62,26 @@ export default class SuggestedTopicsItem extends React.Component {
             description: this.props.description,
             owner: this.props.owner,
             interestedUsers: this.props.interestedUsers,
-            usersDetails: []
+            usersDetails: [],
+            removeInterest: '',
+            joinButtonLabel: '',
         };
     }
 
     componentWillMount(){
         this.getInterestedUsersDetails();
+        this.handleUserInTopic();
     }
 
+    handleUserInTopic = () => {
+        if (this.state.interestedUsers.indexOf(getUserId()) === -1){
+            this.setState({joinButtonLabel: 'Join'})
+            this.setState({removeInterest: '0'})
+        } else {
+            this.setState({joinButtonLabel: 'Leave'})
+            this.setState({removeInterest: '1'})
+        }
+    };
 
     /*update old prop*/
     componentWillReceiveProps(nextProps){
@@ -110,12 +121,26 @@ export default class SuggestedTopicsItem extends React.Component {
         ))
     }
 
+    switchJoinButton = () => {
+        if (this.state.removeInterest === '0'){
+            this.setState({joinButtonLabel: 'Leave'})
+            this.setState({removeInterest: '1'})
+        } else {
+            this.setState({joinButtonLabel: 'Join'})
+            this.setState({removeInterest: '0'})
+        }    
+        console.log(this.state.usersDetails)
+        this.handleInterested()
+    }
+
+
     handleInterested = () => {
         const id = this.props.id;
         const name = this.state.name;
         const description = this.state.description;
         const interestedUser = getUserId();
-        putSuggestedTopicsItem(id, name, description, interestedUser);
+        const removeInterest = this.state.removeInterest;
+        putSuggestedTopicsItem(id, name, description, interestedUser, removeInterest);
     }
 
     render() {
@@ -139,8 +164,8 @@ export default class SuggestedTopicsItem extends React.Component {
                     <div style={styles.description}> {this.state.description} </div>
                     {editButton}
                     <RaisedButton
-                        onClick={this.handleInterested}
-                        label='Interested in'
+                        onClick={this.switchJoinButton}
+                        label={this.state.joinButtonLabel}
                         primary={true}
                         style={styles.button}
                     />

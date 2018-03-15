@@ -7,8 +7,8 @@ const getSuggestedTopicsService = () => {
     return axios.get(appPath);
 };
 
-const putSuggestedTopicsItem = (id, name, description, interestedUser) => {
-    return axios.put(appPath + id + '/', {name, description, 'interested_user': interestedUser});
+const putSuggestedTopicsItem = (id, name, description, interestedUser, removeInterest) => {
+    return axios.put(appPath + id + '/', {name, description, 'interested_user': interestedUser, 'remove_interest': removeInterest})
     };
 
 const postSuggestedTopicsItem = (data) => {

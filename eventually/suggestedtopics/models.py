@@ -108,7 +108,7 @@ class SuggestedTopics(AbstractModel):
         except (ValueError, IntegrityError):
             LOGGER.error('Inappropriate value or relational integrity fail')
 
-    def update(self, name=None, description=None, interested_user=None):
+    def update(self, name=None, description=None, interested_user=None, remove_interest=None):
         """
         Method that updates SuggestedTopics object according to the accepted info.
 
@@ -128,8 +128,10 @@ class SuggestedTopics(AbstractModel):
             self.name = name
         if description:
             self.description = description
-        if interested_user:
+        if remove_interest == "0":
             self.add_interested_user(interested_user)
+        elif remove_interest == "1":
+            self.interested_users.remove(interested_user)
         self.save()
         redis_key = 'suggested_topic_by_id_{0}'.format(self.id)
         if redis_key in cache:
@@ -161,3 +163,4 @@ class SuggestedTopics(AbstractModel):
                 cache.delete(redis_key)
             if "all_suggested_topics" in cache:
                 cache.delete("all_suggested_topics")
+
