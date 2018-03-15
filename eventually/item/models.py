@@ -169,6 +169,7 @@ class Item(AbstractModel):
             self.description = description
         if estimation:
             self.estimation = estimation
+        self.save()
 
     def update_authors(self, authors_add=None, authors_del=None):
         """

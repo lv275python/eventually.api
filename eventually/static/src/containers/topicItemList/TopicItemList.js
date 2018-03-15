@@ -1,5 +1,5 @@
 import React from 'react';
-import {ItemLink, getItemListService} from 'src/containers';
+import {ItemLink, getItemListService, AddItemDialog} from 'src/containers';
 
 
 export default class TopicItemList extends React.Component {
@@ -15,11 +15,14 @@ export default class TopicItemList extends React.Component {
     }
 
     componentWillMount() {
+        this.getItemList();
+    }
+
+    getItemList = () => {
         getItemListService(this.props.curriculumId, this.props.topicId).then(response => {
             this.setState({items: response.data['items']});
         });
-    }
-
+    };
 
     handleModalOpen = () => {
         this.setState({isModalOpen: true});
@@ -49,6 +52,8 @@ export default class TopicItemList extends React.Component {
                 {this.state.items.map(item => (
                     <ItemLink
                         key={item.id.toString()}
+                        topicId={this.props.topicId}
+                        curriculumId={this.props.curriculumId}
                         name={item.name}
                         description={item.description}
                         form={item.form}
@@ -56,8 +61,14 @@ export default class TopicItemList extends React.Component {
                         onClick={this.handleClick}
                         id={item.id}
                         onModalOpen={this.handleModalOpen}
+                        getItemList={this.getItemList}
+                        isMentor={this.props.isMentor}
                     />)
                 )}
+                {this.props.isMentor && (<AddItemDialog
+                    topicId={this.props.topicId}
+                    curriculumId={this.props.curriculumId}
+                    getItemList={this.getItemList} />)}
             </div>
         );
     }

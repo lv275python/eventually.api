@@ -3,24 +3,22 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import SvgIcon from 'material-ui/SvgIcon';
+import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
 import SelectField from 'material-ui/SelectField';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import { postTopicService } from './TopicServices';
+import MenuItem from 'material-ui/MenuItem';
+import { putEditTopicService } from 'src/containers';
 
 
-const FlatButtonStyle = {
-    marginLeft: '93%',
-    marginBottom: '20px',
-};
-
-export default class TopicDialog extends React.Component {
+export default class EditTopicDialog extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             open: false,
-            title: '',
-            description: '',
+            title: props.topicDetail['title'],
+            description: props.topicDetail['description'],
+            topicId: props.topicId,
+            curriculumId: props.curriculumId,
             messageTitle: '',
             titleIsValid: false,
             messageDescription: '',
@@ -28,6 +26,14 @@ export default class TopicDialog extends React.Component {
         };
     }
 
+    componentWillReceiveProps(nextProps){
+        if(this.props.topicDetail !== nextProps.topicDetail){
+            this.setState({
+                title: nextProps.topicDetail['title'],
+                description: nextProps.topicDetail['description']
+            });
+        }
+    }
 
     handleOpen = () => {
         this.setState({ open: true });
@@ -37,9 +43,8 @@ export default class TopicDialog extends React.Component {
         this.setState({
             open: false,
             messageTitle: '',
-            messageDescription: '',
             titleIsValid: false,
-            descriptionIsValid: false
+
         });
     };
 
@@ -53,7 +58,7 @@ export default class TopicDialog extends React.Component {
             });
         } else {
             this.setState({
-                messageTitle: 'Required a minimum length of 4 characters, maximum length of 255 characters',
+                messageTitle: 'Required a minimum length of 4 characters',
                 titleIsValid: false,
             });
         }
@@ -76,20 +81,20 @@ export default class TopicDialog extends React.Component {
     };
 
     handleSubmit = () => {
-        if(this.state.titleIsValid&this.state.descriptionIsValid){
+        if(this.state.titleIsValid === true){
             const data = {
                 'title': this.state.title,
-                'description': this.state.description,
+                'description': this.state.description
             };
-            postTopicService(this.props.curriculumId, data).then(response => {
-                this.props.getTopicListData();
+            putEditTopicService(this.state.curriculumId, this.state.topicId, data).then(response => {
+                this.props.getTopicData();
                 this.handleClose();
             });
         }
     };
 
     render() {
-        const disable = !(this.state.titleIsValid&this.state.descriptionIsValid);
+        const disable = !(this.state.titleIsValid & this.state.descriptionIsValid);
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -99,23 +104,18 @@ export default class TopicDialog extends React.Component {
             <FlatButton
                 label="Submit"
                 primary={true}
-                keyboardFocused={true}
                 onClick={this.handleSubmit}
                 disabled={disable}
             />,
         ];
-
         return (
             <div>
-                <FloatingActionButton
-                    mini={true}
-                    onClick={this.handleOpen}
-                    style={FlatButtonStyle}>
-
-                    <ContentAdd />
-                </FloatingActionButton>
+                <RaisedButton
+                    icon={<ModeEdit />}
+                    label='Edit topic'
+                    onClick={this.handleOpen} />
                 <Dialog
-                    title={this.props.title}
+                    title="Edit topic"
                     actions={actions}
                     modal={false}
                     open={this.state.open}
@@ -123,17 +123,17 @@ export default class TopicDialog extends React.Component {
                 >
                     <TextField
                         floatingLabelText="Title"
+                        defaultValue={this.state.title}
                         fullWidth={true}
                         onChange={this.handleTitle}
                         errorText={this.state.messageTitle} />
                     <TextField
                         floatingLabelText="Description"
-                        multiLine={true}
-                        rows={2}
-                        rowsMax={4}
-                        fullWidth={true}
+                        defaultValue={this.state.description}
                         onChange={this.handleDescription}
-                        errorText={this.state.messageDescription} />
+                        multiLine={true}
+                        rowsMax={4}
+                        fullWidth={true} />
                 </Dialog>
             </div>
         );

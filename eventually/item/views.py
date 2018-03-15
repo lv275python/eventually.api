@@ -10,8 +10,11 @@ from django.views.generic.base import View
 from django.http import JsonResponse
 from django.http import HttpResponse
 from topic.models import Topic
-from utils.responsehelper import (RESPONSE_400_INVALID_DATA,
+from utils.responsehelper import (RESPONSE_200_DELETED,
+                                  RESPONSE_200_UPDATED,
+                                  RESPONSE_400_INVALID_DATA,
                                   RESPONSE_403_ACCESS_DENIED,
+                                  RESPONSE_400_DB_OPERATION_FAILED,
                                   RESPONSE_404_OBJECT_NOT_FOUND)
 from .models import Item
 
@@ -79,7 +82,6 @@ class ItemView(View):
 
         if not topic:
             return RESPONSE_404_OBJECT_NOT_FOUND
-
         allowed_authors = topic.mentors.all()
 
         if author not in allowed_authors:
@@ -96,3 +98,81 @@ class ItemView(View):
             return JsonResponse(item.to_dict(), status=201)
 
         return HttpResponse('not implemented', status=501)
+
+    def put(self, request, curriculum_id=None, topic_id=None, item_id=None):  # pylint: disable=unused-argument
+        """
+        Method that handles PUT request.
+
+        :param request: the accepted HTTP request.
+        :type request: `HttpRequest object`
+
+        :param curriculum_id: ID of the certain curriculum.
+        :type curriculum_id: 'int'
+
+        :param topic_id: ID of the certain topic.
+        :type topic_id: `int`
+
+        :param item_id: ID of the certain item.
+        :type item_id: `int`
+
+        :return: response with status code 200 when topic was successfully updated or response with
+                 400, 403 or 404 failed status code.
+        :rtype: `HttpResponse object."""
+
+        user = request.user
+        item = Item.get_by_id(item_id)
+
+        if not item:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+
+        topic = Topic.get_by_id(topic_id)
+        if not topic:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+
+        if user not in topic.mentors.all():
+            return RESPONSE_403_ACCESS_DENIED
+
+        data = request.body
+        if not data:
+            return RESPONSE_400_INVALID_DATA
+
+        data = {'name': data.get('name'),
+                'description': data.get('description'),
+                'form': data.get('form')}
+        item.update(**data)
+
+        return RESPONSE_200_UPDATED
+
+    def delete(self, request, curriculum_id, topic_id, item_id):    # pylint: disable=unused-argument
+        """
+        Method that handles DELETE request.
+
+        :param request: the accepted HTTP request.
+        :type request: `HttpRequest object`
+
+        :param curriculum_id: ID of the certain curriculum.
+        :type curriculum_id: `int`
+
+        :param topic_id: ID of the certain topic.
+        :type topic_id: `int`
+
+        :param item_id: ID of the certain item.
+        :type item_id: `int`
+
+        :return: response with status code 200 when topic was successfully deleted or response with
+                 403 or 404 failed status code.
+        :rtype: `HttpResponse object."""
+
+        user = request.user
+        item = Item.get_by_id(item_id)
+        topic = Topic.get_by_id(topic_id)
+        if not topic:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+        if not item:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+        if user in topic.mentors.all():
+            is_deleted = Item.delete_by_id(item_id)
+            if is_deleted:
+                return RESPONSE_200_DELETED
+            return RESPONSE_400_DB_OPERATION_FAILED
+        return RESPONSE_403_ACCESS_DENIED

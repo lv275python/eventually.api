@@ -10,10 +10,12 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from curriculum.models import Curriculum
 from utils.responsehelper import (RESPONSE_200_DELETED,
+                                  RESPONSE_200_UPDATED,
                                   RESPONSE_400_INVALID_DATA,
                                   RESPONSE_400_DB_OPERATION_FAILED,
                                   RESPONSE_403_ACCESS_DENIED,
                                   RESPONSE_404_OBJECT_NOT_FOUND)
+from authentication.models import CustomUser
 from .models import Topic
 
 
@@ -92,7 +94,7 @@ class TopicView(View):
 
         return HttpResponse('not implemented', status=501)
 
-    def put(self, request, curriculum_id=None, topic_id=None):
+    def put(self, request, curriculum_id=None, topic_id=None):  # pylint: disable=unused-argument
         """
         Method that handles PUT request.
 
@@ -105,9 +107,32 @@ class TopicView(View):
         :param topic_id: ID of the certain topic.
         :type topic_id: `int`
 
-        :return: response with status code 204 when event was successfully updated or response with
+        :return: response with status code 200 when topic was successfully updated or response with
                  400, 403 or 404 failed status code.
         :rtype: `HttpResponse object."""
+
+        user = request.user
+        topic = Topic.get_by_id(topic_id)
+        if not topic:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+
+        data = request.body
+        if not data:
+            return RESPONSE_400_INVALID_DATA
+
+        if user not in topic.mentors.all():
+            return RESPONSE_403_ACCESS_DENIED
+
+        if data.get('addMentors'):
+            mentors_list = [CustomUser.get_by_id(mentor_id) for mentor_id in data.get('addMentors')]
+            topic.add_mentors(mentors_list)
+
+        if data.get('title') or data.get('description'):
+            data = {'title': data.get('title'),
+                    'description': data.get('description')}
+            topic.update(**data)
+
+        return RESPONSE_200_UPDATED
 
     def delete(self, request, curriculum_id, topic_id):    # pylint: disable=unused-argument
         """
@@ -137,6 +162,7 @@ class TopicView(View):
             return RESPONSE_400_DB_OPERATION_FAILED
         return RESPONSE_403_ACCESS_DENIED
 
+
 def is_topic_mentor(request, curriculum_id, topic_id):   # pylint: disable=unused-argument
     """
     Function that handle get request for mentor belonging to the certain topic.
@@ -147,7 +173,7 @@ def is_topic_mentor(request, curriculum_id, topic_id):   # pylint: disable=unuse
     :param topic_id: Id of certain topic.
     :type topic_id: integer.
 
-    :return: Boolean
+    :return: JsonResponse with data whether user is a mentor of the certain topic.
     """
     user = request.user
     topic = Topic.get_by_id(topic_id)
