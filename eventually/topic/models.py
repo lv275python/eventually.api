@@ -172,3 +172,11 @@ class Topic(AbstractModel):
         cached_topic = pickle.dumps(topic)
         cache.set(redis_key, cached_topic, CACHE_TTL)
         return topic
+
+    @staticmethod
+    def get_mentors_topics(mentor_id):
+        """
+        Method that get topics that belong to the certain mentor
+        """
+        topics = Topic.objects.filter(mentors__id=mentor_id)
+        return topics

@@ -16,6 +16,16 @@ const getStudentsList = (chosenTopic, isTopicDone, fromDate, toDate) => {
     return axios.get(getStudentsUrl);
 };
 
+const getMentorsTopics = () => {
+    let url = apiUrl + 'mentor/topics/';
+    return axios.get(url);
+};
+
+const putMentorStudentService = (studentId, topicId, data) => {
+    let url = apiUrl + 'mentor/';
+    return axios.put(url, data);
+};
+
 const postStudentList = (studentId, chosenTopic) => {
     const postStudentsUrl = `${appPath}`;
     return axios.post(postStudentsUrl, {
@@ -63,4 +73,4 @@ const getCurriculumTopics = () => {
     ];
 };
 
-export {getStudentsList, getCurriculumTopics, postStudentList};
+export {getStudentsList, getCurriculumTopics, postStudentList, getMentorsTopics, putMentorStudentService};

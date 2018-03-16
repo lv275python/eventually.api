@@ -9,6 +9,7 @@ from django.views.generic.base import View
 from django.http import JsonResponse
 from django.http import HttpResponse
 from curriculum.models import Curriculum
+from utils.topic_views_functions import find_mentors_topics
 from utils.responsehelper import (RESPONSE_200_DELETED,
                                   RESPONSE_200_UPDATED,
                                   RESPONSE_400_INVALID_DATA,
@@ -25,7 +26,7 @@ class TopicView(View):
     operations with topic model.
     """
 
-    def get(self, request, topic_id=None, curriculum_id=None,):
+    def get(self, request, topic_id=None, curriculum_id=None):
         """
         Method that handles GET request.
 
@@ -39,7 +40,7 @@ class TopicView(View):
         :type curriculum_id: `int`
 
         :return: the response with the certain topic information when topic_id was transferred or
-                 the full list of certain curriculum topics. If topic_id or curriculum_id does
+                 or the full list of certain curriculum topics. If topic_id or curriculum_id does
                  not exist returns the 404 failed status code response.
         :rtype: `HttpResponse object.
         """
@@ -161,6 +162,24 @@ class TopicView(View):
                 return RESPONSE_200_DELETED
             return RESPONSE_400_DB_OPERATION_FAILED
         return RESPONSE_403_ACCESS_DENIED
+
+
+def mentors_topics(request):
+    """
+    Method that get all topics where mentor is a certain user.
+
+    :param request: the accepted HTTP request.
+    :type request: `HttpRequest object`
+
+    :return: JsonResponse object with topics, that belongs to the certain mentor
+    """
+    mentor = request.user
+    if not mentor:
+        return RESPONSE_404_OBJECT_NOT_FOUND
+
+    topics = find_mentors_topics(mentor.id)
+    data = {'topics': [topic.to_dict() for topic in topics]}
+    return JsonResponse(data, status=200)
 
 
 def is_topic_mentor(request, curriculum_id, topic_id):   # pylint: disable=unused-argument

@@ -135,25 +135,35 @@ class MentorStudent(AbstractModel):
         self.save()
 
     @staticmethod
-    def get_all():
+    def get_all(mentors_topics_ids):
         """
-        returns data for json request with querysets of all MentorStudent objects
+        returns data for json request with QuerySets of MentorStudent objects that belongs to
+        the certain mentor's topics
+
+        :param mentors_topics_ids: topic's ids that belongs to the certain mentor
+        :type mentors_topics_ids: list
+
+        :return: QuerySet with students
         """
-        all_mentees = MentorStudent.objects.all()
+        all_mentees = MentorStudent.objects.filter(topic_id__in=mentors_topics_ids)
         return all_mentees
 
     @staticmethod
-    def get_my_students(mentor_id):
+    def get_my_students(mentors_topics_ids, mentor_id):
         """
         A method that get students who belong to a certain mentor
 
         :param mentor_id: Certain mentor id
         :type mentor_id: int
 
+        :param mentors_topics_ids: topic's ids that belongs to the certain mentor
+        :type mentors_topics_ids: list
+
         :return: QuerySet with students
         """
-
-        return MentorStudent.objects.filter(mentor_id=mentor_id)
+        my_students = MentorStudent.objects.filter(topic_id__in=mentors_topics_ids,
+                                                   mentor_id=mentor_id)
+        return my_students
 
     @staticmethod
     def get_my_mentors(student_id):
@@ -169,30 +179,37 @@ class MentorStudent(AbstractModel):
         return MentorStudent.objects.filter(student_id=student_id)
 
     @staticmethod
-    def get_assigned_students(mentor_id):
+    def get_assigned_students(mentors_topics_ids, mentor_id):
         """
         A method that only get students who signed in courses in which mentor can be certain mentor,
         but them mentor is not certain mentor
+
+        :param mentors_topics_ids: topic's ids that belongs to the certain mentor
+        :type mentors_topics_ids: list
 
         :param mentor_id: Certain mentor id
         :type mentor_id: int
 
         :return: QuerySet with students
         """
-
-        assigned_students = MentorStudent.objects.exclude(mentor_id=mentor_id)
+        all_mentees = MentorStudent.objects.filter(topic_id__in=mentors_topics_ids)
+        assigned_students = all_mentees.exclude(mentor_id=mentor_id)
         return assigned_students.exclude(mentor_id=None)
 
     @staticmethod
-    def get_available_students():
+    def get_available_students(mentors_topics_ids):
         """
         A method that only get students who signed in courses in which mentor can be certain mentor,
         but they do not have a mentor yet
 
+        :param mentors_topics_ids: topic's ids that belongs to the certain mentor
+        :type mentors_topics_ids: list
+
         :return: QuerySet with students
         """
-
-        return MentorStudent.objects.filter(mentor_id=None)
+        available_students = MentorStudent.objects.filter(topic_id__in=mentors_topics_ids,
+                                                          mentor_id=None)
+        return available_students
 
     @staticmethod
     def get_topic_all_students(topic_id):
@@ -208,6 +225,12 @@ class MentorStudent(AbstractModel):
         """
         A method that return MentorStudent instance if student assigned to course
         or None, if not.
+
+        :param topic_id: id of the certain topic
+        :type topic_id: int
+
+        :param student_id: id of the certain student
+        :type student_id: int
 
         :return: MentorStudent instance
         """

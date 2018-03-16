@@ -70,8 +70,10 @@ class MentorStudentViewTestCase(TestCase):
 
             topic_python = Topic(id=200,
                                  curriculum=curriculum,
+                                 author=custom_user_first,
                                  title='Python',
-                                 description='My awesome topic')
+                                 description='My awesome topic',
+                                 mentors=(custom_user_first,))
             topic_python.save()
 
             topic_react = Topic(id=201,
@@ -108,23 +110,17 @@ class MentorStudentViewTestCase(TestCase):
     def test_success_get_all(self):
         """Method that tests the successful get request for the certain mentors."""
 
-        expected_data = {'my_students': [{'created_at': 1508044512,
-                                          'email': 'email2@gmail.com',
+        expected_data = {'my_students': [{'student_id': 102,
                                           'first_name': 'anton',
-                                          'id': 102,
-                                          'is_active': True,
                                           'last_name': 'shulga',
-                                          'middle_name': 'frensis',
-                                          'updated_at': 1508044512}],
+                                          'topic_title':'Python',
+                                          'topic_id': 200}],
                          'assigned_students': [],
-                         'available_students': [{'created_at': 1508044512,
-                                                 'email': 'email3@gmail.com',
+                         'available_students': [{'student_id': 103,
                                                  'first_name': 'fedir',
-                                                 'id': 103,
-                                                 'is_active': True,
                                                  'last_name': 'bogolubov',
-                                                 'middle_name': 'sergiy',
-                                                 'updated_at': 1508044512}]}
+                                                 'topic_title': 'JS',
+                                                 'topic_id': 202}]}
 
         url = reverse('mentor:index')
         response = self.client.get(url)
@@ -146,6 +142,8 @@ class MentorStudentViewTestCase(TestCase):
     def test_mentor_success_post(self):
         """Method that tests the successful post request."""
 
+        self.client = Client()
+        self.client.login(username='email3@gmail.com', password='Pas3')
         data = {'student': 103,
                 'topicId': 200}
         url = reverse('mentor:index')
