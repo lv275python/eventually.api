@@ -4,25 +4,32 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import { postTopicService } from './TopicServices';
+import { postItemService } from 'src/containers';
 
 
 const FlatButtonStyle = {
-    marginLeft: '93%',
-    marginBottom: '20px',
+    position: 'fixed',
+    right: '3%',
+    top: '85%'
 };
 
-export default class TopicDialog extends React.Component {
+export default class TaskDialog extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             open: false,
-            title: '',
+            name: '',
             description: '',
-            messageTitle: '',
-            titleIsValid: false,
+            form: 0,
+            estimation:0,
+            topicId: props.topicId,
+            curriculumId: props.curriculumId,
+            itemId: props.itemId,
+            messageName: '',
+            nameIsValid: false,
             messageDescription: '',
             descriptionIsValid: false
         };
@@ -36,31 +43,32 @@ export default class TopicDialog extends React.Component {
     handleClose = () => {
         this.setState({
             open: false,
-            messageTitle: '',
+            messageName: '',
+            nameIsValid: false,
             messageDescription: '',
-            titleIsValid: false,
-            descriptionIsValid: false
+            descriptionIsValid: false,
+            form: 0
         });
     };
 
-    handleTitle = event => {
+    handleName = event => {
         const regex = /^.{4,255}$/;
         if(regex.test(event.target.value) === true ) {
             this.setState({
-                messageTitle: '',
-                title: event.target.value,
-                titleIsValid: true,
+                messageName: '',
+                name: event.target.value,
+                nameIsValid: true,
             });
         } else {
             this.setState({
-                messageTitle: 'Required a minimum length of 4 characters, maximum length of 255 characters',
-                titleIsValid: false,
+                messageName: 'Required a minimum length of 4 characters',
+                nameIsValid: false,
             });
         }
     };
 
     handleDescription = event => {
-        const regex = /^.{10,1024}$/;
+        const regex = /^.{10,10000}$/;
         if(regex.test(event.target.value) === true ) {
             this.setState({
                 messageDescription: '',
@@ -69,27 +77,31 @@ export default class TopicDialog extends React.Component {
             });
         } else {
             this.setState({
-                messageDescription: 'Required a minimum length of 10 characters, maximum length of 1024 characters',
+                messageDescription: 'Required a minimum length of 10 characters',
                 descriptionIsValid: false,
             });
         }
     };
 
+    handleChange = (event, index, value) => this.setState({'form': value});
+
     handleSubmit = () => {
-        if(this.state.titleIsValid&this.state.descriptionIsValid){
+        if(this.state.nameIsValid && this.state.descriptionIsValid){
             const data = {
-                'title': this.state.title,
+                'name': this.state.name,
                 'description': this.state.description,
+                'form': this.state.form,
+                'estimation': this.state.estimation
             };
-            postTopicService(this.props.curriculumId, data).then(response => {
-                this.props.getTopicListData();
+            postItemService(this.state.curriculumId, this.state.topicId, data).then(response => {
+                this.props.getItemList();
                 this.handleClose();
             });
         }
     };
 
     render() {
-        const disable = !(this.state.titleIsValid&this.state.descriptionIsValid);
+        const disable = !(this.state.nameIsValid && this.state.descriptionIsValid);
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -99,41 +111,44 @@ export default class TopicDialog extends React.Component {
             <FlatButton
                 label="Submit"
                 primary={true}
-                keyboardFocused={true}
                 onClick={this.handleSubmit}
                 disabled={disable}
             />,
         ];
-
         return (
             <div>
                 <FloatingActionButton
-                    mini={true}
                     onClick={this.handleOpen}
                     style={FlatButtonStyle}>
-
                     <ContentAdd />
                 </FloatingActionButton>
                 <Dialog
-                    title={this.props.title}
+                    title="Add item"
                     actions={actions}
                     modal={false}
                     open={this.state.open}
                     onRequestClose={this.handleClose}
                 >
                     <TextField
-                        floatingLabelText="Title"
+                        floatingLabelText="Name"
                         fullWidth={true}
-                        onChange={this.handleTitle}
-                        errorText={this.state.messageTitle} />
+                        onChange={this.handleName}
+                        errorText={this.state.messageName} />
                     <TextField
                         floatingLabelText="Description"
-                        multiLine={true}
-                        rows={2}
-                        rowsMax={4}
-                        fullWidth={true}
                         onChange={this.handleDescription}
+                        multiLine={true}
+                        fullWidth={true}
                         errorText={this.state.messageDescription} />
+                    <SelectField
+                        floatingLabelText="Select form"
+                        value={this.state.form}
+                        onChange={this.handleChange}
+                    >
+                        <MenuItem value={0} primaryText="Theoretic" />
+                        <MenuItem value={1} primaryText="Practice" />
+                        <MenuItem value={2} primaryText="Group" />
+                    </SelectField>
                 </Dialog>
             </div>
         );

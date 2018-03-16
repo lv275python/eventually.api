@@ -1,6 +1,14 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
+import {red500, blue300} from 'material-ui/styles/colors';
+import Avatar from 'material-ui/Avatar';
+import SvgIcon from 'material-ui/SvgIcon';
+import DeleteForever from 'material-ui/svg-icons/action/delete-forever';
+import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
+import Chip from 'material-ui/Chip';
 import Dialog from 'material-ui/Dialog';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card';
@@ -13,13 +21,14 @@ import {
     getProfileService,
     TopicItemList,
     MentorsChip,
-    getIsMentorService
+    getIsMentorService,
+    EditTopicDialog
 } from 'src/containers';
 
 
 const wrapperButtonStyle = {
     display: 'flex',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between'
 };
 
 const cardTextStyle = {
@@ -39,7 +48,11 @@ const style = {
 
 const wrapperStyle = {
     display: 'flex',
-    flexWrap: 'wrap',
+    flexWrap: 'wrap'
+};
+
+const chipStyle = {
+    margin: 4,
 };
 
 class TopicView extends React.Component {
@@ -60,10 +73,14 @@ class TopicView extends React.Component {
         getIsMentorService(this.state.curriculumId, this.state.topicId).then(response => {
             this.setState({isMentor: response.data['is_mentor']});
         });
+        this.getTopicData();
+    }
+
+    getTopicData = () => {
         getTopicDetailService(this.state.curriculumId, this.state.topicId).then(response => {
             return response.data;
         }).then(data => {
-            this.setState({'topicDetail': data});
+            this.setState({'topicDetail': data, 'mentorsDetail': []});
             data['mentors'].map(mentorId => (
                 getProfileService(mentorId).then(response => {
                     let mentorsDetail = this.state.mentorsDetail;
@@ -72,7 +89,7 @@ class TopicView extends React.Component {
                 })
             ));
         });
-    }
+    };
 
     handleDelete = () => {
         this.handleOpen();
@@ -98,18 +115,18 @@ class TopicView extends React.Component {
 
     render() {
         let cardActions;
-        if (this.state.isMentor){
+        if (this.state.isMentor && this.state.topicDetail){
             cardActions = [
                 <RaisedButton
-                    label='Delete topic'
-                    backgroundColor="#D50000"
-                    labelColor="#FFF"
-                    key={0}
-                    onClick={this.handleDelete} />,
-                <RaisedButton
-                    label='Edit topic'
                     key={1}
-                    onClick={this.handleEdit} />
+                    icon={<DeleteForever color={red500} />}
+                    onClick={this.handleDelete} />,
+                <EditTopicDialog
+                    key={0}
+                    topicId={this.state.topicId}
+                    curriculumId={this.state.curriculumId}
+                    topicDetail={this.state.topicDetail}
+                    getTopicData={this.getTopicData} />
             ];
         } else {
             cardActions = [];
@@ -134,11 +151,9 @@ class TopicView extends React.Component {
         return (
             <div style={style}>
                 <Card>
-                    <div style={wrapperButtonStyle}>
-                        <CardActions>
-                            {cardActions}
-                        </CardActions>
-                    </div>
+                    <CardActions style={wrapperButtonStyle}>
+                        {cardActions}
+                    </CardActions>
                     <CardTitle
                         title={this.state.topicDetail['title']}
                         subtitle={this.state.topicDetail['description']} />
@@ -147,16 +162,25 @@ class TopicView extends React.Component {
                             <MentorsChip
                                 id={mentor['user']}
                                 key={mentor['user']}
+                                style={chipStyle}
                                 photo={getImageUrl(mentor['photo'])}
                                 text={'Mentor ' + mentor['first_name'] + ' ' + mentor['last_name']} />
                         ))}
+                        {this.state.isMentor && (<Chip
+                            style={chipStyle}
+                            onClick={this.handleAddMentor}
+                        >
+                            <Avatar backgroundColor={blue300} icon={<ContentAdd />} />
+                            Add mentor
+                        </Chip>)}
                     </div>
                     <CardHeader
                         title='Course materials'
                         subtitle='You have to pass these materials in order in which they are appear below' />
                     <TopicItemList
                         curriculumId={this.state.curriculumId}
-                        topicId={this.state.topicId} />
+                        topicId={this.state.topicId}
+                        isMentor={this.state.isMentor} />
                     <Dialog
                         actions={actionsDialog}
                         modal={true}

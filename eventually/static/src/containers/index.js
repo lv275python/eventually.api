@@ -74,21 +74,29 @@ export {
     teamServiceGetMembers,
     teamServicePost,
     usersServiceGet} from './teamList/teamService';
-export ItemLink from './topicList/ItemLink';
+export AddItemDialog from './topicItemList/AddItemDialog';
+export ItemLink from './topicItemList/ItemLink';
+export EditItemDialog from './topicItemList/EditItemDialog';
+export TopicItemList from './topicItemList/TopicItemList';
+export {
+    deleteItemService,
+    postItemService,
+    getItemListService,
+    putEditItemService } from './topicItemList/ItemServices';
+export EditTopicDialog from './topicList/EditTopicDialog';
 export MentorsChip from './topicList/MentorsChip';
 export TopicDialog from './topicList/TopicDialog';
-export TopicItemList from './topicList/TopicItemList';
 export TopicView from './topicList/TopicView';
 export TopicLink from './topicList/TopicLink';
 export {
     deleteTopicService,
     postTopicService,
     postTopicAssignService,
+    putEditTopicService,
     getTopicStudentsService,
     deleteMenteeService,
     getIsMentorService,
-    getTopicDetailService,
-    getItemListService } from './topicList/TopicServices';
+    getTopicDetailService } from './topicList/TopicServices';
 export TopicsList from './topicList/TopicsList';
 export ProgressProfile from './userProgress/ProgressProfile';
 export Home from './Home';

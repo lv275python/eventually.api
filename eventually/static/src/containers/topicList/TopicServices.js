@@ -10,6 +10,11 @@ const postTopicService = (curriculumId, data) => {
     return axios.post(url, data);
 };
 
+const postItemService = (curriculumId, topicId, data) => {
+    let url = curriculumPath + curriculumId + '/topics/' + topicId + '/items/';
+    return axios.post(url, data);
+};
+
 const postTopicAssignService = data => {
     return axios.post(mentorPath, data);
 };
@@ -34,6 +39,11 @@ const deleteTopicService = (curriculumId, topicId) => {
     return axios.delete(url);
 };
 
+const deleteItemService = (curriculumId, topicId, id) => {
+    let url = curriculumPath + curriculumId + '/topics/' + topicId + '/items/' + id + '/delete/';
+    return axios.delete(url);
+};
+
 const getItemListService = (curriculumId, topicId) => {
     let url = curriculumPath + curriculumId + '/topics/' + topicId + '/items/';
     return axios.get(url);
@@ -44,13 +54,21 @@ const deleteMenteeService = topicId => {
     return axios.delete(url);
 };
 
+const putEditTopicService = (curriculumId, topicId, data) => {
+    let url = curriculumPath + curriculumId + '/topics/' + topicId + '/';
+    return axios.put(url, data);
+};
+
 export {
     deleteTopicService,
-    postTopicService,
-    postTopicAssignService,
-    getTopicStudentsService,
     deleteMenteeService,
+    deleteItemService,
+    getTopicStudentsService,
     getIsMentorService,
     getTopicDetailService,
-    getItemListService
+    getItemListService,
+    postItemService,
+    postTopicService,
+    postTopicAssignService,
+    putEditTopicService
 };

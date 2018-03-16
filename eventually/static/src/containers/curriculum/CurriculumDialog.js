@@ -119,13 +119,13 @@ export default class CurriculumDialog extends React.Component {
                     onRequestClose={this.handleClose}
                 >
                     <TextField
-                        hintText="Name"
+                        floatingLabelText="Name"
                         fullWidth={true}
                         onChange={this.handleTitle}
                         errorText={this.state.messageTitle} />
                     <TextField
                         defaultValue={this.props.description}
-                        hintText="Description"
+                        floatingLabelText="Description"
                         multiLine={true}
                         rows={2}
                         rowsMax={4}
