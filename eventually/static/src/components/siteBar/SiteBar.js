@@ -19,6 +19,7 @@ class SiteBar extends React.Component {
     goToProfile = () => {
         this.props.toggleSiteBarOpen();
         this.props.history.push('/profile/' + getUserId());
+        window.location.reload();
     };
 
     goToProgress = () => {
