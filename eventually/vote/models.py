@@ -47,7 +47,7 @@ class Vote(AbstractModel):
         (1, 'Multi'),
     )
 
-    event = models.ForeignKey(Event, null=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True)
     is_active = models.BooleanField(default=True)
     is_extended = models.BooleanField(default=True)
     title = models.CharField(max_length=100)

@@ -1,10 +1,27 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import LinearProgress from 'material-ui/LinearProgress';
 import TextField from 'material-ui/TextField';
 import {FileUpload, CancelDialog} from 'src/containers';
+import {getImageUrl} from 'src/helper';
+import {deleteFile} from '../fileUpload/FileUploadService';
+import {sendFile} from '../fileUpload/FileUploadService';
 import {teamServicePut} from './teamService';
 
+const styleContainer = {
+    width: '150px',
+    height: '150px',
+    margin:'0% 15%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+};
+
+const imageStyle = {
+    maxWidth: '100%',
+    maxHeight: '100%',
+};
 
 export default class EditTeamDialog extends React.Component {
     constructor(props) {
@@ -12,14 +29,13 @@ export default class EditTeamDialog extends React.Component {
         this.state = {
             name: this.props.name,
             description: this.props.description,
-            image: this.props.image,
+            imageName: this.props.image,
             openMore:false,
+            imageData: {},
+            imageUrl: getImageUrl(this.props.image),
+            linearProgressVisibility: 'hidden',
             openCancelDialog: false
         };
-    }
-    /*upload image to state*/
-    uploadImage = imageName => {
-        this.setState({image: imageName});
     }
     /*update name*/
     handleName = event => {
@@ -29,15 +45,55 @@ export default class EditTeamDialog extends React.Component {
     handleDescription = event => {
         this.setState({description: event.target.value});
     };
+
+    showLinearProgress = () => {
+        this.setState({linearProgressVisibility: 'visible'});
+    }
+
+    hideLinearProgress = () => {
+        this.setState({linearProgressVisibility: 'hidden'});
+    }
+
     /*save info from dialog*/
     handleSave = event => {
-        const name = this.state.name;
-        const description = this.state.description;
-        const new_image = this.state.image;
-        const id = this.props.id;
-        teamServicePut(id, name, description, new_image).then(response => {
-            this.props.updateItem(id, name, description, new_image);
-            this.props.handleClose();
+        this.showLinearProgress();
+
+        const oldImageName = this.state.imageName;
+
+        sendFile(this.state.imageData).then(response => {
+            if (response.status == 200) {
+                this.setState({
+                    imageName: response.data['image_key']
+                });
+
+                this.hideLinearProgress();
+
+                teamServicePut(
+                    this.props.id,
+                    this.state.name,
+                    this.state.description,
+                    response.data['image_key']
+                ).then(response => {
+                    this.props.updateItem(
+                        this.props.id,
+                        this.state.name,
+                        this.state.description,
+                        this.state.imageName
+                    );
+                    this.props.handleClose();
+                });
+
+                deleteFile(oldImageName);
+            }
+        }).catch(error => {
+            this.hideLinearProgress();
+        });
+    };
+
+    fetchData = (imageData, imageUrl) => {
+        this.setState({
+            imageData: imageData,
+            imageUrl: imageUrl
         });
     };
 
@@ -65,6 +121,10 @@ export default class EditTeamDialog extends React.Component {
     };
 
     render() {
+        const linearProgressStyle = {'visibility': this.state.linearProgressVisibility};
+
+        const linearProgressWrapperStyle = {position: 'relative', top: 5};
+
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -77,6 +137,9 @@ export default class EditTeamDialog extends React.Component {
                 keyboardFocused={true}
                 onClick={this.handleSave}
             />,
+            <div style={linearProgressWrapperStyle}>
+                <LinearProgress mode='indeterminate' style = {linearProgressStyle}/>
+            </div>
         ];
         return (
             <div>
@@ -107,8 +170,16 @@ export default class EditTeamDialog extends React.Component {
                                 onChange={this.handleDescription}
                             />
                         </div>
-                        <FileUpload updateImageNameInDb={this.uploadImage}/>
                     </div>
+                    <div style={styleContainer}>
+                        <img src={this.state.imageUrl}
+                            alt=""
+                            style={imageStyle}
+                        />
+                    </div>
+                    <FileUpload
+                        fetchData={this.fetchData}
+                    />
                 </Dialog>
                 {this.state.openCancelDialog &&
                     (<CancelDialog
