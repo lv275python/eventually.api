@@ -5,7 +5,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-import { eventTaskServicePut } from './EventService';
+import {eventTaskServicePut} from './EventService';
+import {CancelDialog} from 'src/containers';
 
 
 const divStyle = {
@@ -22,15 +23,16 @@ export default class EditEventTaskDialog extends React.Component {
             description: this.props.description,
             members:this.props.members,
             assignment:this.props.assignmentUsers,
-            openDialog: false
+            openDialog: false,
+            openCancelDialog: false
         };
     }
 
-    handleDialogOpen = () => {
+    handleEditDialogOpen = () => {
         this.setState({'openDialog': true});
     }
 
-    handleDialogClose = () => {
+    handleEditDialogClose = () => {
         this.setState({'openDialog': false});
     }
 
@@ -44,7 +46,7 @@ export default class EditEventTaskDialog extends React.Component {
 
     handleUsers = (event, index, values) => this.setState({'assignment': values});
 
-    handleSave = event => {
+    handleSave = () => {
         let data = {};
         if (this.state.title != this.props.title) data['title'] = this.state.title;
         if (this.state.description != this.props.description) data['description'] = this.state.description;
@@ -60,8 +62,35 @@ export default class EditEventTaskDialog extends React.Component {
         }
         eventTaskServicePut(this.props.eventId, this.state.id, data).then(response => {
             this.props.getEventTaskItem();
-            this.handleDialogClose();
+            this.handleEditDialogClose();
         });
+    };
+
+    handleCancel = () => {
+        this.setState ({
+            title: this.props.title,
+            description: this.props.description,
+            assignment:this.props.assignmentUsers,
+        });
+        this.handleEditDialogClose();
+    };
+
+    handleCancelDialogClose = () => {
+        this.setState({'openCancelDialog': false});
+    };
+
+    handleCancelEditDialogClose = () => {
+        this.handleCancelDialogClose();
+        this.handleCancel();
+    };
+
+    handleRequestClose = () => {
+        if ((this.state.title != this.props.title) ||
+            (this.state.description != this.props.description) ||
+            (this.state.assignment != this.props.assignmentUsers)) {
+            this.setState({openCancelDialog: true});
+        }
+        else this.handleEditDialogClose();
     };
 
     render() {
@@ -69,7 +98,7 @@ export default class EditEventTaskDialog extends React.Component {
             <FlatButton
                 label="Cancel"
                 primary={true}
-                onClick={this.handleDialogClose}
+                onClick={this.handleCancel}
             />,
             <FlatButton
                 label="Save"
@@ -79,14 +108,14 @@ export default class EditEventTaskDialog extends React.Component {
         ];
         return (
             <div style={divStyle}>
-                <RaisedButton label="Edit" onClick = {this.handleDialogOpen} />
+                <RaisedButton label="Edit" onClick = {this.handleEditDialogOpen} />
                 <Dialog
                     title="Task Edit"
                     actions={actions}
                     modal={false}
                     open={this.state.openDialog}
                     autoDetectWindowHeight={true}
-                    onRequestClose={this.handleDialogClose}
+                    onRequestClose={this.handleRequestClose}
                 >
                     <div>
                         <TextField
@@ -124,6 +153,13 @@ export default class EditEventTaskDialog extends React.Component {
                                 />
                             ))}
                         </SelectField>
+                        {this.state.openCancelDialog &&
+                            (<CancelDialog
+                                openCancelDialog={this.state.openCancelDialog}
+                                handleCancelMainDialogClose={this.handleCancelEditDialogClose}
+                                handleCancelDialogClose={this.handleCancelDialogClose}
+                            />)
+                        }
                     </div>
                 </Dialog>
             </div>

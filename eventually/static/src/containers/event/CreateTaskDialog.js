@@ -8,6 +8,7 @@ import MenuItem from 'material-ui/MenuItem';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import { eventTaskServicePost, taskGetTeamService } from './EventService';
+import {CancelDialog} from 'src/containers';
 
 
 const FlatButtonStyle = {
@@ -29,6 +30,7 @@ export default class TaskDialog extends React.Component {
             assignment: [],
             messageTitle: '',
             titleIsValid: false,
+            openCancelDialog: false
         };
     }
 
@@ -45,6 +47,8 @@ export default class TaskDialog extends React.Component {
     handleClose = () => {
         this.setState({
             open: false,
+            title: '',
+            description: '',
             messageTitle: '',
             titleIsValid: false,
             assignment: []
@@ -100,6 +104,24 @@ export default class TaskDialog extends React.Component {
         }
     };
 
+    handleRequestClose = () => {
+        if ((this.state.title != '') ||
+            (this.state.description != '') ||
+            (this.state.assignment.length != 0)) {
+            this.setState({openCancelDialog: true});
+        }
+        else this.handleClose();
+    };
+
+    handleCancelDialogClose = () => {
+        this.setState({'openCancelDialog': false});
+    };
+
+    handleCancelCreateDialogClose = () => {
+        this.handleCancelDialogClose();
+        this.handleClose();
+    };
+
     render() {
         const disable = !this.state.titleIsValid;
         const actions = [
@@ -127,7 +149,7 @@ export default class TaskDialog extends React.Component {
                     actions={actions}
                     modal={false}
                     open={this.state.open}
-                    onRequestClose={this.handleClose}
+                    onRequestClose={this.handleRequestClose}
                 >
                     <TextField
                         hintText="Name"
@@ -149,6 +171,13 @@ export default class TaskDialog extends React.Component {
                         {this.menuItems(this.state.members)}
                     </SelectField>
                 </Dialog>
+                {this.state.openCancelDialog &&
+                    (<CancelDialog
+                        openCancelDialog={this.state.openCancelDialog}
+                        handleCancelMainDialogClose={this.handleCancelCreateDialogClose}
+                        handleCancelDialogClose={this.handleCancelDialogClose}
+                    />)
+                }
             </div>
         );
     }

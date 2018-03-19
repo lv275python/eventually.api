@@ -12,6 +12,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import SelectField from 'material-ui/SelectField';
 import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
+import {CancelDialog} from 'src/containers';
 
 
 const FlatButtonStyle = {
@@ -48,7 +49,8 @@ class CreateEvent extends React.Component {
             formattedAddress: '',
             longitude: 0,
             latitude: 0,
-            open: false
+            open: false,
+            openCancelDialog: false
         };
     }
 
@@ -137,7 +139,6 @@ class CreateEvent extends React.Component {
 
     handleSubmit = event => {
         event.preventDefault();
-
         if(this.state.nameIsValid === true && this.state.descriptionIsValid === true &&
             this.state.budgetIsValid === true && this.state.team !== null){
             const data = {
@@ -172,9 +173,28 @@ class CreateEvent extends React.Component {
             timeEnd: new Date() / 1000,
             budget: 0,
             status: 0,
-            teams: [],
-            formattedAddress: '',
+            formattedAddress: ''
         });
+    };
+
+    handleCancelDialogClose = () => {
+        this.setState({'openCancelDialog': false});
+    };
+
+    handleCancelCreateDialogClose = () => {
+        this.handleCancelDialogClose();
+        this.handleClose();
+    };
+
+    handleRequestClose = () => {
+        if ((this.state.team != null) ||
+            (this.state.name != '') ||
+            (this.state.description != '') ||
+            (this.state.budget != 0) ||
+            (this.state.status != 0)) {
+            this.setState({openCancelDialog: true});
+        }
+        else this.handleClose();
     };
 
     render() {
@@ -204,7 +224,7 @@ class CreateEvent extends React.Component {
                     actions={actions}
                     modal={false}
                     open={this.state.open}
-                    onRequestClose={this.handleClose}
+                    onRequestClose={this.handleRequestClose}
                     autoScrollBodyContent={true}
                     style={{zIndex: 800}}>
                     <TextField
@@ -274,6 +294,13 @@ class CreateEvent extends React.Component {
                         <MenuItem value={3} primaryText="finished" />
                     </SelectField>
                 </Dialog>
+                {this.state.openCancelDialog &&
+                    (<CancelDialog
+                        openCancelDialog={this.state.openCancelDialog}
+                        handleCancelMainDialogClose={this.handleCancelCreateDialogClose}
+                        handleCancelDialogClose={this.handleCancelDialogClose}
+                    />)
+                }
             </div>
         );
     }

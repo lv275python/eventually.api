@@ -85,8 +85,6 @@ export default class TeamItem extends React.Component {
             });
         }
     };
-
-
     /*update old prop*/
     componentWillReceiveProps(nextProps) {
         this.setState({
@@ -112,7 +110,7 @@ export default class TeamItem extends React.Component {
         }
     };
     /*changes state when team is deleted*/
-    comfirmDeleteTeam = () => {
+    confirmDeleteTeam = () => {
         this.setState({teamDeleted: true});
     };
 
@@ -214,7 +212,7 @@ export default class TeamItem extends React.Component {
                     name={this.props.name}
                     description={this.props.description}
                     id={this.props.id}
-                    comfirmDeleteTeam={this.comfirmDeleteTeam}
+                    confirmDeleteTeam={this.confirmDeleteTeam}
                 />
             </div>
         );

@@ -25,7 +25,7 @@ export default class DeleteTeamDialog extends React.Component {
     deleteTeam = () => {
         teamServiceDelete(this.state.id).then(response => {
             if (response.status == 200) {
-                this.props.comfirmDeleteTeam();
+                this.props.confirmDeleteTeam();
                 this.props.handleCloseDel();
             } else {
                 this.setState({responseError: response.status});

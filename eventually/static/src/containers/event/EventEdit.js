@@ -9,6 +9,7 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import {CancelDialog} from 'src/containers';
 
 
 const FlatButtonStyle = {
@@ -38,6 +39,7 @@ export default class EventEdit extends React.Component {
             duration: this.props.duration,
             budget: this.props.budget ? this.props.budget : 0,
             status: this.props.status,
+            openCancelDialog: false
         };
     }
 
@@ -58,11 +60,19 @@ export default class EventEdit extends React.Component {
     };
 
     handleClose = () => {
-        this.setState({ open: false });
+        this.setState ({
+            open: false,
+            teamId: this.props.team,
+            name: this.props.name,
+            description: this.props.description,
+            startAt: this.props.startAt,
+            duration: this.props.duration,
+            budget: this.props.budget ? this.props.budget : 0,
+            status: this.props.status
+        });
     };
 
     handleTeams = (event, index, teams) => this.setState({teamId : teams});
-
 
     handleName = event => {
         this.setState({name: event.target.value});
@@ -105,6 +115,28 @@ export default class EventEdit extends React.Component {
         this.handleClose();
     }
 
+    handleCancelDialogClose = () => {
+        this.setState({'openCancelDialog': false});
+    };
+
+    handleCancelEditDialogClose = () => {
+        this.handleCancelDialogClose();
+        this.handleClose();
+    };
+
+    handleRequestClose = () => {
+        if ((this.state.teamId != this.props.team) ||
+            (this.state.name != this.props.name) ||
+            (this.state.description != this.props.description) ||
+            (this.state.startAt != this.props.startAt) ||
+            (this.state.budget != this.props.budget) ||
+            (this.state.status != this.props.status) ||
+            (this.state.duration != this.props.duration)) {
+            this.setState({openCancelDialog: true});
+        }
+        else this.handleClose();
+    };
+
     render() {
         const actions = [
             <FlatButton
@@ -137,7 +169,7 @@ export default class EventEdit extends React.Component {
                         actions={actions}
                         modal={false}
                         open={this.state.open}
-                        onRequestClose={this.handleClose}
+                        onRequestClose={this.handleRequestClose}
                         autoScrollBodyContent={true}
                     >
                         <TextField
@@ -223,6 +255,13 @@ export default class EventEdit extends React.Component {
                         </SelectField>
                     </Dialog>
                 </form>
+                {this.state.openCancelDialog &&
+                    (<CancelDialog
+                        openCancelDialog={this.state.openCancelDialog}
+                        handleCancelMainDialogClose={this.handleCancelEditDialogClose}
+                        handleCancelDialogClose={this.handleCancelDialogClose}
+                    />)
+                }
             </div>
         );
     }

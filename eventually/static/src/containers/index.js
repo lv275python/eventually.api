@@ -99,5 +99,6 @@ export {
     getTopicDetailService } from './topicList/TopicServices';
 export TopicsList from './topicList/TopicsList';
 export ProgressProfile from './userProgress/ProgressProfile';
+export CancelDialog from './cancelDialog/CancelDialog';
 export Home from './Home';
 

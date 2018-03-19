@@ -7,7 +7,7 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import { postItemService } from 'src/containers';
+import { postItemService, CancelDialog } from 'src/containers';
 
 
 const FlatButtonStyle = {
@@ -31,10 +31,10 @@ export default class TaskDialog extends React.Component {
             messageName: '',
             nameIsValid: false,
             messageDescription: '',
-            descriptionIsValid: false
+            descriptionIsValid: false,
+            openCancelDialog: false
         };
     }
-
 
     handleOpen = () => {
         this.setState({ open: true });
@@ -100,6 +100,24 @@ export default class TaskDialog extends React.Component {
         }
     };
 
+    handleCancelDialogClose = () => {
+        this.setState({'openCancelDialog': false});
+    };
+
+    handleCancelCreateDialogClose = () => {
+        this.handleCancelDialogClose();
+        this.handleClose();
+    };
+
+    handleRequestClose = () => {
+        if ((this.state.name != '') ||
+            (this.state.description != '') ||
+            (this.state.form != 0)) {
+            this.setState({openCancelDialog: true});
+        }
+        else this.handleClose();
+    };
+
     render() {
         const disable = !(this.state.nameIsValid && this.state.descriptionIsValid);
         const actions = [
@@ -127,7 +145,7 @@ export default class TaskDialog extends React.Component {
                     actions={actions}
                     modal={false}
                     open={this.state.open}
-                    onRequestClose={this.handleClose}
+                    onRequestClose={this.handleRequestClose}
                 >
                     <TextField
                         floatingLabelText="Name"
@@ -150,6 +168,13 @@ export default class TaskDialog extends React.Component {
                         <MenuItem value={2} primaryText="Group" />
                     </SelectField>
                 </Dialog>
+                {this.state.openCancelDialog &&
+                    (<CancelDialog
+                        openCancelDialog={this.state.openCancelDialog}
+                        handleCancelMainDialogClose={this.handleCancelCreateDialogClose}
+                        handleCancelDialogClose={this.handleCancelDialogClose}
+                    />)
+                }
             </div>
         );
     }

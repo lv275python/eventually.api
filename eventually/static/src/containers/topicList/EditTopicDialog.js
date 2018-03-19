@@ -7,7 +7,7 @@ import SvgIcon from 'material-ui/SvgIcon';
 import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-import { putEditTopicService } from 'src/containers';
+import { putEditTopicService, CancelDialog } from 'src/containers';
 
 
 export default class EditTopicDialog extends React.Component {
@@ -22,7 +22,8 @@ export default class EditTopicDialog extends React.Component {
             messageTitle: '',
             titleIsValid: false,
             messageDescription: '',
-            descriptionIsValid: false
+            descriptionIsValid: false,
+            openCancelDialog: false
         };
     }
 
@@ -42,6 +43,8 @@ export default class EditTopicDialog extends React.Component {
     handleClose = () => {
         this.setState({
             open: false,
+            title: this.props.topicDetail['title'],
+            description: this.props.topicDetail['description'],
             messageTitle: '',
             titleIsValid: false,
 
@@ -93,8 +96,28 @@ export default class EditTopicDialog extends React.Component {
         }
     };
 
+    handleCancelDialogClose = () => {
+        this.setState({'openCancelDialog': false});
+    };
+
+    handleCancelEditDialogClose = () => {
+        this.handleCancelDialogClose();
+        this.handleClose();
+    };
+
+    handleRequestClose = () => {
+        if ((this.state.title != this.props.topicDetail['title']) ||
+            (this.state.description != this.props.topicDetail['description'])) {
+            this.setState({openCancelDialog: true});
+        }
+        else this.handleCancelEditDialogClose();
+    };
+
     render() {
-        const disable = !(this.state.titleIsValid & this.state.descriptionIsValid);
+        const disable = !(
+            (this.state.titleIsValid && (this.state.description == this.props.topicDetail['description'])) ||
+            (this.state.descriptionIsValid && (this.state.description != this.props.topicDetail['description']))
+        );
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -119,7 +142,7 @@ export default class EditTopicDialog extends React.Component {
                     actions={actions}
                     modal={false}
                     open={this.state.open}
-                    onRequestClose={this.handleClose}
+                    onRequestClose={this.handleRequestClose}
                 >
                     <TextField
                         floatingLabelText="Title"
@@ -135,6 +158,13 @@ export default class EditTopicDialog extends React.Component {
                         rowsMax={4}
                         fullWidth={true} />
                 </Dialog>
+                {this.state.openCancelDialog &&
+                    (<CancelDialog
+                        openCancelDialog={this.state.openCancelDialog}
+                        handleCancelMainDialogClose={this.handleCancelEditDialogClose}
+                        handleCancelDialogClose={this.handleCancelDialogClose}
+                    />)
+                }
             </div>
         );
     }
