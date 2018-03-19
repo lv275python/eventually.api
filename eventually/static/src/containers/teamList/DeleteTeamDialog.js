@@ -43,11 +43,11 @@ export default class DeleteTeamDialog extends React.Component {
             <RaisedButton
                 backgroundColor={redA700}
                 labelColor="#FFF"
-                label="Delete"
+                label="Yes"
                 onClick={this.deleteTeam}
             />,
             <FlatButton
-                label="Cancel"
+                label="No"
                 primary={true}
                 onClick={this.closeDialog}
             />

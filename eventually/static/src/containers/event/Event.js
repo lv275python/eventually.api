@@ -4,7 +4,8 @@ import {getTeam} from './EventService';
 import EventEdit from '../event/EventEdit';
 import MapComponent from 'src/containers/event/Map';
 import Paper from 'material-ui/Paper';
-
+import RaisedButton from 'material-ui/RaisedButton';
+import DeleteEventDialog from '../event/DeleteEventDialog';
 
 const STATUS_CHOICES = {
     0: 'draft',
@@ -57,6 +58,7 @@ const styleMap = {
 
 const styleButton = {
     margin: '5% 5%',
+    float: 'left',
 };
 
 const styleHeader = {
@@ -75,6 +77,7 @@ class Event extends React.Component {
         this.state = {
             team: this.props.team,
             owner: this.props.owner,
+            ownerId: this.props.ownerId,
             name: this.props.name,
             description: this.props.description,
             startAt: this.props.startAt,
@@ -160,6 +163,12 @@ class Event extends React.Component {
                                     />
                                 )}
                             </div>
+                            <DeleteEventDialog
+                                owner={this.props.ownerId}
+                                id={this.state.id}
+                                description={this.props.description}
+                                name={this.state.name}
+                            />
                         </div>
                         <div style={styleMap}>
                             <MapComponent

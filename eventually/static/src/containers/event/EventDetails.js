@@ -18,7 +18,7 @@ export default class EventDetails extends React.Component {
         this.state = {
             eventId: this.props.match.params.eventId,
             teamId: null,
-            owner: null,
+            owner: this.props.owner,
             eventName: '',
             eventDescription: '',
             members: [],
@@ -77,6 +77,7 @@ export default class EventDetails extends React.Component {
                         <Event
                             team={this.state.team}
                             owner={this.state.owner}
+                            ownerId={this.state.ownerId}
                             name={this.state.eventName}
                             description={this.state.eventDescription}
                             startAt={this.state.startAt}

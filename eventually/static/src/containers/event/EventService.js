@@ -79,3 +79,8 @@ export const deleteTaskService = (eventId, taskId) => {
     const url = eventPath + eventId + '/task/' + taskId + '/';
     return axios.delete(url);
 };
+
+export const eventServiceDelete = id => {
+    return axios.delete(eventPath + id + '/').catch(error => {return(error.response);});
+};
+
