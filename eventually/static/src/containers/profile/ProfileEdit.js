@@ -1,11 +1,14 @@
 import React from 'react';
-import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
-import DatePicker from 'material-ui/DatePicker';
 import {Card, CardHeader} from 'material-ui/Card';
-import {putProfileService} from './ProfileService';
-import {getImageUrl} from 'src/helper';
+import DatePicker from 'material-ui/DatePicker';
+import LinearProgress from 'material-ui/LinearProgress';
+import RaisedButton from 'material-ui/RaisedButton';
+import TextField from 'material-ui/TextField';
 import {FileUpload} from 'src/containers';
+import {getImageUrl} from 'src/helper';
+import {putProfileService} from './ProfileService';
+import {deleteFile} from '../fileUpload/FileUploadService';
+import {sendFile} from '../fileUpload/FileUploadService';
 
 const styleCard = {
     display: 'flex',
@@ -23,20 +26,20 @@ const styleMainDiv = {
     justifyContent: 'center',
 };
 const styleTitle = {
-    fontSize: '35px',     
+    fontSize: '35px',
 };
 
 const styleHeader = {
-    display: 'flex',      
-    alignItems: 'center',     
-    justifyContent: 'center',     
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
 };
 
 const styleButtons = {
     display: 'flex',
-    alignItems: 'flex-end',     
-    justifyContent: 'space-around',    
-    margin: '20px 20px 40px 350px' , 
+    alignItems: 'flex-end',
+    justifyContent: 'space-around',
+    margin: '20px 20px 40px 350px' ,
     width: '40%',
 };
 
@@ -64,8 +67,11 @@ export default class ProfileEdit extends React.Component {
             middleName: this.props.profileData.middleName,
             lastName: this.props.profileData.lastName,
             hobby: this.props.profileData.hobby,
-            photo: this.props.profileData.photo,
-            birthday: new Date(this.props.profileData.birthday)
+            imageName: this.props.profileData.photo,
+            birthday: new Date(this.props.profileData.birthday),
+            imageData: {},
+            imageUrl: this.props.profileData.photo && getImageUrl(this.props.profileData.photo),
+            linearProgressVisibility: 'hidden'
         };
     }
 
@@ -99,30 +105,67 @@ export default class ProfileEdit extends React.Component {
         });
     };
 
-    uploadImage = imageName => {
-        this.setState({photo: imageName});
+    getBirthday = () => {
+        return this.state.birthday.getFullYear() + '-' +
+               (this.state.birthday.getMonth() + 1) + '-' +
+               this.state.birthday.getDate();
+    };
+
+    showLinearProgress = () => {
+        this.setState({linearProgressVisibility: 'visible'});
+    }
+
+    hideLinearProgress = () => {
+        this.setState({linearProgressVisibility: 'hidden'});
     }
 
     handleSave = () => {
-        const firstName = this.state.firstName;
-        const middleName = this.state.middleName;
-        const lastName = this.state.lastName;
-        const hobby = this.state.hobby;
-        const photo = this.state.photo;
-        const birthday = this.state.birthday.getFullYear() + '-' + (this.state.birthday.getMonth() + 1) + '-' + this.state.birthday.getDate();
+        this.showLinearProgress();
 
-        putProfileService(this.state.id, firstName, middleName, lastName, hobby, photo, birthday)
-            .then(response => {
-                this.props.onCloseClick();
-            });
+        const oldImageName = this.state.imageName;
+        sendFile(this.state.imageData).then(response => {
+            if (response.status == 200) {
+                this.setState({
+                    imageName: response.data['image_key']
+                });
+                this.hideLinearProgress();
+
+                putProfileService(
+                    this.state.id,
+                    this.state.firstName,
+                    this.state.middleName,
+                    this.state.lastName,
+                    this.state.hobby,
+                    response.data['image_key'],
+                    this.getBirthday()
+                ).then(response => {
+                    this.props.onCloseClick();
+                });
+
+                deleteFile(oldImageName);
+            }
+        }).catch(error => {
+            this.hideLinearProgress();
+        });
+    };
+
+    fetchData = (imageData, imageUrl) => {
+        this.setState({
+            imageData: imageData,
+            imageUrl: imageUrl
+        });
     };
 
     render() {
+        const linearProgressStyle = {'visibility': this.state.linearProgressVisibility};
+
+        const linearProgressWrapperStyle = {position: 'relative', bottom: 30};
+
         return (
             <div style={styleMainDiv}>
                 <Card style={styleCard}>
                     <CardHeader style = {styleHeader}
-                        title="Edit profile"      
+                        title="Edit profile"
                         titleStyle={styleTitle}
                     />
                     <div style={styleName}>
@@ -156,7 +199,7 @@ export default class ProfileEdit extends React.Component {
                             rowsMax={3}
                             value={this.state.hobby}
                         />
-                        <DatePicker 
+                        <DatePicker
                             floatingLabelText="Birthday:"
                             hintText="Birthday"
                             mode="landscape"
@@ -167,13 +210,13 @@ export default class ProfileEdit extends React.Component {
                         />
                     </div>
                     <div style={styleContainer}>
-                        <img src={this.state.photo && getImageUrl(this.state.photo)}
+                        <img src={this.state.imageUrl}
                             alt=""
                             style={imageStyle}
                         />
                     </div>
                     <FileUpload
-                        updateImageNameInDb={this.uploadImage}
+                        fetchData={this.fetchData}
                     />
                     <div style={styleButtons}>
                         <RaisedButton
@@ -188,6 +231,9 @@ export default class ProfileEdit extends React.Component {
                             keyboardFocused={true}
                             onClick={this.handleSave}
                         />
+                    </div>
+                    <div style={linearProgressWrapperStyle}>
+                        <LinearProgress mode='indeterminate' style = {linearProgressStyle}/>
                     </div>
                 </Card>
             </div>

@@ -20,16 +20,28 @@ const styles = {
         margin: '0 auto'
     },
     container: {
-        width: '75%',
+        width: '60%',
+        marginLeft: '10%',
         float: 'left'
     },
     pagination: {
         margin: '0 auto',
-        textAlign: 'center'
+        textAlign: 'center',
+        marginTop: 10,
+        marginBottom: 10
     },
     customWidth: {
         width: 180,
         marginLeft: '3%'
+    },
+    sidebar: {
+        borderRadius: '5px',
+        padding: '5px',
+        border: '1px solid #12bbd2',
+        boxShadow: '0 0 0 3px hsl(0, 0%, 80%)',
+        float: 'right',
+        marginRight: '5%',
+        marginTop: 15
     }
 };
 
@@ -137,7 +149,7 @@ class EventList extends React.Component {
 
     render() {
         return (
-            <div style={styles.fullContainer}>
+            <div>
                 <div style={styles.container}>
                     {this.getEventLinks()}
                     <CreateEvent
@@ -147,7 +159,7 @@ class EventList extends React.Component {
                         {this.getPagination()}
                     </div>
                 </div>
-                <div>
+                <div style={styles.sidebar}>
                     <SelectField
                         floatingLabelText="Events per page:"
                         value={this.state.limit}

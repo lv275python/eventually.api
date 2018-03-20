@@ -1,5 +1,5 @@
 /*  Image Upload button component
-    
+
     Accepts GIF, PNG, JPG and BMP images only.
     Size should be less than 8Mb.
 
@@ -7,7 +7,7 @@
 
     You can provide your custom function to upload image to your DB table
     by passing the function as the "updateImageNameInDb" property.
-    E.G.: 
+    E.G.:
         const uploadImage = (imageName) => {
             //function to upload image to the db.
         };
@@ -16,19 +16,17 @@
  */
 
 import React from 'react';
-import Dropzone from 'react-dropzone';
 import Dialog from 'material-ui/Dialog';
+import Dropzone from 'react-dropzone';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import LinearProgress from 'material-ui/LinearProgress';
 import Snackbar from 'material-ui/Snackbar';
 import {imageValidator} from './FileUploadHelper';
-import {sendFile} from './FileUploadService';
 import {s3Root} from 'src/helper';
 
 const dialogStyle = {opacity: '0.98'};
 
-const dropzoneStyle = { height : '100%', 
+const dropzoneStyle = { height : '100%',
     border : '1px dotted lightgrey',
     borderRadius: '5px',
     backgroundColor: '#fafdff',
@@ -47,8 +45,7 @@ export default class FileUpload extends React.Component {
             imageSrc: s3Root,
             open: false,
             snackbarOpen: false,
-            snackbarMessage: '',
-            linearProgressVisibility: 'hidden'
+            snackbarMessage: ''
         };
     }
 
@@ -72,14 +69,6 @@ export default class FileUpload extends React.Component {
         });
     }
 
-    showLinearProgress = () => {
-        this.setState({linearProgressVisibility: 'visible'});
-    }
-
-    hideLinearProgress = () => {
-        this.setState({linearProgressVisibility: 'hidden'});
-    }
-
     updateImageName = (imageName) => {
         this.props.updateImageNameInDb(imageName);
     }
@@ -87,33 +76,14 @@ export default class FileUpload extends React.Component {
     onImageDrop = files => {
         this.setState({'snackbarMessage': ''});
         let image = files[0];
-        let data = new FormData();
+        let imageData = new FormData();
         let imageType = image.type.slice(6);
         let imageSize = image.size;
         if (imageValidator(imageType, imageSize)) {
-            this.showLinearProgress();
-            data.append('image', image);
-            data.append('image', image);
-            sendFile(data).then( (response)=>{
-                if (response.status == 200) {
-                    this.setState({
-                        'imageName': response.data['image_key'],
-                        'imageSrc': this.state.imageSrc.slice(0,53)+response.data['image_key'],
-                        'snackbarMessage': 'Image uploaded'});
-                    this.hideLinearProgress();
-                    this.dialogClose();
-                    this.showSnackbar();
-                    this.updateImageName(response.data['image_key']);
-                }
-            }).catch( (error) => {
-                this.setState({'snackbarMessage': 'Upload timed out'});
-                this.hideLinearProgress();
-                this.dialogClose();
-                this.showSnackbar();
-            });
-        }
-        else {
-            this.hideLinearProgress();
+            imageData.append('image', image);
+            this.props.fetchData(imageData, image['preview']);
+            this.dialogClose();
+        } else {
             this.setState({'snackbarMessage': 'Please choose another file'});
             this.showSnackbar();
         }
@@ -129,13 +99,13 @@ export default class FileUpload extends React.Component {
             />
         ];
 
-        const linearProgressStyle = {'visibility': this.state.linearProgressVisibility};
-
-        const linearProgressWrapperStyle = {position: 'relative', top:'20px'};
-
         return (
             <div style={buttonStyle}>
-                <RaisedButton label='Upload image' primary={true} onClick={this.dialogOpen}/>
+                <RaisedButton
+                    label='Upload image'
+                    primary={true}
+                    onClick={this.dialogOpen}
+                />
                 <Dialog
                     title='File Upload'
                     actions={actions}
@@ -151,9 +121,6 @@ export default class FileUpload extends React.Component {
                         The file must be of GIF, PNG, JPG or BMP type.<br/>
                         Maximum file size: 8 Mb</p>
                     </Dropzone>
-                    <div style={linearProgressWrapperStyle}>
-                        <LinearProgress mode='indeterminate' style = {linearProgressStyle}/>
-                    </div>
                 </Dialog>
                 <Snackbar
                     style={{textAlign:'center'}}

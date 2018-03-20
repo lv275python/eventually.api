@@ -8,4 +8,14 @@ const sendFile = data => {
     return axios.post(requestPath, data, {timeout: requestTimeout});
 };
 
-export {sendFile};
+const deleteFile = imageName => {
+    return axios.delete(requestPath, {
+        headers: {'Content-Type': 'application/json'},
+        timeout: requestTimeout,
+        data: {
+            'image_key': imageName
+        }
+    });
+};
+
+export {sendFile, deleteFile};
