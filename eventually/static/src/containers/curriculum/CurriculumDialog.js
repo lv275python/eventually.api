@@ -8,6 +8,7 @@ import MenuItem from 'material-ui/MenuItem';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import {postCurriculumService} from './CurriculumService';
+import {CancelDialog} from 'src/containers';
 
 
 const FlatButtonStyle = {
@@ -21,10 +22,13 @@ export default class CurriculumDialog extends React.Component {
         super(props);
         this.state = {
             open: false,
+            title: '',
+            description: '',
             messageTitle: '',
             titleIsValid: false,
             messageDescription: '',
-            descriptionIsValid: false
+            descriptionIsValid: false,
+            openCancelDialog: false
         };
     }
 
@@ -35,6 +39,8 @@ export default class CurriculumDialog extends React.Component {
     handleClose = () => {
         this.setState({
             open: false,
+            title: '',
+            description: '',
             messageTitle: '',
             messageDescription: '',
             titleIsValid: false,
@@ -75,7 +81,7 @@ export default class CurriculumDialog extends React.Component {
     };
 
     handleSubmit = () => {
-        if(this.state.titleIsValid&this.state.descriptionIsValid){
+        if(this.state.titleIsValid && this.state.descriptionIsValid){
             const data = {
                 'title': this.state.title,
                 'description': this.state.description
@@ -87,8 +93,25 @@ export default class CurriculumDialog extends React.Component {
         }
     };
 
+    handleCancelDialogClose = () => {
+        this.setState({'openCancelDialog': false});
+    };
+
+    handleCancelCreateDialogClose = () => {
+        this.handleCancelDialogClose();
+        this.handleClose();
+    };
+
+    handleRequestClose = () => {
+        if ((this.state.title != '') ||
+            (this.state.description != '')) {
+            this.setState({openCancelDialog: true});
+        }
+        else this.handleClose();
+    };
+
     render() {
-        const disable = !(this.state.titleIsValid&this.state.descriptionIsValid);
+        const disable = !(this.state.titleIsValid && this.state.descriptionIsValid);
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -116,7 +139,7 @@ export default class CurriculumDialog extends React.Component {
                     actions={actions}
                     modal={false}
                     open={this.state.open}
-                    onRequestClose={this.handleClose}
+                    onRequestClose={this.handleRequestClose}
                 >
                     <TextField
                         floatingLabelText="Name"
@@ -127,12 +150,18 @@ export default class CurriculumDialog extends React.Component {
                         defaultValue={this.props.description}
                         floatingLabelText="Description"
                         multiLine={true}
-                        rows={2}
                         rowsMax={4}
                         fullWidth={true}
                         onChange={this.handleDescription}
                         errorText={this.state.messageDescription} />
                 </Dialog>
+                {this.state.openCancelDialog &&
+                    (<CancelDialog
+                        openCancelDialog={this.state.openCancelDialog}
+                        handleCancelMainDialogClose={this.handleCancelCreateDialogClose}
+                        handleCancelDialogClose={this.handleCancelDialogClose}
+                    />)
+                }
             </div>
         );
     }

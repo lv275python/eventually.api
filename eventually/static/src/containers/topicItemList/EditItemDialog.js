@@ -7,7 +7,7 @@ import SvgIcon from 'material-ui/SvgIcon';
 import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-import { putEditItemService } from 'src/containers';
+import { putEditItemService, CancelDialog } from 'src/containers';
 
 
 export default class EditTopicDialog extends React.Component {
@@ -21,7 +21,8 @@ export default class EditTopicDialog extends React.Component {
             messageName: '',
             nameIsValid: true,
             messageDescription: '',
-            descriptionIsValid: true
+            descriptionIsValid: true,
+            openCancelDialog: false
         };
     }
 
@@ -32,6 +33,9 @@ export default class EditTopicDialog extends React.Component {
     handleClose = () => {
         this.setState({
             open: false,
+            name: this.props.name,
+            description: this.props.description,
+            form: this.props.form,
             messageName: '',
             nameIsValid: true,
             messageDescription: '',
@@ -86,8 +90,25 @@ export default class EditTopicDialog extends React.Component {
                 this.props.getItemList();
                 this.handleClose();
             });
-
         }
+    };
+
+    handleCancelDialogClose = () => {
+        this.setState({'openCancelDialog': false});
+    };
+
+    handleCancelEditDialogClose = () => {
+        this.handleCancelDialogClose();
+        this.handleClose();
+    };
+
+    handleRequestClose = () => {
+        if ((this.state.name != this.props.name) ||
+            (this.state.description != this.props.description) ||
+            (this.state.form != this.props.form)) {
+            this.setState({openCancelDialog: true});
+        }
+        else this.handleCancelEditDialogClose();
     };
 
     render() {
@@ -115,7 +136,7 @@ export default class EditTopicDialog extends React.Component {
                     actions={actions}
                     modal={false}
                     open={this.state.open}
-                    onRequestClose={this.handleClose}
+                    onRequestClose={this.handleRequestClose}
                 >
                     <TextField
                         floatingLabelText="Name"
@@ -140,6 +161,13 @@ export default class EditTopicDialog extends React.Component {
                         <MenuItem value={2} primaryText="Group" />
                     </SelectField>
                 </Dialog>
+                {this.state.openCancelDialog &&
+                    (<CancelDialog
+                        openCancelDialog={this.state.openCancelDialog}
+                        handleCancelMainDialogClose={this.handleCancelEditDialogClose}
+                        handleCancelDialogClose={this.handleCancelDialogClose}
+                    />)
+                }
             </div>
         );
     }

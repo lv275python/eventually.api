@@ -9,7 +9,7 @@ import MenuItem from 'material-ui/MenuItem';
 import {orange500} from 'material-ui/styles/colors';
 
 import {teamServicePost, usersServiceGet} from './teamService';
-import {FileUpload} from 'src/containers';
+import {FileUpload, CancelDialog} from 'src/containers';
 import {getUserId} from 'src/helper';
 
 const FlatButtonStyle = {
@@ -43,6 +43,7 @@ export default class CreateTeamDialog extends React.Component {
             MessageDescription: '',
             NameIsValid: false,
             DescriptionIsValid: true,
+            openCancelDialog: false
         };
     }
 
@@ -104,6 +105,8 @@ export default class CreateTeamDialog extends React.Component {
         this.setState({ open: false });
         this.setState({
             values: [],
+            name: '',
+            description: '',
             image: '',
             MessageName: '',
             MessageDescription: '',
@@ -144,6 +147,25 @@ export default class CreateTeamDialog extends React.Component {
         ));
     }
 
+    handleCancelDialogClose = () => {
+        this.setState({'openCancelDialog': false});
+    };
+
+    handleCancelCreateDialogClose = () => {
+        this.handleCancelDialogClose();
+        this.handleClose();
+    };
+
+    handleRequestClose = () => {
+        if ((this.state.name != '') ||
+            (this.state.description != '') ||
+            (this.state.image != '') ||
+            (this.state.users.length != 0)) {
+            this.setState({openCancelDialog: true});
+        }
+        else this.handleClose();
+    };
+
     render() {
         const {values} = this.state;
         const actions = [
@@ -174,7 +196,7 @@ export default class CreateTeamDialog extends React.Component {
                     modal={false}
                     open={this.state.open}
                     autoDetectWindowHeight={true}
-                    onRequestClose={this.handleClose}
+                    onRequestClose={this.handleRequestClose}
                 >
                     <TextField
                         hintText="Name"
@@ -188,14 +210,12 @@ export default class CreateTeamDialog extends React.Component {
                         defaultValue={this.props.description}
                         hintText="Description"
                         multiLine={true}
-                        rows={2}
                         rowsMax={4}
                         fullWidth={true}
                         onChange={this.handleDescription}
                         errorText={this.state.MessageDescription}
                         errorStyle={errorStyle}
                     />
-
                     <SelectField
                         multiple={true}
                         hintText="Select members"
@@ -204,10 +224,15 @@ export default class CreateTeamDialog extends React.Component {
                     >
                         {this.menuItems(values)}
                     </SelectField>
-
-
                     <FileUpload updateImageNameInDb={this.uploadImage}/>
                 </Dialog>
+                {this.state.openCancelDialog &&
+                    (<CancelDialog
+                        openCancelDialog={this.state.openCancelDialog}
+                        handleCancelMainDialogClose={this.handleCancelCreateDialogClose}
+                        handleCancelDialogClose={this.handleCancelDialogClose}
+                    />)
+                }
             </div>
         );
     }

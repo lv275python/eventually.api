@@ -4,8 +4,8 @@ import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import { postVote } from './VoteService';
-import { postAnswer } from './VoteService';
+import { postVote, postAnswer } from './VoteService';
+import { CancelDialog } from 'src/containers';
 
 
 const FloatingButtonStyle = {
@@ -28,7 +28,8 @@ class CreateCustomVote extends React.Component {
                 {key: '0', id: '0', failAnswerMessage: ''},
                 {key: '1', id: '1', failAnswerMessage: ''}
             ],
-            failQuestionMessage: ''
+            failQuestionMessage: '',
+            openCancelDialog: false
         };
     }
 
@@ -141,6 +142,23 @@ class CreateCustomVote extends React.Component {
         });
     };
 
+    handleCancelDialogClose = () => {
+        this.setState({'openCancelDialog': false});
+    };
+
+    handleCancelCreateDialogClose = () => {
+        this.handleCancelDialogClose();
+        this.handleClose();
+    };
+
+    handleRequestClose = () => {
+        if ((this.state.title != '') ||
+            (this.state.answers != {})) {
+            this.setState({openCancelDialog: true});
+        }
+        else this.handleClose();
+    };
+
     render() {
         const actions = [
             <FlatButton
@@ -166,7 +184,7 @@ class CreateCustomVote extends React.Component {
                     actions={actions}
                     modal={false}
                     open={this.state.open}
-                    onRequestClose={this.handleClose}
+                    onRequestClose={this.handleRequestClose}
                     autoScrollBodyContent={true}
                     style={{zIndex: 800}}>
                     <TextField
@@ -182,6 +200,13 @@ class CreateCustomVote extends React.Component {
                         onClick={this.handleAddField}
                     />
                 </Dialog>
+                {this.state.openCancelDialog &&
+                    (<CancelDialog
+                        openCancelDialog={this.state.openCancelDialog}
+                        handleCancelMainDialogClose={this.handleCancelCreateDialogClose}
+                        handleCancelDialogClose={this.handleCancelDialogClose}
+                    />)
+                }
             </div>
         );
     }

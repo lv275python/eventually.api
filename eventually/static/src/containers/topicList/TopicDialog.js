@@ -7,6 +7,7 @@ import SelectField from 'material-ui/SelectField';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import { postTopicService } from './TopicServices';
+import { CancelDialog } from 'src/containers';
 
 
 const FlatButtonStyle = {
@@ -24,10 +25,10 @@ export default class TopicDialog extends React.Component {
             messageTitle: '',
             titleIsValid: false,
             messageDescription: '',
-            descriptionIsValid: false
+            descriptionIsValid: false,
+            openCancelDialog: false
         };
     }
-
 
     handleOpen = () => {
         this.setState({ open: true });
@@ -36,6 +37,8 @@ export default class TopicDialog extends React.Component {
     handleClose = () => {
         this.setState({
             open: false,
+            title: '',
+            description: '',
             messageTitle: '',
             messageDescription: '',
             titleIsValid: false,
@@ -76,7 +79,7 @@ export default class TopicDialog extends React.Component {
     };
 
     handleSubmit = () => {
-        if(this.state.titleIsValid&this.state.descriptionIsValid){
+        if(this.state.titleIsValid && this.state.descriptionIsValid){
             const data = {
                 'title': this.state.title,
                 'description': this.state.description,
@@ -88,8 +91,25 @@ export default class TopicDialog extends React.Component {
         }
     };
 
+    handleCancelDialogClose = () => {
+        this.setState({'openCancelDialog': false});
+    };
+
+    handleCancelCreateDialogClose = () => {
+        this.handleCancelDialogClose();
+        this.handleClose();
+    };
+
+    handleRequestClose = () => {
+        if ((this.state.title != this.props.title) ||
+            (this.state.description != this.props.description)) {
+            this.setState({openCancelDialog: true});
+        }
+        else this.handleCancelCreateDialogClose();
+    };
+
     render() {
-        const disable = !(this.state.titleIsValid&this.state.descriptionIsValid);
+        const disable = !(this.state.titleIsValid && this.state.descriptionIsValid);
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -111,7 +131,6 @@ export default class TopicDialog extends React.Component {
                     mini={true}
                     onClick={this.handleOpen}
                     style={FlatButtonStyle}>
-
                     <ContentAdd />
                 </FloatingActionButton>
                 <Dialog
@@ -119,7 +138,7 @@ export default class TopicDialog extends React.Component {
                     actions={actions}
                     modal={false}
                     open={this.state.open}
-                    onRequestClose={this.handleClose}
+                    onRequestClose={this.handleRequestClose}
                 >
                     <TextField
                         floatingLabelText="Title"
@@ -129,12 +148,18 @@ export default class TopicDialog extends React.Component {
                     <TextField
                         floatingLabelText="Description"
                         multiLine={true}
-                        rows={2}
                         rowsMax={4}
                         fullWidth={true}
                         onChange={this.handleDescription}
                         errorText={this.state.messageDescription} />
                 </Dialog>
+                {this.state.openCancelDialog &&
+                    (<CancelDialog
+                        openCancelDialog={this.state.openCancelDialog}
+                        handleCancelMainDialogClose={this.handleCancelCreateDialogClose}
+                        handleCancelDialogClose={this.handleCancelDialogClose}
+                    />)
+                }
             </div>
         );
     }
