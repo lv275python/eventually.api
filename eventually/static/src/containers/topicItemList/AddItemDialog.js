@@ -24,7 +24,9 @@ export default class TaskDialog extends React.Component {
             name: '',
             description: '',
             form: 0,
-            estimation:0,
+            estimation: null,
+            superiorsValue: [],
+            itemsList: props.items,
             topicId: props.topicId,
             curriculumId: props.curriculumId,
             itemId: props.itemId,
@@ -34,6 +36,14 @@ export default class TaskDialog extends React.Component {
             descriptionIsValid: false,
             openCancelDialog: false
         };
+    }
+
+    componentWillReceiveProps(nextProps){
+        if(this.props.items !== nextProps.items){
+            this.setState({
+                itemsList: nextProps.items
+            });
+        }
     }
 
     handleOpen = () => {
@@ -85,13 +95,32 @@ export default class TaskDialog extends React.Component {
 
     handleChange = (event, index, value) => this.setState({'form': value});
 
+    handleSuperiorsChange = (event, index, values) => this.setState({'superiorsValue': values});
+
+    menuItems(values) {
+        return this.state.itemsList.map((item) => (
+            <MenuItem
+                key={item.id}
+                insetChildren={true}
+                checked={values && this.state.superiorsValue.indexOf(item.id) > -1}
+                value={item.id}
+                primaryText={item.name}
+            />
+        ));
+    }
+
+    handleEstimation = event => {
+        this.setState({estimation: event.target.value});
+    }
+
     handleSubmit = () => {
         if(this.state.nameIsValid && this.state.descriptionIsValid){
             const data = {
                 'name': this.state.name,
                 'description': this.state.description,
                 'form': this.state.form,
-                'estimation': this.state.estimation
+                'estimation': this.state.estimation,
+                'superiors': this.state.superiorsValue
             };
             postItemService(this.state.curriculumId, this.state.topicId, data).then(response => {
                 this.props.getItemList();
@@ -160,6 +189,7 @@ export default class TaskDialog extends React.Component {
                         errorText={this.state.messageDescription} />
                     <SelectField
                         floatingLabelText="Select form"
+                        fullWidth={true}
                         value={this.state.form}
                         onChange={this.handleChange}
                     >
@@ -167,6 +197,20 @@ export default class TaskDialog extends React.Component {
                         <MenuItem value={1} primaryText="Practice" />
                         <MenuItem value={2} primaryText="Group" />
                     </SelectField>
+                    <SelectField
+                        floatingLabelText="Select superiors"
+                        multiple={true}
+                        fullWidth={true}
+                        value={this.state.superiorsValue}
+                        onChange={this.handleSuperiorsChange}
+                    >
+                        {this.menuItems(this.state.superiorsValue)}
+                    </SelectField>
+                    <TextField
+                        floatingLabelText="Estimation (hours)"
+                        onChange={this.handleEstimation}
+                        fullWidth={true}
+                        errorText={this.state.messageDescription} />
                 </Dialog>
                 {this.state.openCancelDialog &&
                     (<CancelDialog

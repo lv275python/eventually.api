@@ -57,6 +57,9 @@ export default class TopicItemList extends React.Component {
                         name={item.name}
                         description={item.description}
                         form={item.form}
+                        estimation={item.estimation/3600}
+                        superiors={item.superiors}
+                        items={this.state.items}
                         isActive={item.id === this.state.isActive || false}
                         onClick={this.handleClick}
                         id={item.id}
@@ -68,6 +71,7 @@ export default class TopicItemList extends React.Component {
                 {this.props.isMentor && (<AddItemDialog
                     topicId={this.props.topicId}
                     curriculumId={this.props.curriculumId}
+                    items={this.state.items}
                     getItemList={this.getItemList} />)}
             </div>
         );

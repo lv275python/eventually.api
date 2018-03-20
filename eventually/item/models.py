@@ -136,12 +136,13 @@ class Item(AbstractModel):
         try:
             item.save()
             item.authors.add(*authors)
-            item.superiors.add(*superiors)
+            if superiors:
+                item.superiors.add(*superiors)
             return item
         except (ValueError, IntegrityError):
             LOGGER.error('Inappropriate value or relational integrity fail')
 
-    def update(self, name=None, form=None, description=None, estimation=None):
+    def update(self, name=None, form=None, description=None, estimation=None, superiors=None):
         """
         Method that updates the certain instance of Item class accordingly
         to the accepted parameters.
@@ -158,6 +159,10 @@ class Item(AbstractModel):
         :param estimation: The recommended time for passing the current item.
         :type estimation: timedelta
 
+        :param superiors: List of other items that have to be done for the possibility to start
+                          work on the current item.
+        :type superiors: list
+
         :return: None
         """
 
@@ -169,6 +174,8 @@ class Item(AbstractModel):
             self.description = description
         if estimation:
             self.estimation = estimation
+        if superiors:
+            self.superiors = superiors
         self.save()
 
     def update_authors(self, authors_add=None, authors_del=None):
@@ -208,3 +215,15 @@ class Item(AbstractModel):
             self.superiors.add(*superiors_add)
         if superiors_del:
             self.superiors.remove(*superiors_del)
+
+    def get_item_superiors(self):
+        """
+        Method that get item id with it superiors
+
+        :return: tuple with item id and list of superiors items ids
+        :rtype: tuple
+
+        :Example: (5, [2, 3, 4])
+        """
+        superiors_list = [item.id for item in self.superiors.all()]
+        return self.id, superiors_list

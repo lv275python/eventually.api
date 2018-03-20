@@ -6,6 +6,7 @@ The module that provides basic logic for getting, creating, updating and deletin
 of item's model objects.
 """
 
+import datetime
 from django.views.generic.base import View
 from django.http import JsonResponse
 from django.http import HttpResponse
@@ -16,6 +17,7 @@ from utils.responsehelper import (RESPONSE_200_DELETED,
                                   RESPONSE_403_ACCESS_DENIED,
                                   RESPONSE_400_DB_OPERATION_FAILED,
                                   RESPONSE_404_OBJECT_NOT_FOUND)
+from utils.item_views_functions import organized_items_sequence
 from .models import Item
 
 
@@ -38,8 +40,8 @@ class ItemView(View):
         :type topic_id: `int`
 
         :return: the response with the certain item information when item_id was transferred or
-                 the full list of certain topic items. If item_id or topic_id does
-                 not exist returns the 404 failed status code response.
+                 the full list of certain topic items organized by priority. If item_id or topic_id
+                 does not exist returns the 404 failed status code response.
         :rtype: `HttpResponse object.
         """
 
@@ -55,8 +57,10 @@ class ItemView(View):
             topic = Topic.get_by_id(topic_id)
             if not topic:
                 return RESPONSE_404_OBJECT_NOT_FOUND
-            items = topic.item_set.all()
-            data = {'items': [item.to_dict() for item in items]}
+            items_superiors_dict = {item.get_item_superiors()[0]:item.get_item_superiors()[1]
+                                    for item in topic.item_set.all()}
+            items_ids = organized_items_sequence(items_superiors_dict)
+            data = {'items': [(Item.get_by_id(item)).to_dict() for item in items_ids]}
             return JsonResponse(data, status=200)
 
     def post(self, request, curriculum_id, topic_id):
@@ -90,8 +94,10 @@ class ItemView(View):
         data = {'name': data.get('name'),
                 'description': data.get('description') if data.get('description') else '',
                 'form': data.get('form'),
-                'superiors': data.get('superiors') if data.get('superiors') else [],
-                'estimation': data.get('estimation') if data.get('estimation') else None}
+                'superiors': [Item.get_by_id(item) for item in data.get('superiors')]\
+                              if data.get('superiors') else None,
+                'estimation': datetime.timedelta(hours=int(data.get('estimation')))\
+                              if isinstance(data.get('estimation'), int) else None}
 
         item = Item.create(topic=topic, authors=allowed_authors, **data)
         if item:
@@ -138,7 +144,12 @@ class ItemView(View):
 
         data = {'name': data.get('name'),
                 'description': data.get('description'),
-                'form': data.get('form')}
+                'form': data.get('form'),
+                'superiors': [Item.get_by_id(item) for item in data.get('superiors')
+                              if data.get('superiors')],
+                'estimation': datetime.timedelta(hours=int(data.get('estimation')))\
+                              if isinstance(data.get('estimation'), int) else None}
+
         item.update(**data)
 
         return RESPONSE_200_UPDATED
