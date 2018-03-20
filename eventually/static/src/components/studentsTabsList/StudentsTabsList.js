@@ -43,7 +43,10 @@ export default class StudentsTabsList extends React.Component {
         const isTopicDone = this.state.filtersBar.isTopicDone;
         const fromDate = this.state.filtersBar.fromDate;
         const toDate = this.state.filtersBar.toDate;
+        this.getStudentsListData();
+    };
 
+    getStudentsListData = (chosenTopic, isTopicDone, fromDate, toDate) => {
         getStudentsList(chosenTopic, isTopicDone, fromDate, toDate)
             .then(response => {
                 const data = response.data;
@@ -168,6 +171,7 @@ export default class StudentsTabsList extends React.Component {
                             students={this.state.studentsList.myStudents}
                             onItemButtonClick={this.handleModalOpen}
                             tabIndex={this.state.slideIndex}
+                            getStudentsListData={this.getStudentsListData}
                         />
                     </div>
                     <div>
@@ -175,6 +179,7 @@ export default class StudentsTabsList extends React.Component {
                             students={this.state.studentsList.allStudents}
                             onItemButtonClick={this.handleModalOpen}
                             tabIndex={this.state.slideIndex}
+                            getStudentsListData={this.getStudentsListData}
                         />
                     </div>
                     <div>
@@ -182,6 +187,7 @@ export default class StudentsTabsList extends React.Component {
                             students={this.state.studentsList.availableStudents}
                             onItemButtonClick={this.handleModalOpen}
                             tabIndex={this.state.slideIndex}
+                            getStudentsListData={this.getStudentsListData}
                         />
                     </div>
                 </SwipeableViews>

@@ -3,6 +3,8 @@ import {Card, CardHeader} from 'material-ui/Card';
 import Avatar from 'material-ui/Avatar';
 import RaisedButton from 'material-ui/RaisedButton';
 import {lightGreen400} from 'material-ui/styles/colors';
+import {getUserId} from 'src/helper';
+import {putMentorStudentService} from 'src/components';
 
 const cardHeaderStyle = {
     display: 'flex',
@@ -30,8 +32,19 @@ export default class UserItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            userId: this.props.id
+            userId: this.props.id,
+            mentorId: getUserId()
         };
+    }
+
+    handleAssign = () => {
+        const data = {
+            'student': this.state.userId,
+            'topic': this.props.topicId
+        };
+        putMentorStudentService(this.state.userId, this.props.topicId, data).then(response => {
+            this.props.getStudentsListData();
+        });
     }
 
     handleClick = () => {
@@ -41,7 +54,7 @@ export default class UserItem extends React.Component {
     render() {
         const btn=(this.props.tabIndex===2) ?
             (<RaisedButton label="Assign" backgroundColor={lightGreen400}
-                style={buttonStyle} onClick={this.handleClick}/>):
+                style={buttonStyle} onClick={this.handleAssign}/>):
             (<RaisedButton label="Info" style={buttonStyle} onClick={this.handleClick}/>);
 
         return (
@@ -51,6 +64,7 @@ export default class UserItem extends React.Component {
                         <CardHeader
                             style={cardHeaderStyle}
                             title={`${this.props.firstName} ${this.props.lastName}`}
+                            subtitle={this.props.topicTitle}
                             avatar={<Avatar src={`https://robohash.org/${this.props.avatar}`}/>}
                             titleStyle={titleStyle}
                             onClick={this.handleClick}

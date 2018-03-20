@@ -146,7 +146,7 @@ class MentorModelTestCase(TestCase):
     def test_mentor_get_my_students(self):
         """Method that tests "get_my_students" method of MentorStudent class object."""
 
-        get_my_students = MentorStudent().get_my_students(100)
+        get_my_students = MentorStudent().get_my_students([200], 100)
         result = [student for student in get_my_students]
         expected_result = [MentorStudent(id=500), MentorStudent(id=501)]
 
@@ -163,7 +163,7 @@ class MentorModelTestCase(TestCase):
     def test_mentor_get_all_students(self):
         """Method that tests "get_all_students" method of MentorStudent class object."""
 
-        get_assigned_students = MentorStudent().get_assigned_students(102)
+        get_assigned_students = MentorStudent().get_assigned_students([200], 102)
         result = [student for student in get_assigned_students]
         expected_result = [MentorStudent(id=500), MentorStudent(id=501)]
         self.assertEqual(result, expected_result)
@@ -171,7 +171,7 @@ class MentorModelTestCase(TestCase):
     def test_mentor_get_available_students(self):
         """Method that tests "get_available_students" method of MentorStudent class object."""
 
-        get_available_students = MentorStudent().get_available_students()
+        get_available_students = MentorStudent().get_available_students([200])
         result = [student for student in get_available_students]
         expected_result = [MentorStudent(id=502)]
         self.assertEqual(result, expected_result)

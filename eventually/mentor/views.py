@@ -20,6 +20,7 @@ from utils.responsehelper import (RESPONSE_200_UPDATED,
                                   RESPONSE_403_ACCESS_DENIED,
                                   RESPONSE_404_OBJECT_NOT_FOUND)
 from utils.validators import mentor_validator
+from utils.topic_views_functions import find_mentors_topics
 
 
 class MentorView(View):
@@ -36,7 +37,7 @@ class MentorView(View):
         """
 
         mentor = CustomUser.get_by_id(request.user.id)
-        topics_id = [record.id for record in MentorStudent.get_all()]
+        mentors_topics_ids = [topic.id for topic in find_mentors_topics(mentor.id)]
 
         filters = {}
         if request.GET.get('topic', None):
@@ -52,23 +53,42 @@ class MentorView(View):
             to_date = datetime.fromtimestamp(int(to_date), tz=pytz.UTC)
             filters['created_at__lte'] = to_date
 
-        assigned_students = MentorStudent.get_assigned_students(mentor.id).filter(**filters)
-        my_students = MentorStudent.get_my_students(mentor.id).filter(**filters)
-        available_students = MentorStudent.get_available_students().filter(**filters)
+        assigned_students = MentorStudent.get_assigned_students(mentors_topics_ids,
+                                                                mentor.id).filter(**filters)
+        my_students = MentorStudent.get_my_students(mentors_topics_ids,
+                                                    mentor.id).filter(**filters)
+        available_students = MentorStudent.get_available_students(mentors_topics_ids)\
+            .filter(**filters)
 
-        assigned_students = [record for record in assigned_students if record.topic_id in topics_id]
-        assigned_students = set([record.student_id for record in assigned_students])
-        assigned_students = [CustomUser.get_by_id(id).to_dict() for id in assigned_students]
+        response = {'my_students': [],
+                    'assigned_students': [],
+                    'available_students': []}
 
-        my_students = set([item.student_id for item in my_students])
-        my_students = [CustomUser.get_by_id(id).to_dict() for id in my_students]
+        for record in assigned_students:
+            student = CustomUser.get_by_id(record.student_id)
+            topic = Topic.get_by_id(record.topic_id)
+            response['assigned_students'].append({'student_id': student.id,
+                                                  'first_name': student.first_name,
+                                                  'last_name': student.last_name,
+                                                  'topic_title': topic.title,
+                                                  'topic_id': topic.id})
+        for record in my_students:
+            student = CustomUser.get_by_id(record.student_id)
+            topic = Topic.get_by_id(record.topic_id)
+            response['my_students'].append({'student_id': student.id,
+                                            'first_name': student.first_name,
+                                            'last_name': student.last_name,
+                                            'topic_title': topic.title,
+                                            'topic_id': topic.id})
 
-        available_students = set([record.student_id for record in available_students])
-        available_students = [CustomUser.get_by_id(id).to_dict() for id in available_students]
-
-        response = {'my_students': my_students,
-                    'assigned_students': assigned_students,
-                    'available_students': available_students}
+        for record in available_students:
+            student = CustomUser.get_by_id(record.student_id)
+            topic = Topic.get_by_id(record.topic_id)
+            response['available_students'].append({'student_id': student.id,
+                                                   'first_name': student.first_name,
+                                                   'last_name': student.last_name,
+                                                   'topic_title': topic.title,
+                                                   'topic_id': topic.id})
 
         return JsonResponse(response, status=200)
 
@@ -110,12 +130,6 @@ class MentorView(View):
 
         :param request: the accepted HTTP request.
         :type request: `HttpRequest object`
-
-        :param student_id: ID of the certain student.
-        :type student_id: `int`
-
-        :param topic_id: ID of the certain topic.
-        :type topic_id: `int`
 
         :return: return JsonResponse within record data with status 201 if record was successfully
                  create
@@ -196,7 +210,9 @@ def get_students(request):
     """
 
     user_id = request.user.id
-    students = set([record.student_id for record in MentorStudent.get_my_students(user_id)])
+    mentors_topics_ids = [topic.id for topic in find_mentors_topics(user_id)]
+    students = set([record.student_id for record
+                    in MentorStudent.get_my_students(mentors_topics_ids, user_id)])
     receivers = []
     if students:
         receivers = [CustomUser.get_by_id(student_id).to_dict() for student_id in students]

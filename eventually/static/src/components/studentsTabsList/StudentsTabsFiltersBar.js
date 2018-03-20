@@ -4,6 +4,7 @@ import Paper from 'material-ui/Paper';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import DatePicker from 'material-ui/DatePicker';
+import { getMentorsTopics } from 'src/components';
 
 const studentsTabsFiltersBarStyles = {
     display: 'flex',
@@ -29,6 +30,25 @@ export default class StudentsTabsFiltersBar extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            topics: []
+        };
+    }
+
+    componentWillMount() {
+        getMentorsTopics().then(response => {
+            this.setState({topics: response.data['topics']});
+        });
+    }
+
+    menuItems(values) {
+        return this.state.topics.map((topic) => (
+            <MenuItem
+                key={topic.id}
+                value={topic.id}
+                primaryText={topic.title}
+            />
+        ));
     }
 
     render() {
@@ -43,10 +63,11 @@ export default class StudentsTabsFiltersBar extends React.Component {
                             onChange={this.props.onFiltersTopicsChange}
                             style={topicsSelectFieldStyles}
                         >
-                            <MenuItem value={null} primaryText='All topics'/>
-                            <MenuItem value={1} primaryText='JavaScript' />
-                            <MenuItem value={3} primaryText='Node.js' />
-                            <MenuItem value={2} primaryText='CSS' />
+                            <MenuItem
+                                key={0}
+                                value={null}
+                                primaryText='All topics' />
+                            {this.menuItems(this.state.topics)}
                         </SelectField>
                         <DatePicker 
                             floatingLabelText='From'

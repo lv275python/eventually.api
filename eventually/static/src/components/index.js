@@ -10,6 +10,8 @@ export StudentsTabsList from './studentsTabsList/StudentsTabsList';
 export {
     getStudentsList,
     getCurriculumTopics,
-    postStudentList} from './studentsTabsList/studentsTabsListService';
+    postStudentList,
+    getMentorsTopics,
+    putMentorStudentService} from './studentsTabsList/studentsTabsListService';
 export UserItem from './usersList/UserItem';
 export UsersList from './usersList/UsersList';
