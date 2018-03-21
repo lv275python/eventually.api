@@ -1,5 +1,5 @@
 ## Description
-In this document are listed configuration files with settings for nginx and uWSGI.
+In this document are listed configuration files with settings for nginx, uWSGI and Jenkins.
 
 ## Technologies
 * Nginx (1.10.3)
@@ -74,7 +74,7 @@ Edit `settings.py` in directory `~/eventually.api/eventually/eventually/`
 Сhange to:
 ```STATIC_ROOT = os.path.join(BASE_DIR, "static/")```
 
-# Run/stop project
+## Run/stop project
 ### Start uWSGI processes
 ```
 setsid uwsgi --socket :8001 --ini eventually_uwsgi.ini
@@ -83,4 +83,50 @@ setsid uwsgi --socket :8001 --ini eventually_uwsgi.ini
 ### Kill uWSGI processes
 ```
 pkill -f uwsgi -9
+```
+
+## Jenkins configuration:
+```
+Project name: eventually.api
+GitHub project	
+ 	Project url: https://github.com/lv275python/eventually.api/
+GitLab connection: Lv-191.PHP
+Restrict where this project can be run: Yes
+Label Expression: python3_node
+Git: Yes
+Repository URL: https://github.com/lv275python/eventually.api
+Branches to build	
+	Branch Specifier (blank for 'any'): */dev
+Poll SCM: Yes
+	Schedule: H/5 * * * *
+Build
+	Execute shell
+		Command:
+			#!/bin/bash
+			export PATH="$HOME/.pyenv/bin:$PATH"
+			export CONFIGURE_OPTS='--enable-shared'
+			eval "$(pyenv init -)"
+			cd $WORKSPACE/
+			pyenv local eventual-3.6.3
+			pip install -r requirements.txt
+			npm install
+			npm run build
+			cd ~
+			chmod +x ~/confs/kill_uwsgi
+			sudo ~/confs/kill_uwsgi
+			rm -r -f ~/eventually.api
+			cp -R ~/jenkins/workspace/eventually.api ./
+			rm ~/eventually.api/eventually/eventually/settings.py
+			cp ~/confs/eventually_nginx.conf ~/eventually.api/eventually/eventually/
+			cp ~/confs/eventually_uwsgi.ini ~/eventually.api/eventually/eventually/
+			cp ~/confs/uwsgi_params ~/eventually.api/eventually/
+			cp ~/confs/settings.py ~/eventually.api/eventually/eventually/
+			cp ~/confs/local_settings.py ~/eventually.api/eventually/eventually/
+			cd ~/eventually.api/eventually/
+			python manage.py makemigrations
+			python manage.py migrate
+			disown
+			cd ~/eventually.api/eventually/eventually
+			uwsgi --socket :8001 --ini eventually_uwsgi.ini &
+			exit
 ```
