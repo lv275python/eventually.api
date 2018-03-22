@@ -1,10 +1,8 @@
 import React from 'react';
 import axios from 'axios';
-import { getTeamsListService, postEventService } from './EventService';
 import Location from './GoogleLocation';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import MenuItem from 'material-ui/MenuItem';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
@@ -12,7 +10,9 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import SelectField from 'material-ui/SelectField';
 import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
-import {CancelDialog} from 'src/containers';
+import Snackbar from 'material-ui/Snackbar';
+import { CancelDialog } from 'src/containers';
+import { getTeamsListService, postEventService } from './EventService';
 
 
 const FlatButtonStyle = {
@@ -30,14 +30,12 @@ class CreateEvent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            validationField: {
-                failNameMessage: '',
-                failDescriptionMessage: '',
-                failBudgetMessage: '',
-                nameIsValid: false,
-                descriptionIsValid: false,
-                budgetIsValid: false
-            },
+            failNameMessage: '',
+            failDescriptionMessage: '',
+            failBudgetMessage: '',
+            nameIsValid: false,
+            descriptionIsValid: false,
+            budgetIsValid: true,
             name: '',
             team: null,
             description: '',
@@ -50,7 +48,8 @@ class CreateEvent extends React.Component {
             longitude: 0,
             latitude: 0,
             open: false,
-            openCancelDialog: false
+            openCancelDialog: false,
+            responseError: ''
         };
     }
 
@@ -80,15 +79,14 @@ class CreateEvent extends React.Component {
     };
 
     handleChangeStartAt = (event, date) => {
-        this.setState({ startAt: date / 1000 });
+        this.setState({
+            startAt: date / 1000,
+            timeEnd: date / 1000
+        });
     };
 
     handleChangeTimeEnd = (event, date) => {
         this.setState({ timeEnd: date / 1000 });
-    };
-
-    handleChangeDuration = event => {
-        this.setState({ duration: event.target.value });
     };
 
     handleChangeBudget = event => {
@@ -96,11 +94,11 @@ class CreateEvent extends React.Component {
         if(regex.test(event.target.value) === true) {
             this.setState({
                 failBudgetMessage: '',
-                budgetIsValid: true,
                 budget: event.target.value
             });
         } else {
             this.setState({
+                budgetIsValid: false,
                 failBudgetMessage: 'Value must be a number and maximum be less 1000000'
             });
         }
@@ -137,26 +135,41 @@ class CreateEvent extends React.Component {
         this.setState({ status: value });
     };
 
+    openErrorSnackBar = () => {
+        this.setState({
+            openErrorSnackBar: true,
+        });
+    };
+
+    closeErrorSnackBar = () => {
+        this.setState({
+            openErrorSnackBar: false,
+        });
+    };
+
     handleSubmit = event => {
         event.preventDefault();
-        if(this.state.nameIsValid === true && this.state.descriptionIsValid === true &&
-            this.state.budgetIsValid === true && this.state.team !== null){
-            const data = {
-                'name': this.state.name,
-                'description': this.state.description,
-                'start_at': this.state.startAt,
-                'duration': this.state.timeEnd - this.state.startAt,
-                'budget': Number(this.state.budget),
-                'team': this.state.team,
-                'status': this.state.status,
-                'longitude': this.state.longitude,
-                'latitude': this.state.latitude
-            };
-            postEventService(data).then(response => {
+        const data = {
+            'name': this.state.name,
+            'description': this.state.description,
+            'start_at': this.state.startAt,
+            'duration': this.state.timeEnd - this.state.startAt,
+            'budget': Number(this.state.budget),
+            'team': this.state.team,
+            'status': this.state.status,
+            'longitude': this.state.longitude,
+            'latitude': this.state.latitude
+        };
+        postEventService(data).then(
+            response => {
                 this.props.addEvent(response.data);
-            });
-            this.handleClose();
-        }
+                this.handleClose();
+            },
+            error => {
+                this.setState({responseError: error.response.data[0].toUpperCase() + error.response.data.slice(1)});
+                this.openErrorSnackBar();
+            }
+        );
     };
 
     handleOpen = () => {
@@ -167,13 +180,19 @@ class CreateEvent extends React.Component {
         this.setState({ open: false });
         this.setState({
             name: '',
-            team: 0,
+            team: null,
             description: '',
             startAt: new Date() / 1000,
             timeEnd: new Date() / 1000,
             budget: 0,
             status: 0,
-            formattedAddress: ''
+            formattedAddress: '',
+            failNameMessage: '',
+            failDescriptionMessage: '',
+            failBudgetMessage: '',
+            nameIsValid: false,
+            descriptionIsValid: false,
+            budgetIsValid: true
         });
     };
 
@@ -198,6 +217,12 @@ class CreateEvent extends React.Component {
     };
 
     render() {
+        let submitButtonDisabled = !(
+            this.state.nameIsValid && this.state.descriptionIsValid && this.state.budgetIsValid &&
+            this.state.team !== null && (this.state.timeEnd - this.state.startAt) > 0 &&
+            this.state.formattedAddress !==''
+        );
+
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -208,6 +233,7 @@ class CreateEvent extends React.Component {
                 label="Submit"
                 primary={true}
                 keyboardFocused={true}
+                disabled={submitButtonDisabled}
                 onClick={this.handleSubmit}
             />,
         ];
@@ -293,6 +319,14 @@ class CreateEvent extends React.Component {
                         <MenuItem value={2} primaryText="going" />
                         <MenuItem value={3} primaryText="finished" />
                     </SelectField>
+                    {this.state.openErrorSnackBar &&
+                        (<Snackbar
+                            open={this.state.openErrorSnackBar}
+                            message={this.state.responseError}
+                            autoHideDuration={5000}
+                            onRequestClose={this.closeErrorSnackBar}
+                        />)
+                    }
                 </Dialog>
                 {this.state.openCancelDialog &&
                     (<CancelDialog
