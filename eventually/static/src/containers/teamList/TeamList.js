@@ -8,32 +8,23 @@ const CreateTeamDialogStyle = {
     right: '3%',
     top: '85%'
 };
+const TeamListStyle = {
+    marginBottom: '3%'
+};
 
 export default class TeamList extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            teams:[],
-        };
-    }
-
-    componentWillMount(){
-        this.getTeamItem();
-    }
-
     getTeamItem = () => {
         teamServiceGet(true).then(response => this.setState({'teams': response.data.teams}));
     };
 
-    goToUserProfile = (id) =>
-    {
-        this.props.history.push('/profile/'+id);
+    goToUserProfile = (id) => {
+        this.props.history.push('/profile/' + id);
     };
 
     updateTeamItem = (id, name, description, image) => {
         const teams = this.state.teams;
         teams.forEach(team => {
-            if(team.id == id){
+            if (team.id == id) {
                 team.name = name;
                 team.description = description;
                 team.image = image;
@@ -42,9 +33,20 @@ export default class TeamList extends React.Component {
         this.setState({'teams': teams});
     };
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            teams: [],
+        };
+    }
+
+    componentWillMount() {
+        this.getTeamItem();
+    }
+
     render() {
         return (
-            <div>
+            <div style={TeamListStyle}>
                 {this.state.teams.map(team => (
                     <TeamItem
                         key={team.id.toString()}
@@ -56,7 +58,7 @@ export default class TeamList extends React.Component {
                         updateItem={this.updateTeamItem}
                         listOfMembers={team.members_id}
                         owner={team.owner_id}
-                        goToUserProfile={this.goToUserProfile}
+                        goToUserProfile={this.props.goToUserProfile}
                     />
                 ))}
                 <CreateTeamDialog
