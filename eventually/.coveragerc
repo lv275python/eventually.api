@@ -21,6 +21,7 @@ source =
     topic
     utils
     vote
+    suggestedtopics
 
 omit =
     *migrations*
