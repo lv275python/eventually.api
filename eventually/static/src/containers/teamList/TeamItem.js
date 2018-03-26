@@ -127,10 +127,11 @@ export default class TeamItem extends React.Component {
             'padding': 15,
             'width': '90%',
             'margin': '0 auto',
-            'marginTop': 37
+            'marginTop': 10
         };
 
         let delButton;
+        let editButton;
         if (this.ownerCheck() == true) {
             delButton = <RaisedButton
                 label="Delete"
@@ -139,10 +140,15 @@ export default class TeamItem extends React.Component {
                 labelColor="#FFF"
                 onClick={this.handleOpenDel}
             />;
+            editButton = <RaisedButton
+                label="Edit"
+                onClick={this.handleOpen}
+                style={styles.button}
+            />;
         } else {
             delButton = '';
+            editButton = '';
         }
-
         let teamView;
         if (this.state.teamDeleted == false) {
             teamView = (
@@ -168,18 +174,9 @@ export default class TeamItem extends React.Component {
                                 ))
                             }
                         </CardText>
-                        <RaisedButton label="Edit" onClick={this.handleOpen} style={styles.button}/>
+                        {editButton}
                         {delButton}
                         <div style={styles.footer}></div>
-                        <EditTeamDialog
-                            open={this.state.open}
-                            handleClose={this.handleClose}
-                            name={this.props.name}
-                            description={this.props.description}
-                            image={this.props.image}
-                            updateItem={this.props.updateItem}
-                            id={this.props.id}
-                        />
                     </Card>
                 </div>
             );
@@ -190,7 +187,6 @@ export default class TeamItem extends React.Component {
                 </div>
             );
         }
-
         return (
             <div>
                 <div style={styles.container}>

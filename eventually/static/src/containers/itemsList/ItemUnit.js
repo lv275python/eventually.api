@@ -2,7 +2,7 @@ import React from 'react';
 import Avatar from 'material-ui/Avatar';
 import LibraryBooks from 'material-ui/svg-icons/av/library-books';
 import Code from 'material-ui/svg-icons/action/code';
-import Group from 'material-ui/svg-icons/social/group';
+import Book from 'material-ui/svg-icons/action/book';
 import FlatButton from 'material-ui/FlatButton';
 import {Card, CardHeader, CardText, CardActions} from 'material-ui/Card';
 import {blue500, yellow600, lime500} from 'material-ui/styles/colors';
@@ -64,7 +64,7 @@ export default class ItemUnit extends React.Component {
         } else if (this.props.form === 1) {
             avatar = (<Avatar icon={<Code />} backgroundColor={blue500} />);
         } else  if (this.props.form === 2) {
-            avatar = (<Avatar icon={<Group />} backgroundColor={lime500} />);
+            avatar = (<Avatar icon={<Book />} backgroundColor={lime500} />);
         }
 
         return (

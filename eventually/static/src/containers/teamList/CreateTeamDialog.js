@@ -7,14 +7,13 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import {orange500} from 'material-ui/styles/colors';
-
 import {teamServicePost, usersServiceGet} from './teamService';
 import {FileUpload, CancelDialog} from 'src/containers';
 import {getUserId} from 'src/helper';
 
 const FlatButtonStyle = {
     position: 'fixed',
-    right: '3%',
+    right: '30%',
     top: '85%'
 };
 
@@ -27,7 +26,6 @@ const CreateTeamDialogStyle = {
 const errorStyle = {
     color: orange500,
 };
-
 
 export default class CreateTeamDialog extends React.Component {
     constructor(props) {
@@ -47,7 +45,6 @@ export default class CreateTeamDialog extends React.Component {
         };
     }
 
-    
     componentWillMount(){
         this.getAllUsers();
     }
@@ -133,7 +130,7 @@ export default class CreateTeamDialog extends React.Component {
                 this.handleClose();
             });
         }
-    }
+    };
     
     menuItems(values) {
         return this.state.users.map((user) => (
@@ -181,8 +178,6 @@ export default class CreateTeamDialog extends React.Component {
                 onClick={this.handleSubmit}
             />,
         ];
-
-
         return (
             <div>
                 <FloatingActionButton
