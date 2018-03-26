@@ -65,6 +65,7 @@ export default class ItemUnit extends React.Component {
     handleYes = () => {
         deleteItemService(this.props.curriculumId, this.props.topicId, this.props.id).then(response => {
             this.props.getItemList();
+            this.handleClose();
         });
     };
 
@@ -105,6 +106,9 @@ export default class ItemUnit extends React.Component {
                     name={this.props.name}
                     description={this.props.description}
                     form={this.props.form}
+                    estimation={this.props.estimation}
+                    superiors={this.props.superiors}
+                    items={this.props.items}
                     getItemList={this.props.getItemList} />
             ];
         }
@@ -124,6 +128,12 @@ export default class ItemUnit extends React.Component {
             />
         ];
 
+        let estimationText;
+        if (this.props.estimation){
+            estimationText = 'Estimation time: ' + (this.props.estimation).toString() + ' hours';
+        } else {
+            estimationText = 'No estimation time';
+        }
         return (
             <div>
                 <Card
@@ -132,6 +142,7 @@ export default class ItemUnit extends React.Component {
                 >
                     <CardHeader
                         title={this.props.name}
+                        subtitle={estimationText}
                         avatar={avatar}
                         style={cardHeaderStyle}
                         actAsExpander={true}

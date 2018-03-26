@@ -15,9 +15,13 @@ export default class EditTopicDialog extends React.Component {
         super(props);
         this.state = {
             open: false,
+            id: props.id,
             name: props.name,
             description: props.description,
             form: props.form,
+            estimation: props.estimation,
+            superiorsValue: props.superiors,
+            itemsList: props.items,
             messageName: '',
             nameIsValid: true,
             messageDescription: '',
@@ -36,10 +40,14 @@ export default class EditTopicDialog extends React.Component {
             name: this.props.name,
             description: this.props.description,
             form: this.props.form,
+            estimation: this.props.estimation,
+            superiorsValue: this.props.superiors,
             messageName: '',
             nameIsValid: true,
             messageDescription: '',
-            descriptionIsValid: true
+            descriptionIsValid: true,
+            messageEstimation: '',
+            estimationIsValid: true
         });
     };
 
@@ -75,6 +83,18 @@ export default class EditTopicDialog extends React.Component {
         }
     };
 
+    handleEstimation = event => {
+        const regex = /^\d+$/;
+        if(regex.test(event.target.value) === true ) {
+            this.setState({estimation: event.target.value});
+        } else {
+            this.setState({
+                messageEstimation: 'Required an integer value',
+                estimationIsValid: false
+            });
+        }
+    }
+
     handleChange = (event, index, value) => this.setState({'form': value});
 
     handleSubmit = () => {
@@ -82,7 +102,9 @@ export default class EditTopicDialog extends React.Component {
             const data = {
                 'name': this.state.name,
                 'description': this.state.description,
-                'form': this.state.form
+                'form': this.state.form,
+                'estimation': this.state.estimation,
+                'superiors': this.state.superiorsValue
             };
             putEditItemService(
                 this.props.curriculumId, this.props.topicId, this.props.id, data
@@ -110,6 +132,24 @@ export default class EditTopicDialog extends React.Component {
         }
         else this.handleCancelEditDialogClose();
     };
+
+    handleSuperiorsChange = (event, index, values) => this.setState({'superiorsValue': values});
+
+    menuItems(values) {
+        const itemId = this.props.id;
+        const itemsList = this.state.itemsList.filter(function(item) {
+            return !(item.id == itemId);
+        });
+        return itemsList.map((item) => (
+            <MenuItem
+                key={item.id}
+                insetChildren={true}
+                checked={values && this.state.superiorsValue.indexOf(item.id) > -1}
+                value={item.id}
+                primaryText={item.name}
+            />
+        ));
+    }
 
     render() {
         const disable = !(this.state.nameIsValid && this.state.descriptionIsValid);
@@ -160,6 +200,20 @@ export default class EditTopicDialog extends React.Component {
                         <MenuItem value={1} primaryText="Practice" />
                         <MenuItem value={2} primaryText="Group" />
                     </SelectField>
+                    <SelectField
+                        floatingLabelText="Select superiors"
+                        multiple={true}
+                        fullWidth={true}
+                        value={this.state.superiorsValue}
+                        onChange={this.handleSuperiorsChange}
+                    >
+                        {this.menuItems(this.state.superiorsValue)}
+                    </SelectField>
+                    <TextField
+                        floatingLabelText="Estimation (hours)"
+                        onChange={this.handleEstimation}
+                        fullWidth={true}
+                        errorText={this.state.messageDescription} />
                 </Dialog>
                 {this.state.openCancelDialog &&
                     (<CancelDialog
