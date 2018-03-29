@@ -17,12 +17,18 @@ injectTapEventPlugin();
 const styles = {
     fullContainer: {
         width: '90%',
-        margin: '0 auto'
+        margin: '0 auto',
+        display: 'flex',
+        justifyContent: 'center'
     },
     container: {
+        // display: 'inlineBlock',
         width: '60%',
-        marginLeft: '10%',
-        float: 'left'
+        // marginLeft: '10%',
+        margin: '0 auto',
+        // float: 'left'
+        position: 'absolute',
+        left: '20%'
     },
     pagination: {
         margin: '0 auto',
@@ -31,7 +37,7 @@ const styles = {
         marginBottom: 10
     },
     customWidth: {
-        width: 180,
+        width: 150,
         marginLeft: '3%'
     },
     sidebar: {
@@ -40,10 +46,27 @@ const styles = {
         border: '1px solid #12bbd2',
         boxShadow: '0 0 0 3px hsl(0, 0%, 80%)',
         float: 'right',
-        marginRight: '5%',
+        marginRight: '3%',
         marginTop: 15
+    },
+    cardForNoEvents: {
+        margin: '100px auto',
+        minWidth: '200px',
+        width: '35%',
+        padding: '10% 0',
+        textAlign: 'center',
+        backgroundColor: 'hsla(187, 84%, 45%, 0.75)'
+    },
+    cardTextForNoEvents: {
+        textAlign: 'center',
+        color: '#fff',
+        fontWeight: 'bold'
     }
 };
+
+const messageNoEventsYet = `Your teams do not have any planned events
+                            for the nearest future.
+                            Click plus below to create new event.`;
 
 class EventList extends React.Component {
 
@@ -85,24 +108,35 @@ class EventList extends React.Component {
     }
 
     getEventLinks() {
-        return this.state.events.map(event => {
-            return <EventLink
-                key={event.id.toString()}
-                team={event.team}
-                owner={event.owner}
-                name={event.name}
-                description={event.description}
-                start_at={event.start_at}
-                created_at={event.created_at}
-                updated_at={event.updated_at}
-                duration={event.duration}
-                longitude={event.longitude}
-                latitude={event.latitude}
-                budget={event.budget}
-                status={event.status}
-                id={event.id}
-            />;
-        });
+        if (this.state.events.length == 0) {
+            return <Card
+                style={styles.cardForNoEvents}
+                zDepth={3}
+                circle={true}>
+                <CardText style={styles.cardTextForNoEvents}>
+                    {messageNoEventsYet}
+                </CardText>
+            </Card>;
+        } else {
+            return this.state.events.map(event => {
+                return <EventLink
+                    key={event.id.toString()}
+                    team={event.team}
+                    owner={event.owner}
+                    name={event.name}
+                    description={event.description}
+                    start_at={event.start_at}
+                    created_at={event.created_at}
+                    updated_at={event.updated_at}
+                    duration={event.duration}
+                    longitude={event.longitude}
+                    latitude={event.latitude}
+                    budget={event.budget}
+                    status={event.status}
+                    id={event.id}
+                />;
+            });
+        }
     }
 
     handleChangeSelectField = (event, index, value) => {
@@ -127,7 +161,9 @@ class EventList extends React.Component {
 
     addEvent = (newEvent) => {
         this.state.events.unshift(newEvent);
-        this.state.events.pop();
+        if (this.state.events.length > this.state.limit){
+            this.state.events.pop();
+        }
         this.setState({
             events: this.state.events,
             fullLength: this.state.fullLength + 1,
