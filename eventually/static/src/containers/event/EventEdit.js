@@ -1,6 +1,5 @@
 import React from 'react';
-import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card';
-import { putEventService, getTeamsListService, getEvent } from './EventService';
+import { putEventService, getEvent } from './EventService';
 import DatePicker from 'material-ui/DatePicker';
 import TimePicker from 'material-ui/TimePicker';
 import TextField from 'material-ui/TextField';
@@ -10,13 +9,10 @@ import MenuItem from 'material-ui/MenuItem';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import {CancelDialog} from 'src/containers';
+import Location from './GoogleLocation';
+import {googleMapsAPIKey} from 'src/helper/keys';
+import isEqual from 'lodash/isEqual';
 
-
-const FlatButtonStyle = {
-    position: 'fixed',
-    right: '3%',
-    top: '85%',
-};
 
 const dateStyle = {
     display: 'inline-block',
@@ -29,9 +25,7 @@ export default class EventEdit extends React.Component {
         super(props);
         this.state = {
             eventId: this.props.id,
-            teams: [],
             open: false,
-            teamId: this.props.team,
             owner: this.props.owner,
             name: this.props.name,
             description: this.props.description,
@@ -39,21 +33,42 @@ export default class EventEdit extends React.Component {
             duration: this.props.duration,
             budget: this.props.budget ? this.props.budget : 0,
             status: this.props.status,
-            openCancelDialog: false
+            openCancelDialog: false,
+            formattedAddress: 'lon',
+            longitude: this.props.longitude,
+            latitude: this.props.latitude
         };
     }
 
     componentWillMount(){
-        this.getTeamItem();
+        this.fetchAddress();
     }
 
-    getTeamItem = () => {
-        getTeamsListService().then(response => {
-            this.setState({
-                teams: response.data.teams
-            });
+    fetchAddress() {
+        const googleMapsClient = require('@google/maps').createClient({
+            key: googleMapsAPIKey
         });
-    };
+        let location = [this.props.latitude, this.props.longitude];
+        googleMapsClient.reverseGeocode({'latlng': location}, (err, response) => {
+            if (response.status == 200) {
+                let addressComponents = response.json.results[0].address_components;
+                let city = this.fetchAddressComponent(addressComponents, 'locality');
+                let cityName = city ? city.short_name : null;
+                let street = this.fetchAddressComponent(addressComponents, 'route');
+                let streetName = street ? street.long_name : null;
+                let number = this.fetchAddressComponent(addressComponents, 'street_number');
+                let numberStreet = number ? number.long_name : null;
+                let formattedAddress = [streetName, cityName,numberStreet].filter(el => el).join(', ');
+                return this.setState({formattedAddress: formattedAddress});
+            }
+        });
+    }
+
+    fetchAddressComponent(addressComponents, componentType) {
+        return addressComponents.find(component => {
+            return component.types.indexOf(componentType) !== -1;
+        });
+    }
 
     handleOpen = () => {
         this.setState({ open: true });
@@ -62,17 +77,34 @@ export default class EventEdit extends React.Component {
     handleClose = () => {
         this.setState ({
             open: false,
-            teamId: this.props.team,
             name: this.props.name,
             description: this.props.description,
             startAt: this.props.startAt,
             duration: this.props.duration,
             budget: this.props.budget ? this.props.budget : 0,
-            status: this.props.status
+            status: this.props.status,
+            longitude: this.props.longitude,
+            latitude: this.props.latitude
         });
     };
 
-    handleTeams = (event, index, teams) => this.setState({teamId : teams});
+    handleSave = () => {
+        const name = this.state.name;
+        const description = this.state.description;
+        const startAt = this.state.startAt;
+        const budget = this.state.budget;
+        const status = this.state.status;
+        const duration = this.state.duration;
+        const latitude = this.state.latitude;
+        const longitude = this.state.longitude;
+        putEventService( this.state.eventId, name, description, startAt, budget, status, duration, latitude, longitude).then(response => {
+            getEvent(this.state.eventId).then(response =>{
+                this.props.editEvent(response.data);
+            });
+        });
+        this.setState ({ open: false});
+    };
+
 
     handleName = event => {
         this.setState({name: event.target.value});
@@ -99,22 +131,6 @@ export default class EventEdit extends React.Component {
         this.setState({status});
     };
 
-    handleSave = () => {
-        const teamId = this.state.teamId;
-        const name = this.state.name;
-        const description = this.state.description;
-        const startAt = this.state.startAt;
-        const budget = this.state.budget;
-        const status = this.state.status;
-        const duration = this.state.duration;
-        putEventService( this.state.eventId, teamId, name, description, startAt, budget, status, duration).then(response => {
-            getEvent(this.state.eventId).then(response =>{
-                this.props.editEvent(response.data);
-            });
-        });
-        this.handleClose();
-    }
-
     handleCancelDialogClose = () => {
         this.setState({'openCancelDialog': false});
     };
@@ -125,16 +141,26 @@ export default class EventEdit extends React.Component {
     };
 
     handleRequestClose = () => {
-        if ((this.state.teamId != this.props.team) ||
+        if (
             (this.state.name != this.props.name) ||
             (this.state.description != this.props.description) ||
             (this.state.startAt != this.props.startAt) ||
             (this.state.budget != this.props.budget) ||
             (this.state.status != this.props.status) ||
-            (this.state.duration != this.props.duration)) {
+            (this.state.duration != this.props.duration)||
+            (this.state.longitude != this.props.longitude)||
+            (this.state.latitude != this.props.latitude)) {
             this.setState({openCancelDialog: true});
         }
         else this.handleClose();
+    };
+
+    handleChangeLocation = value => {
+        this.setState({
+            formattedAddress: value.formattedAddress,
+            longitude: value.location.lng,
+            latitude: value.location.lat,
+        });
     };
 
     render() {
@@ -171,6 +197,7 @@ export default class EventEdit extends React.Component {
                         open={this.state.open}
                         onRequestClose={this.handleRequestClose}
                         autoScrollBodyContent={true}
+                        style={{zIndex: 800}}
                     >
                         <TextField
                             id = "name-input"
@@ -222,18 +249,6 @@ export default class EventEdit extends React.Component {
                             value={new Date((this.state.startAt+this.state.duration)*1000)}
                             onChange={this.handleDuration}
                         />
-                        <SelectField
-                            id = "teams-input"
-                            floatingLabelText="Team:"
-                            hintText="Team"
-                            fullWidth={true}
-                            value = {this.state.teamId}
-                            onChange={this.handleTeams}
-                        >
-                            {this.state.teams.map(teams => {
-                                return <MenuItem key={teams.id}  value = {teams.id} primaryText = {teams.name} />;
-                            })}
-                        </SelectField>
                         <TextField
                             id = "budget-input"
                             floatingLabelText="Budget:"
@@ -241,6 +256,10 @@ export default class EventEdit extends React.Component {
                             hintText='Budget'
                             value={this.state.budget}
                             fullWidth={true}
+                        />
+                        <Location
+                            formattedAddress={this.state.formattedAddress}
+                            changed={this.handleChangeLocation}
                         />
                         <SelectField
                             id = "status-input"

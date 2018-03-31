@@ -4,8 +4,8 @@ import {getTeam} from './EventService';
 import EventEdit from '../event/EventEdit';
 import MapComponent from 'src/containers/event/Map';
 import Paper from 'material-ui/Paper';
-import RaisedButton from 'material-ui/RaisedButton';
 import DeleteEventDialog from '../event/DeleteEventDialog';
+
 
 const STATUS_CHOICES = {
     0: 'draft',
@@ -89,14 +89,12 @@ class Event extends React.Component {
             budget: this.props.budget,
             status: this.props.status,
             id: this.props.id,
-            isMarkerShown: false,
+            isMarkerShown: false
         };
     }
 
     editEvent = (editedEvent) => {
         this.setState({
-            team: editedEvent.team,
-            owner: editedEvent.owner,
             name: editedEvent.name,
             description: editedEvent.description,
             startAt: editedEvent.start_at,
@@ -145,20 +143,18 @@ class Event extends React.Component {
                             <div style={styleButton}>
                                 {this.state.id && (
                                     <EventEdit
-                                        key={this.props.id.toString()}
-                                        team={this.props.team}
-                                        owner={this.props.owner}
-                                        name={this.props.name}
-                                        description={this.props.description}
-                                        startAt={this.props.startAt}
-                                        createdAt={this.props.createdAt}
-                                        updatedAt={this.props.updatedAt}
-                                        duration={this.props.duration}
-                                        longitude={this.props.longitude}
-                                        latitude={this.props.latitude}
-                                        budget={this.props.budget}
-                                        status={this.props.status}
-                                        id={this.props.id}
+                                        key={this.state.id.toString()}
+                                        name={this.state.name}
+                                        description={this.state.description}
+                                        startAt={this.state.startAt}
+                                        createdAt={this.state.createdAt}
+                                        updatedAt={this.state.updatedAt}
+                                        duration={this.state.duration}
+                                        longitude={this.state.longitude}
+                                        latitude={this.state.latitude}
+                                        budget={this.state.budget}
+                                        status={this.state.status}
+                                        id={this.state.id}
                                         editEvent={this.editEvent}
                                     />
                                 )}
@@ -172,9 +168,9 @@ class Event extends React.Component {
                         </div>
                         <div style={styleMap}>
                             <MapComponent
-                                longitude={this.props.longitude}
-                                latitude={this.props.latitude}
-                                name={this.props.name}
+                                longitude={this.state.longitude}
+                                latitude={this.state.latitude}
+                                name={this.state.name}
                             />
                         </div>
                     </div>

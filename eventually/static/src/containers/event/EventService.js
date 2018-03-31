@@ -9,6 +9,7 @@ const userPath = apiUrl + 'user/';
 
 export const getEvent = (eventId) => {
     return axios.get(eventPath + eventId + '/');
+
 };
 
 export const getEvents = (limit, number, dateInSeconds) => {
@@ -21,16 +22,17 @@ export const getEvents = (limit, number, dateInSeconds) => {
     });
 };
 
-export const putEventService = (eventId, teamId, name, description, startAt, budget, status, duration) => {
+export const putEventService = (eventId, name, description, startAt, budget, status, duration,latitude,longitude) => {
     let url = eventPath + eventId + '/';
     return axios.put(url, {
-        teamId,
         name,
         description,
         startAt,
         budget,
         status,
-        duration
+        duration,
+        longitude,
+        latitude,
     });
 };
 
