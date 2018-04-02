@@ -49,6 +49,7 @@ export default class ParticipantListDialog extends React.Component {
         return (
             <div>
                 <Dialog
+                    contentStyle={{width: '40%', minWidth: 300}} 
                     title={this.props.text}
                     actions={actions}
                     modal={false}

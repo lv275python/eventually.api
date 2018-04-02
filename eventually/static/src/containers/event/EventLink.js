@@ -9,46 +9,46 @@ import Event from './Event';
 import { googleMapsAPIKey } from '../../helper/keys';
 import ActionSchedule from 'material-ui/svg-icons/action/schedule';
 
-const nearbyIcon = <IconLocationOn />;
 
-const raisedButtonDivStyle = {
-    display: 'flex',
-    justifyContent: 'flex-end'
-};
-
-const raisedButtonStyle = {
-    marginLeft: 10,
-    borderRadius: '10px'
-};
-
-const iconLocationOnStyle = {
-    float: 'left',
-    color: '#777777'
-};
-
-const addressStyle = {
-    lineHeight: '24px',
-    verticalAlign: 'middle'
-};
-
-const actionScheduleContainerStyle = {
-    clear: 'both',
-    marginTop: '3px'
-};
-
-const actionScheduleStyle = {
-    verticalAlign: 'middle',
-    color: '#12bbd2'
-};
-
-const cardStyle = {
-    borderRadius: '0 20px',
-    marginTop: '10px',
-    border: '1px solid #12bbd2'
-};
-
-const cardHeaderStyle = {
-    fontWeight: 'bold'
+const styles = {
+    raisedButtonDiv: {
+        display: 'flex',
+        justifyContent: 'flex-end'
+    },
+    raisedButton: {
+        marginLeft: 10,
+        borderRadius: '10px'
+    },
+    iconLocationOn: {
+        float: 'left',
+        color: '#777777'
+    },
+    address: {
+        lineHeight: '24px',
+        verticalAlign: 'middle'
+    },
+    actionScheduleContainer: {
+        clear: 'both',
+        marginTop: '3px'
+    },
+    actionSchedule: {
+        verticalAlign: 'middle',
+        color: '#12bbd2'
+    },
+    card: {
+        borderRadius: '0 20px',
+        marginTop: '10px',
+        border: '1px solid #12bbd2'
+    },
+    cardHeader: {
+        display: 'block',
+        fontWeight: 'bold',
+        padding: '5px'
+    },
+    cardHeaderTitle: {
+        textAlign: 'center',
+        fontSize: '20px'
+    }
 };
 
 class EventLink extends React.Component {
@@ -68,7 +68,8 @@ class EventLink extends React.Component {
         this.props.history.push({
             pathname: '/events/' + this.props.id + '/vote',
             state: {
-                teamId: this.state.teamId
+                teamId: this.state.teamId,
+                startAt: this.props.start_at
             }
         });
     };
@@ -104,9 +105,9 @@ class EventLink extends React.Component {
             return (
                 <div>
                     <IconLocationOn
-                        style={iconLocationOnStyle}
+                        style={styles.iconLocationOn}
                     />
-                    <div style={addressStyle}>
+                    <div style={styles.address}>
                         {this.state.address}
                     </div>
                 </div>
@@ -120,9 +121,9 @@ class EventLink extends React.Component {
         if (this.props.start_at) {
             const date = new Date(this.props.start_at * 1000);
             return (
-                <div style={actionScheduleContainerStyle}>
+                <div style={styles.actionScheduleContainer}>
                     <ActionSchedule
-                        style={actionScheduleStyle}
+                        style={styles.actionSchedule}
                     />
                     {`${date.toDateString()}`}
                 </div>
@@ -140,14 +141,17 @@ class EventLink extends React.Component {
         return (
             <div>
                 <Card
-                    style={cardStyle}
+                    style={styles.card}
                     zDepth={3}
                 >
                     <CardHeader
-                        style={cardHeaderStyle}
+                        style={styles.cardHeader}
+                        textStyle={styles.cardHeader}
                         actAsExpander={true}
                         showExpandableButton={false}
                         title={this.props.name}
+                        titleStyle={styles.cardHeaderTitle}
+                        subtitleStyle={{width: '100%'}}
                         subtitle={
                             <div>
                                 <div>{this.showAddress()}</div>
@@ -159,15 +163,15 @@ class EventLink extends React.Component {
                         {this.props.description}
                     </CardText>
                     <CardActions>
-                        <div style={raisedButtonDivStyle}>
+                        <div style={styles.raisedButtonDiv}>
                             <RaisedButton
-                                style={raisedButtonStyle}
+                                style={styles.raisedButton}
                                 label="Details"
                                 backgroundColor={lightGreen400}
                                 onClick={this.goToTaskList}
                             />
                             <RaisedButton
-                                style={raisedButtonStyle}
+                                style={styles.raisedButton}
                                 label="Voting"
                                 backgroundColor={lightGreen400}
                                 onClick={this.goToVoting}

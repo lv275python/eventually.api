@@ -1,21 +1,46 @@
 import React from 'react';
+import ContentAdd from 'material-ui/svg-icons/content/add';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import TextField from 'material-ui/TextField';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import { postVote, postAnswer } from './VoteService';
+import RaisedButton from 'material-ui/RaisedButton';
+import TextField from 'material-ui/TextField';
 import { CancelDialog } from 'src/containers';
+import { postVote, postAnswer } from './VoteService';
 
 
-const FloatingButtonStyle = {
-    position: 'fixed',
-    right: '3%',
-    top: '85%'
+const styles = {
+    raisedButton: {
+        minWidth: 20,
+        width: 40,
+        marginRight: 10
+    },
+    dialog: {
+        zIndex: 800
+    },
+    dialogContent: {
+        width: '50%',
+        minWidth: 400
+    },
+    floatingButton: {
+        position: 'fixed',
+        right: '3%',
+        top: '85%'
+    },
+    fieldSet: {
+        marginBottom: '10px',
+        borderRadius: '5px',
+        border: '1px solid #12bbd2'
+    },
+    legend: {
+        fontWeight: 'bold'
+    }
 };
 
 const regexForQuestion = /^.{5,100}\?$/;
 const regexForAnswer = /^.{5,100}$/;
+const failQuestionMessage = 'Question should be at least 5 symbols long and end with ? mark.';
+const failAnswerMessage = 'Answer should be at least 5 symbols long.';
 
 class CreateCustomVote extends React.Component {
     constructor(props) {
@@ -24,19 +49,23 @@ class CreateCustomVote extends React.Component {
             open: false,
             title: '',
             answers: {},
-            textFieldsData: [
-                {key: '0', id: '0', failAnswerMessage: ''},
-                {key: '1', id: '1', failAnswerMessage: ''}
-            ],
+            textFieldsData: [],
             failQuestionMessage: '',
-            openCancelDialog: false
+            openCancelDialog: false,
+            disabled: true
         };
     }
 
     handleOpen = () => {
         this.setState({
             open: true,
-            failQuestionMessage: ''
+            title: '',
+            failQuestionMessage: '',
+            answers: {},
+            textFieldsData: [
+                {key: '0', id: '0', failAnswerMessage: ''},
+                {key: '1', id: '1', failAnswerMessage: ''}
+            ]
         });
     };
 
@@ -45,14 +74,17 @@ class CreateCustomVote extends React.Component {
     };
 
     handleChangeQuestion = event => {
-        if (regexForQuestion.test(event.target.value) === true ) {
+        if (this.isValidQuestion(event.target.value)) {
             this.setState({
                 title: event.target.value,
-                failQuestionMessage: ''
+                failQuestionMessage: '',
+                disabled: this.isEveryTextfieldFilledWithAnswer() ? false : true
             });
         } else {
             this.setState({
-                failQuestionMessage: 'Question should be at least 5 symbols long and end with ? mark.'
+                title: event.target.value,
+                failQuestionMessage: failQuestionMessage,
+                disabled: true
             });
         }
     };
@@ -64,30 +96,34 @@ class CreateCustomVote extends React.Component {
         let answers = this.state.answers;
         let textFieldsData = this.state.textFieldsData;
 
-        if (regexForAnswer.test(textFieldValue) === true ) {
+        if (this.isValidAnswer(textFieldValue)) {
             answers[textFieldId] = textFieldValue;
             textFieldsData[parseInt(textFieldId)].failAnswerMessage = '';
             this.setState({
                 answers: answers,
-                textFieldsData: textFieldsData
+                textFieldsData: textFieldsData,
+                disabled: this.isEveryTextfieldFilledWithAnswer() ? false : true
             });
         } else {
-            textFieldsData[parseInt(textFieldId)].failAnswerMessage = 'Answer should be at least 5 symbols long.';
+            textFieldsData[parseInt(textFieldId)].failAnswerMessage = failAnswerMessage;
+            delete answers[textFieldId];
             this.setState({
-                textFieldsData: textFieldsData
+                answers: answers,
+                textFieldsData: textFieldsData,
+                disabled: true
             });
         }
     };
 
     handleSubmit = event => {
-        if (regexForQuestion.test(this.state.title) !== true ) {
+        if (!this.isValidQuestion(this.state.title)) {
             return;
         }
-        if (Object.keys(this.state.answers).length !== this.state.textFieldsData.length) {
+        if (!this.isEveryTextfieldFilledWithAnswer()) {
             return;
         }
         for (let key in this.state.answers) {
-            if (regexForAnswer.test(this.state.answers[key]) !== true ) {
+            if (!this.isValidAnswer(this.state.answers[key])) {
                 return;
             }
         }
@@ -104,7 +140,7 @@ class CreateCustomVote extends React.Component {
             const vote = response.data;
             vote['answers'] = [];
             this.props.addVote(vote);
-            for (var key in this.state.answers) {
+            for (let key in this.state.answers) {
                 postAnswer(
                     this.state.answers[key],
                     parseInt(this.props.event),
@@ -138,7 +174,20 @@ class CreateCustomVote extends React.Component {
             id: index
         });
         this.setState({
-            textFieldsData: textFieldsData
+            textFieldsData: textFieldsData,
+            disabled: true
+        });
+    };
+
+    handleRemoveField = event => {
+        let textFieldsData = this.state.textFieldsData;
+        let answers = this.state.answers;
+        textFieldsData.pop();
+        delete answers[(textFieldsData.length).toString()];
+        this.setState({
+            textFieldsData: textFieldsData,
+            answers: answers,
+            disabled: false
         });
     };
 
@@ -153,10 +202,31 @@ class CreateCustomVote extends React.Component {
 
     handleRequestClose = () => {
         if ((this.state.title != '') ||
-            (this.state.answers != {})) {
+            (this.state.answers.length > 0)) {
             this.setState({openCancelDialog: true});
         }
         else this.handleClose();
+    };
+
+    isValidQuestion = question => {
+        return regexForQuestion.test(question) === true;
+    };
+
+    isValidAnswer = answer => {
+        return regexForAnswer.test(answer) === true;
+    };
+
+    isEveryTextfieldFilledWithAnswer = () => {
+        const answersLength = Object.keys(this.state.answers).length;
+        return answersLength === this.state.textFieldsData.length;
+    };
+
+    isSubmitDisabled = () => {
+        if (this.isValidQuestion(this.state.title) && this.isEveryTextfieldFilledWithAnswer()) {
+            return this.state.disabled;
+        } else {
+            return true;
+        }
     };
 
     render() {
@@ -169,35 +239,54 @@ class CreateCustomVote extends React.Component {
             <FlatButton
                 label="Submit"
                 primary={true}
+                disabled={this.isSubmitDisabled()}
                 keyboardFocused={true}
                 onClick={this.handleSubmit}
-            />,
+            />
         ];
         return (
             <div>
                 <FloatingActionButton
                     onClick={this.handleOpen}
-                    style={FloatingButtonStyle}>
+                    style={styles.floatingButton}
+                    disabled={this.props.disabled}>
                     <ContentAdd />
                 </FloatingActionButton>
                 <Dialog
+                    contentStyle={styles.dialogContent}
                     actions={actions}
                     modal={false}
                     open={this.state.open}
                     onRequestClose={this.handleRequestClose}
                     autoScrollBodyContent={true}
-                    style={{zIndex: 800}}>
-                    <TextField
-                        hintText="Enter question for voting:"
-                        fullWidth={true}
-                        errorText={this.state.failQuestionMessage}
-                        onChange={this.handleChangeQuestion}/>
-                    {this.getTextFields()}
-                    <FlatButton
+                    style={styles.dialog}>
+                    <fieldset style={styles.fieldSet}>
+                        <legend style={styles.legend}>Input question</legend>
+                        <TextField
+                            hintText="Enter question for voting:"
+                            fullWidth={true}
+                            errorText={this.state.failQuestionMessage}
+                            onChange={this.handleChangeQuestion}/>
+                    </fieldset>
+                    <fieldset style={styles.fieldSet}>
+                        <legend style={styles.legend}>Input answers</legend>
+                        {this.getTextFields()}
+                    </fieldset>
+                    <RaisedButton
+                        style={styles.raisedButton}
                         label="+"
                         title="Add answer"
                         primary={true}
+                        disabled={this.state.textFieldsData.length == 5 ? true : false}
                         onClick={this.handleAddField}
+                    />
+                    <RaisedButton
+                        style={styles.raisedButton}
+                        label="-"
+                        title="Remove answer"
+                        primary={true}
+                        disabled={this.state.textFieldsData.length <= 2 ? true : false}
+                        onClick={this.handleRemoveField}
                     />
                 </Dialog>
                 {this.state.openCancelDialog &&

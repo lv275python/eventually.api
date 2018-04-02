@@ -17,7 +17,8 @@ class VoteBox extends React.Component {
         this.state = {
             eventId: this.props.match.params.eventId,
             votes: [],
-            teamId: this.props.location.state.teamId
+            teamId: this.props.location.state.teamId,
+            disabled: this.props.location.state.startAt * 1000 < (new Date()).getTime()
         };
     }
 
@@ -43,6 +44,7 @@ class VoteBox extends React.Component {
                 eventId={this.state.eventId}
                 voteId={vote.id}
                 teamId={this.state.teamId}
+                disabled={this.state.disabled}
             />;
         }
     }
@@ -59,6 +61,7 @@ class VoteBox extends React.Component {
                 voteId={vote.id}
                 teamId={this.state.teamId}
                 answers={vote.answers}
+                disabled={this.state.disabled}
             />;
         });
     }
@@ -98,6 +101,7 @@ class VoteBox extends React.Component {
                     event={this.state.eventId}
                     addVote={this.addVote}
                     addAnswer={this.addAnswer}
+                    disabled={this.state.disabled}
                 />
             </div>
         );

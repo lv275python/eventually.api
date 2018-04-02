@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import Badge from 'material-ui/Badge';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import RadioButtonChecked from 'material-ui/svg-icons/toggle/radio-button-checked';
 import RaisedButton from 'material-ui/RaisedButton';
 import { lightGreen400 } from 'material-ui/styles/colors';
 import {getUserId} from 'src/helper';
@@ -19,7 +20,13 @@ const raisedButtonDivStyle = {
 const styles = {
     radioButton: {
         marginBottom: 16
-    }
+    },
+    card: {
+        borderRadius: '0 20px',
+        border: '1px solid #12bbd2',
+        width: '80%',
+        margin: '10px auto'
+    },
 };
 
 class CustomVote extends React.Component {
@@ -35,7 +42,9 @@ class CustomVote extends React.Component {
 
     getData = () => {
         getAnswersWithMembers(this.props.eventId, this.props.voteId).then(response => {
-            this.setState({answers: response.data['answers_members']});
+            this.setState({
+                answers: response.data['answers_members']
+            });
         });
     }
 
@@ -45,9 +54,9 @@ class CustomVote extends React.Component {
         });
     };
 
-    handleOpen = answerMembers => {
+    handleOpen = (event, answerMembers) => {
         this.setState({
-            open: true,
+            open: Object.keys(answerMembers).length == 0 ? false : true,
             currentAnswerMembers: answerMembers
         });
     };
@@ -71,15 +80,17 @@ class CustomVote extends React.Component {
             return <RadioButton
                 key={answer.id.toString()}
                 value={choice}
+                disabled={this.props.disabled}
                 label={
                     <div>
                         <div style={{float: 'left'}}>{answer.text}</div>
                         <Badge
                             key={answer.id.toString()}
                             badgeContent={answer.members.length}
+                            badgeStyle={answer.members.length == 0 ? {backgroundColor: '#e4e4e4'} : {}}
                             primary={true}
                             style={{float: 'right', zIndex: '100'}}
-                            onClick={() => this.handleOpen(answer.members)}
+                            onClick={event => this.handleOpen(event, answer.members)}
                         >
                         </Badge>
                     </div>
@@ -162,7 +173,10 @@ class CustomVote extends React.Component {
     render() {
         return (
             <div>
-                <Card>
+                <Card
+                    style={styles.card}
+                    zDepth={3}
+                >
                     <CardHeader
                         actAsExpander={true}
                         showExpandableButton={false}
