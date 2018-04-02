@@ -16,7 +16,6 @@ class Location extends Component {
     shouldComponentUpdate(nextProps, nextState){
         return false;
     }
-
     render() {
         const PlacesWithStandaloneSearchBox = compose(
             withProps({
@@ -25,10 +24,10 @@ class Location extends Component {
                 loadingElement: <div style={{ height: '100%' }} />,
                 containerElement: <div style={{ height: '400px'}} />,
             }),
+
             lifecycle({
                 componentWillMount() {
                     const refs = {};
-
                     this.setState({
                         places: [],
                         onSearchBoxMounted: ref => {
