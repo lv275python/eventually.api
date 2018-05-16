@@ -55,11 +55,21 @@ class MentorStudentViewTestCase(TestCase):
             custom_user_third.set_password('Pas3')
             custom_user_third.save()
 
+            custom_user_four = CustomUser(id=104,
+                                           first_name='fedor',
+                                           last_name='bogon',
+                                           middle_name='petro',
+                                           email='email4@gmail.com',
+                                           is_active=True)
+            custom_user_four.set_password('Pas4')
+            custom_user_four.save()
+
+
             team = Team(id=400,
                         owner=custom_user_first,
                         name='Coldplay')
             team.save()
-            team.members.add(custom_user_first, custom_user_second, custom_user_third)
+            team.members.add(custom_user_first, custom_user_second, custom_user_third, custom_user_four)
 
             curriculum = Curriculum.objects.create(id=300,
                                                    name="testcurriculum",
@@ -73,7 +83,7 @@ class MentorStudentViewTestCase(TestCase):
                                  author=custom_user_first,
                                  title='Python',
                                  description='My awesome topic',
-                                 mentors=(custom_user_first,))
+                                 mentors=(custom_user_first, ))
             topic_python.save()
 
             topic_react = Topic(id=201,
@@ -88,13 +98,20 @@ class MentorStudentViewTestCase(TestCase):
                              author=custom_user_first,
                              title='JS',
                              description='My awesome topic',
-                             mentors=(custom_user_first, ))
+                             mentors=(custom_user_first, custom_user_third))
             topic_js.save()
 
             mentor = MentorStudent(id=500,
                                    mentor=custom_user_first,
                                    student=custom_user_second,
                                    topic=topic_python,
+                                   is_done=0)
+            mentor.save()
+
+            mentor = MentorStudent(id=501,
+                                   mentor=custom_user_third,
+                                   student=custom_user_four,
+                                   topic=topic_js,
                                    is_done=0)
             mentor.save()
 
@@ -115,7 +132,11 @@ class MentorStudentViewTestCase(TestCase):
                                           'last_name': 'shulga',
                                           'topic_title':'Python',
                                           'topic_id': 200}],
-                         'assigned_students': [],
+                         'assigned_students': [{'student_id': 104,
+                                          'first_name': 'fedor',
+                                          'last_name': 'bogon',
+                                          'topic_title':'JS',
+                                          'topic_id': 202}],
                          'available_students': [{'student_id': 103,
                                                  'first_name': 'fedir',
                                                  'last_name': 'bogolubov',
