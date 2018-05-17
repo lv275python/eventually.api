@@ -11,14 +11,16 @@ from authentication.models import CustomUser
 from curriculum.models import Curriculum
 from team.models import Team
 
+
 TEST_DATE = datetime.datetime(2017, 4, 10, 12, 0, tzinfo=pytz.utc)
 
 
 class TestCurriculumApp(TestCase):
     """ Tests for Curriculum app model """
-
     def setUp(self):
+
         with mock.patch('django.utils.timezone.now') as mock_time:
+
             mock_time.return_value = TEST_DATE
 
             custom_user = CustomUser.objects.create(id=1,
@@ -78,6 +80,15 @@ class TestCurriculumApp(TestCase):
         self.assertEqual(returned.created_at, TEST_DATE)
         self.assertEqual(returned.updated_at, TEST_DATE)
 
+    def test_get_by_id_cache(self):
+        """ Test for access to the cache in get_by_id method"""
+        with mock.patch('curriculum.models.cache') as mock_cache:
+            with mock.patch('curriculum.models.pickle') as mock_pickle:
+                mock_cache.__contains__.return_value = True
+                mock_pickle.load.return_value = True
+                returned = Curriculum.get_by_id(111)
+                self.assertTrue(returned)
+
     def test_get_by_nonexisting_id(self):
         """ Negative test get_by_id method """
         returned = Curriculum.get_by_id(100500)
@@ -95,6 +106,15 @@ class TestCurriculumApp(TestCase):
         self.assertEqual(returned.created_at, TEST_DATE)
         self.assertEqual(returned.updated_at, TEST_DATE)
 
+    def test_get_by_name_cache(self):
+        """ Test for access to the cache in get_by_name method"""
+        with mock.patch('curriculum.models.cache') as mock_cache:
+            with mock.patch('curriculum.models.pickle') as mock_pickle:
+                mock_cache.__contains__.return_value = True
+                mock_pickle.load.return_value = True
+                returned = Curriculum.get_by_name("testcurriculum")
+                self.assertTrue(returned)
+
     def test_get_by_nonexisting_name(self):
         """ Negative test get_by_name method """
         returned = Curriculum.get_by_name("nonexistingname")
@@ -111,21 +131,23 @@ class TestCurriculumApp(TestCase):
     def test_create(self):
         """ Positive test create method """
         with mock.patch('django.utils.timezone.now') as mock_time:
-            mock_time.return_value = TEST_DATE
+            with mock.patch('curriculum.models.cache') as mock_cache:
+                mock_cache.__contains__.return_value = True
+                mock_time.return_value = TEST_DATE
 
-            testcreate = Curriculum.create(name="testcreate",
-                                           goals=["goal1", "goal2"],
-                                           description="testcreatedescription",
-                                           team=self.team)
+                testcreate = Curriculum.create(name="testcreate",
+                                               goals=["goal1", "goal2"],
+                                               description="testcreatedescription",
+                                               team=self.team)
+                expected = Curriculum.objects.get(name="testcreate")
 
-            expected = Curriculum.objects.get(name="testcreate")
-
-            self.assertEqual(expected.name, "testcreate")
-            self.assertEqual(expected.goals, ['goal1', 'goal2'])
-            self.assertEqual(expected.description, "testcreatedescription")
-            self.assertEqual(expected.team, self.team)
-            self.assertEqual(expected.created_at, TEST_DATE)
-            self.assertEqual(expected.updated_at, TEST_DATE)
+                self.assertEqual(expected.name, "testcreate")
+                self.assertEqual(expected.goals, ['goal1', 'goal2'])
+                self.assertEqual(expected.description, "testcreatedescription")
+                self.assertEqual(expected.team, self.team)
+                self.assertEqual(expected.created_at, TEST_DATE)
+                self.assertEqual(expected.updated_at, TEST_DATE)
+                self.assertTrue(testcreate)
 
     def test_create_existing_name(self):
         """ Negative test create method """
@@ -148,16 +170,34 @@ class TestCurriculumApp(TestCase):
 
     def test_update(self):
         """ Positive test update method """
-        Curriculum.objects.create(name="updatethis")
+        curriculum_object = Curriculum.objects.create(name="updatethis")
         objupdate = Curriculum.objects.get(name="updatethis")
-        objupdate.update(name="newname",
-                         description="newdescription",
-                         team=self.team,)
+
+        with mock.patch('curriculum.models.cache') as mock_cache:
+            mock_cache.__contains__.return_value = True
+            update = objupdate.update(name="newname",
+                             description="newdescription",
+                             team=self.team,)
+
         self.assertEqual(objupdate.name, "newname")
         self.assertEqual(objupdate.description, "newdescription")
         self.assertEqual(objupdate.team, self.team)
+        self.assertTrue(update)
 
     def test_update_with_existing_name(self):
         """ Negative test update method """
         objupdate = Curriculum.objects.get(id=111)
         self.assertIsNone(objupdate.update(name="tes"))
+
+    def test_get_all(self):
+        """Test for get_all method"""
+        curriculum_object = Curriculum.objects.create(name="testCurriculum")
+        self.assertEqual(set(Curriculum.get_all()), set(Curriculum.objects.all()))
+
+    def test_get_all_cache(self):
+        """Tests the access to cache in get_all method"""
+        with mock.patch('curriculum.models.cache') as mock_cache:
+            with mock.patch('curriculum.models.pickle') as mock_pickle:
+                mock_cache.__contains__.return_value = True
+                mock_pickle.loads.return_value = True
+                self.assertTrue(Curriculum.get_all())
