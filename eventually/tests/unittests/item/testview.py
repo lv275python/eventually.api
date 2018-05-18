@@ -204,3 +204,77 @@ class TestItemView(TestCase):
             response = self.client.post(url, json.dumps(data), content_type='application/json')
             self.assertEqual(response.status_code, 501)
 
+    def test_put_success(self):
+
+        data = {
+            'superiors':[],
+            'estimation':None
+        }
+
+        url = reverse('curriculums:topics:items:detail', args=[111,212,311])
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+
+    def test_put_if_not_item(self):
+        data = {'name': 'some updated item',
+                'description': 'another description',
+                'form': 1}
+        url = reverse('curriculums:topics:items:detail', args=[111, 212, 500])
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 404)
+
+    def test_put_if_not_topic(self):
+        data = {'name': 'some updated item',
+                'description': 'another description',
+                'form': 1}
+        url = reverse('curriculums:topics:items:detail', args=[111, 500, 311])
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 404)
+
+    def test_put_is_user_not_a_mentor(self):
+        self.client_second = Client()
+        self.client_second.login(username='email3@mail.com', password='3333')
+        data = {'name': 'some updated item',
+                            'description': 'another description',
+                            'form': 1}
+
+        url = reverse('curriculums:topics:items:detail', args=[111, 212, 311])
+        response = self.client_second.put(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 403)
+
+
+    def test_put_if_not_data(self):
+        data = {}
+        url = reverse('curriculums:topics:items:detail', args=[111, 212, 311])
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_delete_if_not_topic(self):
+        url = reverse('curriculums:topics:items:delete', args=[111, 500, 311])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_if_not_item(self):
+        url = reverse('curriculums:topics:items:delete', args=[111, 212, 500])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_if_user_not_mentor(self):
+        self.client_second = Client()
+        self.client_second.login(username='email3@mail.com', password='3333')
+        url = reverse('curriculums:topics:items:delete', args=[111, 212, 311])
+        response = self.client_second.delete(url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_delete_success(self):
+        url = reverse('curriculums:topics:items:delete', args=[111, 212, 311])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_delete_not_success(self):
+        with mock.patch('item.models.Item.delete_by_id') as item_delete:
+            item_delete.return_value = None
+            url = reverse('curriculums:topics:items:detail', args=[111, 212, 311])
+            response = self.client.delete(url)
+            self.assertEqual(response.status_code, 400)
