@@ -5,18 +5,16 @@
 
 ## Code reviewers
 
-- [ ] @ashatna
-- [ ] @ChristinaPastushchak
-- [ ] @dotiurin
-- [ ] @iryn34
-- [ ] @tarassito
-- [ ] @VasilHamulyak
-- [ ] @VitalyiKhlivnyi
-- [ ] @YurijH
+- [ ] @Sokolovskyi1995
+- [ ] @BDubas
+- [ ] @anastasiyaSht
+- [ ] @rromanitc
+- [ ] @martasakal
+- [ ] @Zaplatynskyi
+- [ ] @aberezh
 
 ### Second Level Review
 
-- [ ] @ushevtsiv
 - [ ] @lhalam
 - [ ] @ssOleg
 
