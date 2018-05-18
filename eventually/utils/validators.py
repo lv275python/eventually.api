@@ -281,7 +281,7 @@ def event_paginator_validate_limit(request):
     """
     try:
         int(request['limit'])
-    except MultiValueDictKeyError:
+    except (MultiValueDictKeyError, KeyError):
         return False
     return True
 
@@ -298,7 +298,7 @@ def event_paginator_validate_number(request):
     """
     try:
         int(request['number'])
-    except MultiValueDictKeyError:
+    except (MultiValueDictKeyError, KeyError):
         return False
 
     return True
@@ -333,7 +333,7 @@ def event_from_date_param_validate(request):
     """
     try:
         request['from_date']
-    except MultiValueDictKeyError:
+    except (MultiValueDictKeyError, KeyError):
         return False
     return True
 
@@ -350,7 +350,7 @@ def _request_get_param(request, key):
     """
     try:
         return request[key]
-    except MultiValueDictKeyError:
+    except (MultiValueDictKeyError, KeyError):
         pass
 
 def login_validate(data):
