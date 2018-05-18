@@ -1177,5 +1177,110 @@ class AnswerDataValidateTestCase(TestCase):
         valid_data = {'vote': 10,
                       'text': 123,
                       'members': [1, 2]}
-
         self.assertFalse(answer_data_validator(valid_data, required_keys=[]))
+
+
+
+
+class EventValidateTestCase(TestCase):
+    def test_event_paginator_validate_number_valid(self):
+        '''
+        Method that tests event_paginator_validate_number function with
+        valid data
+        '''
+        valid_data = {'number':2,
+                      'limit':4}
+        self.assertTrue(event_paginator_validate_number(valid_data))
+
+    def test_event_paginator_validate_number_valid_from_string(self):
+        '''
+        Method that tests event_paginator_validate_number function with
+        valid data, when "number" is string type
+        '''
+        valid_data = {'number': '2',
+                      'limit':4}
+        self.assertTrue(event_paginator_validate_number(valid_data))
+
+
+    def test_event_paginator_validate_limit_valid(self):
+        """
+        Method that tests event_paginator_validate_limit function with
+        valid data
+        """
+        valid_data = {'number': 2,
+                      'limit': 4}
+        self.assertTrue(event_paginator_validate_limit(valid_data))
+
+    def test_event_paginator_validate_limit_valid_from_string(self):
+        """Method that tests event_paginator_validate_number function with
+        valid data, when "limit" is string type"""
+
+        valid_data = {'number': 2,
+                      'limit': '4'}
+        self.assertTrue(event_paginator_validate_limit(valid_data))
+
+    def test_event_from_date_param_validate_valid(self):
+        valid_data = {'from_date': 20180110}
+        self.assertTrue(event_from_date_param_validate(valid_data))
+
+    def test_from_date_param_validate_raise_false(self):
+        valid_data = {'from_date123': 20180110}
+        with self.assertRaises(KeyError):
+            event_from_date_param_validate(valid_data)
+
+    def test_event_paginator_raise_false_limit(self):
+        valid_data = {'number': 2,
+                      'limit111': 4}
+        with self.assertRaises(KeyError):
+            event_paginator_validate_limit(valid_data)
+
+    def test_event_paginator_raise_error_number(self):
+        valid_data = {'number11': 2,
+                      'limit': 4}
+        with self.assertRaises(KeyError):
+            event_paginator_validate_number(valid_data)
+
+
+
+
+class MentorValidator(TestCase):
+
+    def test_mentor_validator_success(self):
+        '''
+        Method that tests "mentor_validator"
+        '''
+        data = {'student': 123,
+                'topic': 212}
+        required_keys = ["student", 'topic']
+        is_valid = mentor_validator(data, required_keys)
+        self.assertTrue(is_valid)
+
+    def test_mentor_validator_invalid_data_length(self):
+        '''
+        Method that tests mentor_validator when "data" has invalid length
+        '''
+        data = {}
+        required_keys = ["student"]
+        is_valid = mentor_validator(data, required_keys)
+        self.assertFalse(is_valid)
+
+    def test_mentor_validator_invalid_keys(self):
+        '''
+        Method that tests mentor_validator without all required keys
+        '''
+        data = {'student': 123,
+                'topic': 212}
+        required_keys = ["nottext"]
+        is_valid = mentor_validator(data, required_keys)
+        self.assertFalse(is_valid)
+
+    def test_mentor_invalid_data_type(self):
+        '''
+        Method that tests mentor_validator function, when data has invalid type
+        '''
+        data = {'student' : 'student',
+                'topic' : 212 }
+        required_keys=[]
+        is_valid = mentor_validator(data, required_keys)
+        self.assertFalse(is_valid)
+
