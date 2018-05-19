@@ -87,8 +87,12 @@ class TestTopicView(TestCase):
 
         url = reverse('curriculums:topics:index', args=[111])
         response = self.client.get(url)
+        actual_data = json.loads(response.content.decode('utf-8'))
+
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
+        self.assertListEqual(list(actual_data.keys()), list(expected_data.keys()))
+        self.assertListEqual(sorted(actual_data['topics'], key=lambda topic: topic['id']),
+                             sorted(expected_data['topics'], key=lambda topic: topic['id']))
 
     def test_success_get_by_topic_id(self):
         """Method that tests the successful get request for the topic with the certain id"""

@@ -7,10 +7,12 @@
 
 import json
 import datetime
+import pytz
 from unittest.mock import patch
 
 from authentication.models import CustomUser
 from django.test import TestCase, Client
+from customprofile.models import CustomProfile
 from django.core.urlresolvers import reverse
 from team.models import Team
 from event.models import Event
@@ -18,6 +20,8 @@ from vote.models import Vote, Answer
 from unittest import mock
 
 TEST_TIME = datetime.datetime(2017, 10, 30, 8, 15, 12)
+TEST_CREATED_AT = datetime.datetime(2017, 4, 10, 12, 00, tzinfo=pytz.utc)
+
 
 
 class VoteViewTest(TestCase):
@@ -60,6 +64,21 @@ class VoteViewTest(TestCase):
         url = reverse('event:vote:detail', args=[111, 111, 111])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+        custom_user = CustomUser.objects.create(id=222, email='exp@gmail.com', is_active=True)
+        custom_user.set_password('123Qwerty')
+        custom_user.save()
+        team = Team.objects.create(id=222, owner=custom_user, members=[custom_user], name='name')
+        team.save()
+        event = Event.objects.create(id=222, team=team, owner=custom_user, name='name')
+        event.save()
+        vote = Vote.objects.create(id=222, event=event, title="new title", vote_type=0)
+        vote.save()
+
+        url = reverse('event:vote:detail', args=[222, 222, 222])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
 
     def test_success_get_all(self):
         """Method that tests the successful get all votes"""
@@ -242,6 +261,9 @@ class AnswerViewTest(TestCase):
         """Method that provides preparation before testing Vote view's features."""
         custom_user = CustomUser.objects.create(id=111,
                                                 email='email@gmail.com',
+                                                first_name="Robert",
+                                                last_name="Downey",
+                                                middle_name="Jr.",
                                                 is_active=True)
         custom_user.set_password('123Qwerty')
         custom_user.save()
@@ -267,6 +289,7 @@ class AnswerViewTest(TestCase):
                                    title="my title",
                                    vote_type=0)
 
+
         with mock.patch('django.utils.timezone.now') as mock_time:
             mock_time.return_value = TEST_TIME
 
@@ -275,32 +298,42 @@ class AnswerViewTest(TestCase):
                                            vote=vote,
                                            text="answer")
             answer.save()
+            mock_time.return_value = TEST_CREATED_AT
+
+            custom_profile = CustomProfile.objects.create(id=222,
+                                                          user=custom_user,
+                                                          hobby='box',
+                                                          photo='link1',
+                                                          birthday='2000-2-4',
+                                                          created_at=TEST_CREATED_AT,
+                                                          updated_at=TEST_CREATED_AT)
+            custom_profile.save()
 
         custom_user = CustomUser.objects.create(id=222,
                                                 email='expqqq@gmail.com',
                                                 is_active=True)
         custom_user.set_password('123Qwerty')
         custom_user.save()
+
         team = Team.objects.create(id=222,
                                    owner=custom_user,
                                    members=[custom_user],
                                    name='name')
-        team.save()
+
         event = Event.objects.create(id=222,
                                      team=team,
                                      owner=custom_user,
                                      name='name')
-        event.save()
+
         vote = Vote.objects.create(id=222,
                                    event=event,
                                    title="new title",
                                    vote_type=0)
-        vote.save()
+
         answer = Answer.objects.create(id=222,
                                        vote=vote,
                                        members=[custom_user],
                                        text="title")
-        answer.save()
 
 
     def test_success_get(self):
@@ -447,3 +480,71 @@ class AnswerViewTest(TestCase):
         url = reverse('event:vote:answer_detail', args=[222, 222, 222, 222])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 403)
+
+    def test_get_answers_with_members(self):
+        """
+        Method that tests response with answers data for specific vote
+        """
+        with mock.patch('django.utils.timezone.now') as mock_time:
+            mock_time.return_value = TEST_TIME
+            custom_user = CustomUser.objects.create(id=227,
+                                                    email='expqweq@gmail.com',
+                                                    is_active=True)
+            custom_user.set_password('123Qwerty')
+            custom_user.save()
+
+            team = Team.objects.create(id=227,
+                                       owner=custom_user,
+                                       members=[custom_user],
+                                       name='name')
+
+            event = Event.objects.create(id=227,
+                                         team=team,
+                                         owner=custom_user,
+                                         name='name')
+
+            vote = Vote.objects.create(id=227,
+                                       event=event,
+                                       title="new title",
+                                       vote_type=0)
+
+
+            answer = Answer.objects.create(id=227,
+                                           members=[custom_user],
+                                           vote=vote,
+                                           text="answer")
+
+            mock_time.return_value = TEST_CREATED_AT
+
+            custom_profile = CustomProfile.objects.create(id=227,
+                                                          user=custom_user,
+                                                          hobby='box',
+                                                          photo='link1',
+                                                          birthday='2000-2-4',
+                                                          created_at=TEST_CREATED_AT,
+                                                          updated_at=TEST_CREATED_AT)
+            custom_profile.save()
+            self.client.login(username='expqweq@gmail.com',
+                              password='123Qwerty')
+            url = reverse('events:vote:answers_with_members', args=[227, 227])
+            response = self.client.get(url)
+
+            self.assertEqual(response.status_code, 200)
+
+    def test_error_invalid_answers_with_members_(self):
+        """
+        Method that tests response with answers data for specific vote
+        """
+        url = reverse('events:vote:answers_with_members', args=[227, 228])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_error_invalid_json_answers_with_members_(self):
+        """
+        Method that tests response with answers data for specific vote
+        """
+
+        data = {}
+        url = reverse('events:vote:answers_with_members', args=[227, 228])
+        response = self.client.delete(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, 400)
