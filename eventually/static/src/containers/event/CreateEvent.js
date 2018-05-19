@@ -73,6 +73,7 @@ class CreateEvent extends React.Component {
             });
         } else {
             this.setState({
+                nameIsValid: false,
                 failNameMessage: 'Name must be greater than 4 and less 64 any symbols'
             });
         }
