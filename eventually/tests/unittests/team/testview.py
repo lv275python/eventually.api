@@ -7,12 +7,16 @@ This module provides complete testing for all Team's views functions.
 
 import json
 import datetime
+import pytz
 from authentication.models import CustomUser
+from customprofile.models import CustomProfile
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
 from team.models import Team
 from unittest import mock
 
+
+TEST_CREATED_AT = datetime.datetime(2017, 4, 10, 12, 00, tzinfo=pytz.utc)
 TEST_TIME = datetime.datetime(2017, 10, 30, 8, 15, 12)
 
 
@@ -41,7 +45,9 @@ class EventViewTest(TestCase):
                                        name='some_name',
                                        description='some_description',
                                        image='link')
+
             team.save()
+
 
     def test_success_get_all(self):
         """Method that tests the successful get request for the all teams of the certain user."""
@@ -63,15 +69,54 @@ class EventViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
 
-    # def test_error_get_all(self):
-    #     """
-    #     Method that tests the unsuccessful get request for all teams of the certain user.
-    #     Test the incorrect team.
-    #     """
 
-    #     url = reverse('event:index', args=[110])
-    #     response = self.client.get(url)
-    #     self.assertEqual(response.status_code, 404)
+    def test_success_get_one_full(self):
+        """Method that tests the successful get request to the certain event."""
+
+        url = reverse('team', args=[101])
+        response = self.client.get(url, {'full_name': True})
+        self.assertEqual(response.status_code, 200)
+
+    def test_success_get_one_with_profile(self):
+        """Method that tests the successful get request to the certain event."""
+        with mock.patch('django.utils.timezone.now') as mock_time:
+            mock_time.return_value = TEST_TIME
+            custom_user = CustomUser.objects.create(id=227,
+                                                    email='expqweq@gmail.com',
+                                                    is_active=True)
+            custom_user.set_password('123Qwerty')
+            custom_user.save()
+
+            team = Team.objects.create(id=227,
+                                       owner=custom_user,
+                                       members=[custom_user],
+                                       name='name')
+            mock_time.return_value = TEST_CREATED_AT
+            custom_profile = CustomProfile.objects.create(id=227,
+                                                          user=custom_user,
+                                                          hobby='box',
+                                                          photo='link1',
+                                                          birthday='2000-2-4',
+                                                          created_at=TEST_CREATED_AT,
+                                                          updated_at=TEST_CREATED_AT)
+            custom_profile.save()
+            self.client.login(username='expqweq@gmail.com',
+                              password='123Qwerty')
+            url = reverse('teams')
+            response = self.client.get(url, {'full_name': True})
+            self.assertEqual(response.status_code, 200)
+
+
+    def test_error_get_all(self):
+        """
+        Method that tests the unsuccessful get request for all teams of the certain user.
+        Test the incorrect team.
+        """
+
+        url = reverse('event:index', args=[110])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
 
     def test_success_get_one(self):
         """Method that tests the successful get request to the certain event."""
@@ -230,9 +275,9 @@ class EventViewTest(TestCase):
                                               description='some_description',
                                               image='link')
             team_second.save()
-        url = reverse('team', args=[102])
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, 403)
+            url = reverse('team', args=[102])
+            response = self.client.delete(url)
+            self.assertEqual(response.status_code, 403)
 
     def test_error_db_deleting_post(self):
         """Method that tests unsuccessful delete request when db deleting is failed."""

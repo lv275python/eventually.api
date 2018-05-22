@@ -10,6 +10,7 @@ from django.test import TestCase
 from authentication.models import CustomUser
 from team.models import Team
 
+
 TEST_TIME = datetime.datetime(2017, 10, 15, 8, 15, 12)
 
 
@@ -106,6 +107,32 @@ class TeamModelTestCase(TestCase):
 
         self.assertEqual(actual_team, expected_team)
 
+    def test_team_success_get_by_id_with_pickle(self):
+        """
+        Method that tests succeeded `get_by_id` method of Team class object.
+        """
+        with mock.patch('team.models.cache') as mock_cache:
+
+            with mock.patch('pickle.loads') as mock_pickle:
+                mock_cache.__contains__.return_value = True
+                mock_pickle.return_value = True
+                actual_team = Team.get_by_id(101)
+                self.assertTrue(actual_team)
+
+    def test_team_success_create_delete_cache(self):
+        """
+        Method that tests succeeded `create` method of Team class object.
+        """
+
+        with mock.patch('team.models.cache') as mock_cache:
+            mock_cache.__contains__.return_value = True
+            members = [CustomUser.objects.get(id=101)]
+            owner = CustomUser.objects.get(id=101)
+            created_team = Team.create(owner=owner,
+                                       members=members,
+                                       name='test9 event name')
+            self.assertIsInstance(created_team, Team)
+
     def test_team_none_get_by_id(self):
         """
         Method that tests unsucceeded `get_by_id` method of Team class object.
@@ -115,10 +142,12 @@ class TeamModelTestCase(TestCase):
 
         self.assertIsNone(actual_team)
 
+
     def test_team_success_create(self):
         """
         Method that tests succeeded `create` method of Team class object.
         """
+
         members = [CustomUser.objects.get(id=101)]
         owner = CustomUser.objects.get(id=101)
         created_team = Team.create(owner=owner,
@@ -131,6 +160,7 @@ class TeamModelTestCase(TestCase):
         """
         Method that tests unsucceeded `create` method of Team class object.
         """
+
         members = [CustomUser.objects.get(id=101)]
         owner = CustomUser.objects.get(id=101)
         created_team = Team.create(owner=owner,
@@ -174,6 +204,52 @@ class TeamModelTestCase(TestCase):
         self.assertEqual(actual_team.name, 'tennis')
         self.assertEqual(actual_team.image, 'link11')
         self.assertEqual(actual_team.description, 'very fun game')
+
+    def test_team_all_update_delete_cache(self):
+        """
+        Method that tests `update` method of certain Team instance.
+        Test for updating all attributes.
+        """
+
+        with mock.patch('team.models.cache') as mock_cache:
+            mock_cache.__contains__.return_value = True
+            actual_team = Team.objects.get(id=101)
+            new_owner = CustomUser.objects.create(id=201,
+                                                  email='exp@gmail.com')
+            new_owner.set_password('123')
+            new_owner.save()
+            new_members = [CustomUser.objects.get(id=101), new_owner]
+            actual_team.update(owner=new_owner,
+                               members_add=[new_owner],
+                               name='tennis_poll',
+                               description='very fun game',
+                               image='link110')
+
+            self.assertEqual(actual_team.owner, new_owner)
+            self.assertListEqual(list(actual_team.members.all()), new_members)
+            self.assertEqual(actual_team.name, 'tennis_poll')
+            self.assertEqual(actual_team.image, 'link110')
+            self.assertEqual(actual_team.description, 'very fun game')
+
+    def test_team_member_del_update_delete_cache(self):
+        """
+        Method that tests `update` method of certain Team instance.
+        Test for updating only `members_del` attribute.
+        """
+
+        with mock.patch('team.models.cache') as mock_cache:
+            mock_cache.__contains__.return_value = True
+            actual_team = Team.objects.get(id=101)
+            first_member = actual_team.members.get(id=101)
+            second_member = CustomUser.objects.get(id=301)
+
+            actual_team.members.add(second_member)
+            actual_team.update(members_del=[first_member])
+            expected_members = [second_member]
+
+            actual_team_members = list(actual_team.members.all())
+            expected_team_members = list(expected_members)
+            self.assertListEqual(actual_team_members, expected_team_members)
 
     def test_team_member_del_update(self):
         """
@@ -254,6 +330,18 @@ class TeamModelTestCase(TestCase):
 
     def test_get_all(self):
         """ Test of the Team.get_all() method """
+
         expected_value = Team.objects.all()
         current_value = Team.get_all()
         self.assertEqual(list(current_value), list(expected_value))
+
+    def test_get_all_with_pickle(self):
+        """ Test of the Team.get_all() method """
+        with mock.patch('team.models.cache') as mock_cache:
+
+            with mock.patch('pickle.loads') as mock_pickle:
+                mock_cache.__contains__.return_value = True
+                mock_pickle.return_value = Team.objects.all()
+                expected_value = Team.objects.all()
+                current_value = Team.get_all()
+                self.assertEqual(list(current_value), list(expected_value))
