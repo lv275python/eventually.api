@@ -162,7 +162,7 @@ class TeamModelTestCase(TestCase):
                                               email='exp@gmail.com')
         new_owner.set_password('123')
         new_owner.save()
-        new_members = [CustomUser.objects.get(id=101), new_owner]
+        new_members = {CustomUser.objects.get(id=101), new_owner}
         actual_team.update(owner=new_owner,
                            members_add=[new_owner],
                            name='tennis',
@@ -170,7 +170,7 @@ class TeamModelTestCase(TestCase):
                            image='link11')
 
         self.assertEqual(actual_team.owner, new_owner)
-        self.assertListEqual(list(actual_team.members.all()), new_members)
+        self.assertSetEqual(set(actual_team.members.all()), new_members)
         self.assertEqual(actual_team.name, 'tennis')
         self.assertEqual(actual_team.image, 'link11')
         self.assertEqual(actual_team.description, 'very fun game')
