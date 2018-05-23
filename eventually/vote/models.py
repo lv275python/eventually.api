@@ -48,6 +48,7 @@ class Vote(AbstractModel):
     )
 
     event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True)
+    owner = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True)
     is_active = models.BooleanField(default=True)
     is_extended = models.BooleanField(default=True)
     title = models.CharField(max_length=100)
@@ -75,6 +76,7 @@ class Vote(AbstractModel):
         """
         return {
             'id': self.id,
+            'owner': self.owner.id,
             'event': self.event.id,
             'is_active': self.is_active,
             'is_extended': self.is_extended,
@@ -86,7 +88,7 @@ class Vote(AbstractModel):
 
 
     @staticmethod
-    def create(event, is_active=True, is_extended=True, title="", vote_type=1):
+    def create(event, owner, is_active=True, is_extended=True, title="", vote_type=1):
         """
         Static method that create new Vote object
 
@@ -108,6 +110,7 @@ class Vote(AbstractModel):
         :return: new created object or None
         """
         vote = Vote(event=event,
+                    owner=owner,
                     is_active=is_active,
                     is_extended=is_extended,
                     title=title,
@@ -171,7 +174,7 @@ class Answer(AbstractModel):
         :param update_at: The date when the certain event was last time edited
         :type update_at: datetime
     """
-    vote = models.ForeignKey(Vote, null=True)
+    vote = models.ForeignKey(Vote, null=True, on_delete=models.CASCADE)
     text = models.CharField(max_length=100)
     members = models.ManyToManyField(CustomUser)
     create_at = models.DateTimeField(auto_now_add=True, editable=False)

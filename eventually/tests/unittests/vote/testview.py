@@ -52,6 +52,7 @@ class VoteViewTest(TestCase):
         with mock.patch('django.utils.timezone.now') as mock_time:
             mock_time.return_value = TEST_TIME
             vote = Vote.objects.create(id=111,
+                                       owner=custom_user,
                                        event=event,
                                        is_active=True,
                                        is_extended=True,

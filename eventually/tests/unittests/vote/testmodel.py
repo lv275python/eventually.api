@@ -39,6 +39,7 @@ class VoteTestCase(TestCase):
             event.save()
 
             vote = Vote(id=111,
+                        owner=user,
                         event=event,
                         title="title",
                         vote_type=0)
@@ -46,6 +47,7 @@ class VoteTestCase(TestCase):
 
             vote = Vote(id=222,
                         event=event,
+                        owner=user,
                         is_active=True,
                         is_extended=False,
                         title="vote",
@@ -56,6 +58,7 @@ class VoteTestCase(TestCase):
         """Method that tests `to_dict` method of certain Vote instance."""
         vote = Vote.objects.get(id=222)
         expect_vote_dict = {'id': 222,
+                            'owner': 111,
                             'event': 111,
                             'is_active': True,
                             'is_extended': False,
@@ -90,6 +93,7 @@ class VoteTestCase(TestCase):
         vote = Vote.objects.get(id=222)
         actual_str = vote.__str__()
         expected_str = "'id': 222, " \
+                       "'owner': 111, " \
                        "'event': 111, " \
                        "'is_active': True, " \
                        "'is_extended': False, " \
@@ -101,14 +105,16 @@ class VoteTestCase(TestCase):
 
     def test_vote_success_create(self):
         """Method that tests succeeded `create` method of Vote class object."""
+        user = CustomUser.objects.get(id=111)
         event = Event.objects.get(id=111)
-        created_vote = Vote.create(event=event, title="my title")
+        created_vote = Vote.create(event=event, owner=user, title="my title")
         self.assertIsInstance(created_vote, Vote)
 
     def test_vote_unsuccess_create(self):
         """Method that tests unsuccessful `create` method of Vote class object."""
+        user = CustomUser.objects.get(id=111)
         event = Event()
-        created_vote = Vote.create(event=event, title="my title")
+        created_vote = Vote.create(event=event, owner=user, title="my title")
         self.assertIsNone(created_vote)
 
     def test_event_update(self):
