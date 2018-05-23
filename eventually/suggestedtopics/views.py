@@ -10,9 +10,13 @@ from django.views.generic.base import View
 from django.http import JsonResponse
 from django.http import HttpResponse
 from utils.responsehelper import (RESPONSE_400_EMPTY_JSON,
+                                  RESPONSE_200_DELETED,
+                                  RESPONSE_200_UPDATED,
+                                  RESPONSE_400_DB_OPERATION_FAILED,
                                   RESPONSE_400_INVALID_DATA,
-                                  RESPONSE_404_OBJECT_NOT_FOUND,
-                                  RESPONSE_200_UPDATED)
+                                  RESPONSE_403_ACCESS_DENIED,
+                                  RESPONSE_404_OBJECT_NOT_FOUND)
+
 from utils.validators import required_keys_validator
 from .models import SuggestedTopics
 
@@ -92,3 +96,15 @@ class SuggestedTopicsView(View):
             return RESPONSE_400_EMPTY_JSON
         suggested_topic.update(**data)
         return RESPONSE_200_UPDATED
+
+    def delete(self, request, suggested_topic_id):
+        user = request.user
+        suggested_topic = SuggestedTopics.get_by_id(suggested_topic_id)
+        if not suggested_topic:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+        if user == request.user:
+            is_deleted = SuggestedTopics.delete_by_id(suggested_topic_id)
+            if is_deleted:
+                return RESPONSE_200_DELETED
+            return RESPONSE_400_DB_OPERATION_FAILED
+        return RESPONSE_403_ACCESS_DENIED
