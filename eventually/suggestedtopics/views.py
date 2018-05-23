@@ -9,11 +9,14 @@ of SuggestedTopics's model objects.
 from django.views.generic.base import View
 from django.http import JsonResponse
 from django.http import HttpResponse
-from utils.responsehelper import (RESPONSE_400_EMPTY_JSON,
-                                  RESPONSE_400_INVALID_DATA,
-                                  RESPONSE_404_OBJECT_NOT_FOUND,
-                                  RESPONSE_200_UPDATED)
 from utils.validators import required_keys_validator
+from utils.responsehelper import (RESPONSE_200_UPDATED,
+                                  RESPONSE_400_EMPTY_JSON,
+                                  RESPONSE_403_ACCESS_DENIED,
+                                  RESPONSE_404_OBJECT_NOT_FOUND,
+                                  RESPONSE_200_DELETED,
+                                  RESPONSE_400_INVALID_DATA,
+                                  RESPONSE_400_DB_OPERATION_FAILED,)
 from .models import SuggestedTopics
 
 
@@ -92,3 +95,25 @@ class SuggestedTopicsView(View):
             return RESPONSE_400_EMPTY_JSON
         suggested_topic.update(**data)
         return RESPONSE_200_UPDATED
+
+    def delete(self, request, suggested_topic_id):
+        """
+        Method that handles DELETE request
+
+        :param request: the accepted HTTP request.
+        :type request: `HttpRequest object`
+
+        :param suggested_topic_id: ID of the certain suggested topic.
+        :type suggested_topic_id: `int`
+
+        :return: response with status code 200 when event was successfully deleted
+                 400 or 403 failed status code.
+        :rtype: `HttpResponse object.
+        """
+        user = request.user
+        if user == request.user:
+            is_deleted = SuggestedTopics.delete_by_id(suggested_topic_id)
+            if is_deleted:
+                return RESPONSE_200_DELETED
+            return RESPONSE_400_DB_OPERATION_FAILED
+        return RESPONSE_403_ACCESS_DENIED

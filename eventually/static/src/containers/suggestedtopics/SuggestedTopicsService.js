@@ -23,4 +23,12 @@ const postSuggestedTopicsItem = data => {
     return axios.post(url, data);
 };
 
-export {getSuggestedTopicsService, putSuggestedTopicsItem, postSuggestedTopicsItem};
+const deleteSuggestedTopicsItem = (id, name, description) => {
+    const data = {
+        name,
+        description
+    };
+    return axios.delete(appPath + id + '/', data);
+};
+
+export {getSuggestedTopicsService, putSuggestedTopicsItem, postSuggestedTopicsItem, deleteSuggestedTopicsItem};
