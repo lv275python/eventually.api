@@ -2,7 +2,7 @@ import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import EditTeamDialog from './EditTeamDialog';
 import {getImageUrl, getUserId} from 'src/helper';
-import {teamServiceGet} from './teamService';
+import {teamServiceGet, getMemberName} from './teamService';
 import {Card, CardHeader, CardText} from 'material-ui/Card';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
@@ -168,7 +168,7 @@ export default class TeamItem extends React.Component {
                                     <div key={usr['id']} style={styles.member}>
                                         <Chip onClick={() => this.props.goToUserProfile(usr['id'])}>
                                             <Avatar src={(usr['photo']) && getImageUrl(usr['photo'])}/>
-                                            {usr['first_name'] + '  ' + usr['last_name']}
+                                            {getMemberName(usr)}
                                         </Chip>
                                     </div>
                                 ))

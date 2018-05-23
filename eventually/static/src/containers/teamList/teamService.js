@@ -32,5 +32,13 @@ const teamServiceDelete = id => {
         .catch(error => {return(error.response);});
 };
 
+const getMemberName = (user) => {
+    if (user['first_name'] || user['last_name']){
+        return (user['first_name'] + '  ' + user['last_name']);
+    } else {
+        return user['email'].match(/^(.+)@/)[1];
+    }
+};
 
-export {teamServiceGet, teamServicePut, teamServiceGetMembers, teamServicePost, usersServiceGet, teamServiceDelete};
+
+export {teamServiceGet, teamServicePut, teamServiceGetMembers, teamServicePost, usersServiceGet, teamServiceDelete, getMemberName};
