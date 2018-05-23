@@ -79,8 +79,9 @@ class VoteView(View):
 
         :return: HttpResponse with status 400,404 or 201
         """
-
+        user = request.user
         event = Event.get_by_id(event_id)
+
         if not event:
             return RESPONSE_404_OBJECT_NOT_FOUND
 
@@ -89,6 +90,7 @@ class VoteView(View):
             return RESPONSE_400_INVALID_DATA
 
         vote = Vote.create(event=event,
+                           owner=user,
                            is_active=data.get("is_active") if data.get("is_active") else True,
                            is_extended=data.get("is_extended") if data.get("is_extended") else
                            True,

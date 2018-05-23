@@ -40,3 +40,8 @@ export const postAnswer = (answer, eventId, voteId) => {
     };
     return axios.post(url, data);
 };
+
+export const deleteCustomVote = (teamId, eventId, voteId) => {
+    const url = teamPath + teamId + '/event/' + eventId + '/vote/' + voteId;
+    return axios.delete(url);
+};

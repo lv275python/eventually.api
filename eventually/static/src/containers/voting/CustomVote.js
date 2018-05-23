@@ -1,4 +1,5 @@
 import React from 'react';
+import Dialog from 'material-ui/Dialog';
 import { Link } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import Badge from 'material-ui/Badge';
@@ -11,6 +12,10 @@ import {getUserId} from 'src/helper';
 import {getAnswersWithMembers} from './VoteService';
 import {putAnswer} from './VoteService';
 import ParticipantListDialog from './ParticipantListDialog';
+import DeleteForever from 'material-ui/svg-icons/action/delete-forever';
+import {red500} from 'material-ui/styles/colors';
+import FlatButton from 'material-ui/FlatButton';
+import {deleteCustomVote} from './VoteService';
 
 const raisedButtonDivStyle = {
     display: 'flex',
@@ -36,7 +41,10 @@ class CustomVote extends React.Component {
             answers: [],
             teamId: this.props.teamId,
             open: false,
-            currentAnswerMembers: []
+            currentAnswerMembers: [],
+            deleteDialogOpen: false,
+            voteDeleted: false,
+            owner: this.props.owner
         };
     }
 
@@ -65,6 +73,38 @@ class CustomVote extends React.Component {
         this.setState({
             open: false
         });
+    };
+
+    /*check if user is author of suggested topic*/
+    ownerCheck = () => {
+        if (getUserId() == this.state.owner){
+            return true;
+        } else {
+            return false;
+        }
+    };
+
+    handleDelete = () => {
+        this.handleOpenDelete();
+    };
+
+    handleOpenDelete = () => {
+        this.setState({ deleteDialogOpen: true });
+    };
+
+    handleCloseDelete = () => {
+        this.setState({ deleteDialogOpen: false });
+    };
+
+    handleYes = () => {
+        deleteCustomVote(this.props.teamId, this.props.eventId, this.props.voteId).then(response => {
+            this.setState({ voteDeleted: true });
+            this.handleCloseDelete();
+        });
+    };
+
+    handleNo = () => {
+        this.handleCloseDelete();
     };
 
     getRadioButtons() {
@@ -171,35 +211,84 @@ class CustomVote extends React.Component {
     }
 
     render() {
-        return (
-            <div>
-                <Card
-                    style={styles.card}
-                    zDepth={3}
-                >
-                    <CardHeader
-                        actAsExpander={true}
-                        showExpandableButton={false}
-                        title={this.props.title}
-                    />
-                    <CardActions>
-                        <div>
-                            <RadioButtonGroup
-                                name="shipSpeed"
-                                valueSelected="checked"
-                                onChange={this.handleChangeButton}>
-                                {this.getRadioButtons()}
-                            </RadioButtonGroup>
-                            <ParticipantListDialog
-                                participants={this.state.currentAnswerMembers}
-                                open={this.state.open}
-                                handleCloseParticipants={this.handleClose}
-                            />
-                        </div>
-                    </CardActions>
-                </Card>
-            </div >
-        );
+        const actionsDialog = [
+            <FlatButton
+                label="Yes"
+                key={1}
+                primary={true}
+                onClick={this.handleYes}
+            />,
+            <FlatButton
+                label="No"
+                key={0}
+                primary={true}
+                onClick={this.handleNo}
+            />
+        ];
+        let deleteButton;
+        if(this.ownerCheck()==true){
+            deleteButton = (
+                <RaisedButton
+                    key={0}
+                    icon={<DeleteForever color={red500} />}
+                    onClick={this.handleDelete} />
+            );
+        }
+        let voteCard;
+        if (this.state.voteDeleted == false){
+            voteCard = (
+                <div>
+                    <Card
+                        style={styles.card}
+                        zDepth={3}
+                    >
+                        <CardHeader
+                            actAsExpander={true}
+                            showExpandableButton={false}
+                            title={this.props.title}
+                        />
+                        <CardActions>
+                            <div>
+                                <RadioButtonGroup
+                                    name="shipSpeed"
+                                    valueSelected="checked"
+                                    onChange={this.handleChangeButton}>
+                                    {this.getRadioButtons()}
+                                </RadioButtonGroup>
+                                <ParticipantListDialog
+                                    participants={this.state.currentAnswerMembers}
+                                    open={this.state.open}
+                                    handleCloseParticipants={this.handleClose}
+                                />
+                                {deleteButton}
+                            </div>
+                        </CardActions>
+                        <Dialog
+                            actions={actionsDialog}
+                            modal={true}
+                            open={this.state.deleteDialogOpen}>
+                            Do you really want to delete this vote?
+                        </Dialog>
+                    </Card>
+                </div >
+            );
+        } else {
+            voteCard = (
+                <div>
+                    <Card
+                        style={styles.card}
+                        zDepth={3}
+                    >
+                        <CardHeader
+                            actAsExpander={true}
+                            showExpandableButton={false}
+                            title={'The vote was successfully deleted'}
+                        />
+                    </Card>
+                </div >
+            );
+        }
+        return (voteCard);
     }
 }
 export default withRouter(CustomVote);

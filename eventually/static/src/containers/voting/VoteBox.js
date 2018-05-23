@@ -55,6 +55,7 @@ class VoteBox extends React.Component {
         });
         return votes.map(vote => {
             return <CustomVote
+                owner={vote.owner}
                 key={vote.id.toString()}
                 title={vote.title}
                 eventId={this.state.eventId}

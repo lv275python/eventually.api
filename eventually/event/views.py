@@ -138,7 +138,7 @@ class EventView(View):
 
         event = Event.create(team, **data)
         if event:
-            vote = Vote.create(event=event, title="Would you like to visit?")
+            vote = Vote.create(event=event, owner=user, title="Would you like to visit?")
             Answer.create(members=[], vote=vote, text="I will go")
             Answer.create(members=[], vote=vote, text="Maybe I will come")
             Answer.create(members=[], vote=vote, text="No, I have other plans")
