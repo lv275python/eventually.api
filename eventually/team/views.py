@@ -86,6 +86,7 @@ class TeamView(View):
                         'id': member.id,
                         'first_name': member.first_name,
                         'last_name': member.last_name,
+                        'email': member.email,
                         'photo': member.customprofile.photo
                     }
         return JsonResponse(data, status=200)
