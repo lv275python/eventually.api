@@ -61,6 +61,13 @@ class TaskViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
 
+    def test_request_get_full(self):
+        """Method that tests the successful request.GET.get('full_name', None)"""
+
+        url = reverse('event:task:detail', args=[11, 11,11])
+        response = self.client.get(url,{'full_name':True})
+        self.assertEqual(response.status_code, 200)
+
     def test_success_get_all(self):
         """Method that tests the successful request to the all tasks"""
 
