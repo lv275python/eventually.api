@@ -24,6 +24,8 @@ class SetNewPassword extends React.Component {
             token: this.props.match.params.token,
             messagePassword:'',
             changeButtonStatus: true,
+            messageError: false,
+            messageSuccess: false,
         };
     }
 
@@ -46,10 +48,21 @@ class SetNewPassword extends React.Component {
         const token = this.state.token;
         putNewPasswordService(token, newPassword).then((response) => {
             this.props.history.push('/login');
+            this.setState({messageError: false});
+        }).catch((error) => {
+            this.setState({messageError: true});
         });
     };
 
     render() {
+        let loginError;
+        if (this.state.messageError === true) {
+            loginError = (
+                <div>
+                    <p style={errorStyle}>New password cannot be the same as old</p>
+                </div>
+            );
+        }
         return(
             <div style={style} >
                 <h2>New Password</h2>
@@ -76,6 +89,7 @@ class SetNewPassword extends React.Component {
                     disabled={this.state.password == this.state.confirmPassword ? false : true}
 
                 />
+                {loginError}
             </div>
         );
     }

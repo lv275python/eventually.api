@@ -22,6 +22,7 @@ class Login extends React.Component {
             password: '',
             MessageEmail: '',
             MessagePassword: '',
+            messageError: false,
         };
     }
 
@@ -49,14 +50,26 @@ class Login extends React.Component {
     handleSubmit = event => {
         const email = this.state.email;
         const password = this.state.password;
-        loginService(email, password)
-            .then((response) => {
-                this.props.history.push('/home');
-            });
+        loginService(email, password).then((response) => {
+            this.setState({messageError: false});
+            this.props.history.push('/home');
+        }).catch((error) => {
+            this.setState({messageError: true});
+        });
         event.preventDefault();
+
     };
 
     render() {
+        let loginError;
+        if (this.state.messageError === true) {
+            loginError = (
+                <div>
+                    <p style={errorStyle}>Invalid email or password</p>
+                </div>
+            );
+        }
+
         return (
             <div style={style}>
                 <h2>Email</h2>
@@ -79,10 +92,14 @@ class Login extends React.Component {
                     label='Login'
                     primary={true}
                     onClick={this.handleSubmit}
+                    disabled={(this.state.email === '' || this.state.MessageEmail !== '' || this.state.password === ''
+                        || this.state.MessagePassword !== '')}
                 />
+                {loginError}
             </div>
         );
     }
 }
+
 
 export default withRouter(Login);
