@@ -22,7 +22,13 @@ class Login extends React.Component {
             password: '',
             MessageEmail: '',
             MessagePassword: '',
+            messageError: false,
         };
+    }
+
+    componentDidCatch(error, info) {
+        console.log(info);
+        console.log(error);
     }
 
     handleEmail = event => {
@@ -51,12 +57,26 @@ class Login extends React.Component {
         const password = this.state.password;
         loginService(email, password)
             .then((response) => {
-                this.props.history.push('/home');
+                if (response.status === 400) {
+                    this.setState({messageError:true});
+                } else {
+                    this.props.history.push('/home');
+                }
             });
         event.preventDefault();
+
     };
 
     render() {
+        let loginError;
+        if (this.state.messageError === true) {
+            loginError = (
+                <div>
+                    <p style={errorStyle}>Invalid email or password</p>
+                </div>
+            );
+        }
+
         return (
             <div style={style}>
                 <h2>Email</h2>
@@ -79,10 +99,14 @@ class Login extends React.Component {
                     label='Login'
                     primary={true}
                     onClick={this.handleSubmit}
+                    disabled={(this.state.email === '' || this.state.MessageEmail !== '' || this.state.password === ''
+                        || this.state.MessagePassword !== '')}
                 />
+                {loginError}
             </div>
         );
     }
 }
+
 
 export default withRouter(Login);
