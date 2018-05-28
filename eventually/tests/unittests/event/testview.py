@@ -10,6 +10,7 @@ import datetime
 from authentication.models import CustomUser
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
+from django.core.cache import cache
 from team.models import Team
 from event.models import Event
 from unittest import mock
@@ -33,8 +34,9 @@ class EventViewTest(TestCase):
         team = Team.objects.create(id=101, owner=custom_user, members=[custom_user], name='chelsea')
 
         with mock.patch('django.utils.timezone.now') as mock_time:
+            cache.clear()
             mock_time.return_value = TEST_TIME
-            event = Event.objects.create(id=101, team=team, owner=custom_user, name='ride')
+            event = Event.objects.create(id=101, team=team, owner=custom_user, name='ride', start_at=TEST_TIME)
             event.save()
 
     def test_success_get_all(self):
@@ -45,7 +47,7 @@ class EventViewTest(TestCase):
                                      'name': 'ride',
                                      'owner': 101,
                                      'description': '',
-                                     'start_at': None,
+                                     'start_at': 1509344112,
                                      'created_at': 1509344112,
                                      'updated_at': 1509344112,
                                      'duration': None,
@@ -68,7 +70,7 @@ class EventViewTest(TestCase):
                                      'name': 'ride',
                                      'owner': 101,
                                      'description': '',
-                                     'start_at': None,
+                                     'start_at': 1509344112,
                                      'created_at': 1509344112,
                                      'updated_at': 1509344112,
                                      'duration': None,
@@ -99,7 +101,7 @@ class EventViewTest(TestCase):
                          'name': 'ride',
                          'owner': 101,
                          'description': '',
-                         'start_at': None,
+                         'start_at': 1509344112,
                          'created_at': 1509344112,
                          'updated_at': 1509344112,
                          'duration': None,
@@ -282,3 +284,70 @@ class EventViewTest(TestCase):
             url = reverse('event:detail', args=[101, 101])
             response = self.client.delete(url)
             self.assertEqual(response.status_code, 400)
+
+    def test_error_event_paginator_validate(self):
+        """
+        Method that tests the unsuccessful get request because of event_paginator_validate.
+        """
+
+        url = reverse('events:index')
+        response = self.client.get(url, {'limit': 2})
+        self.assertEqual(response.status_code, 400)
+
+    def test_if_event_from_date_param_validate(self):
+        """
+        Method that tests the get request when event_from_date_param_validate is true
+        """
+        expected_data = {'events': [{'id': 101,
+                                     'team': 101,
+                                     'name': 'ride',
+                                     'owner': 101,
+                                     'description': '',
+                                     'start_at': 1509344112,
+                                     'created_at': 1509344112,
+                                     'updated_at': 1509344112,
+                                     'duration': None,
+                                     'longitude': None,
+                                     'latitude': None,
+                                     'budget': None,
+                                     'status': 0}],
+                         'full_length': 1}
+
+        url = reverse('events:index')
+        response = self.client.get(url, {'number': 1, 'limit': 2, 'from_date': 1509344110})
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
+
+    def test_event_from_date_param_validate_else(self):
+        """
+        Method that tests the get request when event_from_date_param_validate is false
+        """
+
+        test_time_now = datetime.datetime.now()
+        test_time_future = datetime.datetime.fromtimestamp(test_time_now.timestamp()+60*60*24)
+
+        with mock.patch('django.utils.timezone.now') as mock_time:
+            mock_time.return_value = TEST_TIME
+            event = Event.objects.create(id=102, team=Team.get_by_id(101), owner=CustomUser.get_by_id(101),
+                                         name='some_event', start_at=test_time_future)
+            event.save()
+
+        expected_data = {'events': [{'id': 102,
+                                     'team': 101,
+                                     'name': 'some_event',
+                                     'owner': 101,
+                                     'description': '',
+                                     'start_at': int(test_time_future.timestamp()),
+                                     'created_at': 1509344112,
+                                     'updated_at': 1509344112,
+                                     'duration': None,
+                                     'longitude': None,
+                                     'latitude': None,
+                                     'budget': None,
+                                     'status': 0}],
+                         'full_length': 1}
+
+        url = reverse('events:index')
+        response = self.client.get(url, {'number': 1, 'limit': 2})
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
