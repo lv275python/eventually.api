@@ -174,8 +174,6 @@ def mentors_topics(request):
     :return: JsonResponse object with topics, that belongs to the certain mentor
     """
     mentor = request.user
-    if not mentor:
-        return RESPONSE_404_OBJECT_NOT_FOUND
 
     topics = find_mentors_topics(mentor.id)
     data = {'topics': [topic.to_dict() for topic in topics]}
