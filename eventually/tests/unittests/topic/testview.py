@@ -7,6 +7,7 @@ import json
 import datetime
 from authentication.models import CustomUser
 from django.test import TestCase, Client
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from curriculum.models import Curriculum
 from topic.models import Topic
@@ -21,6 +22,7 @@ class TestTopicView(TestCase):
     def setUp(self):
 
         with mock.patch('django.utils.timezone.now') as mock_time:
+            cache.clear()
             mock_time.return_value = TEST_TIME
             custom_user = CustomUser.objects.create(id=123,
                                                     email='email1@mail.com',
@@ -30,15 +32,6 @@ class TestTopicView(TestCase):
                                                     is_active=True)
             custom_user.set_password('1111')
             custom_user.save()
-
-            custom_user2 = CustomUser.objects.create(id=124,
-                                                    email='email2@mail.com',
-                                                    first_name='2fname',
-                                                    middle_name='2mname',
-                                                    last_name='2lname',
-                                                    is_active=True)
-            custom_user2.set_password('2222')
-            custom_user2.save()
 
             Curriculum.objects.create(id=111,
                                       name="testcurriculum",
@@ -59,6 +52,15 @@ class TestTopicView(TestCase):
                                  title='Topic #2',
                                  description="t_descr",
                                  mentors=(custom_user, ))
+
+            custom_user = CustomUser.objects.create(id=124,
+                                                     email='email2@mail.com',
+                                                     first_name='2fname',
+                                                     middle_name='2mname',
+                                                     last_name='2lname',
+                                                     is_active=True)
+            custom_user.set_password('2222')
+            custom_user.save()
 
         self.client = Client()
         self.client.login(username='email1@mail.com', password='1111')
@@ -194,6 +196,83 @@ class TestTopicView(TestCase):
         """Method that tests 'is_topic_mentor' function."""
         expected_data = {'is_mentor': True}
         url = reverse('curriculums:topics:is_topic_mentor', args=[111, 212])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
+
+
+    def test_error_put_no_data(self):
+        """Method that tests the unsuccessful put request for updating a topic with no data."""
+
+        data = {}
+
+        url = reverse('curriculums:topics:detail', args=[111, 212])
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_error_put_wrong_topic_id(self):
+        """Method that tests the unsuccessful put request for updating a topic with wrong topic_id."""
+
+        data = {'title': 'some new curriculum',
+                'description': 'short description',
+                'mentors': ()}
+
+        url = reverse('curriculums:topics:detail', args=[111, 2120])
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 404)
+
+    def test_error_put_user_not_in_topic_mentor(self):
+        """Method that tests the unsuccessful put request for updating a topic when user is not a topic mentor"""
+
+        Topic.objects.create(id=214,
+                             curriculum=Curriculum.get_by_id(111),
+                             author=CustomUser.get_by_id(123),
+                             title='Topic #3',
+                             description="t_descr",
+                             mentors=(CustomUser.get_by_id(124),))
+
+        data = {'title': 'some new curriculum',
+                'description': 'short description',
+                'mentors': ()}
+
+        url = reverse('curriculums:topics:detail', args=[111, 214])
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 403)
+
+    def test_success_topic_put(self):
+        """Method that tests the successful put request"""
+
+        data = {'title': 'some new curriculum',
+                'description': 'short description',
+                'mentors': ()}
+
+        url = reverse('curriculums:topics:detail', args=[111, 212])
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_success_add_mentors(self):
+        """Method that tests the successful put request for adding mentor"""
+
+        data = {'title': 'some new curriculum',
+                'description': 'short description',
+                'addMentors': [124]}
+
+        url = reverse('curriculums:topics:detail', args=[111, 212])
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
+
+        topic_1 = Topic.get_by_id(212)
+        topic_1_dict = topic_1.to_dict()
+
+        self.assertEqual(topic_1_dict.get('mentors'), [123, 124])
+
+    def test_success_mentors_topics(self):
+        """Method that tests the successful call of mentors_topics"""
+
+        topic_1 = Topic.get_by_id(212)
+        topic_2 = Topic.get_by_id(213)
+        expected_data = {'topics': [topic_1.to_dict(), topic_2.to_dict()]}
+
+        url = reverse('mentor:mentors_topics')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
