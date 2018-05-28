@@ -4,8 +4,13 @@ Curriculum Views
 """
 from django.views.generic.base import View
 from django.http import JsonResponse
-from utils.responsehelper import (RESPONSE_400_DB_OPERATION_FAILED,
-                                  RESPONSE_400_INVALID_DATA,)
+from authentication.models import CustomUser
+from utils.responsehelper import (RESPONSE_400_INVALID_DATA,
+                                  RESPONSE_200_UPDATED,
+                                  RESPONSE_200_DELETED,
+                                  RESPONSE_400_DB_OPERATION_FAILED,
+                                  RESPONSE_404_OBJECT_NOT_FOUND,
+                                  RESPONSE_403_ACCESS_DENIED)
 from .models import Curriculum
 
 
@@ -54,14 +59,85 @@ class CurriculumView(View):
 
         # author = request.user
         data = request.body
+        owner = request.user
         if not data:
             return RESPONSE_400_INVALID_DATA
 
-        data = {'name': data.get('title'),
+        data = {'name': data.get('title'), 'owner': owner,
                 'description': data.get('description') if data.get('description') else ''}
 
         curriculum = Curriculum.create(**data)
         if curriculum:
             return JsonResponse(curriculum.to_dict(), status=201)
+
+        return RESPONSE_400_DB_OPERATION_FAILED
+
+    def put(self, request, user_id=None, curriculumn_id=None):
+        """
+        Method that handles PUT request.
+
+        :param request: the accepted HTTP request.
+        :type request: `HttpRequest object`
+
+        :param user_id: ID of the certain user.
+        :type user_id: `int`
+
+        :param curriculumn_id: ID of the certain curriculumn.
+        :type curriculumn_id: `int`
+
+        :return: response with status code 200 when curriculumn was successfully updated
+                 or response with 400 or 403 or 404 failed status code.
+
+        :rtype: `HttpResponse object."""
+        user = CustomUser.get_by_id(user_id)
+        curriculumn = Curriculum.get_by_id(curriculumn_id)
+
+        if user.id is not curriculumn.owner.id:
+            return RESPONSE_403_ACCESS_DENIED
+
+        if not curriculumn:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+
+
+        data = request.body
+        if not data:
+            return RESPONSE_400_INVALID_DATA
+
+        data = {'name': data.get('name'),
+                'goals': data.get('goals'),
+                'description': data.get('description'),
+                'team': data.get('team'),
+                'created_at': data.get('created_at'),
+                'updated_at': data.get('updated_at')}
+
+        curriculumn.update(**data)
+        return RESPONSE_200_UPDATED
+
+    def delete(self, request, curriculumn_id=None):
+        """
+        Method that handles DELETE request.
+
+        :param request: the accepted HTTP request.
+        :type request: `HttpRequest object`
+
+        :param curriculumn_id: ID of the certain curriculumn.
+        :type curriculumn_id: `int`
+
+        :return: response with status code 200 when curriculumn was successfully deleted
+                 or response with 400 or 403 or 404 failed status code.
+
+        :rtype: `HttpResponse object."""
+        user = request.user
+        curriculumn = Curriculum.get_by_id(curriculumn_id)
+
+        if not curriculumn:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+
+        if user.id is not curriculumn.owner.id:
+            return RESPONSE_403_ACCESS_DENIED
+
+        is_deleted = Curriculum.delete_by_id(curriculumn_id)
+        if is_deleted:
+            return RESPONSE_200_DELETED
 
         return RESPONSE_400_DB_OPERATION_FAILED
