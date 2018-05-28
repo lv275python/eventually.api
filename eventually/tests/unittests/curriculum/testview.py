@@ -35,12 +35,14 @@ class TestCurriculumApp(TestCase):
                                       name="testcurriculum",
                                       goals=["goal1", "goal2"],
                                       description="t_descr",
+                                      owner=custom_user,
                                       team=None)
 
             Curriculum.objects.create(id=112,
                                       name="tes",
                                       goals=["goal1", "goal2"],
                                       description="t_descr",
+                                      owner=custom_user,
                                       team=None)
 
         self.client = Client()
@@ -54,6 +56,7 @@ class TestCurriculumApp(TestCase):
                                           'description': "t_descr",
                                           'goals': ["goal1", "goal2"],
                                           'team': None,
+                                          'owner': 1,
                                           'created': 1509344112,
                                           'updated': 1509344112},
                                          {'id': 112,
@@ -61,6 +64,7 @@ class TestCurriculumApp(TestCase):
                                           'description': "t_descr",
                                           'goals': ["goal1", "goal2"],
                                           'team': None,
+                                          'owner': 1,
                                           'created': 1509344112,
                                           'updated': 1509344112}
                                          ]}
@@ -70,17 +74,17 @@ class TestCurriculumApp(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
 
+
     def test_success_get_by_id(self):
         """Method that tests the successful get request for the curriculum with the certain id"""
-
         expected_data = {'id': 111,
                         'name': "testcurriculum",
                         'description': "t_descr",
                         'goals': ["goal1", "goal2"],
+                        'owner': 1,
                         'team': None,
                         'created': 1509344112,
                         'updated': 1509344112}
-
         url = reverse('curriculums:detail', args=[111])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -88,8 +92,7 @@ class TestCurriculumApp(TestCase):
 
     def test_success_post(self):
         """Method that tests the successful post request for creating of curriculum."""
-
-        data = {'title': 'some new curriculum',
+        data = {'title': 'some new curriculum', 'owner': 1,
                 'description': 'short description'}
 
         url = reverse('curriculums:index')

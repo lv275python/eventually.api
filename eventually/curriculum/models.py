@@ -5,9 +5,10 @@ Curriculum model
 # pylint: disable=arguments-differ
 
 import pickle
+from authentication.models import CustomUser
+from django.db import models, IntegrityError
 from django.conf import settings
 from django.core.cache import cache
-from django.db import models, IntegrityError
 from django.contrib.postgres.fields import ArrayField
 from team.models import Team
 from utils.abstractmodel import AbstractModel
@@ -45,6 +46,7 @@ class Curriculum(AbstractModel):
     team = models.ForeignKey(Team, null=True, related_name='team')
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(CustomUser, null=True, on_delete=models.SET_NULL)
 
     @staticmethod
     def get_by_name(curriculum_name):
@@ -67,7 +69,7 @@ class Curriculum(AbstractModel):
         return curriculum
 
     @staticmethod
-    def create(name, description='', goals=(), team=None):
+    def create(name, owner, description='', goals=(), team=None):
         """
         Create a new Curriculum object in the database
 
@@ -80,6 +82,9 @@ class Curriculum(AbstractModel):
         :param goals: list of goals to be achieved during the curriculum
         :type goals: list
 
+        :param owner: Certain CustomUser's object. Is required.
+        :type owner: CustomUser model
+
         :param team: id of teams which study the curriculum
         :type team: list
 
@@ -90,6 +95,7 @@ class Curriculum(AbstractModel):
             new_curriculum = Curriculum.objects.create(name=name,
                                                        description=description,
                                                        goals=goals,
+                                                       owner=owner,
                                                        team=team)
             new_curriculum.save()
             if "all_curriculums" in cache:
@@ -109,7 +115,8 @@ class Curriculum(AbstractModel):
         |   'name:': 'reading',
         |   'description': 'shakespeare',
         |   'goals': ['Be a Senior dev'],
-        |   'team': 'Team(id=1)',
+        |   'team': 1,
+        |   'owner': 1,
         |   'created': 1511386400,
         |   'updated': 1511394690
         | }
@@ -119,18 +126,22 @@ class Curriculum(AbstractModel):
                 'name': self.name,
                 'description': self.description,
                 'goals': self.goals,
-                'team': self.team,
+                'team': self.team.id if self.team else None,
+                'owner': self.owner.id if self.owner else None,
                 'created': int(self.created_at.timestamp()),
                 'updated': int(self.updated_at.timestamp())
                }
 
 
-    def update(self, name=None, description=None, team=None):
+    def update(self, owner, name=None, description=None, team=None):
         """
         Updates the curriculum object
 
         :param name: name for the curriculum object
         :type name: str
+
+        :param owner: Certain CustomUser's object. Is required.
+        :type owner: CustomUser model
 
         :param description: description for the curriculum object
         :type description: str
@@ -147,6 +158,8 @@ class Curriculum(AbstractModel):
             self.description = description
         if team:
             self.team = team
+        if owner:
+            self.owner = owner
         try:
             self.save()
             redis_key = 'curriculum_by_id_{0}'.format(self.id)
