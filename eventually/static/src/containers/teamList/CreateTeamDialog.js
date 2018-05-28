@@ -8,7 +8,7 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import {orange500} from 'material-ui/styles/colors';
 import {teamServicePost, usersServiceGet, getMemberName} from './teamService';
-import {FileUpload, CancelDialog} from 'src/containers';
+import {FileUpload, CancelDialog, sendFile} from 'src/containers';
 import {getUserId} from 'src/helper';
 
 const FlatButtonStyle = {
@@ -75,12 +75,12 @@ export default class CreateTeamDialog extends React.Component {
         const regex = /^.{4,30}$/;
         if(regex.test(event.target.value) === true ) {
             this.setState({
-                MessageName: '',
+                MessageName: '', 
                 name: event.target.value,
                 NameIsValid: true,
             });
         } else {
-            this.setState({
+            this.setState({ 
                 MessageName: 'Name must contain 4-30 symbols',
                 NameIsValid: false,
             });
@@ -131,7 +131,7 @@ export default class CreateTeamDialog extends React.Component {
             });
         }
     };
-
+    
     menuItems(values) {
         return this.state.users.map((user) => (
             <MenuItem
@@ -139,7 +139,7 @@ export default class CreateTeamDialog extends React.Component {
                 insetChildren={true}
                 checked={values && values.indexOf(user.id) > -1}
                 value={user.id}
-                primaryText={getMemberName(user)}
+                primaryText={user.first_name + ' ' + user.last_name}
             />
         ));
     }
