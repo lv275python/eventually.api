@@ -6,7 +6,7 @@ export {
     getTopicListService} from './curriculum/CurriculumService';
 export FileUpload from './fileUpload/FileUpload';
 export imageValidator from './fileUpload/FileUploadHelper';
-export sendFile from './fileUpload/FileUploadService';
+export {sendFile} from './fileUpload/FileUploadService';
 export Answer from './item/Answer';
 export Assignment from './item/Assignment';
 export Item from './item/Item';
