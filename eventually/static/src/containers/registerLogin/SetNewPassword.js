@@ -4,6 +4,7 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import {putNewPasswordService} from './registrationService';
 import {orange500} from 'material-ui/styles/colors';
+import FlatButton from 'material-ui/FlatButton';
 
 const style = {
     margin: 12,
@@ -24,6 +25,7 @@ class SetNewPassword extends React.Component {
             token: this.props.match.params.token,
             messagePassword:'',
             changeButtonStatus: true,
+            expiredTokenError: false,
             messageError: false,
             messageSuccess: false,
         };
@@ -38,7 +40,6 @@ class SetNewPassword extends React.Component {
             });
     };
 
-
     handleConfirmPassword = event => {
         this.setState({confirmPassword: event.target.value});
     };
@@ -50,8 +51,17 @@ class SetNewPassword extends React.Component {
             this.props.history.push('/login');
             this.setState({messageError: false});
         }).catch((error) => {
-            this.setState({messageError: true});
+            if (error.response.status === 400) {
+                this.setState({messageError: true});
+            } else if (error.response.status === 498) {
+                this.setState({expiredTokenError: true});
+            }
+
         });
+    };
+
+    handleReturn = event => {
+        this.props.history.push('/forget');
     };
 
     render() {
@@ -63,8 +73,55 @@ class SetNewPassword extends React.Component {
                 </div>
             );
         }
-        return(
-            <div style={style} >
+
+        let expiredToken;
+        if (this.state.expiredTokenError === true) {
+            expiredToken = (
+                <div>
+                    <p style={errorStyle}>Token has expired</p>
+                    <FlatButton
+                        label='Send another mail'
+                        primary={true}
+                        onClick={this.handleReturn}
+                    />
+                </div>
+            );
+        }
+
+        if (this.state.expiredTokenError === true) {
+            return expiredToken;
+        } else if (this.state.messageError === true) {
+            return(
+                <div style={style} >
+                    <h2>New Password</h2>
+                    <TextField
+                        onChange={this.handlePassword}
+                        hintText='Enter password'
+                        type="password"
+                        errorStyle = {errorStyle}
+                        errorText={this.state.messagePassword}
+                    />
+                    <br />
+                    <h2>Confirm Password</h2>
+                    <TextField
+                        onChange={this.handleConfirmPassword}
+                        hintText='Re-enter password'
+                        type="password"
+                        errorStyle = {errorStyle}
+                    />
+                    <br />
+                    <br />
+                    <RaisedButton label='Change password'
+                        primary={true}
+                        onClick={this.handleSubmit}
+                        disabled={this.state.password == this.state.confirmPassword ? false : true}
+
+                    />
+                    {loginError}
+                </div>
+            );
+        } else {
+            return ( <div style={style} >
                 <h2>New Password</h2>
                 <TextField
                     onChange={this.handlePassword}
@@ -83,15 +140,13 @@ class SetNewPassword extends React.Component {
                 />
                 <br />
                 <br />
-                <RaisedButton label='Change password'
-                    primary={true}
+                <RaisedButton label='Change password' primary={true}
                     onClick={this.handleSubmit}
                     disabled={this.state.password == this.state.confirmPassword ? false : true}
-
                 />
-                {loginError}
             </div>
-        );
+            );
+        }
     }
 }
 
