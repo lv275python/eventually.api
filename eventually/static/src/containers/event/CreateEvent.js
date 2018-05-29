@@ -255,21 +255,21 @@ class CreateEvent extends React.Component {
                     autoScrollBodyContent={true}
                     style={{zIndex: 800}}>
                     <TextField
-                        hintText="Name"
+                        hintText="Name *"
                         fullWidth={true}
                         defaultValue={this.state.name}
                         errorText={this.state.failNameMessage}
                         onChange={this.handleChangeName}/>
                     <TextField
                         defaultValue={this.state.description}
-                        hintText="Description"
+                        hintText="Description *"
                         multiLine={true}
                         rowsMax={4}
                         fullWidth={true}
                         errorText={this.state.failDescriptionMessage}
                         onChange={this.handleChangeDescription}/>
                     <DatePicker hintText="Portrait Dialog"
-                        floatingLabelText="Start date and time"
+                        floatingLabelText="Start date and time *"
                         style={dateStyle}
                         mode="landscape"
                         value={new Date(this.state.startAt * 1000)}
@@ -280,7 +280,7 @@ class CreateEvent extends React.Component {
                         format="24hr"
                         onChange={this.handleChangeStartAt}/>
                     <DatePicker hintText="Portrait Dialog"
-                        floatingLabelText="Finish date and time"
+                        floatingLabelText="Finish date and time *"
                         style={dateStyle}
                         mode="landscape"
                         value={new Date(this.state.timeEnd * 1000)}
@@ -291,7 +291,7 @@ class CreateEvent extends React.Component {
                         format="24hr"
                         onChange={this.handleChangeTimeEnd}/>
                     <SelectField
-                        floatingLabelText="Team"
+                        floatingLabelText="Team *"
                         value={this.state.team}
                         fullWidth={true}
                         onChange={this.handleChangeTeam}>
@@ -328,6 +328,7 @@ class CreateEvent extends React.Component {
                             onRequestClose={this.closeErrorSnackBar}
                         />)
                     }
+                    <div><sub>* required fields</sub></div>
                 </Dialog>
                 {this.state.openCancelDialog &&
                     (<CancelDialog
