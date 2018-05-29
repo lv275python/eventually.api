@@ -111,7 +111,8 @@ class SuggestedTopicsView(View):
         :rtype: `HttpResponse object.
         """
         user = request.user
-        if user == request.user:
+        suggested_topic_owner = SuggestedTopics.get_by_id(suggested_topic_id).owner
+        if suggested_topic_owner == user:
             is_deleted = SuggestedTopics.delete_by_id(suggested_topic_id)
             if is_deleted:
                 return RESPONSE_200_DELETED

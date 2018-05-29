@@ -2,7 +2,6 @@
 SuggestedTopics Model Test
 ================
 This module provides complete testing for all Team's model functions.
-
 """
 
 import datetime
@@ -13,6 +12,7 @@ from authentication.models import CustomUser
 from suggestedtopics.models import SuggestedTopics
 
 TEST_TIME = datetime.datetime(2017, 10, 15, 8, 15, 12)
+
 
 class SuggestedTopicsModelTestCase(TestCase):
     """
@@ -59,6 +59,7 @@ class SuggestedTopicsModelTestCase(TestCase):
         Method that tests `to_dict` method of certain SuggestedTopics instance.
 
         """
+
         suggested_topic = SuggestedTopics.objects.get(id=101)
         expect_suggested_topic_dict = {'id': 101,
                             'name': 'somename',
@@ -70,6 +71,7 @@ class SuggestedTopicsModelTestCase(TestCase):
                             'interested_users_name': []}
 
         actual_suggested_topic_dict = suggested_topic.to_dict()
+
         self.assertDictEqual(actual_suggested_topic_dict, expect_suggested_topic_dict)
 
         suggested_topic_second = SuggestedTopics.objects.get(id=102)
@@ -112,7 +114,6 @@ class SuggestedTopicsModelTestCase(TestCase):
     def test_suggested_topic_update(self):
         """
         Method that tests `update` method of SuggestedTopics class object.
-
         """
 
         with mock.patch('suggestedtopics.models.cache') as mock_cache:
@@ -155,7 +156,6 @@ class SuggestedTopicsModelTestCase(TestCase):
     def test_suggested_topic_get_all(self):
         """
         Method that tests 'get_all' method of SuggestedTopics class object.
-
         """
         with mock.patch('suggestedtopics.models.cache') as mock_cache:
             with mock.patch('suggestedtopics.models.pickle') as mock_pickle:
@@ -167,7 +167,6 @@ class SuggestedTopicsModelTestCase(TestCase):
     def test_suggested_topic_get_all_not(self):
         """
         Method that tests 'get_all' method of SuggestedTopics class object.
-
         """
         expected_suggested_topic = SuggestedTopics.objects.all()
         actual_suggested_topic = SuggestedTopics.get_all()
