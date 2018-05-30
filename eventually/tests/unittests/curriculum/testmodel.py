@@ -11,22 +11,21 @@ from authentication.models import CustomUser
 from curriculum.models import Curriculum
 from team.models import Team
 
-
 TEST_DATE = datetime.datetime(2017, 10, 30, 6, 15, 12, tzinfo=pytz.utc)
 
 
 class TestCurriculumApp(TestCase):
     """ Tests for Curriculum app model """
-    def setUp(self):
 
+    def setUp(self):
         with mock.patch('django.utils.timezone.now') as mock_time:
             mock_time.return_value = TEST_DATE
             custom_user = CustomUser.objects.create(id=1,
-                                                         email='email1@mail.com',
-                                                         password='1234',
-                                                         first_name='1fname',
-                                                         middle_name='1mname',
-                                                         last_name='1lname')
+                                                    email='email1@mail.com',
+                                                    password='1234',
+                                                    first_name='1fname',
+                                                    middle_name='1mname',
+                                                    last_name='1lname')
             custom_user.set_password('1234')
             custom_user.save()
 
@@ -34,13 +33,13 @@ class TestCurriculumApp(TestCase):
                                       name="testcurriculum",
                                       goals=["goal1", "goal2"],
                                       description="t_descr",
-                                      owner = custom_user)
+                                      owner=custom_user)
 
             Curriculum.objects.create(id=112,
                                       name="tes",
                                       goals=["goal1", "goal2"],
                                       description="t_descr",
-                                      owner = custom_user)
+                                      owner=custom_user)
 
     def test__repr__(self):
         """ Test __repr__ method """
@@ -58,7 +57,6 @@ class TestCurriculumApp(TestCase):
         self.assertEqual(returned.description, "t_descr")
         self.assertEqual(returned.created_at, TEST_DATE)
         self.assertEqual(returned.updated_at, TEST_DATE)
-
 
     def test_get_by_id_cache(self):
         """ Test for access to the cache in get_by_id method"""
@@ -91,8 +89,6 @@ class TestCurriculumApp(TestCase):
                 mock_pickle.load.return_value = True
                 returned = Curriculum.get_by_name("testcurriculum")
                 self.assertTrue(returned)
-
-
 
     def test_get_by_name_cache(self):
         """ Test for access to the cache in get_by_name method"""
@@ -134,7 +130,7 @@ class TestCurriculumApp(TestCase):
                 testcreate = Curriculum.create(name="testcreate",
                                                goals=["goal1", "goal2"],
                                                description="testcreatedescription",
-                                               owner = owner)
+                                               owner=owner)
 
                 expected = Curriculum.objects.get(name="testcreate")
 
@@ -172,13 +168,12 @@ class TestCurriculumApp(TestCase):
         curriculum_object = Curriculum.objects.create(name="updatethis")
         objupdate = Curriculum.objects.get(name="updatethis")
 
-
         with mock.patch('curriculum.models.cache') as mock_cache:
             mock_cache.__contains__.return_value = True
             owner = CustomUser.objects.get(id=1)
             update = objupdate.update(name="newname",
                                       description="newdescription",
-                                      owner = owner)
+                                      owner=owner)
 
         self.assertEqual(objupdate.name, "newname")
         self.assertEqual(objupdate.description, "newdescription")

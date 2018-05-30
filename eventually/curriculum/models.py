@@ -79,9 +79,7 @@ class Curriculum(AbstractModel):
         :param owner: Certain CustomUser's object. Is required.
         :type owner: CustomUser model
 
-        :return: Curriculum object or nonenew_c = Curriculum.objects.creat(name='curr',
-         description='dededede', goals='sadsadsa', owner=11)
-
+        :return: Curriculum object or None
         """
         new_curriculum = Curriculum()
         new_curriculum.name = name
@@ -96,6 +94,7 @@ class Curriculum(AbstractModel):
             return new_curriculum
         except (ValueError, IntegrityError):
             LOGGER.error("Relational integrity error")
+
 
     def to_dict(self):
         """
