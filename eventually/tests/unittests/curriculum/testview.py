@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse
 from curriculum.models import Curriculum
 from unittest import mock
 
+
 TEST_TIME = datetime.datetime(2017, 10, 30, 8, 15, 12)
 
 
@@ -18,6 +19,7 @@ class TestCurriculumApp(TestCase):
     """ Tests for Curriculum app model """
 
     def setUp(self):
+
         with mock.patch('django.utils.timezone.now') as mock_time:
             mock_time.return_value = TEST_TIME
             custom_user = CustomUser.objects.create(id=1,
@@ -79,6 +81,7 @@ class TestCurriculumApp(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
+
 
     def test_success_get_by_id(self):
         """Method that tests the successful get request for the curriculum with the certain id"""

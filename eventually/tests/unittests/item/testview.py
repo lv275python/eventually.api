@@ -68,6 +68,7 @@ class TestItemView(TestCase):
                                 name='Node.js',
                                 form=1,
                                 description='description')
+
             Item.objects.create(id=312,
                                 topic=Topic.get_by_id(212),
                                 authors=[CustomUser.get_by_id(123), CustomUser.get_by_id(124)],
@@ -183,6 +184,7 @@ class TestItemView(TestCase):
         data = {'name': 'some new curriculum',
                 'description': 'short description',
                 'form': 0}
+
         self.client = Client()
         self.client.login(username='email3@mail.com', password='3333')
 
@@ -234,6 +236,7 @@ class TestItemView(TestCase):
     def test_put_is_user_not_a_mentor(self):
         self.client_second = Client()
         self.client_second.login(username='email3@mail.com', password='3333')
+
         data = {'name': 'some updated item',
                             'description': 'another description',
                             'form': 1}
