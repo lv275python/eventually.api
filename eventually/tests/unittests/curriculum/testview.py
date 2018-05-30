@@ -35,15 +35,13 @@ class TestCurriculumApp(TestCase):
                                       name="testcurriculum",
                                       goals=["goal1", "goal2"],
                                       description="t_descr",
-                                      owner=custom_user,
-                                      team=None)
+                                      owner=custom_user)
 
             Curriculum.objects.create(id=112,
                                       name="tes",
                                       goals=["goal1", "goal2"],
                                       description="t_descr",
-                                      owner=custom_user,
-                                      team=None)
+                                      owner=custom_user)
 
         self.client = Client()
         self.client.login(username='email1@mail.com', password='1111')
@@ -55,7 +53,6 @@ class TestCurriculumApp(TestCase):
                                           'name': "testcurriculum",
                                           'description': "t_descr",
                                           'goals': ["goal1", "goal2"],
-                                          'team': None,
                                           'owner': 1,
                                           'created': 1509344112,
                                           'updated': 1509344112},
@@ -63,7 +60,6 @@ class TestCurriculumApp(TestCase):
                                           'name': "tes",
                                           'description': "t_descr",
                                           'goals': ["goal1", "goal2"],
-                                          'team': None,
                                           'owner': 1,
                                           'created': 1509344112,
                                           'updated': 1509344112}
@@ -82,7 +78,6 @@ class TestCurriculumApp(TestCase):
                         'description': "t_descr",
                         'goals': ["goal1", "goal2"],
                         'owner': 1,
-                        'team': None,
                         'created': 1509344112,
                         'updated': 1509344112}
         url = reverse('curriculums:detail', args=[111])

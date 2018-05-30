@@ -42,8 +42,8 @@ class SuggestedTopicsModelTestCase(TestCase):
                                      middle_name='Jay',
                                      email='roman@gmail.com')
             interested_user.set_password('roman')
-
             interested_user.save()
+
             interested_users = []
             owner = custom_user
             name = 'somename'

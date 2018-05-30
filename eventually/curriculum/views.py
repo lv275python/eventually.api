@@ -106,7 +106,6 @@ class CurriculumView(View):
         data = {'name': data.get('name'),
                 'goals': data.get('goals'),
                 'description': data.get('description'),
-                'team': data.get('team'),
                 'created_at': data.get('created_at'),
                 'updated_at': data.get('updated_at')}
 

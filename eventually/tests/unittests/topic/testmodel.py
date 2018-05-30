@@ -49,8 +49,7 @@ class TopicModelTestCase(TestCase):
             test_curriculum = Curriculum.objects.create(id=111,
                                                         name="testcurriculum",
                                                         goals=["goal1", "goal2"],
-                                                        description="t_descr",
-                                                        team=team)
+                                                        description="t_descr")
 
 
             topic = Topic(id=11,

@@ -20,9 +20,7 @@ class TestCurriculumApp(TestCase):
     def setUp(self):
 
         with mock.patch('django.utils.timezone.now') as mock_time:
-
             mock_time.return_value = TEST_DATE
-
             custom_user = CustomUser.objects.create(id=1,
                                                          email='email1@mail.com',
                                                          password='1234',
@@ -32,39 +30,17 @@ class TestCurriculumApp(TestCase):
             custom_user.set_password('1234')
             custom_user.save()
 
-            Team.objects.create(id=11,
-                                name="testteam",
-                                description="t_descr",
-                                owner=custom_user,
-                                image="ADSS3JHDF6DSF4JJDF")
-
             Curriculum.objects.create(id=111,
                                       name="testcurriculum",
                                       goals=["goal1", "goal2"],
                                       description="t_descr",
-                                      owner = custom_user,
-                                      team=None)
+                                      owner = custom_user)
 
             Curriculum.objects.create(id=112,
                                       name="tes",
                                       goals=["goal1", "goal2"],
                                       description="t_descr",
-                                      owner = custom_user,
-                                      team=None)
-
-    def test__str__(self):
-        """ Test __str__ method"""
-        owner = CustomUser.objects.get(id=1)
-        expected = "'id': 111, " \
-                   "'name': 'testcurriculum', " \
-                   "'description': 't_descr', " \
-                   "'goals': ['goal1', 'goal2'], " \
-                   "'team': None, " \
-                   "'owner': 1, " \
-                   "'created': 1509344112, " \
-                   "'updated': 1509344112"
-        returned = str(Curriculum.objects.get(name="testcurriculum", owner=owner, team=None))
-        self.assertEqual(expected, returned)
+                                      owner = custom_user)
 
     def test__repr__(self):
         """ Test __repr__ method """
@@ -80,9 +56,9 @@ class TestCurriculumApp(TestCase):
         self.assertEqual(returned.name, "testcurriculum")
         self.assertEqual(returned.goals, ['goal1', 'goal2'])
         self.assertEqual(returned.description, "t_descr")
-        self.assertEqual(returned.team, None)
         self.assertEqual(returned.created_at, TEST_DATE)
         self.assertEqual(returned.updated_at, TEST_DATE)
+
 
     def test_get_by_id_cache(self):
         """ Test for access to the cache in get_by_id method"""
@@ -106,7 +82,6 @@ class TestCurriculumApp(TestCase):
         self.assertEqual(returned.name, "testcurriculum")
         self.assertEqual(returned.goals, ['goal1', 'goal2'])
         self.assertEqual(returned.description, "t_descr")
-        self.assertEqual(returned.team, None)
         self.assertEqual(returned.created_at, TEST_DATE)
         self.assertEqual(returned.updated_at, TEST_DATE)
 
@@ -159,14 +134,13 @@ class TestCurriculumApp(TestCase):
                 testcreate = Curriculum.create(name="testcreate",
                                                goals=["goal1", "goal2"],
                                                description="testcreatedescription",
-                                               owner = owner,
-                                               team=None)
+                                               owner = owner)
+
                 expected = Curriculum.objects.get(name="testcreate")
 
                 self.assertEqual(expected.name, "testcreate")
                 self.assertEqual(expected.goals, ['goal1', 'goal2'])
                 self.assertEqual(expected.description, "testcreatedescription")
-                self.assertEqual(expected.team, None)
                 self.assertEqual(expected.owner, owner)
                 self.assertEqual(expected.created_at, TEST_DATE)
                 self.assertEqual(expected.updated_at, TEST_DATE)
@@ -184,7 +158,6 @@ class TestCurriculumApp(TestCase):
                     'name': 'testcurriculum',
                     'description': 't_descr',
                     'goals': ['goal1', 'goal2'],
-                    'team': None,
                     'owner': 1,
                     'created': 1509344112,
                     'updated': 1509344112}
@@ -203,15 +176,12 @@ class TestCurriculumApp(TestCase):
         with mock.patch('curriculum.models.cache') as mock_cache:
             mock_cache.__contains__.return_value = True
             owner = CustomUser.objects.get(id=1)
-            team = Team.objects.get(id=11)
             update = objupdate.update(name="newname",
                                       description="newdescription",
-                                      owner = owner,
-                                      team=team)
+                                      owner = owner)
 
         self.assertEqual(objupdate.name, "newname")
         self.assertEqual(objupdate.description, "newdescription")
-        self.assertEqual(objupdate.team, Team(id=11))
         self.assertTrue(update)
 
     def test_update_with_existing_name(self):
@@ -222,9 +192,10 @@ class TestCurriculumApp(TestCase):
 
     def test_get_all(self):
         """Test for get_all method"""
-        owner = CustomUser.objects.get(id=1)
-        curriculum_object = Curriculum.objects.create(name="testCurriculum", owner = owner)
-        self.assertEqual(set(Curriculum.get_all()), set(Curriculum.objects.all()))
+        expected_object = Curriculum.objects.all()
+        current_value = Curriculum.get_all()
+        self.assertEqual(list(current_value), list(expected_object))
+
         with mock.patch('curriculum.models.cache') as mock_cache:
             with mock.patch('curriculum.models.pickle') as mock_pickle:
                 mock_cache.__contains__.return_value = True

@@ -42,8 +42,7 @@ class AssignmentModelTestCase(TestCase):
             curriculum = Curriculum.objects.create(id=101,
                                                    name="testcurriculum",
                                                    goals=["goal1", "goal2"],
-                                                   description="test_descr",
-                                                   team=team)
+                                                   description="test_descr")
             curriculum.save()
 
             topic_python = Topic(id=101,
@@ -162,8 +161,7 @@ class AssignmentModelTestCase(TestCase):
         new_curriculum = Curriculum.objects.create(id=102,
                                                name="very interest curriculum",
                                                goals=["goal1", "goal2"],
-                                               description="test",
-                                               team=new_team)
+                                               description="test")
         new_curriculum.save()
 
         new_topic = Topic(id=102,
