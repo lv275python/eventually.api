@@ -48,7 +48,7 @@ class TaskViewTest(TestCase):
 
         expected_data = {'id': 11,
                          'event': 11,
-                         'users': [11],
+                         'users': [11,],
                          'created_at': 1510629132,
                          'updated_at': 1510629132,
                          'title': 'do something',
