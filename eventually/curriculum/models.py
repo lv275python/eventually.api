@@ -10,7 +10,6 @@ from django.db import models, IntegrityError
 from django.conf import settings
 from django.core.cache import cache
 from django.contrib.postgres.fields import ArrayField
-from team.models import Team
 from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
@@ -30,20 +29,15 @@ class Curriculum(AbstractModel):
         :param description: description of the curriculum
         :type description: str
 
-        :param team: id of teams which are studying by the curriculum
-        :type team: int
-
         :param created_at: Describes the date when the curriculum was created
         :type created_at: datetime
 
         :param updated_at: Describes the date when the curriculum was modified
         :type updated_at: datetime
     """
-
     name = models.CharField(max_length=50, unique=True, blank=False)
     goals = ArrayField(models.CharField(max_length=30, blank=False), size=8, null=True)
     description = models.TextField(max_length=500, blank=True)
-    team = models.ForeignKey(Team, null=True, related_name='team')
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(CustomUser, null=True, on_delete=models.SET_NULL)
@@ -69,7 +63,7 @@ class Curriculum(AbstractModel):
         return curriculum
 
     @staticmethod
-    def create(name, owner, description='', goals=(), team=None):
+    def create(name, owner, description='', goals=()):
         """
         Create a new Curriculum object in the database
 
@@ -85,25 +79,23 @@ class Curriculum(AbstractModel):
         :param owner: Certain CustomUser's object. Is required.
         :type owner: CustomUser model
 
-        :param team: id of teams which study the curriculum
-        :type team: list
+        :return: Curriculum object or nonenew_c = Curriculum.objects.creat(name='curr',
+         description='dededede', goals='sadsadsa', owner=11)
 
-        :return: Curriculum object or none
         """
+        new_curriculum = Curriculum()
+        new_curriculum.name = name
+        new_curriculum.description = description
+        new_curriculum.owner = owner
+        new_curriculum.goals = goals
 
         try:
-            new_curriculum = Curriculum.objects.create(name=name,
-                                                       description=description,
-                                                       goals=goals,
-                                                       owner=owner,
-                                                       team=team)
             new_curriculum.save()
             if "all_curriculums" in cache:
                 cache.delete("all_curriculums")
             return new_curriculum
-        except IntegrityError:
+        except (ValueError, IntegrityError):
             LOGGER.error("Relational integrity error")
-
 
     def to_dict(self):
         """
@@ -115,7 +107,6 @@ class Curriculum(AbstractModel):
         |   'name:': 'reading',
         |   'description': 'shakespeare',
         |   'goals': ['Be a Senior dev'],
-        |   'team': 1,
         |   'owner': 1,
         |   'created': 1511386400,
         |   'updated': 1511394690
@@ -126,14 +117,12 @@ class Curriculum(AbstractModel):
                 'name': self.name,
                 'description': self.description,
                 'goals': self.goals,
-                'team': self.team.id if self.team else None,
-                'owner': self.owner.id if self.owner else None,
                 'created': int(self.created_at.timestamp()),
-                'updated': int(self.updated_at.timestamp())
+                'updated': int(self.updated_at.timestamp()),
+                'owner': self.owner.id
                }
 
-
-    def update(self, owner, name=None, description=None, team=None):
+    def update(self, owner, name=None, description=None):
         """
         Updates the curriculum object
 
@@ -146,9 +135,6 @@ class Curriculum(AbstractModel):
         :param description: description for the curriculum object
         :type description: str
 
-        :param team: id of teams which study the curriculum
-        :type team: list
-
         :return: True if updated or None
         """
 
@@ -156,8 +142,6 @@ class Curriculum(AbstractModel):
             self.name = name
         if description:
             self.description = description
-        if team:
-            self.team = team
         if owner:
             self.owner = owner
         try:

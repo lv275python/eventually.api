@@ -58,8 +58,7 @@ class MentorModelTestCase(TestCase):
             curriculum = Curriculum.objects.create(id=300,
                                                    name="testcurriculum",
                                                    goals=["goal1", "goal2"],
-                                                   description="test_descr",
-                                                   team=team)
+                                                   description="test_descr")
             curriculum.save()
 
             topic_python = Topic(id=200,

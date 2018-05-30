@@ -35,8 +35,7 @@ class LiteratureItemTestCase(TestCase):
             curriculum = Curriculum(id=112,
                                     name="tes",
                                     goals=["goal1", "goal2"],
-                                    description="t_descr",
-                                    team=team)
+                                    description="t_descr")
             curriculum.save()
 
             topic = Topic(id=111,

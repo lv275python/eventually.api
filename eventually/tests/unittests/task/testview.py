@@ -32,7 +32,6 @@ class TaskViewTest(TestCase):
 
         event = Event.objects.create(id=11, team=team, owner=custom_user, name='Party')
 
-
         with mock.patch('django.utils.timezone.now') as mock_time:
             mock_time.return_value = TEST_TIME
 
@@ -49,7 +48,7 @@ class TaskViewTest(TestCase):
 
         expected_data = {'id': 11,
                          'event': 11,
-                         'users': [11,],
+                         'users': [11],
                          'created_at': 1510629132,
                          'updated_at': 1510629132,
                          'title': 'do something',
@@ -64,8 +63,8 @@ class TaskViewTest(TestCase):
     def test_request_get_full(self):
         """Method that tests the successful request.GET.get('full_name', None)"""
 
-        url = reverse('event:task:detail', args=[11, 11,11])
-        response = self.client.get(url,{'full_name':True})
+        url = reverse('event:task:detail', args=[11, 11, 11])
+        response = self.client.get(url, {'full_name': True})
         self.assertEqual(response.status_code, 200)
 
     def test_success_get_all(self):
@@ -73,7 +72,7 @@ class TaskViewTest(TestCase):
 
         expected_data = {'tasks': [{'id': 11,
                                     'event': 11,
-                                    'users': [11,],
+                                    'users': [11],
                                     'created_at': 1510629132,
                                     'updated_at': 1510629132,
                                     'title': 'do something',
@@ -105,7 +104,7 @@ class TaskViewTest(TestCase):
     def test_success_post(self):
         """Method that tests the success post request for creating task"""
 
-        data = {'users': [11,],
+        data = {'users': [11],
                 'title': 'do something else',
                 'description': 'give me pan',
                 'status': 1}
@@ -114,7 +113,7 @@ class TaskViewTest(TestCase):
         response = self.client.post(url, json.dumps(data), content_type='application/json')
         response_dict = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response_dict['users'], [11,])
+        self.assertEqual(response_dict['users'], [11])
         self.assertEqual(response_dict['title'], 'do something else')
         self.assertEqual(response_dict['description'], 'give me pan')
         self.assertEqual(response_dict['status'], 1)
@@ -131,11 +130,11 @@ class TaskViewTest(TestCase):
     def test_invalid_event_post(self):
         """Method that tests unsuccessful post request with invalid event id."""
 
-        data = {'users': [11,],
+        data = {'users': [11],
                 'title': 'do something else',
                 'description': 'give me pan',
                 'status': 1}
-        url = reverse('event:task:index', args=[11 ,112])
+        url = reverse('event:task:index', args=[11, 112])
         response = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 404)
 
@@ -143,7 +142,7 @@ class TaskViewTest(TestCase):
         """Method that tests unsuccessful post request with empty JSON data."""
 
         data = {}
-        url = reverse('event:task:index', args=[11 ,112])
+        url = reverse('event:task:index', args=[11, 112])
         response = self.client.post(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
@@ -155,8 +154,8 @@ class TaskViewTest(TestCase):
             data = {'title': 'some name',
                     'description': 'hello',
                     'status': 0,
-                    'users': [11,]}
-            url = reverse('event:task:index', args=[11 ,11])
+                    'users': [11]}
+            url = reverse('event:task:index', args=[11, 11])
             response = self.client.post(url, json.dumps(data), content_type='application/json')
             self.assertEqual(response.status_code, 400)
 
@@ -215,7 +214,6 @@ class TaskViewTest(TestCase):
         url = reverse('event:task:detail', args=[11, 11, 11])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 200)
-
 
     def test_fail_user_delete(self):
         """Method that tests unsuccessful delete request with no permissions."""

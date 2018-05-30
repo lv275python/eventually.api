@@ -53,8 +53,7 @@ class TestItemView(TestCase):
             Curriculum.objects.create(id=111,
                                       name="testcurriculum",
                                       goals=["goal1", "goal2"],
-                                      description="t_descr",
-                                      team=None)
+                                      description="t_descr")
 
             Topic.objects.create(id=212,
                                  curriculum=Curriculum.get_by_id(111),

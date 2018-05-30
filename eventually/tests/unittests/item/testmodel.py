@@ -59,8 +59,7 @@ class ItemModelTestCase(TestCase):
             curriculum = Curriculum.objects.create(id=101,
                                                    name="testcurriculum",
                                                    goals=["goal1", "goal2"],
-                                                   description="test_descr",
-                                                   team=team)
+                                                   description="test_descr")
             curriculum.save()
 
             topic_python = Topic(id=101,
