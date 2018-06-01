@@ -97,6 +97,7 @@ class Assignment(AbstractModel):
 
     @staticmethod
     def create(user, item):
+
         """
         Static method that creates instance of Assignment class and creates databes
         row with the accepted info.
@@ -209,7 +210,7 @@ class Assignment(AbstractModel):
         return assignment
 
     @staticmethod
-    def get_assignmets_by_student_id(student_id):
+    def get_assignmets_by_student_id_and_item_id(student_id, item_id=None):
         """
         Method that gets assignments that belong to certain student
         :param student_id: Certain student id
@@ -217,5 +218,10 @@ class Assignment(AbstractModel):
 
         :return: QuerySet with assignments
         """
-        assignments = Assignment.objects.filter(user_id=student_id)
+
+        if item_id:
+            assignments = Assignment.objects.get(user_id=student_id, item_id=item_id)
+        else:
+            assignments = Assignment.objects.filter(user_id=student_id)
+
         return assignments
