@@ -50,10 +50,11 @@ class Assignment(AbstractModel):
         (1, 'in_process'),
         (2, 'done')
     )
+
     statement = models.CharField(max_length=300, blank=True)
     grade = models.BooleanField(default=False)
-    user = models.ForeignKey(CustomUser, null=True)
-    item = models.ForeignKey(Item, null=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     status = models.IntegerField(default=0, choices=STATUS_TYPE_CHOICES)
     started_at = models.DateTimeField(null=True)
     finished_at = models.DateTimeField(null=True)
@@ -95,13 +96,7 @@ class Assignment(AbstractModel):
 
 
     @staticmethod
-    def create(user,
-               item,
-               statement='',
-               grade=False,
-               status=0,
-               started_at=None,
-               finished_at=None):
+    def create(user, item):
         """
         Static method that creates instance of Assignment class and creates databes
         row with the accepted info.
@@ -131,13 +126,9 @@ class Assignment(AbstractModel):
         """
 
         assignment = Assignment()
-        assignment.statement = statement
-        assignment.grade = grade
         assignment.user = user
         assignment.item = item
-        assignment.status = status
-        assignment.started_at = started_at
-        assignment.finished_at = finished_at
+
         try:
             assignment.save()
             return assignment
