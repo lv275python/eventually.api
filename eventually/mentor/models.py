@@ -13,6 +13,7 @@ from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 from authentication.models import CustomUser
 from topic.models import Topic
+from curriculum.models import Curriculum
 
 
 class MentorStudent(AbstractModel):
@@ -240,8 +241,22 @@ class MentorStudent(AbstractModel):
         return None
 
     @staticmethod
-    def get_student_topics(student_id):
-        assigned_topics = MentorStudent.objects.filter(student_id=student_id, mentor_id__isnull=False)
-        topics_list = assigned_topics.values_list('topic', flat=True)
-        topics = [Topic.get_by_id(topic_id) for topic_id in topics_list]
+    def get_student_topics(student_id, curriculum_id=None):
+        if curriculum_id:
+            assigned_topics = MentorStudent.objects.filter(student_id=student_id,
+                                                           mentor_id__isnull=False,
+                                                           topic__curriculum_id=curriculum_id)
+            topics_list = assigned_topics.values_list('topic', flat=True)
+            topics = [Topic.get_by_id(topic_id) for topic_id in topics_list]
+        else:
+            assigned_topics = MentorStudent.objects.filter(student_id=student_id, mentor_id__isnull=False)
+            topics_list = assigned_topics.values_list('topic', flat=True)
+            topics = [Topic.get_by_id(topic_id) for topic_id in topics_list]
         return topics
+
+    @staticmethod
+    def get_student_curriculums(student_id):
+        assigned_topics = MentorStudent.objects.filter(student_id=student_id, mentor_id__isnull=False)
+        curriculum_list= assigned_topics.values_list('topic__curriculum_id', flat=True).distinct()
+        curriculums = [Curriculum.get_by_id(curriculum_id) for curriculum_id in curriculum_list]
+        return curriculums
