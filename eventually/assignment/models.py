@@ -209,7 +209,7 @@ class Assignment(AbstractModel):
         return assignment
 
     @staticmethod
-    def get_assignmets_by_student_id(student_id):
+    def get_assignments_by_student_id(student_id, topic_id=None):
         """
         Method that gets assignments that belong to certain student
         :param student_id: Certain student id
@@ -217,5 +217,8 @@ class Assignment(AbstractModel):
 
         :return: QuerySet with assignments
         """
-        assignments = Assignment.objects.filter(user_id=student_id)
+        if topic_id:
+            assignments = Assignment.objects.filter(user_id=student_id, item__topic_id=topic_id)
+        else:
+            assignments = Assignment.objects.filter(user_id=student_id)
         return assignments

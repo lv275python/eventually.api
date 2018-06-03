@@ -238,3 +238,10 @@ class MentorStudent(AbstractModel):
         if record:
             return record[0]
         return None
+
+    @staticmethod
+    def get_student_topics(student_id):
+        assigned_topics = MentorStudent.objects.filter(student_id=student_id, mentor_id__isnull=False)
+        topics_list = assigned_topics.values_list('topic', flat=True)
+        topics = [Topic.get_by_id(topic_id) for topic_id in topics_list]
+        return topics
