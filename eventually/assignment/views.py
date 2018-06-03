@@ -3,8 +3,10 @@
 from django.views.generic.base import View
 from django.http import JsonResponse
 from assignment.models import Assignment
-
-from utils.responsehelper import (RESPONSE_404_OBJECT_NOT_FOUND)
+from authentication.models import CustomUser
+from utils.responsehelper import (RESPONSE_200_UPDATED,
+                                  RESPONSE_400_INVALID_DATA,
+                                  RESPONSE_404_OBJECT_NOT_FOUND)
 
 
 class AssignmentAnswerView(View):
@@ -32,3 +34,77 @@ class AssignmentAnswerView(View):
             data = {'new_date': new_date[::-1]}
             return JsonResponse(data, status=201)
         return RESPONSE_404_OBJECT_NOT_FOUND
+
+
+class AssignmentStudentView(View):
+    """Assignment view that handles GET, POST, PUT, DELETE requests."""
+
+    def get(self, request):
+        # """
+        # Handle GET request
+        #
+        # :param request: the accepted HTTP request. Is required
+        # :type request: HttpRequest
+        #
+        # :return: return JsonResponse within status and statement data with status 200
+        #          or HttpRequest with error if parameters are bad.
+        #
+        # """
+
+        student = CustomUser.get_by_id(request.user.id)
+        assignments = Assignment.get_assignmets_by_student_id(student.id)
+
+        response = (assignment.to_dict() for assignment in assignments)
+        return JsonResponse(response, status=200)
+
+    def post(self, request):
+        """
+
+        :param request:
+        :return:
+        """
+
+        data = request.body
+
+        response = {}
+
+        Assignment.create(**response)
+
+    def put(self, request, assignment_id):
+        """
+        Handle PUT request
+
+        :param request: the accepted HTTP request.
+        :type request: HttpRequest
+
+        :param assignment_id:
+        :type assignment_id: int
+
+        # :return:
+        # :rtype: HttpResponse object
+        """
+
+        assignment = Assignment.get_by_id(assignment_id)
+
+        if not assignment:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+
+        data = request.body
+        if not data:
+            return RESPONSE_400_INVALID_DATA
+
+        status = data.get('status')
+        if not status:
+            return RESPONSE_400_INVALID_DATA
+
+        if status == 1:
+            assignment.update({"status": 1})
+
+        if status == 2:
+            response = {'status': status,
+                        'statement': data.get('statement')
+                        # 'started_at': ,
+                        }
+            assignment.update(**response)
+
+        return RESPONSE_200_UPDATED

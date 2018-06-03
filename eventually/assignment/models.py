@@ -5,13 +5,17 @@ Assignment model
 This module implements class that represents the assignment entity.
 """
 # pylint: disable=arguments-differ
+import pickle
 from django.db import models, IntegrityError
+from django.conf import settings
+from django.core.cache import cache
 from authentication.models import CustomUser
 from item.models import Item
 
 from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
+CACHE_TTL = settings.CACHE_TTL
 
 class Assignment(AbstractModel):
 
@@ -46,10 +50,11 @@ class Assignment(AbstractModel):
         (1, 'in_process'),
         (2, 'done')
     )
-    statement = models.CharField(max_length=1024, blank=True)
-    grade = models.FloatField(null=True)
-    user = models.ForeignKey(CustomUser, null=True)
-    item = models.ForeignKey(Item, null=True)
+
+    statement = models.CharField(max_length=300, blank=True)
+    grade = models.BooleanField(default=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
     status = models.IntegerField(default=0, choices=STATUS_TYPE_CHOICES)
     started_at = models.DateTimeField(null=True)
     finished_at = models.DateTimeField(null=True)
@@ -91,13 +96,7 @@ class Assignment(AbstractModel):
 
 
     @staticmethod
-    def create(statement,
-               grade,
-               user=None,
-               item=None,
-               status=0,
-               started_at=None,
-               finished_at=None):
+    def create(user, item):
         """
         Static method that creates instance of Assignment class and creates databes
         row with the accepted info.
@@ -127,13 +126,9 @@ class Assignment(AbstractModel):
         """
 
         assignment = Assignment()
-        assignment.statement = statement
-        assignment.grade = grade
         assignment.user = user
         assignment.item = item
-        assignment.status = status
-        assignment.started_at = started_at
-        assignment.finished_at = finished_at
+
         try:
             assignment.save()
             return assignment
@@ -190,3 +185,40 @@ class Assignment(AbstractModel):
         if finished_at:
             self.finished_at = finished_at
         self.save()
+
+    @staticmethod
+    def get_by_id(assignment_id):
+        """
+        returns object of Topic by id
+
+        :param student_id: Certain student id
+        :type student_id: int
+
+        :return: QuerySet with assignments
+        """
+        redis_key = 'assignment_by_id_{0}'.format(assignment_id)
+        if redis_key in cache:
+            assignment = pickle.loads(cache.get(redis_key))
+            return assignment
+        try:
+            assignment = Assignment.objects.get(id=assignment_id)
+        except Assignment.DoesNotExist:
+            return None
+        cached_topic = pickle.dumps(assignment)
+        cache.set(redis_key, cached_topic, CACHE_TTL)
+        return assignment
+
+    @staticmethod
+    def get_assignments_by_student_id(student_id, topic_id=None):
+        """
+        Method that gets assignments that belong to certain student
+        :param student_id: Certain student id
+        :type student_id: int
+
+        :return: QuerySet with assignments
+        """
+        if topic_id:
+            assignments = Assignment.objects.filter(user_id=student_id, item__topic_id=topic_id)
+        else:
+            assignments = Assignment.objects.filter(user_id=student_id)
+        return assignments
