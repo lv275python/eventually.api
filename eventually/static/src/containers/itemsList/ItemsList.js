@@ -12,15 +12,17 @@ export default class ItemsList extends React.Component {
         this.state = {
             isActive: -1,
             isModalOpen: false,
-            answer: ''
+            answer: '',
+            items: []
         };
     }
 
     componentWillMount() {
-        this.setState({
-            items: getItemsList()
+        getItemsList(this.props.curriculumId, this.props.topicId).then(response => {
+            this.setState({items: response.data['items']});
         });
-    }
+    };
+
 
 
     handleModalOpen = () => {
@@ -49,8 +51,7 @@ export default class ItemsList extends React.Component {
         return (
             <div style={this.props.style}>
                 <Paper zDepth={2}>
-                    {
-                        this.state.items.map(item => (
+                    {this.state.items.map(item => (
                             <ItemUnit
                                 key={item.id.toString()}
                                 name={item.name}

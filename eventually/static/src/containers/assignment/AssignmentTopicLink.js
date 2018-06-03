@@ -1,12 +1,17 @@
 import React from 'react';
 import {withRouter} from "react-router-dom";
 import { Card, CardHeader, CardText } from 'material-ui/Card';
-import {TopicItemList,} from 'src/containers';
+import {TopicItemList, ItemsList} from 'src/containers';
 
 const cardHeaderStyle= {
     fontSize: '25px'
 };
 
+const itemsGraphStyle = {
+    paddingTop: 10,
+    width: '90%',
+    maxWidth: '90%'
+};
 
 const cardTextStyle = {
     color: '#455A64',
@@ -58,10 +63,13 @@ class AssignmentTopicLink extends React.Component {
                     <CardText
                         style={cardTextStyle}
                         expandable={true}>
-                        <TopicItemList
+                        <ItemsList
                             curriculumId={this.state.curriculumId}
-                            topicId={this.state.topicId}
-                            isMentor={this.state.isMentor} />
+                            topicId={this.state.topicId}/>
+                        {/*<TopicItemList*/}
+                            {/*curriculumId={this.state.curriculumId}*/}
+                            {/*topicId={this.state.topicId}*/}
+                            {/*isMentor={this.state.isMentor} />*/}
                     </CardText>
 
                 </Card>
