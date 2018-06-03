@@ -7,6 +7,8 @@ from authentication.models import CustomUser
 from utils.responsehelper import (RESPONSE_200_UPDATED,
                                   RESPONSE_400_INVALID_DATA,
                                   RESPONSE_404_OBJECT_NOT_FOUND)
+from curriculum.models import Curriculum
+from mentor.models import MentorStudent
 
 
 class AssignmentAnswerView(View):
@@ -39,23 +41,25 @@ class AssignmentAnswerView(View):
 class AssignmentStudentView(View):
     """Assignment view that handles GET, POST, PUT, DELETE requests."""
 
-    def get(self, request):
-        # """
-        # Handle GET request
-        #
-        # :param request: the accepted HTTP request. Is required
-        # :type request: HttpRequest
-        #
-        # :return: return JsonResponse within status and statement data with status 200
-        #          or HttpRequest with error if parameters are bad.
-        #
-        # """
+    def get(self, request, topic_id=None):
+        """
+        Handle GET request
 
-        student = CustomUser.get_by_id(request.user.id)
-        assignments = Assignment.get_assignmets_by_student_id(student.id)
+        :param request: the accepted HTTP request. Is required
+        :type request: HttpRequest
 
-        response = (assignment.to_dict() for assignment in assignments)
-        return JsonResponse(response, status=200)
+        :param topic_id: topic_id
+        :type request: int
+
+        :return: return JsonResponse within status and statement data with status 200
+                 or HttpRequest with error if parameters are bad.
+
+        """
+
+        student = CustomUser.get_by_id(request.user)
+        assignments = Assignment.get_assignmets_by_student_id(student.id, topic_id)
+        data = {'assignments': [assignment.to_dict() for assignment in assignments]}
+        return JsonResponse(data, status=200)
 
     def post(self, request):
         """
@@ -108,3 +112,17 @@ class AssignmentStudentView(View):
             assignment.update(**response)
 
         return RESPONSE_200_UPDATED
+
+
+def get_curriculum_list(request):
+    student = request.user
+    curriculums = MentorStudent.get_student_curriculums(student)
+    data = {'curriculums': [curriculum.to_dict() for curriculum in curriculums]}
+    return JsonResponse(data, status=200)
+
+
+def get_topic_list(request, curriculum_id=None):
+    student = request.user
+    topics = MentorStudent.get_student_topics(student, curriculum_id)
+    data = {'topics': [topic.to_dict() for topic in topics]}
+    return JsonResponse(data, status=200)
