@@ -60,7 +60,7 @@ export default class ItemUnit extends React.Component {
 
         if (this.props.form === 0) {
             avatar = (<Avatar icon={<LibraryBooks />} backgroundColor={yellow600} />);
-            controlButton = <FlatButton label="Done" secondary={true} />;
+            controlButton = <FlatButton label="Done" secondary={true}/>;
         } else if (this.props.form === 1) {
             avatar = (<Avatar icon={<Code />} backgroundColor={blue500} />);
         } else  if (this.props.form === 2) {

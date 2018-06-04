@@ -18,8 +18,8 @@ export default class ItemsList extends React.Component {
     }
 
     componentWillMount() {
-        getItemsList(this.props.curriculumId, this.props.topicId).then(response => {
-            this.setState({items: response.data['items']});
+        getItemsList(this.props.topicId).then(response => {
+            this.setState({items: response.data['assignments']});
         });
     };
 
@@ -53,13 +53,13 @@ export default class ItemsList extends React.Component {
                 <Paper zDepth={2}>
                     {this.state.items.map(item => (
                             <ItemUnit
-                                key={item.id.toString()}
-                                name={item.name}
-                                description={item.description}
-                                form={item.form}
-                                isActive={item.id === this.state.isActive || false}
+                                key={item.item.id.toString()}
+                                name={item.item.name}
+                                description={item.item.description}
+                                form={item.item.form}
+                                isActive={item.item.id === this.state.isActive || false}
                                 onClick={this.handleClick}
-                                id={item.id}
+                                id={item.item.id}
                                 onModalOpen={this.handleModalOpen}
                             />)
                         )
