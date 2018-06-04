@@ -115,22 +115,26 @@ class AssignmentStudentView(View):
 
 
 def get_curriculum_list(request):
-    student = request.user
-    curriculums = Assignment.get_curriculums(student)
-    data = {'curriculums': [curriculum.to_dict() for curriculum in curriculums]}
-    return JsonResponse(data, status=200)
+    if request.method == "GET":
+        student = request.user
+        curriculums = Assignment.get_curriculums(student)
+        data = {'curriculums': [curriculum.to_dict() for curriculum in curriculums]}
+        return JsonResponse(data, status=200)
 
 
 def get_topic_list(request, curriculum_id=None):
-    student = request.user
-    topics =Assignment.get_curriculums(studen MentorStudent.get_student_topics(student, curriculum_id)
-    data = {'topics': [topic.to_dict() for topic in topics]}
-    return JsonResponse(data, status=200)
+    if request.method == "GET":
+        student = request.user
+        topics = Assignment.get_topics(student, curriculum_id)
+        print(topics)
+        data = {'topics': [topic.to_dict() for topic in topics]}
+        return JsonResponse(data, status=200)
 
 
 def get_assignment_list(request, topic_id):
-    user = request.user
-    assignments = Assignment.get_assignments_by_student_id(user, topic_id)
-    data = {'assignments': [{'assignment':assignment.to_dict(), 'item':assignment.item.to_dict()}
-            for assignment in assignments]}
-    return JsonResponse(data, status=200)
+    if request.method == "GET":
+        user = request.user
+        assignments = Assignment.get_assignments_by_student_id(user, topic_id)
+        data = {'assignments': [{'assignment':assignment.to_dict(), 'item':assignment.item.to_dict()}
+                for assignment in assignments]}
+        return JsonResponse(data, status=200)
