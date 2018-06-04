@@ -18,7 +18,7 @@ export default class ItemsList extends React.Component {
     }
 
     componentWillMount() {
-        getItemsList(this.props.topicId).then(response => {
+        getItemsList(this.props.topicId, 1).then(response => {
             this.setState({items: response.data['assignments']});
         });
     };
