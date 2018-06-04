@@ -237,10 +237,10 @@ class Assignment(AbstractModel):
         if curriculum_id:
             assignments = Assignment.objects.filter(user=student_id,
                                                     item__topic__curriculum=curriculum_id).exclude(status=2)
-            topic_ids = assignments.values_list('item__topic').distinct()
+            topic_ids = assignments.values_list('item__topic', flat=True).distinct()
             topics = [Topic.get_by_id(id) for id in topic_ids]
         else:
             assignments = Assignment.objects.filter(user=student_id).exlude(status=2)
-            topic_ids = assignments.values_list('item__topic').distinct()
+            topic_ids = assignments.values_list('item__topic', flat=True).distinct()
             topics = [Topic.get_by_id(id) for id in topic_ids]
         return topics
