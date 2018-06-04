@@ -126,14 +126,16 @@ def get_topic_list(request, curriculum_id=None):
     if request.method == "GET":
         student = request.user
         topics = Assignment.get_topics(student, curriculum_id)
-        print(topics)
         data = {'topics': [topic.to_dict() for topic in topics]}
         return JsonResponse(data, status=200)
 
 
-def get_assignment_list(request, topic_id):
+def get_assignment_list(request, topic_id, user_id=None):
     if request.method == "GET":
-        user = request.user
+        if user_id:
+            user = CustomUser.get_by_id(user_id)
+        else:
+            user = request.user
         assignments = Assignment.get_assignments_by_student_id(user, topic_id)
         data = {'assignments': [{'assignment':assignment.to_dict(), 'item':assignment.item.to_dict()}
                 for assignment in assignments]}
