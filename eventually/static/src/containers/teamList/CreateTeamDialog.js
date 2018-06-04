@@ -27,6 +27,20 @@ const errorStyle = {
     color: orange500,
 };
 
+const styleContainer = {
+    width: '150px',
+    height: '150px',
+    margin:'0% 15%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+};
+
+const imageStyle = {
+    maxWidth: '100%',
+    maxHeight: '100%',
+};
+
 export default class CreateTeamDialog extends React.Component {
     constructor(props) {
         super(props);
@@ -35,6 +49,8 @@ export default class CreateTeamDialog extends React.Component {
             name: '',
             description: '',
             image: '',
+            imageData:'',
+            imageUrl:'',
             values: [],
             users: [],
             MessageName: '',
@@ -44,6 +60,13 @@ export default class CreateTeamDialog extends React.Component {
             openCancelDialog: false
         };
     }
+
+    fetchData = (imageData, imageUrl) => {
+        this.setState({
+            imageData: imageData,
+            imageUrl: imageUrl
+        });
+    };
 
     componentWillMount(){
         this.getAllUsers();
@@ -105,6 +128,8 @@ export default class CreateTeamDialog extends React.Component {
             name: '',
             description: '',
             image: '',
+            imageUrl: '',
+            imageData: '',
             MessageName: '',
             MessageDescription: '',
             NameIsValid: false,
@@ -116,8 +141,8 @@ export default class CreateTeamDialog extends React.Component {
         this.setState({values});
     };
 
-    handleSubmit = () => {
-        if(this.state.DescriptionIsValid === true && this.state.NameIsValid === true){
+    postTeamData = () => {
+        if (this.state.DescriptionIsValid === true && this.state.NameIsValid === true) {
             const data = {
                 'name': this.state.name,
                 'description': this.state.description,
@@ -125,13 +150,29 @@ export default class CreateTeamDialog extends React.Component {
                 'owner': getUserId(),
                 'members_id': this.state.values
             };
+
             teamServicePost(data).then(response => {
-                this.props.getTeamItem();
                 this.handleClose();
+                this.props.getTeamItem();
             });
         }
+    }
+
+    handleSubmit = () => {
+        if (this.state.imageData){
+            sendFile(this.state.imageData).then(response => {
+                if (response.status == 200) {
+                    this.setState({
+                        image: response.data['image_key']
+                    });
+                }
+                this.postTeamData();
+            });
+        } else {
+            this.postTeamData();
+        }
     };
-    
+
     menuItems(values) {
         return this.state.users.map((user) => (
             <MenuItem
@@ -219,7 +260,13 @@ export default class CreateTeamDialog extends React.Component {
                     >
                         {this.menuItems(values)}
                     </SelectField>
-                    <FileUpload updateImageNameInDb={this.uploadImage}/>
+                    <div style={styleContainer}>
+                        <img src={this.state.imageUrl}
+                            alt=""
+                            style={imageStyle}
+                        />
+                    </div>
+                    <FileUpload fetchData={this.fetchData}/>
                 </Dialog>
                 {this.state.openCancelDialog &&
                     (<CancelDialog

@@ -3,10 +3,9 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import LinearProgress from 'material-ui/LinearProgress';
 import TextField from 'material-ui/TextField';
-import {FileUpload, CancelDialog} from 'src/containers';
+import {FileUpload, CancelDialog, sendFile} from 'src/containers';
 import {getImageUrl} from 'src/helper';
 import {deleteFile} from '../fileUpload/FileUploadService';
-import {sendFile} from '../fileUpload/FileUploadService';
 import {teamServicePut} from './teamService';
 
 const styleContainer = {
