@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
-import { postTopicAssignService, getTopicStudentsService, deleteMenteeService, getIsMentorService } from '../topicList/TopicServices';
+import { Card, CardHeader, CardText } from 'material-ui/Card';
+import {getIsMentorService } from '../topicList/TopicServices';
 import StudentsMentorList from './StudentsMentor';
 
 
@@ -14,11 +14,6 @@ const cardHeaderStyle= {
     fontSize: '25px'
 };
 
-const flatButtonStyle = {
-    display: 'flex',
-    justifyContent: 'flex-end'
-};
-
 
 class MentorTopicLink extends React.Component {
 
@@ -27,7 +22,11 @@ class MentorTopicLink extends React.Component {
         this.state = {
             expanded: this.props.isActive,
             isMentor: false,
+            topicId: this.props.id,
+            curriculumId: this.props.curriculumId,
+
         };
+
     }
 
     changeExp = newExpandedState => {
@@ -55,6 +54,7 @@ class MentorTopicLink extends React.Component {
                     <CardHeader
                         style={cardHeaderStyle}
                         title={this.props.title}
+                        id={this.props.id}
                         actAsExpander={true}
                         showExpandableButton={true}
                     />
@@ -62,7 +62,12 @@ class MentorTopicLink extends React.Component {
                         style={cardTextStyle}
                         expandable={true}>
                         <StudentsMentorList
+                            id={this.state.topicId}
                             style={cardTextStyle}
+                            expandable={true}
+                            actAsExpander={true}
+                            showExpandableButton={true}
+                            curriculumId={this.state.curriculumId}
                         />
                     </CardText>
                 </Card>);

@@ -38,7 +38,6 @@ class MentorView(View):
 
         mentor = CustomUser.get_by_id(request.user.id)
         mentors_topics_ids = [topic.id for topic in find_mentors_topics(mentor.id)]
-
         filters = {}
         if request.GET.get('topic', None):
             filters['topic_id'] = request.GET.get('topic')

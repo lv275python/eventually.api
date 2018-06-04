@@ -1,9 +1,6 @@
 import React from 'react';
-import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
-import {withRouter} from 'react-router-dom';
+import {Card, CardHeader} from 'material-ui/Card';
 import {getTopicListService} from '../curriculum/CurriculumService';
-import {TopicsList, TopicDialog} from 'src/containers';
-import MentorTopicLink from './MentorTopicLink';
 import MentorList from './MentorList';
 
 const cardHeaderStyle = {
