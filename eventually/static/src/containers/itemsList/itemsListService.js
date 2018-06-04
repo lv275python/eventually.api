@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { apiUrl } from 'src/helper';
 
-const curriculumPath = apiUrl + 'curriculums/';
+const assignmentPath = apiUrl + 'assignment/'
 
-const getItemsList = (curriculumId, topicId) => {
-    let url = curriculumPath + curriculumId + '/topics/' + topicId + '/items/';
+const getItemsList = (topicId) => {
+    let url = assignmentPath + topicId;
     return axios.get(url);
 };
 //     return [

@@ -14,6 +14,8 @@ from item.models import Item
 
 from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
+from curriculum.models import Curriculum
+from topic.models import Topic
 
 CACHE_TTL = settings.CACHE_TTL
 
@@ -222,3 +224,23 @@ class Assignment(AbstractModel):
         else:
             assignments = Assignment.objects.filter(user_id=student_id)
         return assignments
+
+    @staticmethod
+    def get_curriculums(student_id):
+        assignments = Assignment.objects.filter(user=student_id).exclude(status=2)
+        curriculums_id = assignments.values_list('item__topic__curriculum', flat=True).distinct()
+        curriculums = [Curriculum.get_by_id(id) for id in curriculums_id]
+        return curriculums
+
+    @staticmethod
+    def get_topics(student_id, curriculum_id=None):
+        if curriculum_id:
+            assignments = Assignment.objects.filter(user=student_id,
+                                                    item__topic__curriculum=curriculum_id).exclude(status=2)
+            topic_ids = assignments.values_list('item__topic').distinct()
+            topics = [Topic.get_by_id(id) for id in topic_ids]
+        else:
+            assignments = Assignment.objects.filter(user=student_id).exlude(status=2)
+            topic_ids = assignments.values_list('item__topic').distinct()
+            topics = [Topic.get_by_id(id) for id in topic_ids]
+        return topics

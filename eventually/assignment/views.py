@@ -116,13 +116,21 @@ class AssignmentStudentView(View):
 
 def get_curriculum_list(request):
     student = request.user
-    curriculums = MentorStudent.get_student_curriculums(student)
+    curriculums = Assignment.get_curriculums(student)
     data = {'curriculums': [curriculum.to_dict() for curriculum in curriculums]}
     return JsonResponse(data, status=200)
 
 
 def get_topic_list(request, curriculum_id=None):
     student = request.user
-    topics = MentorStudent.get_student_topics(student, curriculum_id)
+    topics =Assignment.get_curriculums(studen MentorStudent.get_student_topics(student, curriculum_id)
     data = {'topics': [topic.to_dict() for topic in topics]}
+    return JsonResponse(data, status=200)
+
+
+def get_assignment_list(request, topic_id):
+    user = request.user
+    assignments = Assignment.get_assignments_by_student_id(user, topic_id)
+    data = {'assignments': [{'assignment':assignment.to_dict(), 'item':assignment.item.to_dict()}
+            for assignment in assignments]}
     return JsonResponse(data, status=200)
