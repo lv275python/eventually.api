@@ -1,14 +1,14 @@
 import React from 'react';
-import {UsersList} from 'src/components';
-import {getStudentsList, getCurriculumTopics, postStudentList} from 'src/components/studentsTabsList/studentsTabsListService';
+import {getStudentsList} from 'src/components/studentsTabsList/studentsTabsListService';
 import {isObjectsEqual} from 'src/helper';
+import {Card} from 'material-ui/Card';
+import StudentList from './StudentList';
 
 
 export default class StudentsMentorList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            chosenTopic: null,
             studentsList: {
                 myStudents: [],
             },
@@ -19,11 +19,10 @@ export default class StudentsMentorList extends React.Component {
     }
 
     getData = () => {
-        const chosenTopic = this.props.title;
-        this.getStudentsListData();
+        this.getStudentsListData(this.props.id, false);
     };
-    getStudentsListData = (chosenTopic) => {
-        getStudentsList(chosenTopic)
+    getStudentsListData = (chosenTopic, isTopicDone) => {
+        getStudentsList(chosenTopic, isTopicDone)
             .then(response => {
                 const data = response.data;
                 this.setState({
@@ -36,10 +35,11 @@ export default class StudentsMentorList extends React.Component {
 
     render() {
         return (
-            <div>
-                <UsersList
+            <Card>
+                <StudentList
+                    curriculumId = {this.props.curriculumId}
                     students={this.state.studentsList.myStudents}/>
-            </div>
+            </Card>
         );
     }
 }

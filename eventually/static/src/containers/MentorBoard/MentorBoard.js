@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
+import {Card} from 'material-ui/Card';
 import MentorTopicsList from './MentorTopicsList';
 import {getCurriculumsService} from './MentorBoardService';
 
@@ -25,7 +25,6 @@ class MentorBoard extends React.Component {
         getCurriculumsService().then(response => {
             this.setState({'curriculums': response.data['curriculums']});
         });
-
     };
 
 
