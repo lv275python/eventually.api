@@ -61,7 +61,7 @@ class AssignmentStudentView(View):
         """
 
         student = CustomUser.get_by_id(request.user)
-        assignments = Assignment.get_assignmets_by_student_id(student.id, topic_id)
+        assignments = Assignment.get_assignments_by_student_topic_item_ids(student_id=student.id, topic_id=topic_id)
         data = {'assignments': [assignment.to_dict() for assignment in assignments]}
         return JsonResponse(data, status=200)
 
@@ -113,7 +113,7 @@ class AssignmentStudentView(View):
         user = CustomUser.get_by_id(assignment.user_id)
 
         current_item_id = assignment.item_id
-        topic_id = Item.get_by_id(current_item_id).topic.id
+        topic_id = Item.get_by_id(current_item_id).topic_id
 
         if status == 1:
             assignment.update(**{'status': status})
@@ -128,8 +128,8 @@ class AssignmentStudentView(View):
                     item_superiors_id_list = item.get_item_superiors()[1]
                     if current_item_id in item_superiors_id_list:
                         for superior_item_id in item_superiors_id_list:
-                            superior_assignment = Assignment.get_assignmets_by_student_id_and_item_id(user.id,
-                                                                                                      superior_item_id)
+                            superior_assignment = Assignment.\
+                                get_assignments_by_student_topic_item_ids(student_id=user.id, item_id=superior_item_id)
 
                             if not superior_assignment:
                                 break

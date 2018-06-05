@@ -214,7 +214,7 @@ class Assignment(AbstractModel):
         return assignment
 
     @staticmethod
-    def get_assignments_by_student_id(student_id, topic_id=None, item_id=None):
+    def get_assignments_by_student_topic_item_ids(student_id, topic_id=None, item_id=None):
         """
         Method that gets assignments that belong to certain student
         :param student_id: Certain student id
