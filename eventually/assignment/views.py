@@ -8,6 +8,11 @@ from item.models import Item
 from utils.responsehelper import (RESPONSE_200_UPDATED,
                                   RESPONSE_400_INVALID_DATA,
                                   RESPONSE_404_OBJECT_NOT_FOUND)
+from utils.topic_views_functions import find_mentors_topics
+from curriculum.models import Curriculum
+from topic.models import Topic
+from curriculum.models import Curriculum
+from mentor.models import MentorStudent
 
 
 class AssignmentAnswerView(View):
@@ -40,23 +45,25 @@ class AssignmentAnswerView(View):
 class AssignmentStudentView(View):
     """Assignment view that handles GET, POST, PUT, DELETE requests."""
 
-    def get(self, request):
-        # """
-        # Handle GET request
-        #
-        # :param request: the accepted HTTP request. Is required
-        # :type request: HttpRequest
-        #
-        # :return: return JsonResponse within status and statement data with status 200
-        #          or HttpRequest with error if parameters are bad.
-        #
-        # """
+    def get(self, request, topic_id=None):
+        """
+        Handle GET request
 
-        student = CustomUser.get_by_id(request.user.id)
-        assignments = Assignment.get_assignmets_by_student_id_and_item_id(student.id)
+        :param request: the accepted HTTP request. Is required
+        :type request: HttpRequest
 
-        response = (assignment.to_dict() for assignment in assignments)
-        return JsonResponse(response, status=200)
+        :param topic_id: topic_id
+        :type request: int
+
+        :return: return JsonResponse within status and statement data with status 200
+                 or HttpRequest with error if parameters are bad.
+
+        """
+
+        student = CustomUser.get_by_id(request.user)
+        assignments = Assignment.get_assignmets_by_student_id(student.id, topic_id)
+        data = {'assignments': [assignment.to_dict() for assignment in assignments]}
+        return JsonResponse(data, status=200)
 
     def post(self, request):
         """
@@ -148,3 +155,46 @@ class AssignmentStudentView(View):
                 assignment.update(**response)
 
         return RESPONSE_200_UPDATED
+
+class AssigmentsMentorView(View):
+    """Assignment view that handles GET, POST, PUT, DELETE requests."""
+
+    def get(self, request, curriculum_id=None):
+        """
+        """
+        mentor = request.user
+        if curriculum_id:
+            topics = Assignment.get_topics_by_mentor_id(mentor)
+            response = {'topics': [topics.to_dict() for topic in topics]}
+            return JsonResponse(response, status=200)
+        else:
+            curriculums = Assignment.get_curriculums_by_mentor_id(mentor)
+            response = {'curriculums': [curriculum.to_dict() for curriculum in curriculums]}
+            return JsonResponse(response, status=200)
+def get_curriculum_list(request):
+    if request.method == "GET":
+        student = request.user
+        curriculums = Assignment.get_curriculums(student)
+        data = {'curriculums': [curriculum.to_dict() for curriculum in curriculums]}
+        return JsonResponse(data, status=200)
+
+
+def get_topic_list(request, curriculum_id=None):
+    if request.method == "GET":
+        student = request.user
+        topics = Assignment.get_topics(student, curriculum_id)
+        data = {'topics': [topic.to_dict() for topic in topics]}
+        return JsonResponse(data, status=200)
+
+
+
+def get_assignment_list(request, topic_id, user_id=None):
+    if request.method == "GET":
+        if user_id:
+            user = CustomUser.get_by_id(user_id)
+        else:
+            user = request.user
+        assignments = Assignment.get_assignments_by_mentor_id(user, topic_id)
+        data = {'assignments': [{'assignment':assignment.to_dict(), 'item':assignment.item.to_dict()}
+                for assignment in assignments]}
+        return JsonResponse(data, status=200)

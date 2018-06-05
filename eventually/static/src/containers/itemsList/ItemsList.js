@@ -12,15 +12,16 @@ export default class ItemsList extends React.Component {
         this.state = {
             isActive: -1,
             isModalOpen: false,
-            answer: ''
+            answer: '',
+            items: [],
         };
     }
 
     componentWillMount() {
-        this.setState({
-            items: getItemsList()
+        getItemsList(this.props.topicId, this.props.userId).then(response => {
+            this.setState({items: response.data['assignments']});
         });
-    }
+    };
 
 
     handleModalOpen = () => {
@@ -48,20 +49,19 @@ export default class ItemsList extends React.Component {
     render() {
         return (
             <div style={this.props.style}>
-                <Paper zDepth={2}>
-                    {
-                        this.state.items.map(item => (
-                            <ItemUnit
-                                key={item.id.toString()}
-                                name={item.name}
-                                description={item.description}
-                                form={item.form}
-                                isActive={item.id === this.state.isActive || false}
-                                onClick={this.handleClick}
-                                id={item.id}
-                                onModalOpen={this.handleModalOpen}
-                            />)
-                        )
+                <Paper zDepth={1}>
+                    {this.state.items.map(item => (
+                        <ItemUnit
+                            key={item.item.id.toString()}
+                            name={item.item.name}
+                            description={item.item.description}
+                            form={item.item.form}
+                            isActive={item.item.id === this.state.isActive || false}
+                            onClick={this.handleClick}
+                            id={item.item.id}
+                            onModalOpen={this.handleModalOpen}
+                        />)
+                    )
                     }
                     <Divider inset={true} />
                 </Paper>
