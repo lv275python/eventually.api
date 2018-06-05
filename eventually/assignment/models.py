@@ -13,7 +13,9 @@ from authentication.models import CustomUser
 from item.models import Item
 
 from utils.abstractmodel import AbstractModel
+from utils.topic_views_functions import find_mentors_topics
 from utils.utils import LOGGER
+
 from curriculum.models import Curriculum
 from topic.models import Topic
 
@@ -99,6 +101,7 @@ class Assignment(AbstractModel):
 
     @staticmethod
     def create(user, item):
+
         """
         Static method that creates instance of Assignment class and creates databes
         row with the accepted info.
@@ -211,7 +214,7 @@ class Assignment(AbstractModel):
         return assignment
 
     @staticmethod
-    def get_assignments_by_student_id(student_id, topic_id=None):
+    def get_assignments_by_student_id(student_id, topic_id=None, item_id=None):
         """
         Method that gets assignments that belong to certain student
         :param student_id: Certain student id
@@ -219,7 +222,10 @@ class Assignment(AbstractModel):
 
         :return: QuerySet with assignments
         """
-        if topic_id:
+
+        if item_id:
+            assignments = Assignment.objects.get(user_id=student_id, item_id=item_id)
+        elif topic_id:
             assignments = Assignment.objects.filter(user_id=student_id, item__topic_id=topic_id)
         else:
             assignments = Assignment.objects.filter(user_id=student_id)
@@ -244,3 +250,36 @@ class Assignment(AbstractModel):
             topic_ids = assignments.values_list('item__topic', flat=True).distinct()
             topics = [Topic.get_by_id(id) for id in topic_ids]
         return topics
+
+    @staticmethod
+    def get_assignments_by_mentor_id(mentor_id, topic_id=None):
+        if topic_id:
+            assignments = Assignment.objects.filter(user_id=mentor_id, item__topic_id=topic_id, item__form=1)
+        else:
+            assignments = Assignment.objects.filter(user_id=mentor_id, item__form=1)
+        return assignments
+
+    @staticmethod
+    def get_curriculums_by_mentor_id(mentor_id):
+        assigments = Assignment.objects.filter(item__form=1, item__topic__mentors__in = [mentor_id]).exclude(status=2)
+        curriculums_id = assigments.values_list('item__topic__curriculum', flat=True).distinct()
+        curriculums = [Curriculum.get_by_id(id) for id in curriculums_id]
+        return curriculums
+
+    @staticmethod
+    def get_topics_by_mentor_id(mentor_id, curriculum_id=None):
+        if curriculum_id:
+            assignments = Assignment.objects.filter(user=mentor_id,
+                                                    item__form=1,
+                                                    item__topic__curriculum=curriculum_id).exclude(status=2)
+
+            mentor_topic_ids = assignments.values_list('item__topic').distinct()
+            topics = [Topic.get_by_id(id) for id in mentor_topic_ids]
+        else:
+            assignments = Assignment.objects.filter(item__form=1,user=mentor_id).exlude(status=2)
+            mentor_topic_ids = assignments.values_list('item__topic').distinct()
+            topics = [Topic.get_by_id(id) for id in mentor_topic_ids]
+        return topics
+
+
+

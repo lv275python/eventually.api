@@ -227,3 +227,10 @@ class Item(AbstractModel):
         """
         superiors_list = [item.id for item in self.superiors.all()]
         return self.id, superiors_list
+
+
+    @staticmethod
+    def get_items_by_topic_id(topic_id):
+        items = Item.objects.filter(topic_id=topic_id)
+        return items
+

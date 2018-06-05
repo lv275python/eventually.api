@@ -265,3 +265,9 @@ class MentorStudent(AbstractModel):
         curriculum_list= assigned_topics.values_list('topic__curriculum_id', flat=True).distinct()
         curriculums = [Curriculum.get_by_id(curriculum_id) for curriculum_id in curriculum_list]
         return curriculums
+
+    @staticmethod
+    def get_students_by_mentor_id(mentor_id, topic_id):
+        stude = MentorStudent.objects.filter(mentor=mentor_id, topic=topic_id, is_done=False)
+        students = [mentee.student for mentee in stude]
+        return students
