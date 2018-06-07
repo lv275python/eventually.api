@@ -1,11 +1,11 @@
 import React from 'react';
+import AutoComplete from 'material-ui/AutoComplete';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import TextField from 'material-ui/TextField';
 import ContentAdd from 'material-ui/svg-icons/content/add';
-import {postSuggestedTopicsItem} from './SuggestedTopicsService';
-
+import {postSuggestedTopicsItem, getTopicAllTitleService} from './SuggestedTopicsService';
 
 const FlatButtonStyle = {
     position: 'fixed',
@@ -29,17 +29,30 @@ export default class SuggestedTopicCreate extends React.Component {
             },
             open: false,
             name: '',
+            dataSource:[],
             description: '',
         };
     }
 
-    handleChangeName = event => {
+    componentWillMount() {
+        this.getData();
+    }
+
+    getData = () => {
+        getTopicAllTitleService().then(response => {
+            this.setState({
+                'dataSource': response.data['topics_name']
+            });
+        });
+    }
+
+    handleUpdateInput = (value) => {
         const regex = /^[\S\s].{4,64}$/;
-        if(regex.test(event.target.value) === true ) {
+        if(regex.test(value) === true ) {
             this.setState({
                 failNameMessage: '',
                 nameIsValid: true,
-                name: event.target.value,
+                name: value,
             });
         } else {
             this.setState({
@@ -119,13 +132,16 @@ export default class SuggestedTopicCreate extends React.Component {
                     open={this.state.open}
                     onRequestClose={this.handleClose}
                     style={SuggestedTopicCreateDialogStyle}>
-                    <TextField
+                    <AutoComplete
+                        listStyle={{ maxHeight: 200, overflow: 'auto',}}
                         hintText="minimum 4 characters"
                         floatingLabelText="Enter name of topic that you suggest"
-                        defaultValue={this.state.name}
                         fullWidth={true}
                         errorText={this.state.failNameMessage}
-                        onChange={this.handleChangeName}/>
+                        filter={AutoComplete.caseInsensitiveFilter}
+                        dataSource = {this.state.dataSource}
+                        onUpdateInput={this.handleUpdateInput}
+                    />
                     <TextField
                         hintText="minimum 10 characters"
                         floatingLabelText="Enter description of topic you suggest"

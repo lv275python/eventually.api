@@ -14,5 +14,6 @@ urlpatterns = [
     url(r'^api/v1/item/', include('item.urls', namespace='item')),
     url(r'^api/v1/assignment/', include('assignment.urls')),
     url(r'^api/v1/suggestedtopics/', include('suggestedtopics.urls')),
+    url(r'^api/v1/topic/', include('topic.urlshelp')),
     url(r'.*', include('home.urls')),
 ]

@@ -198,3 +198,18 @@ def is_topic_mentor(request, curriculum_id, topic_id):   # pylint: disable=unuse
     if user in topic.mentors.all():
         is_mentor = True
     return JsonResponse({'is_mentor': is_mentor}, status=200)
+
+
+def get_all_topics_title(request): # pylint: disable=unused-argument
+    """
+    Method that get all topics where mentor is a certain user.
+
+    :param request: the accepted HTTP request.
+    :type request: `HttpRequest object`
+
+    :return: JsonResponse object with topics, that belongs to the certain mentor
+    """
+    topics = Topic.get_all()
+    data = {'topics_name': [topic.title for topic in topics]}
+    print(data)
+    return JsonResponse(data, status=200)
