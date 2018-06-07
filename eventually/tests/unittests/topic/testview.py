@@ -279,3 +279,14 @@ class TestTopicView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
+
+    def test_success_get_all_title(self):
+        """Method that tests the successful get request for the all teams of the certain user."""
+
+        expected_data = {'topics_name': ['Topic #1', 'Topic #2']}
+
+        url = reverse('all_title')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
+

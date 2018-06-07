@@ -199,7 +199,6 @@ class TopicModelTestCase(TestCase):
 
         with mock.patch('topic.models.cache') as mock_cache:
             mock_cache.__contains__.return_value = True
-
             actual_topic = Topic.objects.get(id=11)
             user_first = CustomUser.objects.get(id=12)
             user_second = CustomUser.objects.get(id=11)
@@ -207,3 +206,21 @@ class TopicModelTestCase(TestCase):
             actual_topic.remove_mentors(mentors_list=users)
             expected_topic = Topic.objects.get(id=11)
             self.assertListEqual(list(actual_topic.mentors.all()), list(expected_topic.mentors.all()))
+
+    def test_get_all(self):
+        """ Test of the Topic.get_all() method """
+
+        expected_value = Topic.objects.all()
+        current_value = Topic.get_all()
+        self.assertEqual(list(current_value), list(expected_value))
+
+    def test_get_all_with_pickle(self):
+        """ Test of the Topic.get_all() method """
+
+        with mock.patch('topic.models.cache') as mock_cache:
+            with mock.patch('pickle.loads') as mock_pickle:
+                mock_cache.__contains__.return_value = True
+                mock_pickle.return_value = Topic.objects.all()
+                expected_value = Topic.objects.all()
+                current_value = Topic.get_all()
+                self.assertEqual(list(current_value), list(expected_value))
