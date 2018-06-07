@@ -1,4 +1,5 @@
 import json
+
 from io import BytesIO
 from unittest import mock
 
@@ -11,6 +12,10 @@ from django.urls import reverse
 from authentication.models import CustomUser
 from utils import awss3_helper
 
+from customprofile.models import CustomProfile
+from team.models import Team
+import datetime
+
 IMAGE_NAME = "testimage.png"
 IMAGE_MIME_TYPE = "image/png"
 GOOD_IMAGE_SIZE = 3 * 1024 * 1024
@@ -19,6 +24,8 @@ IMAGE_FORMAT = "png"
 BUCKET_ADDRESS = "https://s3.eu-west-2.amazonaws.com/eventually-photos/"
 
 IMAGE_KEY = "image_key"
+
+TEST_TIME = datetime.datetime(2017, 10, 15, 8, 15, 12)
 
 
 class MockObjectsLoadRaiseClientError():
@@ -50,6 +57,20 @@ class MockBOTO_S3TLoadReturnTrue():
         return MockObjectsLoadReturnTrue()
 
 
+class MockClient():
+    def list_objects(*args, **kwargs):
+        return {'Contents': [
+            {'Key': 'team_1'},
+            {'Key': 'team_2'},
+            {'Key': 'img1'},
+            {'Key': 'img2'},
+            {'Key': 'cus_prof_1'},
+            {'Key': 'cus_prof_2'}
+        ]}
+
+class MockMeta():
+    client = MockClient()
+
 class MockBUCKET():
     """ Class for simulate BUCKET """
 
@@ -59,13 +80,15 @@ class MockBUCKET():
         return response
 
     @staticmethod
-    def delete_objects(**kwargs):
+    def delete_objects(*args, **kwargs):
         return {
             'DeleteMarker': True,
             'VersionId': 'string',
             'RequestCharged': 'requester'
         }
 
+    meta = MockMeta()
+    name = "MockBUCKET"
 
 class UtilsAwss3HelperTestCase(TestCase):
     """TestCase for providing awss3_helper utils testing."""
@@ -91,6 +114,13 @@ class UtilsAwss3HelperTestCase(TestCase):
         bad_file.seek(0)
         self.image_bad = InMemoryUploadedFile(bad_file, None, 'testimage.vfc', 'image/vfc',
                                               3 * 1024 * 1024, None)
+
+        self.cus_prof_1 = CustomProfile.objects.create(photo = 'cus_prof_1')
+        self.cus_prof_2 = CustomProfile.objects.create(photo = 'cus_prof_2')
+        self.team_1 = Team.objects.create(image = 'team_1')
+        self.team_2 = Team.objects.create(image = 'team_2')
+
+
 
     def test_upload_bad_content_type(self):
         """Method that test is not success `upload` method when bad content type."""
@@ -193,3 +223,32 @@ class UtilsAwss3HelperTestCase(TestCase):
 
         response = awss3_helper.delete(request)
         self.assertFalse(response)
+
+    def test_get_all_img_keys(self):
+        images_list = awss3_helper._get_all_img_keys()
+        expected_list = [
+            'team_1',
+            'team_2',
+            'cus_prof_1',
+            'cus_prof_2'
+        ]
+        self.assertListEqual(images_list, expected_list)
+
+    @mock.patch('utils.awss3_helper.BUCKET', MockBUCKET)
+    def test_get_all_images_a3(self):
+        keys_list = awss3_helper.get_all_images_a3()
+        result = ['team_1', 'team_2', 'img1', 'img2', 'cus_prof_1', 'cus_prof_2']
+        self.assertListEqual(keys_list, result)
+
+    @mock.patch('utils.awss3_helper.BUCKET', MockBUCKET)
+    def test_get_keys_to_delete(self):
+        result = ['img1', 'img2']
+        a3_images = awss3_helper.get_keys_to_delete()
+        self.assertListEqual(a3_images, result)
+
+    @mock.patch('utils.awss3_helper.BUCKET', MockBUCKET)
+    def test_delete_images_awss3(self):
+        keys_to_delete = awss3_helper.delete_images_awss3()
+        print(keys_to_delete)
+        result = ['img1', 'img2']
+        self.assertListEqual(keys_to_delete, result)
