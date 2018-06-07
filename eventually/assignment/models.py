@@ -280,6 +280,3 @@ class Assignment(AbstractModel):
             mentor_topic_ids = assignments.values_list('item__topic').distinct()
             topics = [Topic.get_by_id(id) for id in mentor_topic_ids]
         return topics
-
-
-

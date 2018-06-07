@@ -13,6 +13,12 @@ from curriculum.models import Curriculum
 from topic.models import Topic
 from curriculum.models import Curriculum
 from mentor.models import MentorStudent
+from time import time
+
+STATUS_IN_PROCESS = 1
+STATUS_IS_DONE = 2
+FORM_THEORETIC = 0
+FORM_PRACTICE = 1
 
 
 class AssignmentAnswerView(View):
@@ -43,7 +49,7 @@ class AssignmentAnswerView(View):
 
 
 class AssignmentStudentView(View):
-    """Assignment view that handles GET, POST, PUT, DELETE requests."""
+    """Assignment view that handles GET, POST, PUT requests."""
 
     def get(self, request, topic_id=None):
         """
@@ -74,12 +80,12 @@ class AssignmentStudentView(View):
 
         data = request.body
 
-        user = CustomUser.get_by_id(data.get('user'))
+        student = CustomUser.get_by_id(data.get('student'))
         items = Item.get_items_by_topic_id(data.get('topic'))
 
         for item in items:
             if not item.get_item_superiors()[1]:
-                Assignment.create(user=user, item=item)
+                Assignment.create(user=student, item=item)
 
         return RESPONSE_200_UPDATED
 
@@ -107,56 +113,68 @@ class AssignmentStudentView(View):
             return RESPONSE_400_INVALID_DATA
 
         status = data.get('status')
-        if not status:
+        grade = data.get('grade')
+        if not status or not grade:
             return RESPONSE_400_INVALID_DATA
 
         user = CustomUser.get_by_id(assignment.user_id)
 
         current_item_id = assignment.item_id
-        topic_id = Item.get_by_id(current_item_id).topic_id
 
-        if status == 1:
-            assignment.update(**{'status': status})
+        if status == STATUS_IN_PROCESS:
+            response = {'status': status,
+                        'started_at': int(time())}
+            assignment.update(**response)
+            return RESPONSE_200_UPDATED
 
-        if status == 2:
-            if assignment.item.form == 0:
-                assignment.update(**{'status': status})
-                # create next assignment for item, where current item is superior
-                items = Item.get_items_by_topic_id(topic_id)
-                new_assignments = []
-                for item in items:
-                    item_superiors_id_list = item.get_item_superiors()[1]
-                    if current_item_id in item_superiors_id_list:
-                        for superior_item_id in item_superiors_id_list:
-                            superior_assignment = Assignment.\
-                                get_assignments_by_student_topic_item_ids(student_id=user.id, item_id=superior_item_id)
-
-                            if not superior_assignment:
-                                break
-                            elif not superior_assignment.status == 2:
-                                break
-                        else:
-                            new_assignment = Assignment.create(user=user, item=item)
-                            new_assignments.append(new_assignment.to_dict())
-
-                return JsonResponse({'assignments': new_assignments}, status=201)
-                # if new_assignments:
-                #     return JsonResponse({'assignments': new_assignments}, status=201)
-                # else:
-                #     pass
-
-            elif assignment.item.form == 1:
-                pass
-
+        if status == STATUS_IS_DONE:
+            if assignment.item.form == FORM_THEORETIC:
                 response = {'status': status,
-                            'statement': data.get('statement') if data.get('statement') else '',
-                            # 'started_at': ,
-                            }
+                            'finished_at': int(time())}
                 assignment.update(**response)
 
-        return RESPONSE_200_UPDATED
+            elif assignment.item.form == FORM_PRACTICE:
+                statement = data.get('statement')
+                if not statement:
+                    return RESPONSE_400_INVALID_DATA
 
-class AssigmentsMentorView(View):
+                response = {'status': status,
+                            'statement': statement,
+                            'finished_at': int(time())}
+                assignment.update(**response)
+                return RESPONSE_200_UPDATED
+
+        if grade is True:
+            response = {'grade': grade,
+                        'finished_at': int(time())}
+            assignment.update(**response)
+
+            # create next assignments for subordinate items
+            new_assignments = []
+            subordinates = Item.get_subordinate_items(superior_item_id=current_item_id)
+            for subordinate_item in subordinates:
+                superiors = subordinate_item.get_item_superiors()[1]
+                for superior_item in superiors:
+                    superior_assignment = Assignment.\
+                        get_assignments_by_student_topic_item_ids(student_id=user.id, item_id=superior_item.id)
+                    if not superior_assignment or not superior_assignment.status == 2\
+                                or superior_assignment.grade is not True:
+                        break
+                    else:
+                        new_assignment = Assignment.create(user=user, item=subordinate_item)
+                        new_assignments.append(new_assignment.to_dict())
+            if new_assignments:
+                return JsonResponse({'assignments': new_assignments}, status=201)
+            else:
+                return RESPONSE_200_UPDATED
+
+        elif grade is False:
+            response = {'status': STATUS_IN_PROCESS}
+            assignment.update(**response)
+            return RESPONSE_200_UPDATED
+
+
+class AssignmentsMentorView(View):
     """Assignment view that handles GET, POST, PUT, DELETE requests."""
 
     def get(self, request, curriculum_id=None):
@@ -171,6 +189,8 @@ class AssigmentsMentorView(View):
             curriculums = Assignment.get_curriculums_by_mentor_id(mentor)
             response = {'curriculums': [curriculum.to_dict() for curriculum in curriculums]}
             return JsonResponse(response, status=200)
+
+
 def get_curriculum_list(request):
     if request.method == "GET":
         student = request.user
