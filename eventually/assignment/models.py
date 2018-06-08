@@ -178,6 +178,7 @@ class Assignment(AbstractModel):
         if statement:
             self.statement = statement
         if grade:
+
             self.grade = grade
         if user:
             self.user = user
@@ -224,16 +225,16 @@ class Assignment(AbstractModel):
         """
 
         if item_id:
-            assignments = Assignment.objects.get(user_id=student_id, item_id=item_id)
+            assignments = Assignment.objects.get(user_id=student_id, item_id=item_id).exclude(grade=True)
         elif topic_id:
-            assignments = Assignment.objects.filter(user_id=student_id, item__topic_id=topic_id)
+            assignments = Assignment.objects.filter(user_id=student_id, item__topic_id=topic_id).exclude(grade=True)
         else:
-            assignments = Assignment.objects.filter(user_id=student_id)
+            assignments = Assignment.objects.filter(user_id=student_id).exclude(grade=True)
         return assignments
 
     @staticmethod
     def get_curriculums(student_id):
-        assignments = Assignment.objects.filter(user=student_id).exclude(status=2)
+        assignments = Assignment.objects.filter(user=student_id).exclude(grade=True)
         curriculums_id = assignments.values_list('item__topic__curriculum', flat=True).distinct()
         curriculums = [Curriculum.get_by_id(id) for id in curriculums_id]
         return curriculums
@@ -242,11 +243,11 @@ class Assignment(AbstractModel):
     def get_topics(student_id, curriculum_id=None):
         if curriculum_id:
             assignments = Assignment.objects.filter(user=student_id,
-                                                    item__topic__curriculum=curriculum_id).exclude(status=2)
+                                                    item__topic__curriculum=curriculum_id).exclude(grade=True)
             topic_ids = assignments.values_list('item__topic', flat=True).distinct()
             topics = [Topic.get_by_id(id) for id in topic_ids]
         else:
-            assignments = Assignment.objects.filter(user=student_id).exlude(status=2)
+            assignments = Assignment.objects.filter(user=student_id).exlude(grade=True)
             topic_ids = assignments.values_list('item__topic', flat=True).distinct()
             topics = [Topic.get_by_id(id) for id in topic_ids]
         return topics
@@ -261,7 +262,7 @@ class Assignment(AbstractModel):
 
     @staticmethod
     def get_curriculums_by_mentor_id(mentor_id):
-        assigments = Assignment.objects.filter(item__form=1, item__topic__mentors__in = [mentor_id]).exclude(status=2)
+        assigments = Assignment.objects.filter(item__form=1, item__topic__mentors__in = [mentor_id]).exclude()
         curriculums_id = assigments.values_list('item__topic__curriculum', flat=True).distinct()
         curriculums = [Curriculum.get_by_id(id) for id in curriculums_id]
         return curriculums
@@ -271,12 +272,12 @@ class Assignment(AbstractModel):
         if curriculum_id:
             assignments = Assignment.objects.filter(user=mentor_id,
                                                     item__form=1,
-                                                    item__topic__curriculum=curriculum_id).exclude(status=2)
+                                                    item__topic__curriculum=curriculum_id).exclude(grade=True)
 
             mentor_topic_ids = assignments.values_list('item__topic').distinct()
             topics = [Topic.get_by_id(id) for id in mentor_topic_ids]
         else:
-            assignments = Assignment.objects.filter(item__form=1,user=mentor_id).exlude(status=2)
+            assignments = Assignment.objects.filter(item__form=1,user=mentor_id).exlude(grade=True)
             mentor_topic_ids = assignments.values_list('item__topic').distinct()
             topics = [Topic.get_by_id(id) for id in mentor_topic_ids]
         return topics

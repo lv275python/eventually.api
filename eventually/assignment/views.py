@@ -114,7 +114,7 @@ class AssignmentStudentView(View):
 
         status = data.get('status')
         grade = data.get('grade')
-        if not status or not grade:
+        if not status and not grade:
             return RESPONSE_400_INVALID_DATA
 
         user = CustomUser.get_by_id(assignment.user_id)
@@ -134,6 +134,7 @@ class AssignmentStudentView(View):
                 assignment.update(**response)
 
             elif assignment.item.form == FORM_PRACTICE:
+
                 statement = data.get('statement')
                 if not statement:
                     return RESPONSE_400_INVALID_DATA
@@ -207,14 +208,14 @@ def get_topic_list(request, curriculum_id=None):
         return JsonResponse(data, status=200)
 
 
-
 def get_assignment_list(request, topic_id, user_id=None):
     if request.method == "GET":
         if user_id:
             user = CustomUser.get_by_id(user_id)
+            assignments = Assignment.get_assignments_by_mentor_id(user, topic_id)
         else:
             user = request.user
-        assignments = Assignment.get_assignments_by_mentor_id(user, topic_id)
-        data = {'assignments': [{'assignment':assignment.to_dict(), 'item':assignment.item.to_dict()}
+            assignments = Assignment.get_assignments_by_student_topic_item_ids(user, topic_id)
+        data = {'assignments': [{'assignment': assignment.to_dict(), 'item': assignment.item.to_dict()}
                 for assignment in assignments]}
         return JsonResponse(data, status=200)
