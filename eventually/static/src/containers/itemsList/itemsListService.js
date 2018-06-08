@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { apiUrl } from 'src/helper';
 
-const assignmentPath = apiUrl + 'assignment/'
+const assignmentPath = apiUrl + 'assignment/list/'
 
 const getItemsList = (topicId, userId) => {
     let url;

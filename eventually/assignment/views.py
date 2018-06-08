@@ -13,7 +13,7 @@ from curriculum.models import Curriculum
 from topic.models import Topic
 from curriculum.models import Curriculum
 from mentor.models import MentorStudent
-from time import time
+from datetime import datetime
 
 STATUS_IN_PROCESS = 1
 STATUS_IS_DONE = 2
@@ -123,14 +123,14 @@ class AssignmentStudentView(View):
 
         if status == STATUS_IN_PROCESS:
             response = {'status': status,
-                        'started_at': int(time())}
+                        'started_at': datetime.now()}
             assignment.update(**response)
             return RESPONSE_200_UPDATED
 
         if status == STATUS_IS_DONE:
             if assignment.item.form == FORM_THEORETIC:
                 response = {'status': status,
-                            'finished_at': int(time())}
+                            'finished_at': datetime.now()}
                 assignment.update(**response)
 
             elif assignment.item.form == FORM_PRACTICE:
@@ -140,13 +140,13 @@ class AssignmentStudentView(View):
 
                 response = {'status': status,
                             'statement': statement,
-                            'finished_at': int(time())}
+                            'finished_at': datetime.now()}
                 assignment.update(**response)
                 return RESPONSE_200_UPDATED
 
         if grade is True:
             response = {'grade': grade,
-                        'finished_at': int(time())}
+                        'finished_at': datetime.now()}
             assignment.update(**response)
 
             # create next assignments for subordinate items
