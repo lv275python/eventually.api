@@ -215,7 +215,7 @@ def get_assignment_list(request, topic_id, user_id=None):
             assignments = Assignment.get_assignments_by_mentor_id(user, topic_id)
         else:
             user = request.user
-            assignments = Assignment.get_assignments_by_student_topic_item_ids(user, topic_id)
+            assignments = Assignment.get_assignments_by_student_topic_item_ids(student_id=user, topic_id=topic_id)
         data = {'assignments': [{'assignment': assignment.to_dict(), 'item': assignment.item.to_dict()}
                 for assignment in assignments]}
         return JsonResponse(data, status=200)

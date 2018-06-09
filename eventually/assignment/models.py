@@ -225,7 +225,7 @@ class Assignment(AbstractModel):
         """
 
         if item_id:
-            assignments = Assignment.objects.get(user_id=student_id, item_id=item_id).exclude(grade=True)
+            assignments = Assignment.objects.get(user_id=student_id, item_id=item_id)
         elif topic_id:
             assignments = Assignment.objects.filter(user_id=student_id, item__topic_id=topic_id).exclude(grade=True)
         else:
