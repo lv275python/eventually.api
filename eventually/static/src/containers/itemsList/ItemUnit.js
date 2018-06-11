@@ -6,6 +6,8 @@ import Book from 'material-ui/svg-icons/action/book';
 import FlatButton from 'material-ui/FlatButton';
 import {Card, CardHeader, CardText, CardActions} from 'material-ui/Card';
 import {blue500, yellow600, lime500} from 'material-ui/styles/colors';
+import {AssignmentUpload} from 'src/containers';
+
 
 const titleStyle = {
     fontWeight: 'bold',
@@ -51,10 +53,8 @@ export default class ItemUnit extends React.Component {
 
         let avatar = null,
             controlButton = (
-                <FlatButton
-                    label="Send Answer"
-                    primary={true}
-                    onClick={this.props.onModalOpen}
+                <AssignmentUpload
+                    assignment_id = {this.props.assignment_id}
                 />
             );
 
@@ -85,7 +85,9 @@ export default class ItemUnit extends React.Component {
                         style={cardTextStyle}>
                         {this.props.description}
                         <CardActions style={actionsStyle}>
+
                             {controlButton}
+
                         </CardActions>
                     </CardText>
                 </Card>
