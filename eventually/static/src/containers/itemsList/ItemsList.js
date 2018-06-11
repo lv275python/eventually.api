@@ -59,6 +59,7 @@ export default class ItemsList extends React.Component {
                             isActive={item.item.id === this.state.isActive || false}
                             onClick={this.handleClick}
                             id={item.item.id}
+                            assignment_id = {item.assignment.id}
                             onModalOpen={this.handleModalOpen}
                         />)
                     )
