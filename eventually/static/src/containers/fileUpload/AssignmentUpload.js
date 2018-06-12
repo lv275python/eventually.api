@@ -46,7 +46,7 @@ export default class AssignmentUpload extends React.Component {
                 open: false,
             });
             updateAssignmentStatus(this.props.assignment_id, this.state.fileKey).then(response => {
-                console.log(response);
+                this.props.updateStatus(response.status)
             });
         })
 
@@ -60,10 +60,9 @@ export default class AssignmentUpload extends React.Component {
     onFileDrop = files => {
         let file = files[0];
         let fileData = new FormData();
-        let fileType = file.type.slice(6);
+        let fileType = file.type.split('/')[1];
         let fileSize = file.size;
         let fileName = file.name;
-
         // TODO add type and size validation
 
         fileData.append('file', file);

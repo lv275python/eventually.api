@@ -31,7 +31,10 @@ const actionsStyle = {
     justifyContent: 'flex-end'
 };
 
+const STATUS_REQUESTED = 0;
 const STATUS_IN_PROCESS = 1;
+const STATUS_DONE = 2;
+
 const FORM_THEORETIC = 0;
 const FORM_PRACTICE = 1;
 const FORM_GROUP = 2;
@@ -41,7 +44,8 @@ export default class ItemUnit extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            expanded: this.props.isActive
+            expanded: this.props.isActive,
+            status: this.props.status
         };
     }
 
@@ -51,8 +55,9 @@ export default class ItemUnit extends React.Component {
 
     handleStartAssignment = () => {
         putAssignmentService(this.props.assignmenId, {'status': STATUS_IN_PROCESS})//.then(response => {
-        //     ;
-        // })
+
+        // TODO then for response
+
     };
 
     componentWillReceiveProps(nextProps) {
@@ -61,19 +66,21 @@ export default class ItemUnit extends React.Component {
         });
     }
 
+    updateStatus = status => {
+        if (status === 200){
+            this.setState({
+                status: 2
+            })
+        }
+    };
+
     render() {
 
         let avatar = null,
-            // Те, що зробив Богдан
-            // controlButton = (
-            //     <AssignmentUpload
-            //         assignment_id = {this.props.assignment_id}
-            //     />
-            // );
             controlButton = <FlatButton
                             label="Start assignment"
-                            primary={true}
-                            onClick={this.handleStartAssignment}/>;
+                            onClick={this.handleStartAssignment}
+                            backgroundColor={lime500}/>;
 
         if (this.props.form === FORM_THEORETIC) {
                 avatar = (<Avatar icon={<LibraryBooks />}
@@ -88,30 +95,29 @@ export default class ItemUnit extends React.Component {
                               backgroundColor={lime500} />);
         }
 
-        if (this.props.status === STATUS_IN_PROCESS) {
-            if (this.props.form === FORM_THEORETIC) {
+
+        if (this.state.status === STATUS_IN_PROCESS) {
+            if (this.props.form === FORM_THEORETIC || this.props.form === FORM_GROUP) {
                 controlButton = <FlatButton
                                 label="Done"
                                 secondary={true}/>;
 
             } else if (this.props.form === FORM_PRACTICE) {
-                controlButton = <FlatButton
-                                label="Send Answer"
-                                primary={true}
-                                onClick={this.props.onModalOpen}/>;
-            } else  if (this.props.form === FORM_GROUP) {
+                controlButton = <AssignmentUpload
+                        assignment_id={this.props.assignment_id}
+                        updateStatus = {this.updateStatus}
+                        />
+            }
 
-                // Те, що було
-        // if (this.props.form === 0) {
-        //     avatar = (<Avatar icon={<LibraryBooks />} backgroundColor={yellow600} />);
-        //     controlButton = <FlatButton label="Done" secondary={true}/>;
-        // } else if (this.props.form === 1) {
-        //     avatar = (<Avatar icon={<Code />} backgroundColor={blue500} />);
-        // } else  if (this.props.form === 2) {
-        //     avatar = (<Avatar icon={<Book />} backgroundColor={lime500} />);
+        } else if (this.state.status === STATUS_DONE){
+            controlButton = <FlatButton
+                            label="Completed"
+                            backgroundColor={yellow600}
+                            disabled={true}/>;
         }
 
         return (
+
             <div>
                 <Card
                     expanded={this.state.expanded}
