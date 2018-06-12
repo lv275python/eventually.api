@@ -13,4 +13,12 @@ const getItemsList = (topicId, userId) => {
     return axios.get(url);
 };
 
+const putAssignmentService = (assignmentId, data) => {
+
+    let url = apiUrl + 'assignment/' + assignmentId + '/';
+    return axios.put(url, data);
+
+};
+
 export default getItemsList;
+export {putAssignmentService};

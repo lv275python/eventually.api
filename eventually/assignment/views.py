@@ -6,6 +6,7 @@ from assignment.models import Assignment
 from authentication.models import CustomUser
 from item.models import Item
 from utils.responsehelper import (RESPONSE_200_UPDATED,
+                                  RESPONSE_201_CREATED,
                                   RESPONSE_400_INVALID_DATA,
                                   RESPONSE_404_OBJECT_NOT_FOUND)
 from utils.topic_views_functions import find_mentors_topics
@@ -83,13 +84,16 @@ class AssignmentStudentView(View):
         student = CustomUser.get_by_id(data.get('student'))
         items = Item.get_items_by_topic_id(data.get('topic'))
 
+        if not items:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+
         for item in items:
             if not item.get_item_superiors()[1]:
                 Assignment.create(user=student, item=item)
 
-        return RESPONSE_200_UPDATED
+        return RESPONSE_201_CREATED
 
-    def put(self, request, assignment_id):
+    def put(self, request, assignment_id=None):
         """
         Handle PUT request
 
@@ -117,21 +121,17 @@ class AssignmentStudentView(View):
         if not status and not grade:
             return RESPONSE_400_INVALID_DATA
 
-        user = CustomUser.get_by_id(assignment.user_id)
-
-        current_item_id = assignment.item_id
-
         if status == STATUS_IN_PROCESS:
-            response = {'status': status,
+            new_data = {'status': status,
                         'started_at': datetime.now()}
-            assignment.update(**response)
+            assignment.update(**new_data)
             return RESPONSE_200_UPDATED
 
         if status == STATUS_IS_DONE:
             if assignment.item.form == FORM_THEORETIC:
-                response = {'status': status,
+                new_data = {'status': status,
                             'finished_at': datetime.now()}
-                assignment.update(**response)
+                assignment.update(**new_data)
 
             elif assignment.item.form == FORM_PRACTICE:
 
@@ -139,16 +139,19 @@ class AssignmentStudentView(View):
                 if not statement:
                     return RESPONSE_400_INVALID_DATA
 
-                response = {'status': status,
+                new_data = {'status': status,
                             'statement': statement,
                             'finished_at': datetime.now()}
-                assignment.update(**response)
+                assignment.update(**new_data)
                 return RESPONSE_200_UPDATED
 
+        user = CustomUser.get_by_id(assignment.user_id)
+        current_item_id = assignment.item_id
+
         if grade is True:
-            response = {'grade': grade,
+            new_data = {'grade': grade,
                         'finished_at': datetime.now()}
-            assignment.update(**response)
+            assignment.update(**new_data)
 
             # create next assignments for subordinate items
             new_assignments = []
@@ -170,8 +173,8 @@ class AssignmentStudentView(View):
                 return RESPONSE_200_UPDATED
 
         elif grade is False:
-            response = {'status': STATUS_IN_PROCESS}
-            assignment.update(**response)
+            new_data = {'status': STATUS_IN_PROCESS}
+            assignment.update(**new_data)
             return RESPONSE_200_UPDATED
 
 

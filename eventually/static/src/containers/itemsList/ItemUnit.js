@@ -6,6 +6,8 @@ import Book from 'material-ui/svg-icons/action/book';
 import FlatButton from 'material-ui/FlatButton';
 import {Card, CardHeader, CardText, CardActions} from 'material-ui/Card';
 import {blue500, yellow600, lime500} from 'material-ui/styles/colors';
+import {putAssignmentService} from './itemsListService';
+
 
 const titleStyle = {
     fontWeight: 'bold',
@@ -28,6 +30,11 @@ const actionsStyle = {
     justifyContent: 'flex-end'
 };
 
+const STATUS_IN_PROCESS = 1;
+const FORM_THEORETIC = 0;
+const FORM_PRACTICE = 1;
+const FORM_GROUP = 2;
+
 export default class ItemUnit extends React.Component {
 
     constructor(props) {
@@ -41,6 +48,12 @@ export default class ItemUnit extends React.Component {
         this.props.onClick(this.props.id);
     };
 
+    handleStartAssignment = () => {
+        putAssignmentService(this.props.assignmenId, {'status': STATUS_IN_PROCESS})//.then(response => {
+        //     ;
+        // })
+    };
+
     componentWillReceiveProps(nextProps) {
         this.setState({
             expanded: nextProps.isActive
@@ -50,21 +63,38 @@ export default class ItemUnit extends React.Component {
     render() {
 
         let avatar = null,
-            controlButton = (
-                <FlatButton
-                    label="Send Answer"
-                    primary={true}
-                    onClick={this.props.onModalOpen}
-                />
-            );
+            controlButton = <FlatButton
+                            label="Start assignment"
+                            primary={true}
+                            onClick={this.handleStartAssignment}/>;
 
-        if (this.props.form === 0) {
-            avatar = (<Avatar icon={<LibraryBooks />} backgroundColor={yellow600} />);
-            controlButton = <FlatButton label="Done" secondary={true}/>;
-        } else if (this.props.form === 1) {
-            avatar = (<Avatar icon={<Code />} backgroundColor={blue500} />);
+        if (this.props.form === FORM_THEORETIC) {
+                avatar = (<Avatar icon={<LibraryBooks />}
+                                  backgroundColor={yellow600} />);
+
+        } else if (this.props.form === FORM_PRACTICE) {
+            avatar = (<Avatar icon={<Code />}
+                              backgroundColor={blue500} />);
+
         } else  if (this.props.form === 2) {
-            avatar = (<Avatar icon={<Book />} backgroundColor={lime500} />);
+            avatar = (<Avatar icon={<Book />}
+                              backgroundColor={lime500} />);
+        }
+
+        if (this.props.status === STATUS_IN_PROCESS) {
+            if (this.props.form === FORM_THEORETIC) {
+                controlButton = <FlatButton
+                                label="Done"
+                                secondary={true}/>;
+
+            } else if (this.props.form === FORM_PRACTICE) {
+                controlButton = <FlatButton
+                                label="Send Answer"
+                                primary={true}
+                                onClick={this.props.onModalOpen}/>;
+            } else  if (this.props.form === FORM_GROUP) {
+
+            }
         }
 
         return (

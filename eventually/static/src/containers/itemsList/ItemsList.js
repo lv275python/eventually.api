@@ -48,6 +48,7 @@ export default class ItemsList extends React.Component {
 
     render() {
         return (
+
             <div style={this.props.style}>
                 <Paper zDepth={1}>
                     {this.state.items.map(item => (
@@ -56,10 +57,12 @@ export default class ItemsList extends React.Component {
                             name={item.item.name}
                             description={item.item.description}
                             form={item.item.form}
+                            status={item.assignment.status}
                             isActive={item.item.id === this.state.isActive || false}
                             onClick={this.handleClick}
                             id={item.item.id}
                             onModalOpen={this.handleModalOpen}
+                            assignmenId={item.assignment.id}
                         />)
                     )
                     }
