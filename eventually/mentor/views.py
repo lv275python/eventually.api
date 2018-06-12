@@ -78,7 +78,8 @@ class MentorView(View):
                                             'first_name': student.first_name,
                                             'last_name': student.last_name,
                                             'topic_title': topic.title,
-                                            'topic_id': topic.id})
+                                            'topic_id': topic.id,
+                                            'email': student.email})
 
         for record in available_students:
             student = CustomUser.get_by_id(record.student_id)

@@ -28,7 +28,9 @@ export default class StudentItem extends React.Component {
         };
     }
 
+
     render() {
+        // console.log(this.props.lastName);
         return (
             <Card>
                 <CardHeader
@@ -43,7 +45,9 @@ export default class StudentItem extends React.Component {
                     <ItemsList
                         curriculumId={this.state.curriculumId}
                         topicId={this.state.topicId}
-                        userId={this.state.userId}/>
+                        userId={this.state.userId}
+                        id={this.props.id}
+                        isMentor={this.props.isMentor}/>
                 </CardText>
             </Card>
         );

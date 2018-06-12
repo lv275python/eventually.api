@@ -6,6 +6,7 @@ from assignment.models import Assignment
 from authentication.models import CustomUser
 from item.models import Item
 from utils.responsehelper import (RESPONSE_200_UPDATED,
+                                  RESPONSE_200_OK,
                                   RESPONSE_201_CREATED,
                                   RESPONSE_400_INVALID_DATA,
                                   RESPONSE_404_OBJECT_NOT_FOUND)
@@ -14,6 +15,8 @@ from curriculum.models import Curriculum
 from topic.models import Topic
 from curriculum.models import Curriculum
 from mentor.models import MentorStudent
+from utils.send_mail import send_email
+from eventually.settings import FRONT_HOST
 from datetime import datetime
 
 STATUS_IN_PROCESS = 1
@@ -177,7 +180,6 @@ class AssignmentStudentView(View):
             assignment.update(**new_data)
             return RESPONSE_200_UPDATED
 
-
 class AssignmentsMentorView(View):
     """Assignment view that handles GET, POST, PUT, DELETE requests."""
 
@@ -193,6 +195,30 @@ class AssignmentsMentorView(View):
             curriculums = Assignment.get_curriculums_by_mentor_id(mentor)
             response = {'curriculums': [curriculum.to_dict() for curriculum in curriculums]}
             return JsonResponse(response, status=200)
+
+    def put(self, request, assignment_id=None):
+        data = request.body
+        if not data:
+            return RESPONSE_400_INVALID_DATA
+        assignment = Assignment.get_by_id(assignment_id)
+        if not assignment:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+        grade = data.get('grade')
+
+        if grade:
+            response = {
+                'grade' : True
+            }
+            assignment.update(**response)
+
+        status = data.get('status')
+        if status:
+            response = {
+                'status' : status
+            }
+            assignment.update(**response)
+
+        return RESPONSE_200_UPDATED
 
 
 def get_curriculum_list(request):
@@ -222,3 +248,25 @@ def get_assignment_list(request, topic_id, user_id=None):
         data = {'assignments': [{'assignment': assignment.to_dict(), 'item': assignment.item.to_dict()}
                 for assignment in assignments]}
         return JsonResponse(data, status=200)
+
+
+def send_answer(request):
+    if request.method == 'POST':
+        data = request.body
+        id = data.get('userId')
+        if not data:
+            return RESPONSE_400_INVALID_DATA
+        user = CustomUser.get_by_id(id)
+        if not user:
+            return RESPONSE_400_INVALID_DATA,
+        answer = data.get('message')
+        ctx = {
+            'user_name': user.first_name,
+            'response': answer,
+            'domain': FRONT_HOST,
+        }
+        message = 'mentor answer'
+        subject = 'rejected answer'
+        send_email(subject, message, [user.email], 'mentor_answer.html', ctx)
+        return RESPONSE_200_OK
+    return RESPONSE_400_INVALID_DATA

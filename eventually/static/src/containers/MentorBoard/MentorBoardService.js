@@ -8,4 +8,29 @@ const getCurriculumsService = () => {
     return axios.get(url);
 };
 
-export {getCurriculumsService} ;
+const checkUserAnswer = (id, grade) => {
+    const data = {
+        id, grade
+    };
+    console.log(grade);
+    let url = assigmentMentorPath + id;
+    return axios.put(url, data);
+};
+
+const dismissUserAnswer = (id, status) => {
+    const data = {
+        id, status
+    };
+    let url = assigmentMentorPath + id;
+    return axios.put(url, data);
+};
+
+const sendAnswerToUser = (message, userId) => {
+    let url = assigmentMentorPath + 'send_answer/';
+    let data = {
+        message, userId
+    };
+    return axios.post(url, data);
+};
+
+export {getCurriculumsService, checkUserAnswer, dismissUserAnswer, sendAnswerToUser} ;

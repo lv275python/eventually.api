@@ -4,8 +4,11 @@ import LibraryBooks from 'material-ui/svg-icons/av/library-books';
 import Code from 'material-ui/svg-icons/action/code';
 import Book from 'material-ui/svg-icons/action/book';
 import FlatButton from 'material-ui/FlatButton';
+import TextField from 'material-ui/TextField'
 import {Card, CardHeader, CardText, CardActions} from 'material-ui/Card';
 import {blue500, yellow600, lime500} from 'material-ui/styles/colors';
+import Dialog from 'material-ui/Dialog';
+import {checkUserAnswer, dismissUserAnswer, sendAnswerToUser} from 'src/containers/MentorBoard/MentorBoardService';
 import {putAssignmentService} from './itemsListService';
 import {AssignmentUpload} from 'src/containers';
 
@@ -14,6 +17,10 @@ const titleStyle = {
     fontWeight: 'bold',
     fontSize: '16px'
 };
+
+const inputStyle = {
+    width: '100%',
+}
 
 const cardHeaderStyle = {
     display: 'flex',
@@ -45,7 +52,12 @@ export default class ItemUnit extends React.Component {
         super(props);
         this.state = {
             expanded: this.props.isActive,
-            status: this.props.status
+            grade: this.props.grade,
+            handleCheckDialog: false,
+            status: this.props.status,
+            handleMentorAnswer: false,
+            textAnswer:'',
+            userId:this.props.userId,
         };
     }
 
@@ -53,6 +65,46 @@ export default class ItemUnit extends React.Component {
         this.props.onClick(this.props.id);
     };
 
+
+    handleOpenCheck = () => {
+        this.setState({
+            handleCheckDialog: true,
+        });
+    };
+
+    handleCloseCheck = () => {
+        const id = this.props.id;
+        dismissUserAnswer(id, 1).then(response => {
+            this.setState({
+                handleCheckDialog: false,
+                handleMentorAnswer: true,
+            });
+        });
+    };
+
+    handleSubmit = () => {
+        const id = this.props.id;
+        checkUserAnswer(id, true).then(response => {
+            this.setState({
+                handleCheckDialog: false
+            });
+        });
+    };
+
+    handleAnswer = event => {
+        this.setState({
+            textAnswer: event.target.value,
+        });
+    };
+
+    handleSendAnswer = () => {
+        const userId = this.state.userId;
+        let message = this.state.textAnswer;
+        sendAnswerToUser(message, userId);
+        this.setState({
+            handleMentorAnswer: false,
+        });
+    };
     handleStartAssignment = () => {
         putAssignmentService(this.props.assignmenId, {'status': STATUS_IN_PROCESS})//.then(response => {
 
@@ -75,49 +127,83 @@ export default class ItemUnit extends React.Component {
     };
 
     render() {
+        const actionsDialog = [
+            <FlatButton
+                label="Yes"
+                key={1}
+                primary={true}
+                onClick={this.handleSubmit}
+            />,
+            <FlatButton
+                label="No"
+                key={0}
+                primary={true}
+                onClick={this.handleCloseCheck}
+            />
+        ];
 
-        let avatar = null,
-            controlButton = <FlatButton
-                            label="Start assignment"
-                            onClick={this.handleStartAssignment}
-                            backgroundColor={lime500}/>;
 
+        const actionAnswerDialog = [
+            <FlatButton
+                label="Send"
+                key={1}
+                primary={true}
+                onClick={this.handleSendAnswer}
+            />
+        ];
+
+        let controlButton;
+        let avatar = null;
         if (this.props.form === FORM_THEORETIC) {
-                avatar = (<Avatar icon={<LibraryBooks />}
-                                  backgroundColor={yellow600} />);
+            avatar = (<Avatar icon={<LibraryBooks />}
+                backgroundColor={yellow600} />);
 
         } else if (this.props.form === FORM_PRACTICE) {
             avatar = (<Avatar icon={<Code />}
-                              backgroundColor={blue500} />);
+                backgroundColor={blue500} />);
 
         } else  if (this.props.form === 2) {
             avatar = (<Avatar icon={<Book />}
-                              backgroundColor={lime500} />);
+                backgroundColor={lime500} />);
         }
+        if (this.props.isMentor === true) {
+            controlButton = (
+                <FlatButton
+                    label="Check Answer"
+                    primary={true}
+                    onClick={this.handleOpenCheck}
+                />
+            );
+        } else {
+            controlButton = <FlatButton
+                label="Start assignment"
+                onClick={this.handleStartAssignment}
+                backgroundColor={lime500}/>;
 
 
-        if (this.state.status === STATUS_IN_PROCESS) {
-            if (this.props.form === FORM_THEORETIC || this.props.form === FORM_GROUP) {
-                controlButton = <FlatButton
-                                label="Done"
-                                secondary={true}/>;
 
-            } else if (this.props.form === FORM_PRACTICE) {
-                controlButton = <AssignmentUpload
+            if (this.state.status === STATUS_IN_PROCESS) {
+                if (this.props.form === FORM_THEORETIC || this.props.form === FORM_GROUP) {
+                    controlButton = <FlatButton
+                        label="Done"
+                        secondary={true}/>;
+
+                } else if (this.props.form === FORM_PRACTICE) {
+                    controlButton = <AssignmentUpload
                         assignment_id={this.props.assignment_id}
                         updateStatus = {this.updateStatus}
-                        />
-            }
+                    />;
+                }
 
-        } else if (this.state.status === STATUS_DONE){
-            controlButton = <FlatButton
-                            label="Completed"
-                            backgroundColor={yellow600}
-                            disabled={true}/>;
+            } else if (this.state.status === STATUS_DONE) {
+                controlButton = <FlatButton
+                    label="Completed"
+                    backgroundColor={yellow600}
+                    disabled={true}/>;
+            };
         }
 
         return (
-
             <div>
                 <Card
                     expanded={this.state.expanded}
@@ -135,12 +221,30 @@ export default class ItemUnit extends React.Component {
                         style={cardTextStyle}>
                         {this.props.description}
                         <CardActions style={actionsStyle}>
-
                             {controlButton}
-
                         </CardActions>
                     </CardText>
                 </Card>
+                <Dialog
+                    actions = {actionAnswerDialog}
+                    // modal={true}
+                    open={this.state.handleMentorAnswer}>
+                    <TextField
+                        hintText={'Write your answer here'}
+                        style={inputStyle}
+                        multiLine={true}
+                        id={'answer'}
+                        label={'Your answer'}
+                        autoFocus
+                        onChange={this.handleAnswer}
+                    />
+                </Dialog>
+                <Dialog
+                    actions={actionsDialog}
+                    modal={true}
+                    open={this.state.handleCheckDialog}>
+                    Approve this assignment?
+                </Dialog>
             </div>
         );
     }

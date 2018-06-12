@@ -178,7 +178,6 @@ class Assignment(AbstractModel):
         if statement:
             self.statement = statement
         if grade:
-
             self.grade = grade
         if user:
             self.user = user
