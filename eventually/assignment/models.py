@@ -254,14 +254,14 @@ class Assignment(AbstractModel):
     @staticmethod
     def get_assignments_by_mentor_id(mentor_id, topic_id=None):
         if topic_id:
-            assignments = Assignment.objects.filter(user_id=mentor_id, item__topic_id=topic_id, item__form=1)
+            assignments = Assignment.objects.filter(user_id=mentor_id, item__topic_id=topic_id).exclude(status=0, grade=True)
         else:
-            assignments = Assignment.objects.filter(user_id=mentor_id, item__form=1)
+            assignments = Assignment.objects.filter(user_id=mentor_id).exclude(status=0, grade=True)
         return assignments
 
     @staticmethod
     def get_curriculums_by_mentor_id(mentor_id):
-        assigments = Assignment.objects.filter(item__form=1, item__topic__mentors__in = [mentor_id]).exclude()
+        assigments = Assignment.objects.filter(item__form=1, item__topic__mentors__in = [mentor_id]).exclude(grade=True)
         curriculums_id = assigments.values_list('item__topic__curriculum', flat=True).distinct()
         curriculums = [Curriculum.get_by_id(id) for id in curriculums_id]
         return curriculums
