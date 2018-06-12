@@ -83,7 +83,7 @@ export default class ItemUnit extends React.Component {
     };
 
     handleSubmit = () => {
-        const id = this.props.id;
+        const id = this.props.assignmentId;
         checkUserAnswer(id, true).then(response => {
             this.setState({
                 handleCheckDialog: false
@@ -190,7 +190,7 @@ export default class ItemUnit extends React.Component {
 
                 } else if (this.props.form === FORM_PRACTICE) {
                     controlButton = <AssignmentUpload
-                        assignment_id={this.props.assignment_id}
+                        assignment_id={this.props.assignmentId}
                         updateStatus = {this.updateStatus}
                     />;
                 }

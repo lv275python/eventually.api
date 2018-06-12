@@ -65,7 +65,7 @@ export default class ItemsList extends React.Component {
                             onModalOpen={this.handleModalOpen}
                             isMentor={this.props.isMentor}
                             status={item.assignment.status}
-                            assignmenId={item.assignment.id}
+                            assignmentId={item.assignment.id}
                         />)
                     )
                     }
