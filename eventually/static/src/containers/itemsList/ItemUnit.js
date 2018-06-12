@@ -7,6 +7,7 @@ import FlatButton from 'material-ui/FlatButton';
 import {Card, CardHeader, CardText, CardActions} from 'material-ui/Card';
 import {blue500, yellow600, lime500} from 'material-ui/styles/colors';
 import {putAssignmentService} from './itemsListService';
+import {AssignmentUpload} from 'src/containers';
 
 
 const titleStyle = {
@@ -63,6 +64,12 @@ export default class ItemUnit extends React.Component {
     render() {
 
         let avatar = null,
+            // Те, що зробив Богдан
+            // controlButton = (
+            //     <AssignmentUpload
+            //         assignment_id = {this.props.assignment_id}
+            //     />
+            // );
             controlButton = <FlatButton
                             label="Start assignment"
                             primary={true}
@@ -94,7 +101,14 @@ export default class ItemUnit extends React.Component {
                                 onClick={this.props.onModalOpen}/>;
             } else  if (this.props.form === FORM_GROUP) {
 
-            }
+                // Те, що було
+        // if (this.props.form === 0) {
+        //     avatar = (<Avatar icon={<LibraryBooks />} backgroundColor={yellow600} />);
+        //     controlButton = <FlatButton label="Done" secondary={true}/>;
+        // } else if (this.props.form === 1) {
+        //     avatar = (<Avatar icon={<Code />} backgroundColor={blue500} />);
+        // } else  if (this.props.form === 2) {
+        //     avatar = (<Avatar icon={<Book />} backgroundColor={lime500} />);
         }
 
         return (
@@ -115,7 +129,9 @@ export default class ItemUnit extends React.Component {
                         style={cardTextStyle}>
                         {this.props.description}
                         <CardActions style={actionsStyle}>
+
                             {controlButton}
+
                         </CardActions>
                     </CardText>
                 </Card>

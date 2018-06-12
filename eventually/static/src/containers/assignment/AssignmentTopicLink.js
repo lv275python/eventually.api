@@ -1,7 +1,7 @@
 import React from 'react';
 import {withRouter} from "react-router-dom";
 import { Card, CardHeader, CardText } from 'material-ui/Card';
-import {TopicItemList, ItemsList} from 'src/containers';
+import {ItemsList} from 'src/containers';
 
 const cardHeaderStyle= {
     fontSize: '25px'
@@ -66,10 +66,6 @@ class AssignmentTopicLink extends React.Component {
                         <ItemsList
                             curriculumId={this.state.curriculumId}
                             topicId={this.state.topicId}/>
-                        {/*<TopicItemList*/}
-                            {/*curriculumId={this.state.curriculumId}*/}
-                            {/*topicId={this.state.topicId}*/}
-                            {/*isMentor={this.state.isMentor} />*/}
                     </CardText>
 
                 </Card>

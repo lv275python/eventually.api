@@ -2,7 +2,7 @@ import React from 'react';
 import {Card, CardHeader, CardText} from 'material-ui/Card';
 import Avatar from 'material-ui/Avatar';
 import {getUserId} from 'src/helper';
-import ItemList from '../itemsList/ItemsList';
+import {ItemsList} from 'src/containers';
 
 
 const cardHeaderStyle = {
@@ -40,7 +40,7 @@ export default class StudentItem extends React.Component {
                     avatar={<Avatar src={`https://robohash.org/${this.props.avatar}`}/>}
                     titleStyle={titleStyle}/>
                 <CardText expandable={true}>
-                    <ItemList
+                    <ItemsList
                         curriculumId={this.state.curriculumId}
                         topicId={this.state.topicId}
                         userId={this.state.userId}/>
