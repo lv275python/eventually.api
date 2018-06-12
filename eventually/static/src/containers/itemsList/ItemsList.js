@@ -14,6 +14,7 @@ export default class ItemsList extends React.Component {
             isModalOpen: false,
             answer: '',
             items: [],
+
         };
     }
 
@@ -48,7 +49,6 @@ export default class ItemsList extends React.Component {
 
     render() {
         return (
-
             <div style={this.props.style}>
                 <Paper zDepth={1}>
                     {this.state.items.map(item => (
@@ -57,12 +57,14 @@ export default class ItemsList extends React.Component {
                             name={item.item.name}
                             description={item.item.description}
                             form={item.item.form}
-                            status={item.assignment.status}
+                            grade={item.assignment.grade}
                             isActive={item.item.id === this.state.isActive || false}
                             onClick={this.handleClick}
                             id={item.item.id}
-                            assignment_id = {item.assignment.id}
+                            userId={this.props.id}
                             onModalOpen={this.handleModalOpen}
+                            isMentor={this.props.isMentor}
+                            status={item.assignment.status}
                             assignmenId={item.assignment.id}
                         />)
                     )

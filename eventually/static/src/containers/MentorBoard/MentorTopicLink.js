@@ -26,7 +26,6 @@ class MentorTopicLink extends React.Component {
             curriculumId: this.props.curriculumId,
 
         };
-
     }
 
     changeExp = newExpandedState => {
@@ -68,6 +67,7 @@ class MentorTopicLink extends React.Component {
                             actAsExpander={true}
                             showExpandableButton={true}
                             curriculumId={this.state.curriculumId}
+                            isMentor={this.state.isMentor}
                         />
                     </CardText>
                 </Card>);

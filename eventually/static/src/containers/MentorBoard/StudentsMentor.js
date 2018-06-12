@@ -37,6 +37,7 @@ export default class StudentsMentorList extends React.Component {
         return (
             <Card>
                 <StudentList
+                    isMentor={this.props.isMentor}
                     curriculumId = {this.props.curriculumId}
                     students={this.state.studentsList.myStudents}/>
             </Card>

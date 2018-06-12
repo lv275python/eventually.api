@@ -24,6 +24,7 @@ export default class StudentList extends React.Component {
                         tabIndex={this.props.tabIndex}
                         getStudentsListData={this.props.getStudentsListData}
                         curriculumId = {this.props.curriculumId}
+                        isMentor={this.props.isMentor}
                     />
                 ))}
             </div>
