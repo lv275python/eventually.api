@@ -13,11 +13,17 @@ const getItemsList = (topicId, userId) => {
     return axios.get(url);
 };
 
-const putAssignmentService = (assignmentId, status, grade) => {
-    let data = {'status': status, 'grade': grade};
+ const putAssignmentService = (assignmentId, status, grade) => {
+     let data = {'status': status, 'grade': grade};
+     let url = apiUrl + 'assignment/' + assignmentId + '/';
+     return axios.put(url, data);
+ };
+
+const updatePracticalAssignmentService = (assignmentId, fileKey) => {
+    const data = {'statement': fileKey, 'status': 2,};
     let url = apiUrl + 'assignment/' + assignmentId + '/';
     return axios.put(url, data);
 };
 
 export default getItemsList;
-export {putAssignmentService};
+export {putAssignmentService, updatePracticalAssignmentService};

@@ -45,15 +45,9 @@ export default class AssignmentUpload extends React.Component {
                 fileKey: response.data['file_key'],
                 open: false,
             });
-            updateAssignmentStatus(this.props.assignment_id, this.state.fileKey).then(response => {
-                this.props.updateStatus(response.status)
-            });
+            this.props.updatePracticalAssignment(this.state.fileKey)
         })
 
-    };
-
-    updateFileName = (fileName) => {
-        this.props.updateFileNameInDb(fileName);
     };
 
 
@@ -66,6 +60,10 @@ export default class AssignmentUpload extends React.Component {
         // TODO add type and size validation
 
         fileData.append('file', file);
+        fileData.append('curriculum_id', this.props.curriculumId);
+        fileData.append('topic_id', this.props.topicId);
+        fileData.append('item_id', this.props.itemId);
+
         this.setState({
             fileData: fileData,
             fileName: fileName,
