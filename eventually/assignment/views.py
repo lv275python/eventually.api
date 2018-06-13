@@ -159,10 +159,10 @@ class AssignmentStudentView(View):
             new_assignments = []
             subordinates = Item.get_subordinate_items(superior_item_id=current_item_id)
             for subordinate_item in subordinates:
-                superiors = subordinate_item.get_item_superiors()[1]
-                for superior_item in superiors:
+                superiors_ids = subordinate_item.get_item_superiors()[1]
+                for superior_item_id in superiors_ids:
                     superior_assignment = Assignment.\
-                        get_assignments_by_student_topic_item_ids(student_id=user.id, item_id=superior_item.id)
+                        get_assignments_by_student_topic_item_ids(student_id=user.id, item_id=superior_item_id)
                     if not superior_assignment or not superior_assignment.status == 2\
                                 or superior_assignment.grade is not True:
                         break
@@ -178,6 +178,7 @@ class AssignmentStudentView(View):
             new_data = {'status': STATUS_IN_PROCESS}
             assignment.update(**new_data)
             return RESPONSE_200_UPDATED
+
 
 class AssignmentsMentorView(View):
     """Assignment view that handles GET, POST, PUT, DELETE requests."""
