@@ -56,8 +56,8 @@ export default class ItemUnit extends React.Component {
             handleCheckDialog: false,
             status: this.props.status,
             handleMentorAnswer: false,
-            textAnswer:'',
-            userId:this.props.userId,
+            textAnswer: '',
+            userId: this.props.userId,
         };
     }
 
@@ -169,7 +169,7 @@ export default class ItemUnit extends React.Component {
             avatar = (<Avatar icon={<Code />}
                 backgroundColor={blue500} />);
 
-        } else  if (this.props.form === 2) {
+        } else  if (this.props.form === FORM_GROUP) {
             avatar = (<Avatar icon={<Book />}
                 backgroundColor={lime500} />);
         }
