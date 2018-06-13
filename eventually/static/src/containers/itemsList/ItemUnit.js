@@ -108,14 +108,14 @@ export default class ItemUnit extends React.Component {
     handleStartAssignment = () => {
         const assignmentId = this.props.assignmentId;
         putAssignmentService(assignmentId, STATUS_IN_PROCESS).then(response => {
-            this.setState({status: STATUS_IN_PROCESS});
+            this.updateStatus(response.status, STATUS_IN_PROCESS)
         });
     };
 
     handleEndAssignment = () => {
         const assignmentId = this.props.assignmentId;
         putAssignmentService(assignmentId, STATUS_DONE, true).then(response => {
-            this.updateStatus(response.status);
+            this.updateStatus(response.status, STATUS_DONE)
         });
     };
 
@@ -125,10 +125,10 @@ export default class ItemUnit extends React.Component {
         });
     }
 
-    updateStatus = status => {
+    updateStatus = (status, assignmentStatus) => {
         if (status === 200){
             this.setState({
-                status: 2
+                status: assignmentStatus
             });
         }
     };

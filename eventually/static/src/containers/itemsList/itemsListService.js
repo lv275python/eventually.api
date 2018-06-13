@@ -14,7 +14,7 @@ const getItemsList = (topicId, userId) => {
 };
 
 const putAssignmentService = (assignmentId, status, grade) => {
-    let data = {'status':status, 'grade':true};
+    let data = {'status': status, 'grade': grade};
     let url = apiUrl + 'assignment/' + assignmentId + '/';
     return axios.put(url, data);
 };
