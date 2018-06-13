@@ -150,7 +150,6 @@ class AssignmentStudentView(View):
 
         user = CustomUser.get_by_id(assignment.user_id)
         current_item_id = assignment.item_id
-
         if grade is True:
             new_data = {'grade': grade,
                         'finished_at': datetime.now()}

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { apiUrl } from 'src/helper';
 
-const assignmentPath = apiUrl + 'assignment/list/'
+const assignmentPath = apiUrl + 'assignment/list/';
 
 const getItemsList = (topicId, userId) => {
     let url;
@@ -13,11 +13,10 @@ const getItemsList = (topicId, userId) => {
     return axios.get(url);
 };
 
-const putAssignmentService = (assignmentId, data) => {
-
+const putAssignmentService = (assignmentId, status, grade) => {
+    let data = {'status':status, 'grade':true};
     let url = apiUrl + 'assignment/' + assignmentId + '/';
     return axios.put(url, data);
-
 };
 
 export default getItemsList;

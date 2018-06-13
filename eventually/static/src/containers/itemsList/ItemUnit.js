@@ -4,7 +4,7 @@ import LibraryBooks from 'material-ui/svg-icons/av/library-books';
 import Code from 'material-ui/svg-icons/action/code';
 import Book from 'material-ui/svg-icons/action/book';
 import FlatButton from 'material-ui/FlatButton';
-import TextField from 'material-ui/TextField'
+import TextField from 'material-ui/TextField';
 import {Card, CardHeader, CardText, CardActions} from 'material-ui/Card';
 import {blue500, yellow600, lime500} from 'material-ui/styles/colors';
 import Dialog from 'material-ui/Dialog';
@@ -20,7 +20,7 @@ const titleStyle = {
 
 const inputStyle = {
     width: '100%',
-}
+};
 
 const cardHeaderStyle = {
     display: 'flex',
@@ -106,10 +106,17 @@ export default class ItemUnit extends React.Component {
         });
     };
     handleStartAssignment = () => {
-        putAssignmentService(this.props.assignmenId, {'status': STATUS_IN_PROCESS})//.then(response => {
+        const assignmentId = this.props.assignmentId;
+        putAssignmentService(assignmentId, STATUS_IN_PROCESS).then(response => {
+            this.setState({status: STATUS_IN_PROCESS});
+        });
+    };
 
-        // TODO then for response
-
+    handleEndAssignment = () => {
+        const assignmentId = this.props.assignmentId;
+        putAssignmentService(assignmentId, STATUS_DONE, true).then(response => {
+            this.updateStatus(response.status);
+        });
     };
 
     componentWillReceiveProps(nextProps) {
@@ -122,7 +129,7 @@ export default class ItemUnit extends React.Component {
         if (status === 200){
             this.setState({
                 status: 2
-            })
+            });
         }
     };
 
@@ -174,18 +181,26 @@ export default class ItemUnit extends React.Component {
                     onClick={this.handleOpenCheck}
                 />
             );
+            if (this.state.status === STATUS_IN_PROCESS) {
+                controlButton = <FlatButton
+                    label="In process"
+                    disabled/>;
+            } else if (this.state.status === STATUS_REQUESTED) {
+                controlButton = <FlatButton
+                    label="Not started"
+                    disabled/>;
+            }
         } else {
             controlButton = <FlatButton
                 label="Start assignment"
                 onClick={this.handleStartAssignment}
                 backgroundColor={lime500}/>;
 
-
-
             if (this.state.status === STATUS_IN_PROCESS) {
                 if (this.props.form === FORM_THEORETIC || this.props.form === FORM_GROUP) {
                     controlButton = <FlatButton
                         label="Done"
+                        onClick={this.handleEndAssignment}
                         secondary={true}/>;
 
                 } else if (this.props.form === FORM_PRACTICE) {
@@ -200,7 +215,7 @@ export default class ItemUnit extends React.Component {
                     label="Completed"
                     backgroundColor={yellow600}
                     disabled={true}/>;
-            };
+            }
         }
 
         return (
@@ -227,7 +242,6 @@ export default class ItemUnit extends React.Component {
                 </Card>
                 <Dialog
                     actions = {actionAnswerDialog}
-                    // modal={true}
                     open={this.state.handleMentorAnswer}>
                     <TextField
                         hintText={'Write your answer here'}
