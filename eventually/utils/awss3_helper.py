@@ -172,17 +172,22 @@ class AwsPracticalAssignment:
 
     @staticmethod
     def upload(request):
+
         if request.content_type != 'multipart/form-data':
             return False
 
         file_for_upload = request.FILES.get('file')
+        curriculum = str(request.POST.get('curriculum_id'))
+        topic = str(request.POST.get('topic_id'))
+        item = str(request.POST.get('item_id'))
+        name_date = (str(request.user.email) + str(datetime.now())).replace(' ', '_')
+
+        file_key = '/'.join([curriculum, topic, item, name_date])
 
         if not file_for_upload:
             return False
 
         # TODO extension validator
-
-        file_key = (str(request.user.email) + str(datetime.now())).replace(' ', '_')
 
         file_acl = "public-read"
 

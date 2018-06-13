@@ -24,9 +24,6 @@ const deleteFile = imageName => {
     });
 };
 
-const updateAssignmentStatus = (assignmentId, fileKey) => {
-    let url = apiUrl + 'assignment/' + assignmentId + '/';
-    return axios.put(url, {'statement':fileKey, 'status':2});
-}
 
-export {sendFile, deleteFile, updateAssignmentStatus};
+
+export {sendFile, deleteFile};

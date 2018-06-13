@@ -9,7 +9,7 @@ import {Card, CardHeader, CardText, CardActions} from 'material-ui/Card';
 import {blue500, yellow600, lime500} from 'material-ui/styles/colors';
 import Dialog from 'material-ui/Dialog';
 import {checkUserAnswer, dismissUserAnswer, sendAnswerToUser} from 'src/containers/MentorBoard/MentorBoardService';
-import {putAssignmentService} from './itemsListService';
+import {putAssignmentService, updatePracticalAssignmentService} from './itemsListService';
 import {AssignmentUpload} from 'src/containers';
 
 
@@ -133,6 +133,12 @@ export default class ItemUnit extends React.Component {
         }
     };
 
+    updatePracticalAssignment = (fileKey) => {
+        updatePracticalAssignmentService(this.props.assignmentId, fileKey,).then(response => {
+                this.updateStatus(response.status, 2)
+            });
+    };
+
     render() {
         const actionsDialog = [
             <FlatButton
@@ -206,7 +212,10 @@ export default class ItemUnit extends React.Component {
                 } else if (this.props.form === FORM_PRACTICE) {
                     controlButton = <AssignmentUpload
                         assignment_id={this.props.assignmentId}
-                        updateStatus = {this.updateStatus}
+                        updatePracticalAssignment = {this.updatePracticalAssignment}
+                        curriculumId = {this.props.curriculumId}
+                        topicId = {this.props.topicId}
+                        itemId = {this.props.id}
                     />;
                 }
 
