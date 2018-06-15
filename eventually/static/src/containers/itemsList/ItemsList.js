@@ -47,6 +47,12 @@ export default class ItemsList extends React.Component {
         }
     };
 
+    remountItems = () => {
+        getItemsList(this.props.topicId, this.props.userId).then(response => {
+            this.setState({items: response.data['assignments']});
+        });
+    };
+
     render() {
         return (
             <div style={this.props.style}>
@@ -68,6 +74,7 @@ export default class ItemsList extends React.Component {
                             assignmentId={item.assignment.id}
                             topicId = {this.props.topicId}
                             curriculumId = {this.props.curriculumId}
+                            remountItems = {this.remountItems}
                         />)
                     )
                     }

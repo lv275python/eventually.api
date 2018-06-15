@@ -17,7 +17,7 @@ const dropzoneStyle = { height : '100%',
     textAlign: 'center'};
 
 const buttonStyle = {
-    margin: '1% 15% -3%'};
+    margin: '1% 1% -3%'};
 
 export default class AssignmentUpload extends React.Component {
 

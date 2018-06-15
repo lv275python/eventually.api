@@ -115,7 +115,8 @@ export default class ItemUnit extends React.Component {
     handleEndAssignment = () => {
         const assignmentId = this.props.assignmentId;
         putAssignmentService(assignmentId, STATUS_DONE, true).then(response => {
-            this.updateStatus(response.status, STATUS_DONE)
+            this.updateStatus(response.status, STATUS_DONE);
+            this.props.remountItems();
         });
     };
 
@@ -134,8 +135,8 @@ export default class ItemUnit extends React.Component {
     };
 
     updatePracticalAssignment = (fileKey) => {
-        updatePracticalAssignmentService(this.props.assignmentId, fileKey,).then(response => {
-                this.updateStatus(response.status, 2)
+        updatePracticalAssignmentService(this.props.assignmentId, fileKey).then(response => {
+                this.updateStatus(response.status, STATUS_DONE)
             });
     };
 
@@ -198,7 +199,7 @@ export default class ItemUnit extends React.Component {
             }
         } else {
             controlButton = <FlatButton
-                label="Start assignment"
+                label="Start"
                 onClick={this.handleStartAssignment}
                 backgroundColor={lime500}/>;
 

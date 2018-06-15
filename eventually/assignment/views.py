@@ -1,7 +1,11 @@
 """Views"""
 
+from datetime import datetime
+
 from django.views.generic.base import View
 from django.http import JsonResponse
+
+from eventually.settings import FRONT_HOST
 from assignment.models import Assignment
 from authentication.models import CustomUser
 from item.models import Item
@@ -10,14 +14,7 @@ from utils.responsehelper import (RESPONSE_200_UPDATED,
                                   RESPONSE_201_CREATED,
                                   RESPONSE_400_INVALID_DATA,
                                   RESPONSE_404_OBJECT_NOT_FOUND)
-from utils.topic_views_functions import find_mentors_topics
-from curriculum.models import Curriculum
-from topic.models import Topic
-from curriculum.models import Curriculum
-from mentor.models import MentorStudent
 from utils.send_mail import send_email
-from eventually.settings import FRONT_HOST
-from datetime import datetime
 
 STATUS_IN_PROCESS = 1
 STATUS_IS_DONE = 2
@@ -169,16 +166,12 @@ class AssignmentStudentView(View):
                     else:
                         new_assignment = Assignment.create(user=user, item=subordinate_item)
                         new_assignments.append(new_assignment.to_dict())
-            if new_assignments:
-                return JsonResponse({'assignments': new_assignments}, status=201)
-            else:
-                return RESPONSE_200_UPDATED
+            return RESPONSE_200_UPDATED
 
         elif grade is False:
             new_data = {'status': STATUS_IN_PROCESS}
             assignment.update(**new_data)
             return RESPONSE_200_UPDATED
-
 
 class AssignmentsMentorView(View):
     """Assignment view that handles GET, POST, PUT, DELETE requests."""
