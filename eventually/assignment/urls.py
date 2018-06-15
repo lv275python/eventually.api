@@ -13,6 +13,5 @@ urlpatterns = [
     url(r'^$', views.AssignmentStudentView.as_view(), name='AssignmentStudent'),
     url(r'^mentor/send_answer/$', send_answer, name='SendAnswer'),
     url(r'^mentor/(?P<assignment_id>\d+)$', views.AssignmentsMentorView.as_view(), name='complete'),
-    # url(r'^$', views.AssignmentAnswerView.as_view(), name='AssignmentAnswer'),
-
+    url(r'^answer/$', views.AssignmentAnswerView.as_view(), name='AssignmentAnswer'),
 ]
