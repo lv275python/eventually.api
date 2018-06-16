@@ -15,6 +15,7 @@ PASSWORD_REG_EXP = r'^(?=.*?\d)(?=.*?[A-Z])(?=.*?[a-z])[A-Za-z\d]*$'
 STR_MIN_LENGTH = 0
 STR_MAX_LENGTH = None
 MAX_IMAGE_FILESIZE = 8 * 1024 * 1024
+MAX_FILESIZE = 1024 * 1024 * 1024
 
 def string_validator(value, min_length=STR_MIN_LENGTH, max_length=STR_MAX_LENGTH):
     """
@@ -630,6 +631,25 @@ def image_validator(image_file):
         return False
 
     return file_extension
+
+
+def file_validator(file):
+    """
+    Checks if the file has acceptable size.
+    Maximum file size allowed is 1Gb.
+
+    :param file: file
+    :type file: MultiValueDict
+
+    :return: True if file is valid and False if not
+    :rtype: bool
+    """
+
+    if file.size > MAX_FILESIZE:
+        return False
+    else:
+        return True
+
 
 def paginator_page_validator(page_number, pages_amount):
     """
