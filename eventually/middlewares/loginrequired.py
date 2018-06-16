@@ -37,7 +37,7 @@ class LoginRequiredMiddleware():  # pylint: disable=too-few-public-methods
 
         if request.method == 'POST' or request.method == 'PUT':
             try:
-                if not request.path_info.startswith('/api/v1/img'):
+                if not request.path_info.startswith('/api/v1/upload'):
                     request._body = json.loads(request.body.decode(ENCODING))  # pylint: disable=W0212
             except (SyntaxError, JSONDecodeError):
                 return HttpResponse(status=400)

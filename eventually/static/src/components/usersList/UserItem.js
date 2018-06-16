@@ -4,7 +4,8 @@ import Avatar from 'material-ui/Avatar';
 import RaisedButton from 'material-ui/RaisedButton';
 import {lightGreen400} from 'material-ui/styles/colors';
 import {getUserId} from 'src/helper';
-import {putMentorStudentService} from 'src/components';
+import {putMentorStudentService, postAssignmentAfterMentorAssignsTopic} from 'src/components';
+
 
 const cardHeaderStyle = {
     display: 'flex',
@@ -42,14 +43,15 @@ export default class UserItem extends React.Component {
             'student': this.state.userId,
             'topic': this.props.topicId
         };
+        postAssignmentAfterMentorAssignsTopic(data);
         putMentorStudentService(this.state.userId, this.props.topicId, data).then(response => {
             this.props.getStudentsListData();
         });
-    }
+    };
 
     handleClick = () => {
         this.props.onButtonClick(this.props.id);
-    }
+    };
 
     render() {
         const btn=(this.props.tabIndex===2) ?
