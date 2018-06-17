@@ -173,6 +173,7 @@ class AssignmentStudentView(View):
             assignment.update(**new_data)
             return RESPONSE_200_UPDATED
 
+
 class AssignmentsMentorView(View):
     """Assignment view that handles GET, POST, PUT, DELETE requests."""
 
@@ -218,16 +219,22 @@ def get_curriculum_list(request):
     if request.method == "GET":
         student = request.user
         curriculums = Assignment.get_curriculums(student)
-        data = {'curriculums': [curriculum.to_dict() for curriculum in curriculums]}
-        return JsonResponse(data, status=200)
+        if curriculums:
+            data = {'curriculums': [curriculum.to_dict() for curriculum in curriculums]}
+            return JsonResponse(data, status=200)
+        else:
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
 
 def get_topic_list(request, curriculum_id=None):
     if request.method == "GET":
         student = request.user
         topics = Assignment.get_topics(student, curriculum_id)
-        data = {'topics': [topic.to_dict() for topic in topics]}
-        return JsonResponse(data, status=200)
+        if topics:
+            data = {'topics': [topic.to_dict() for topic in topics]}
+            return JsonResponse(data, status=200)
+        else:
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
 
 def get_assignment_list(request, topic_id, user_id=None):
@@ -238,20 +245,23 @@ def get_assignment_list(request, topic_id, user_id=None):
         else:
             user = request.user
             assignments = Assignment.get_assignments_by_student_topic_item_ids(student_id=user, topic_id=topic_id)
-        data = {'assignments': [{'assignment': assignment.to_dict(), 'item': assignment.item.to_dict()}
-                for assignment in assignments]}
-        return JsonResponse(data, status=200)
+        if assignments:
+            data = {'assignments': [{'assignment': assignment.to_dict(), 'item': assignment.item.to_dict()}
+                                    for assignment in assignments]}
+            return JsonResponse(data, status=200)
+        else:
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
 
 def send_answer(request):
     if request.method == 'POST':
         data = request.body
-        id = data.get('userId')
         if not data:
             return RESPONSE_400_INVALID_DATA
+        id = data.get('userId')
         user = CustomUser.get_by_id(id)
         if not user:
-            return RESPONSE_400_INVALID_DATA,
+            return RESPONSE_400_INVALID_DATA
         answer = data.get('message')
         ctx = {
             'user_name': user.first_name,
