@@ -301,3 +301,80 @@ class AssignmentFunctionViewTestCase(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 400)
+
+
+class AssignmentMentorViewTestCase(TestCase):
+    def setUp(self):
+        self.custom_user = CustomUser.objects.create(id=1,
+                                                     email='email.1@mail.com',
+                                                     first_name='1fname',
+                                                     middle_name='1mname',
+                                                     last_name='1lname',
+                                                     is_active=True)
+        self.custom_user.set_password('1111')
+        self.custom_user.save()
+
+        self.curriculum = Curriculum.objects.create(id=111,
+                                                    name="testcurriculum",
+                                                    goals=["goal1", "goal2"],
+                                                    description="some_description",
+                                                    owner=self.custom_user
+                                                    )
+
+        self.topic = Topic.objects.create(id=222,
+                                          curriculum=self.curriculum,
+                                          author=self.custom_user,
+                                          title='Topic #1',
+                                          description="test_description",
+                                          mentors=[self.custom_user])
+
+        self.item = Item.objects.create(id=333,
+                                        topic=self.topic,
+                                        authors=[self.custom_user],
+                                        name='Item #1',
+                                        form=0,
+                                        description='description')
+
+        self.assignment = Assignment.objects.create(id=444,
+                                                    user=self.custom_user,
+                                                    item=self.item)
+
+        self.client = Client()
+        self.client.login(username='email.1@mail.com', password='1111')
+
+    def test_mentor_success_get_by_curricilum_id(self):
+        with mock.patch('assignment.views.CustomUser') as mock_user:
+            with mock.patch('assignment.views.Assignment') as mock_assignment:
+                mock_user.get_by_id.return_value = self.custom_user
+                mock_assignment.get_assignment_by_mentor_id.return_value = [self.assignment]
+                url = reverse('assignment:mentorlabla')
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200)
+
+    def test_mentor_not_success_put_not_assignment(self):
+        url = reverse('assignment:complete', kwargs={'assignment_id':777})
+        data = {'grade':True}
+        response = self.client.put(url, json.dumps(data))
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_mentor_not_success_put_not_data(self):
+        url = reverse('assignment:complete', kwargs={'assignment_id':444})
+        data = {}
+        response = self.client.put(url, json.dumps(data))
+
+        self.assertEqual(response.status_code, 400)
+
+    def test_mentor_success_put_grade(self):
+        url = reverse('assignment:complete', kwargs={'assignment_id':444})
+        data = {'grade':True}
+        response = self.client.put(url, json.dumps(data))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_mentor_success_put_status(self):
+        url = reverse('assignment:complete', kwargs={'assignment_id':444})
+        data = {'status':2}
+        response = self.client.put(url, json.dumps(data))
+
+        self.assertEqual(response.status_code, 200)
