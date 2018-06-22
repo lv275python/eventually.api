@@ -3,14 +3,12 @@ Validator tests
 ===============
 """
 
-import datetime
 from django.test import TestCase
 from utils.validators import *
 from PIL import Image
-from io import BytesIO
+from io import BytesIO, StringIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from unittest import mock
-from django.http import HttpResponse
 
 IMAGE_NAME = "testimage.png"
 IMAGE_MIME_TYPE = "image/png"
@@ -1298,3 +1296,19 @@ class MentorValidator(TestCase):
         is_valid = mentor_validator(data, required_keys)
         self.assertFalse(is_valid)
 
+
+class FileValidatorTestCase(TestCase):
+    def setUp(self):
+        self.file = StringIO()
+
+    def test_file_validator_positive(self):
+        self.file.size = 1024*1024*1023
+        result = file_validator(self.file)
+
+        self.assertTrue(result)
+
+    def test_file_validator_negative(self):
+        self.file.size = 1024 * 1024 * 1025
+        result = file_validator(self.file)
+
+        self.assertFalse(result)

@@ -1,7 +1,6 @@
 """
 File Handler
 ============
-
 Provides methods for upload and download processes of the object to Amazon S3 service
 """
 
@@ -10,7 +9,7 @@ import uuid
 import boto3
 from eventually import settings
 from botocore.exceptions import ClientError
-from utils.validators import image_validator
+from utils.validators import image_validator, file_validator
 from customprofile.models import CustomProfile
 from team.models import Team
 from datetime import datetime
@@ -25,7 +24,6 @@ BUCKET_TASKS = BOTO_S3.Bucket(settings.AWS_STORAGE_BUCKET_NAME_TASKS)
 def _get_all_img_keys():
     """
     Collects keys of all images stored in database
-
     :return: list of keys of all images from database stored in amazons3
     """
 
@@ -48,10 +46,8 @@ def upload(request):
     Handles upload to Amazon S3 bucket eventually-photos.
     URL for requests: s3.eu-west-2.amazonaws.com/eventually-photos/
     Accepts the following image extensions: *.gif, *.png, *.jpg, *.jpeg, *.bmp
-
     :param request: request from the web page
     :type request: multipart/form-data
-
     :Example:
     |   POST /s3.eu-west-2.amazonaws.com/eventually-photos/ HTTP/1.1
     |   Host: localhost:8000
@@ -60,7 +56,6 @@ def upload(request):
     |   Content-Disposition: form-data; name="image"; filename="IMG_20171129.jpg"
     |   Content-Type: image/jpeg
     |   ------WebKitFormBoundary7MA4YWxkTrZu0gW--
-
     :return: True if image has been uploaded successfully
              False if image hasn't been uploaded
     """
@@ -80,7 +75,6 @@ def upload(request):
 
     image_acl = "public-read"
     image_key = str(uuid.uuid4()).replace('-', '').upper()
-
     try:
         BOTO_S3.Object(settings.AWS_STORAGE_BUCKET_NAME_IMG, image_key).load()
     except ClientError:
@@ -96,10 +90,8 @@ def upload(request):
 def delete(request):
     """
     Handles delete image from bucket request
-
     :param request: request from the website
     :type request: application/json
-
     :return: status 200 if object has been deleted, otherwise - status 400
     """
 
@@ -124,11 +116,10 @@ def delete(request):
 def get_all_images_a3():
     """
     Collects keys of all images stored on amazons3 bucket.
-
     :return: list of strings with keys of images stored on amazons3
     """
 
-    bucket_objects = BUCKET_IMG.meta.client.list_objects(Bucket=BUCKET.name)
+    bucket_objects = BUCKET_IMG.meta.client.list_objects(Bucket=BUCKET_IMG.name)
     keys_list = []
     for image in bucket_objects['Contents']:
         keys_list.append(image['Key'])
@@ -139,7 +130,6 @@ def get_keys_to_delete():
     """
     Compares lists of image keys from amazons3 and database, returns list of keys which are
     not in database.
-
     :return: list of strings with keys of images stored on amazons3, but not in database
     """
 
@@ -153,7 +143,6 @@ def get_keys_to_delete():
 def delete_images_awss3():
     """
     deletes images by keys from amazons3
-
     :return: list with keys of deleted images from amazons3
     """
 
@@ -172,23 +161,23 @@ class AwsPracticalAssignment:
 
     @staticmethod
     def upload(request):
-
         if request.content_type != 'multipart/form-data':
             return False
 
         file_for_upload = request.FILES.get('file')
+
+        if not file_for_upload:
+            return False
+
+        if not file_validator(file_for_upload):
+            return False
+
         curriculum = str(request.POST.get('curriculum_id'))
         topic = str(request.POST.get('topic_id'))
         item = str(request.POST.get('item_id'))
         name_date = (str(request.user.email) + str(datetime.now())).replace(' ', '_')
 
         file_key = '/'.join([curriculum, topic, item, name_date])
-
-        if not file_for_upload:
-            return False
-
-        # TODO extension validator
-
         file_acl = "public-read"
 
         try:
@@ -196,7 +185,6 @@ class AwsPracticalAssignment:
         except ClientError:
             response = BUCKET_TASKS.put_object(ACL=file_acl,
                                                Body=file_for_upload.read(),
-                                               ContentType='application/msword',
                                                Key=file_key)
             return {"file_key": response.key}
         else:
@@ -206,10 +194,8 @@ class AwsPracticalAssignment:
     def delete(request):
         """
         Handles delete file from bucket request
-
         :param request: request from the website
         :type request: application/json
-
         :return: status 200 if object has been deleted, otherwise - status 400
         """
 
