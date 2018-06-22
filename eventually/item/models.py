@@ -227,3 +227,28 @@ class Item(AbstractModel):
         """
         superiors_list = [item.id for item in self.superiors.all()]
         return self.id, superiors_list
+
+
+    @staticmethod
+    def get_items_by_topic_id(topic_id):
+        """
+
+        :param topic_id: Certain topic id
+        :type topic_id: int
+
+        :return: QuerySet with items
+        """
+        items = Item.objects.filter(topic_id=topic_id)
+        return items
+
+    @staticmethod
+    def get_subordinate_items(superior_item_id):
+        """
+
+        :param superior_item_id: ID of a superior item
+        :type superior_item_id: int
+
+        :return: QuerySet with items
+        """
+        items = Item.objects.filter(superiors=superior_item_id)
+        return items

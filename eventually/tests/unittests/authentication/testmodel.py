@@ -13,9 +13,9 @@ import pytz
 
 TEST_DATE = datetime.datetime(2017, 4, 10, 12, 00, tzinfo=pytz.utc)
 
+
 class TestCustomUserModel(TestCase):
     """Class for CustomUser Model test"""
-
 
     def setUp(self):
         """ Create a user object to be used by the tests """

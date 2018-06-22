@@ -106,3 +106,52 @@ class AmazonS3TestCases(TestCase):
         response = self.client.delete(reverse("handle_image"),
                                       json.dumps({"image_key": "SOMEIMAGEKEYSOMEIMAGEKEY"}))
         self.assertEqual(response.status_code, 400)
+
+
+class PracticalAssignmentManagementTestCase(TestCase):
+
+    def setUp(self):
+        user = CustomUser.objects.create(id=101,
+                                         first_name="Jerry",
+                                         last_name="Newbey",
+                                         middle_name="Jr.",
+                                         email='mail@mail.com',
+                                         is_active=True)
+        user.set_password('1Aa')
+        user.save()
+
+        self.client = Client()
+        user = json.dumps({'email': 'mail@mail.com', 'password': '1Aa'})
+        self.client.post(reverse('login_user'), user, content_type='application/json')
+
+    def test_post_positive(self):
+        with mock.patch('utils.awss3_helper.AwsPracticalAssignment.upload') as mock_upload:
+            mock_upload.return_value = {'file_key':True}
+            url = reverse('handle_practical_assignment')
+            response = self.client.post(url)
+
+            self.assertEqual(response.status_code, 200)
+
+    def test_post_negative(self):
+        with mock.patch('utils.awss3_helper.AwsPracticalAssignment.upload') as mock_upload:
+            mock_upload.return_value = False
+            url = reverse('handle_practical_assignment')
+            response = self.client.post(url)
+
+            self.assertEqual(response.status_code, 400)
+
+    def test_delete_positive(self):
+        with mock.patch('utils.awss3_helper.AwsPracticalAssignment.delete') as mock_upload:
+            mock_upload.return_value = True
+            url = reverse('handle_practical_assignment')
+            response = self.client.delete(url)
+
+            self.assertEqual(response.status_code, 200)
+
+    def test_delete_negative(self):
+        with mock.patch('utils.awss3_helper.AwsPracticalAssignment.delete') as mock_upload:
+            mock_upload.return_value = False
+            url = reverse('handle_practical_assignment')
+            response = self.client.delete(url)
+
+            self.assertEqual(response.status_code, 400)

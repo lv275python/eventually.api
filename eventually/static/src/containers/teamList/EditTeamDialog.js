@@ -59,7 +59,7 @@ export default class EditTeamDialog extends React.Component {
 
         const oldImageName = this.state.imageName;
 
-        sendFile(this.state.imageData).then(response => {
+        sendFile(this.state.imageData, 'img').then(response => {
             if (response.status == 200) {
                 this.setState({
                     imageName: response.data['image_key']
