@@ -72,7 +72,6 @@ export default class ItemsList extends React.Component {
                             isMentor={this.props.isMentor}
                             status={item.assignment.status}
                             assignmentId={item.assignment.id}
-                            statement={item.assignment.statement}
                             topicId = {this.props.topicId}
                             curriculumId = {this.props.curriculumId}
                             remountItems = {this.remountItems}

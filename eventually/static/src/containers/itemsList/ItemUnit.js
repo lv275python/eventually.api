@@ -9,7 +9,7 @@ import {Card, CardHeader, CardText, CardActions} from 'material-ui/Card';
 import {blue500, yellow600, lime500} from 'material-ui/styles/colors';
 import Dialog from 'material-ui/Dialog';
 import {checkUserAnswer, dismissUserAnswer, sendAnswerToUser} from 'src/containers/MentorBoard/MentorBoardService';
-import {putAssignmentService, updatePracticalAssignmentService, getAssignmentUrl} from './itemsListService';
+import {putAssignmentService, updatePracticalAssignmentService} from './itemsListService';
 import {AssignmentUpload} from 'src/containers';
 
 
@@ -38,11 +38,6 @@ const actionsStyle = {
     justifyContent: 'flex-end'
 };
 
-const downloadStyle = {
-    textDecoration: 'none',
-    color: 'black',
-};
-
 const STATUS_REQUESTED = 0;
 const STATUS_IN_PROCESS = 1;
 const STATUS_DONE = 2;
@@ -63,7 +58,6 @@ export default class ItemUnit extends React.Component {
             handleMentorAnswer: false,
             textAnswer: '',
             userId: this.props.userId,
-            statement: this.props.statement,
         };
     }
 
@@ -79,7 +73,7 @@ export default class ItemUnit extends React.Component {
     };
 
     handleCloseCheck = () => {
-        const id = this.props.assignmentId;
+        const id = this.props.id;
         dismissUserAnswer(id, 1).then(response => {
             this.setState({
                 handleCheckDialog: false,
@@ -106,26 +100,21 @@ export default class ItemUnit extends React.Component {
     handleSendAnswer = () => {
         const userId = this.state.userId;
         let message = this.state.textAnswer;
-        const assignmentId = this.props.assignmentId;
-        putAssignmentService(assignmentId, STATUS_IN_PROCESS).then(response => {
-            this.updateStatus(response.status, STATUS_IN_PROCESS);
-        });
         sendAnswerToUser(message, userId);
         this.setState({
             handleMentorAnswer: false,
         });
-
     };
     handleStartAssignment = () => {
         const assignmentId = this.props.assignmentId;
         putAssignmentService(assignmentId, STATUS_IN_PROCESS).then(response => {
-            this.updateStatus(response.status, STATUS_IN_PROCESS);
+            this.updateStatus(response.status, STATUS_IN_PROCESS)
         });
     };
 
     handleEndAssignment = () => {
         const assignmentId = this.props.assignmentId;
-        putAssignmentService(assignmentId, STATUS_DONE).then(response => {
+        putAssignmentService(assignmentId, STATUS_DONE, true).then(response => {
             this.updateStatus(response.status, STATUS_DONE);
             this.props.remountItems();
         });
@@ -147,13 +136,8 @@ export default class ItemUnit extends React.Component {
 
     updatePracticalAssignment = (fileKey) => {
         updatePracticalAssignmentService(this.props.assignmentId, fileKey).then(response => {
-            this.updateStatus(response.status, STATUS_DONE);
-        });
-    };
-
-    handleDownload = () => {
-        const assignmentStatement = this.state.statement;
-        getAssignmentUrl(assignmentStatement);
+                this.updateStatus(response.status, STATUS_DONE)
+            });
     };
 
     render() {
@@ -182,7 +166,7 @@ export default class ItemUnit extends React.Component {
             />
         ];
 
-        let controlButton, downloadButton;
+        let controlButton;
         let avatar = null;
         if (this.props.form === FORM_THEORETIC) {
             avatar = (<Avatar icon={<LibraryBooks />}
@@ -204,14 +188,6 @@ export default class ItemUnit extends React.Component {
                     onClick={this.handleOpenCheck}
                 />
             );
-            if (this.state.status === STATUS_DONE) {
-                const url = 'https://s3.eu-central-1.amazonaws.com/eventually-practical-tasks/' + this.state.statement;
-                downloadButton = (
-                    <FlatButton
-                        href={url}
-                        label='download'/>
-                );
-            }
             if (this.state.status === STATUS_IN_PROCESS) {
                 controlButton = <FlatButton
                     label="In process"
@@ -271,7 +247,6 @@ export default class ItemUnit extends React.Component {
                         {this.props.description}
                         <CardActions style={actionsStyle}>
                             {controlButton}
-                            {downloadButton}
                         </CardActions>
                     </CardText>
                 </Card>
