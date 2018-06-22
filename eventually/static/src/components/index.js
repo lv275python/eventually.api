@@ -12,6 +12,7 @@ export {
     getCurriculumTopics,
     postStudentList,
     getMentorsTopics,
-    putMentorStudentService} from './studentsTabsList/studentsTabsListService';
+    putMentorStudentService,
+    postAssignmentAfterMentorAssignsTopic} from './studentsTabsList/studentsTabsListService';
 export UserItem from './usersList/UserItem';
 export UsersList from './usersList/UsersList';

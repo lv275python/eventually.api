@@ -211,5 +211,4 @@ def get_all_topics_title(request): # pylint: disable=unused-argument
     """
     topics = Topic.get_all()
     data = {'topics_name': [topic.title for topic in topics]}
-    print(data)
     return JsonResponse(data, status=200)

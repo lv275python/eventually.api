@@ -13,6 +13,7 @@ from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 from authentication.models import CustomUser
 from topic.models import Topic
+from curriculum.models import Curriculum
 
 
 class MentorStudent(AbstractModel):
@@ -238,3 +239,52 @@ class MentorStudent(AbstractModel):
         if record:
             return record[0]
         return None
+
+    @staticmethod
+    def get_student_topics(student_id, curriculum_id=None):
+        """
+        Returns topics list by student_id or student_id and curriculum_id.
+        :param student_id: int
+        :param curriculum_id: int
+        :return: query_set
+        """
+        if curriculum_id:
+            assigned_topics = MentorStudent.objects.filter(student_id=student_id,
+                                                           mentor_id__isnull=False,
+                                                           topic__curriculum_id=curriculum_id,
+                                                           is_done=False)
+            topics_list = assigned_topics.values_list('topic', flat=True)
+            topics = [Topic.get_by_id(topic_id) for topic_id in topics_list]
+        else:
+            assigned_topics = MentorStudent.objects.filter(student_id=student_id,
+                                                           mentor_id__isnull=False,
+                                                           is_done=False)
+            topics_list = assigned_topics.values_list('topic', flat=True)
+            topics = [Topic.get_by_id(topic_id) for topic_id in topics_list]
+        return topics
+
+    @staticmethod
+    def get_student_curriculums(student_id):
+        """
+        Returns curriculums list by student_id.
+        :param student_id: int
+        :return: query_set
+        """
+        assigned_topics = MentorStudent.objects.filter(student_id=student_id,
+                                                       mentor_id__isnull=False,
+                                                       is_done=False)
+        curriculum_list = assigned_topics.values_list('topic__curriculum_id', flat=True).distinct()
+        curriculums = [Curriculum.get_by_id(curriculum_id) for curriculum_id in curriculum_list]
+        return curriculums
+
+    @staticmethod
+    def get_students_by_mentor_id(mentor_id, topic_id):
+        """
+        Returns student list by mentor_id and topic_id.
+        :param mentor_id: int
+        :param topic_id: int
+        :return: query_set
+        """
+        stude = MentorStudent.objects.filter(mentor=mentor_id, topic=topic_id, is_done=False)
+        students = [mentee.student for mentee in stude]
+        return students

@@ -34,11 +34,6 @@ class AssignmentModelTestCase(TestCase):
                                      password='30sectomrs')
             custom_user.save()
 
-            team = Team(id=101,
-                        owner=custom_user,
-                        name='Coldplay')
-            team.save()
-
             curriculum = Curriculum.objects.create(id=101,
                                                    name="testcurriculum",
                                                    goals=["goal1", "goal2"],
@@ -58,10 +53,7 @@ class AssignmentModelTestCase(TestCase):
             item.save()
             item.authors.add(custom_user)
 
-            statement = 'It is you task'
             assignment = Assignment(id=101,
-                                    statement=statement,
-                                    grade=5.5,
                                     user=custom_user,
                                     item=item)
             assignment.save()
@@ -71,8 +63,8 @@ class AssignmentModelTestCase(TestCase):
 
         assignment = Assignment.objects.get(id=101)
         expect_assignment_dict = {'id': 101,
-                                  'statement': 'It is you task',
-                                  'grade': 5.5,
+                                  'statement': '',
+                                  'grade': False,
                                   'user_id': 101,
                                   'item_id': 101,
                                   'status': 0,
@@ -109,9 +101,7 @@ class AssignmentModelTestCase(TestCase):
         """
         item = Item.objects.get(id=101)
         custom_user = CustomUser.objects.get(id=101)
-        created_assignment = Assignment.create(statement='owner',
-                                               grade=5.5,
-                                               user=custom_user,
+        created_assignment = Assignment.create(user=custom_user,
                                                item=item)
 
         self.assertIsInstance(created_assignment, Assignment)
@@ -120,8 +110,11 @@ class AssignmentModelTestCase(TestCase):
         """
         Method that tests unsucceeded `create` method of Assignment class object.
         """
-        created_assignment = Assignment.create(statement='owner',
-                                               grade='qwe')
+        item = Item.objects.get(id=101)
+        custom_user = CustomUser()
+
+        created_assignment = Assignment.create(user=custom_user,
+                                               item=item)
 
         self.assertIsNone(created_assignment)
 
@@ -133,7 +126,7 @@ class AssignmentModelTestCase(TestCase):
 
         actual_assignment = Assignment.get_by_id(101)
 
-        actual_assignment.update(grade=5.2)
+        actual_assignment.update(grade=True)
         expected_assignment = Assignment.objects.get(id=101)
 
         self.assertEqual(actual_assignment, expected_assignment)
@@ -153,33 +146,15 @@ class AssignmentModelTestCase(TestCase):
                                      password='30sectomrs')
         new_custom_user.save()
 
-        new_team = Team(id=102,
-                        owner=new_custom_user,
-                        name='Green Day')
-        new_team.save()
-
-        new_curriculum = Curriculum.objects.create(id=102,
-                                               name="very interest curriculum",
-                                               goals=["goal1", "goal2"],
-                                               description="test")
-        new_curriculum.save()
-
-        new_topic = Topic(id=102,
-                           curriculum=new_curriculum,
-                           title='HTML',
-                           description='My another awesome topic')
-        new_topic.save()
-        new_topic.mentors.add(new_custom_user)
-
         new_item = Item(id=1020,
                         name='some name',
                         form=1,
-                        topic=new_topic)
+                        topic=Topic.get_by_id(101))
         new_item.save()
         new_item.authors.add(new_custom_user)
 
         actual_assignment.update(statement='some statement',
-                                 grade=5.2,
+                                 grade=True,
                                  user=new_custom_user,
                                  item=new_item,
                                  status=2,
@@ -219,10 +194,45 @@ class AssignmentModelTestCase(TestCase):
 
         assignment = Assignment.objects.get(id=101)
         actual_str = assignment.__str__()
-        expected_str = ("'id': 101, 'statement': 'It is you task', "
-                        "'grade': 5.5, 'user_id': 101, 'item_id': "
+        expected_str = ("'id': 101, 'statement': '', "
+                        "'grade': False, 'user_id': 101, 'item_id': "
                         "101, 'status': 0, 'started_at': None, "
                         "'finished_at': None, 'created_at': 1508044512, "
                         "'updated_at': 1508044512")
         self.assertMultiLineEqual(actual_str, expected_str)
 
+    def test_get_by_id_cache(self):
+        with mock.patch('assignment.models.cache') as mock_cache:
+            with mock.patch('assignment.models.pickle') as mock_pickle:
+                mock_cache.__contains__.return_value = True
+                mock_pickle.loads.return_value = True
+                response = Assignment.get_by_id(101)
+                self.assertTrue(response)
+
+    def test_get_assignments_by_student_item_positive(self):
+        assignment = Assignment.get_by_topic_item_ids(student_id=101, item_id=101)
+        self.assertEqual(assignment.id, 101)
+
+    def test_get_assignments_by_student_item_negative(self):
+        assignment = Assignment.get_by_topic_item_ids(student_id=101, item_id=666)
+        self.assertIsNone(assignment)
+
+    def test_get_assignments_by_student_topic_positive(self):
+        assignment = Assignment.get_by_topic_item_ids(student_id=101, topic_id=101)[0]
+        self.assertEqual(assignment.id, 101)
+
+    def test_get_assignments_by_student_positive(self):
+        assignment = Assignment.get_by_topic_item_ids(student_id=101)[0]
+        self.assertEqual(assignment.id, 101)
+
+    def test_get_curriculums_positive(self):
+        curriculum = Assignment.get_curriculums(101)[0]
+        self.assertEqual(curriculum.id, 101)
+
+    def test_get_topics_curriculum_id(self):
+        topic = Assignment.get_topics(101, 101)[0]
+        self.assertEqual(topic.id, 101)
+
+    def test_get_topics_student_id(self):
+        topic = Assignment.get_topics(101)[0]
+        self.assertEqual(topic.id, 101)

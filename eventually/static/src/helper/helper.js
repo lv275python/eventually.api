@@ -1,8 +1,8 @@
-export const s3Root='https://s3.eu-west-2.amazonaws.com/eventually-photos/';
+export const s3Root='https://s3.eu-central-1.amazonaws.com/';
 
 export function getImageUrl(imageName) {
     if (imageName) {
-        return s3Root + imageName;
+        return s3Root + 'eventually-img/' + imageName;
     }
 }
 
