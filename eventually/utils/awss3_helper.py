@@ -13,11 +13,13 @@ from botocore.exceptions import ClientError
 from utils.validators import image_validator
 from customprofile.models import CustomProfile
 from team.models import Team
+from datetime import datetime
 
 BOTO_S3 = boto3.resource('s3',
                          aws_access_key_id=settings.AWS_S3_ACCESS_KEY_ID,
                          aws_secret_access_key=settings.AWS_S3_SECRET_ACCESS_KEY)
-BUCKET = BOTO_S3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
+BUCKET_IMG = BOTO_S3.Bucket(settings.AWS_STORAGE_BUCKET_NAME_IMG)
+BUCKET_TASKS = BOTO_S3.Bucket(settings.AWS_STORAGE_BUCKET_NAME_TASKS)
 
 
 def _get_all_img_keys():
@@ -73,15 +75,16 @@ def upload(request):
     image_extension = image_validator(image_for_upload)
     if not image_extension:
         return False
-    else: mime_type = 'image/' + image_extension
+    else:
+        mime_type = 'image/' + image_extension
 
     image_acl = "public-read"
     image_key = str(uuid.uuid4()).replace('-', '').upper()
 
     try:
-        BOTO_S3.Object(settings.AWS_STORAGE_BUCKET_NAME, image_key).load()
+        BOTO_S3.Object(settings.AWS_STORAGE_BUCKET_NAME_IMG, image_key).load()
     except ClientError:
-        response = BUCKET.put_object(ACL=image_acl,
+        response = BUCKET_IMG.put_object(ACL=image_acl,
                                      Body=image_for_upload.read(),
                                      ContentType=mime_type,
                                      Key=image_key)
@@ -108,10 +111,10 @@ def delete(request):
         return False
 
     delete_obj = {"Key": image_to_delete.get("image_key")}
-    BUCKET.delete_objects(Delete={"Objects":[delete_obj]})
+    BUCKET_IMG.delete_objects(Delete={"Objects":[delete_obj]})
 
     try:
-        BOTO_S3.Object(settings.AWS_STORAGE_BUCKET_NAME,
+        BOTO_S3.Object(settings.AWS_STORAGE_BUCKET_NAME_IMG,
                        image_to_delete.get("image_key")).load()
     except ClientError:
         return True
@@ -125,7 +128,7 @@ def get_all_images_a3():
     :return: list of strings with keys of images stored on amazons3
     """
 
-    bucket_objects = BUCKET.meta.client.list_objects(Bucket=BUCKET.name)
+    bucket_objects = BUCKET_IMG.meta.client.list_objects(Bucket=BUCKET.name)
     keys_list = []
     for image in bucket_objects['Contents']:
         keys_list.append(image['Key'])
@@ -161,5 +164,69 @@ def delete_images_awss3():
         objects_to_del.append(delete_obj)
     if objects_to_del:
         dict_keys_del = {'Objects': objects_to_del}
-        BUCKET.delete_objects(Delete=dict_keys_del)
+        BUCKET_IMG.delete_objects(Delete=dict_keys_del)
         return keys_to_delete
+
+
+class AwsPracticalAssignment:
+
+    @staticmethod
+    def upload(request):
+
+        if request.content_type != 'multipart/form-data':
+            return False
+
+        file_for_upload = request.FILES.get('file')
+        curriculum = str(request.POST.get('curriculum_id'))
+        topic = str(request.POST.get('topic_id'))
+        item = str(request.POST.get('item_id'))
+        name_date = (str(request.user.email) + str(datetime.now())).replace(' ', '_')
+
+        file_key = '/'.join([curriculum, topic, item, name_date])
+
+        if not file_for_upload:
+            return False
+
+        # TODO extension validator
+
+        file_acl = "public-read"
+
+        try:
+            BOTO_S3.Object(settings.AWS_STORAGE_BUCKET_NAME_TASKS, file_key).load()
+        except ClientError:
+            response = BUCKET_TASKS.put_object(ACL=file_acl,
+                                               Body=file_for_upload.read(),
+                                               ContentType='application/msword',
+                                               Key=file_key)
+            return {"file_key": response.key}
+        else:
+            return False
+
+    @staticmethod
+    def delete(request):
+        """
+        Handles delete file from bucket request
+
+        :param request: request from the website
+        :type request: application/json
+
+        :return: status 200 if object has been deleted, otherwise - status 400
+        """
+
+        if request.content_type != 'application/json':
+            return False
+
+        file_to_delete = json.loads(request.body)
+        key = file_to_delete.get("file_key")
+        if not key:
+            return False
+
+        delete_obj = {"Key": key}
+        BUCKET_TASKS.delete_objects(Delete={"Objects": [delete_obj]})
+
+        try:
+            BOTO_S3.Object(settings.AWS_STORAGE_BUCKET_NAME_TASKS,
+                           file_to_delete.get("file_key")).load()
+        except ClientError:
+            return True
+        return False

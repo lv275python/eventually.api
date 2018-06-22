@@ -26,6 +26,11 @@ const putMentorStudentService = (studentId, topicId, data) => {
     return axios.put(url, data);
 };
 
+const postAssignmentAfterMentorAssignsTopic = (data) => {
+    let url = apiUrl + 'assignment/';
+    return axios.post(url, data);
+};
+
 const postStudentList = (studentId, chosenTopic) => {
     const postStudentsUrl = `${appPath}`;
     return axios.post(postStudentsUrl, {
@@ -73,4 +78,5 @@ const getCurriculumTopics = () => {
     ];
 };
 
-export {getStudentsList, getCurriculumTopics, postStudentList, getMentorsTopics, putMentorStudentService};
+export {getStudentsList, getCurriculumTopics, postStudentList, getMentorsTopics, putMentorStudentService,
+    postAssignmentAfterMentorAssignsTopic};
