@@ -1,7 +1,6 @@
 """
 Project validators
 ==================
-
 Module that provides validation functions for all kinds of project's data.
 """
 import datetime
@@ -15,20 +14,17 @@ PASSWORD_REG_EXP = r'^(?=.*?\d)(?=.*?[A-Z])(?=.*?[a-z])[A-Za-z\d]*$'
 STR_MIN_LENGTH = 0
 STR_MAX_LENGTH = None
 MAX_IMAGE_FILESIZE = 8 * 1024 * 1024
+MAX_FILESIZE = 1024 * 1024 * 1024
 
 def string_validator(value, min_length=STR_MIN_LENGTH, max_length=STR_MAX_LENGTH):
     """
     Function that provides string validation.
-
     :param value: the string literal itself.
     :type value: string
-
     :param min_length: the minimal length of the received string value.
     :type min_length: integer
-
     :param max_length: the maximum length of the received string value.
     :type max_length: integer
-
     :return: `True` if value if valid and `False` if it is not.
     """
 
@@ -47,10 +43,8 @@ def string_validator(value, min_length=STR_MIN_LENGTH, max_length=STR_MAX_LENGTH
 def duration_validator(value):
     """
     Function that provides validation for time duration field.
-
     :param value: the duration that represented as the amount of second.
     :type value: int or float
-
     :return: `True` if value if valid and `None` if it is not.
     """
 
@@ -69,10 +63,8 @@ def duration_validator(value):
 def timestamp_validator(value):
     """
     Function that provides validation for time date and datetime fields.
-
     :param value: the timestamp that represented as the amount of second.
     :type value: int or float
-
     :return: `True` if value if valid and `None` if it is not.
     """
 
@@ -85,17 +77,13 @@ def timestamp_validator(value):
 def required_keys_validator(data, keys_required, strict=True):
     """
     Provide required keys validation.
-
     :param data: data from request.
     :type data: dictionary
-
     :param keys_required: set or list or tuple of requied keys for method.
     :type keys_required: set or list or tuple
-
     :param strict: shows the status of strict method of comparing keys
                    in input data with required keys in method.
     :type strict: Bool
-
     :return: `True` if data is valid and `False` if it is not valid.
     """
     keys = set(data.keys())
@@ -108,10 +96,8 @@ def required_keys_validator(data, keys_required, strict=True):
 def list_of_int_validator(value):
     """
     Function that provides list validation
-
     :param value: list or tuple with integer items
     :type value: list or tuple
-
     :return: `True` if value if valid and `False` if it is not.
     """
     if not isinstance(value, (list, tuple)):
@@ -125,10 +111,8 @@ def list_of_int_validator(value):
 def email_validator(email):
     """
     Function that provides string validation.
-
     :param email: String with email data
     :type email: str
-
     :return: `True` if email if valid and `False` if it is not.
     """
 
@@ -141,10 +125,8 @@ def email_validator(email):
 
 def registration_validate(data):
     """Validation data from registration request.
-
     :param data: registration data
     :type data: dict
-
     :return: `True` if data is valid and `None` if it is not.
     """
 
@@ -163,12 +145,9 @@ def registration_validate(data):
 def password_validator(password):
     """
     Function that provides password validation.
-
     Password should consist of: uppercase letters: A-Z, lowercase letters: a-z, numbers: 0-9
-
     :param password: the password itself.
     :type password: string
-
     :return: `True` if password if valid and `None` if it is not.
     """
 
@@ -182,13 +161,10 @@ def password_validator(password):
 def updating_password_validate(data, new_password):
     """
     Function that validation for ForgetPassword class
-
     :param data: dict that we need to validate.
     :type data: dict
-
     :param requred_key: requred_key for required_keys_validator
     :type requred_key: str
-
     :return: `True` if data is valid and `None` if it is not.
     """
 
@@ -204,13 +180,10 @@ def updating_password_validate(data, new_password):
 def updating_email_validate(data, email):
     """
     Function that validation for ForgetPassword class
-
     :param data: dict that we need to validate.
     :type data: dict
-
     :param requred_key: requred_key for required_keys_validator
     :type requred_key: str
-
     :return: `True` if data is valid and `None` if it is not.
     """
     if data:
@@ -224,13 +197,10 @@ def updating_email_validate(data, email):
 def event_data_validate(data, required_keys):
     """
     Function that provides complete event model data validation
-
     :param data: the data that is received by event view.
     :type data: dict
-
     :param required_keys: the list of necessary keys of event data schema.
     :type required_keys: `list`
-
     :return: `True' if all data is valid or `False` if some fields are invalid.
     :rtype `bool`
     """
@@ -271,11 +241,9 @@ def event_data_validate(data, required_keys):
 def event_paginator_validate_limit(request):
     """
     Function that provides event paginator limit validation
-
     :param request: the data with events limit for pagination
     that is received from event view.
     :type request: QueryDict
-
     :return: `True` if valid data, else `False`
     :rtype `bool`
     """
@@ -288,11 +256,9 @@ def event_paginator_validate_limit(request):
 def event_paginator_validate_number(request):
     """
     Function that provides event paginator limit validation
-
     :param request: the data with events limit for pagination
     that is received from event view.
     :type request: QueryDict
-
     :return: `True` if valid data, else `False`
     :rtype `bool`
     """
@@ -306,11 +272,9 @@ def event_paginator_validate_number(request):
 def event_paginator_validate(request):
     """
     Function that provides event paginator number validation
-
     :param request: the data with number for pagination
     that is received from event view.
     :type request: QueryDict
-
     :return: `True` if valid data, else `False`
     :rtype `bool`
     """
@@ -323,11 +287,9 @@ def event_paginator_validate(request):
 def event_from_date_param_validate(request):
     """
     Function that provides event paginator number validation
-
     :param request: the data with number for pagination
     that is received from event view.
     :type request: QueryDict
-
     :return: `True` if valid data, else `False`
     :rtype `bool`
     """
@@ -340,11 +302,9 @@ def event_from_date_param_validate(request):
 def _request_get_param(request, key):
     """
     Function that provides event paginator number validation
-
     :param request: the data with number for pagination
     that is received from event view.
     :type request: QueryDict
-
     :return: `True` if valid data, else `False`
     :rtype `bool`
     """
@@ -356,10 +316,8 @@ def _request_get_param(request, key):
 def login_validate(data):
     """
     Function that provides login data validation.
-
     :param data: dict that we need to validate.
     :type data: dict
-
     :return: `True` if data is valid and `None` if it is not.
     :rtype: bool
     """
@@ -375,13 +333,10 @@ def login_validate(data):
 def comment_data_validator(data, required_keys):
     """
     Function that provides complete comment model data validation
-
     :param data: the data that is received by comment view.
     :type data: dict
-
     :param required_keys: the list of necessary keys of comment data schema.
     :type required_keys: `list`
-
     :return: `True' if all data is valid or `False` if some fields are invalid.
     :rtype `bool`
     """
@@ -449,13 +404,10 @@ def profile_data_validator(data):
 def vote_data_validator(data, required_keys):
     """
     Function that validation incoming request.body
-
     :param data: data
     :type data: HttpRequest
-
     :param required_keys: data that need to validate.
     :type required_keys: HttpRequest
-
     :return: data if data is valid and `None` if it is not.
     """
 
@@ -487,13 +439,10 @@ def vote_data_validator(data, required_keys):
 def answer_data_validator(data, required_keys):
     """
     Function that validation incoming request.body
-
     :param data: data
     :type data: HttpRequest
-
     :param required_keys: data that need to validate.
     :type required_keys: HttpRequest
-
     :return: data if data is valid and `None` if it is not.
     """
 
@@ -523,10 +472,8 @@ def answer_data_validator(data, required_keys):
 def task_data_validate_create(data):
     """
     Function that provides complete task model data validation
-
     :param data: the data that is received by task view.
     :type data: dict
-
     :return: `True' if all data is valid or `False` if some fields are invalid.
     :rtype `bool`
     """
@@ -550,10 +497,8 @@ def task_data_validate_create(data):
 def task_data_validate_update(data):
     """
     Function that provides complete task model data validation
-
     :param data: the data that is received by task view.
     :type data: dict
-
     :return: `True' if all data is valid or `False` if some fields are invalid.
     :rtype `bool`
     """
@@ -579,10 +524,8 @@ def task_data_validate_update(data):
 def mentor_validator(data, required_keys):
     """
     Function that provides complete mentorStudent model data validation
-
     :param data: the data that is received by task view.
     :type data: dict
-
     :return: data if data is valid and `None` if it is not
     """
 
@@ -613,10 +556,8 @@ def image_validator(image_file):
     Checks if the uploaded file is a valid image file.
     A valid image file has to be of gif, png, jpg/jpeg or bmp file type.
     Maximum file size allowed is 8 MB.
-
     :param image_file: image file
     :type image_file: UploadedFile object
-
     :return: string image extension or False
     """
 
@@ -631,16 +572,29 @@ def image_validator(image_file):
 
     return file_extension
 
+
+def file_validator(file):
+    """
+    Checks if the file has acceptable size.
+    Maximum file size allowed is 1Gb.
+    :param file: file
+    :type file: MultiValueDict
+    :return: True if file is valid and False if not
+    :rtype: bool
+    """
+
+    if file.size > MAX_FILESIZE:
+        return False
+    return True
+
+
 def paginator_page_validator(page_number, pages_amount):
     """
     Function that provides validation for chat view paginator pages.
-
     :param page_number: number of the accepted page.
     :type page_number: `int`
-
     :param pages_amount: the amount of all of the currently existed pages.
     :type pages_amount: `int`
-
     :return: `True' if all data is valid or `False` if some fields are invalid.
     :rtype `bool`
     """
@@ -650,13 +604,10 @@ def paginator_page_validator(page_number, pages_amount):
 def chat_message_validator(data, required_keys):
     """
     Function that provides complete chat messages view data validation
-
     :param data: the data that is received by chat view.
     :type data: `dict`
-
     :param required_keys: the list of necessary keys of message data schema.
     :type required_keys: `list`
-
     :return: `True' if all data is valid or `False` if some fields are invalid.
     :rtype `bool`
     """

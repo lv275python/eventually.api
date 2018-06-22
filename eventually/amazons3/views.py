@@ -14,7 +14,9 @@ from utils import awss3_helper
 BOTO_S3 = boto3.resource('s3',
                          aws_access_key_id=settings.AWS_S3_ACCESS_KEY_ID,
                          aws_secret_access_key=settings.AWS_S3_SECRET_ACCESS_KEY)
-BUCKET = BOTO_S3.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
+BUCKET_TASKS = BOTO_S3.Bucket(settings.AWS_STORAGE_BUCKET_NAME_TASKS)
+BUCKET_IMG = BOTO_S3.Bucket(settings.AWS_STORAGE_BUCKET_NAME_IMG)
+
 
 class ImageManagement(View):
     """ View for handling upload and delete objects in the AmazonS3 bucket """
@@ -42,13 +44,10 @@ class ImageManagement(View):
         :return: Status 200 and JsonResponse with random image name
                  Status 400 if bad request or image with such name already exists
         """
-
         image_key = awss3_helper.upload(request)
         if not image_key:
             return RESPONSE_400_INVALID_DATA
         return JsonResponse(image_key, status=200)
-
-
 
     def delete(self, request):
         """
@@ -61,6 +60,30 @@ class ImageManagement(View):
         """
 
         deleted = awss3_helper.delete(request)
+        if not deleted:
+            return RESPONSE_400_INVALID_DATA
+        return RESPONSE_200_DELETED
+
+
+class PracticalAssignmentManagement(View):
+    """
+    Handles practical assignments upload and delete from AWS S3.
+    """
+
+    def post(self, request):
+        """
+        Handles post request for PracticalAssignmentManagement.
+        """
+        file_key = awss3_helper.AWSPracticalAssignment.upload(request)
+        if not file_key:
+            return RESPONSE_400_INVALID_DATA
+        return JsonResponse(file_key, status=200)
+
+    def delete(self, request):
+        """
+        Handles delete request for PracticalAssignmentManagement.
+        """
+        deleted = awss3_helper.AWSPracticalAssignment.delete(request)
         if not deleted:
             return RESPONSE_400_INVALID_DATA
         return RESPONSE_200_DELETED

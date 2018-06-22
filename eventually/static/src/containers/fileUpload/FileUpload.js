@@ -42,10 +42,10 @@ export default class FileUpload extends React.Component {
         super(props);
         this.state = {
             imageName: '',
-            imageSrc: s3Root,
+            imageSrc: s3Root + 'eventually-img/',
             open: false,
             snackbarOpen: false,
-            snackbarMessage: ''
+            snackbarMessage: '',
         };
     }
 
@@ -61,17 +61,17 @@ export default class FileUpload extends React.Component {
         this.setState({
             snackbarOpen: true,
         });
-    }
+    };
 
     hideSnackbar = () => {
         this.setState({
             snackbarOpen: false,
         });
-    }
+    };
 
     updateImageName = (imageName) => {
         this.props.updateImageNameInDb(imageName);
-    }
+    };
 
     onImageDrop = files => {
         this.setState({'snackbarMessage': ''});
@@ -87,7 +87,7 @@ export default class FileUpload extends React.Component {
             this.setState({'snackbarMessage': 'Please choose another file'});
             this.showSnackbar();
         }
-    }
+    };
 
     render() {
         const actions = [

@@ -160,7 +160,7 @@ export default class CreateTeamDialog extends React.Component {
 
     handleSubmit = () => {
         if (this.state.imageData){
-            sendFile(this.state.imageData).then(response => {
+            sendFile(this.state.imageData, 'img').then(response => {
                 if (response.status == 200) {
                     this.setState({
                         image: response.data['image_key']
@@ -180,7 +180,7 @@ export default class CreateTeamDialog extends React.Component {
                 insetChildren={true}
                 checked={values && values.indexOf(user.id) > -1}
                 value={user.id}
-                primaryText={user.first_name + ' ' + user.last_name}
+                primaryText={getMemberName(user)}
             />
         ));
     }

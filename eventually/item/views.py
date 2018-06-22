@@ -10,6 +10,8 @@ import datetime
 from django.views.generic.base import View
 from django.http import JsonResponse
 from django.http import HttpResponse
+from assignment.views import create_assignment_for_new_item
+from mentor.models import MentorStudent
 from topic.models import Topic
 from utils.responsehelper import (RESPONSE_200_DELETED,
                                   RESPONSE_200_UPDATED,
@@ -100,7 +102,12 @@ class ItemView(View):
                               if isinstance(data.get('estimation'), int) else None}
 
         item = Item.create(topic=topic, authors=allowed_authors, **data)
+
         if item:
+            topic_students = MentorStudent.get_topic_all_students(topic_id)
+            if topic_students:
+                create_assignment_for_new_item(item)
+
             return JsonResponse(item.to_dict(), status=201)
 
         return HttpResponse('not implemented', status=501)

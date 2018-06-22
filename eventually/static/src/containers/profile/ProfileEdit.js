@@ -123,7 +123,7 @@ export default class ProfileEdit extends React.Component {
         this.showLinearProgress();
 
         const oldImageName = this.state.imageName;
-        sendFile(this.state.imageData).then(response => {
+        sendFile(this.state.imageData, 'img').then(response => {
             if (response.status == 200) {
                 this.setState({
                     imageName: response.data['image_key']
