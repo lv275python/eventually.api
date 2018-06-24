@@ -224,8 +224,11 @@ def get_curriculum_list(request):
     if request.method == "GET":
         student = request.user
         curriculums = Assignment.get_curriculums(student)
-        data = {'curriculums': [curriculum.to_dict() for curriculum in curriculums]}
-        return JsonResponse(data, status=200)
+        if curriculums:
+            data = {'curriculums': [curriculum.to_dict() for curriculum in curriculums]}
+            return JsonResponse(data, status=200)
+        else:
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
 
 def get_topic_list(request, curriculum_id=None):
@@ -245,9 +248,11 @@ def get_topic_list(request, curriculum_id=None):
     if request.method == "GET":
         student = request.user
         topics = Assignment.get_topics(student, curriculum_id)
-        data = {'topics': [topic.to_dict() for topic in topics]}
-        return JsonResponse(data, status=200)
-
+        if topics:
+            data = {'topics': [topic.to_dict() for topic in topics]}
+            return JsonResponse(data, status=200)
+        else:
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
 def get_assignment_list(request, topic_id, user_id=None):
     """
@@ -272,9 +277,12 @@ def get_assignment_list(request, topic_id, user_id=None):
         else:
             user = request.user
             assignments = Assignment.get_assignments_by_student_topic_item_ids(student_id=user, topic_id=topic_id)
-        data = {'assignments': [{'assignment': assignment.to_dict(), 'item': assignment.item.to_dict()}
-                for assignment in assignments]}
-        return JsonResponse(data, status=200)
+        if assignments:
+            data = {'assignments': [{'assignment': assignment.to_dict(), 'item': assignment.item.to_dict()}
+                                    for assignment in assignments]}
+            return JsonResponse(data, status=200)
+        else:
+            return RESPONSE_404_OBJECT_NOT_FOUND
 
 
 def send_answer(request):
