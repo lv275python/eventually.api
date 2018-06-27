@@ -93,8 +93,10 @@ class CustomProfileViewTest(TestCase):
                 'photo': 'link16',
                 'birthday': '2000-2-4'}
         url = reverse('profile', args=[101])
-        response = self.client.put(url, json.dumps(data), content_type='application/json')
-        self.assertEqual(response.status_code, 200)
+        with mock.patch('utils.awss3_helper.delete_by_image_key') as awss3_helper:
+            awss3_helper.return_value = True
+            response = self.client.put(url, json.dumps(data), content_type='application/json')
+            self.assertEqual(response.status_code, 200)
 
     def test_error_invalid_data_put(self):
         """Method that tests unsuccessful put request with invalid put data ."""

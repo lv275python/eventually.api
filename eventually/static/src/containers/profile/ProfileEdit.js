@@ -6,8 +6,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import {FileUpload} from 'src/containers';
 import {getImageUrl} from 'src/helper';
-import {putProfileService} from './ProfileService';
-import {deleteFile} from '../fileUpload/FileUploadService';
+import {putProfileService, putProfileServicePhoto} from './ProfileService';
 import {sendFile} from '../fileUpload/FileUploadService';
 
 const styleCard = {
@@ -122,28 +121,32 @@ export default class ProfileEdit extends React.Component {
     handleSave = () => {
         this.showLinearProgress();
 
-        const oldImageName = this.state.imageName;
+        putProfileService(
+            this.state.id,
+            this.state.firstName,
+            this.state.middleName,
+            this.state.lastName,
+            this.state.hobby,
+            this.getBirthday()
+        ).then(() => {
+            this.props.onCloseClick();
+        });
+    };
+
+    handleSavePhoto = () => {
+        this.showLinearProgress();
+
         sendFile(this.state.imageData, 'img').then(response => {
-            if (response.status == 200) {
-                this.setState({
-                    imageName: response.data['image_key']
-                });
-                this.hideLinearProgress();
-
-                putProfileService(
-                    this.state.id,
-                    this.state.firstName,
-                    this.state.middleName,
-                    this.state.lastName,
-                    this.state.hobby,
-                    response.data['image_key'],
-                    this.getBirthday()
-                ).then(response => {
-                    this.props.onCloseClick();
-                });
-
-                deleteFile(oldImageName);
-            }
+            this.setState({
+                imageName: response.data['image_key']
+            });
+        }).then( () => {
+            putProfileServicePhoto(this.state.id,
+                this.state.imageName
+            ).then(response => {
+                this.props.onCloseClick();
+            });
+            this.hideLinearProgress();
         }).catch(error => {
             this.hideLinearProgress();
         });
@@ -153,7 +156,7 @@ export default class ProfileEdit extends React.Component {
         this.setState({
             imageData: imageData,
             imageUrl: imageUrl
-        });
+        }, () => { this.handleSavePhoto(); });
     };
 
     render() {
@@ -217,6 +220,7 @@ export default class ProfileEdit extends React.Component {
                     </div>
                     <FileUpload
                         fetchData={this.fetchData}
+                        handleSavePhoto={this.handleSavePhoto}
                     />
                     <div style={styleButtons}>
                         <RaisedButton

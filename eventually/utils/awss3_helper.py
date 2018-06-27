@@ -9,10 +9,11 @@ import uuid
 from datetime import datetime
 import boto3
 from botocore.exceptions import ClientError
+from utils.utils import LOGGER
+from utils.validators import image_validator, file_validator
 from customprofile.models import CustomProfile
 from eventually import settings
 from team.models import Team
-from utils.validators import image_validator, file_validator
 
 
 BOTO_S3 = boto3.resource('s3',
@@ -93,7 +94,7 @@ def delete(request):
     Handles delete image from bucket request
     :param request: request from the website
     :type request: application/json
-    :return: status 200 if object has been deleted, otherwise - status 400
+    :return: True if object has been deleted, otherwise - False
     """
 
     if request.content_type != 'application/json':
@@ -103,13 +104,26 @@ def delete(request):
     if not image_to_delete.get("image_key"):
         return False
 
-    delete_obj = {"Key": image_to_delete.get("image_key")}
+    return delete_by_image_key(image_to_delete.get("image_key"))
+
+def delete_by_image_key(image_key):
+    """
+    Handles delete image from bucket request
+
+    :param image_key: image_key in aws3
+    :type image_key: str
+
+    :return: True if object has been deleted, otherwise - False
+    """
+
+    delete_obj = {"Key": image_key}
     BUCKET_IMG.delete_objects(Delete={"Objects":[delete_obj]})
 
     try:
         BOTO_S3.Object(settings.AWS_STORAGE_BUCKET_NAME_IMG,
-                       image_to_delete.get("image_key")).load()
-    except ClientError:
+                       image_key).load()
+    except ClientError as err:
+        LOGGER.error(f'Image key {image_key} does not exist. {err}')
         return True
     return False
 
