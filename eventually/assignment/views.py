@@ -53,26 +53,6 @@ class AssignmentAnswerView(View):
 class AssignmentStudentView(View):
     """Assignment view that handles GET, POST, PUT requests."""
 
-    def get(self, request, topic_id=None):
-        """
-        Handle GET request
-
-        :param request: the accepted HTTP request. Is required
-        :type request: HttpRequest
-
-        :param topic_id: topic id
-        :type request: int
-
-        :return: return JsonResponse with data and status 200
-                 or HttpRequest with error if parameters are bad.
-
-        """
-
-        student = CustomUser.get_by_id(request.user)
-        assignments = Assignment.get_assignments_by_student_topic_item_ids(student_id=student.id, topic_id=topic_id)
-        data = {'assignments': [assignment.to_dict() for assignment in assignments]}
-        return JsonResponse(data, status=200)
-
     def post(self, request):
         """
         Handle POST request
@@ -89,14 +69,12 @@ class AssignmentStudentView(View):
         student = CustomUser.get_by_id(data.get('student'))
         items = Item.get_items_by_topic_id(data.get('topic'))
 
-        if not items:
-            return RESPONSE_404_OBJECT_NOT_FOUND
+        if items:
+            for item in items:
+                if not item.get_item_superiors()[1]:
+                    Assignment.create(user=student, item=item)
 
-        for item in items:
-            if not item.get_item_superiors()[1]:
-                Assignment.create(user=student, item=item)
-
-        return RESPONSE_201_CREATED
+            return RESPONSE_201_CREATED
 
     def put(self, request, assignment_id=None):
         """
@@ -255,6 +233,7 @@ def get_topic_list(request, curriculum_id=None):
         else:
             return RESPONSE_404_OBJECT_NOT_FOUND
 
+
 def get_assignment_list(request, topic_id, user_id=None):
     """
     Handle GET request
@@ -342,8 +321,8 @@ def create_assignment_for_new_item(new_item):
                 if not superior_assignment or not superior_assignment.status == STATUS_IS_DONE \
                         or superior_assignment.grade is not True:
                     break
-                else:
-                    Assignment.create(user=student_user, item=new_item)
+            else:
+                Assignment.create(user=student_user, item=new_item)
 
 
 def create_assignments_for_subordinate_items(assignment):
@@ -369,8 +348,8 @@ def create_assignments_for_subordinate_items(assignment):
             if not superior_assignment or not superior_assignment.status == STATUS_IS_DONE \
                     or superior_assignment.grade is not True:
                 break
-            else:
-                new_assignment = Assignment.create(user=user, item=subordinate_item)
-                new_assignments.append(new_assignment.to_dict())
+        else:
+            new_assignment = Assignment.create(user=user, item=subordinate_item)
+            new_assignments.append(new_assignment.to_dict())
 
     return new_assignments

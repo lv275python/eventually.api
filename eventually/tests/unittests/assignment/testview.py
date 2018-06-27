@@ -9,8 +9,9 @@ from authentication.models import CustomUser
 from django.test import TestCase, Client, RequestFactory
 from django.core.urlresolvers import reverse
 from assignment.models import Assignment
-from item.models import Item
 from curriculum.models import Curriculum
+from item.models import Item
+from mentor.models import MentorStudent
 from topic.models import Topic
 from unittest import mock
 
@@ -59,7 +60,7 @@ class TestAssignmentApp(TestCase):
         Topic.objects.create(id=223,
                              curriculum=Curriculum.get_by_id(111),
                              author=CustomUser.get_by_id(2),
-                             title='Topic #1',
+                             title='Topic #2',
                              description="test_description",
                              mentors=(CustomUser.get_by_id(2),))
 
@@ -85,13 +86,37 @@ class TestAssignmentApp(TestCase):
                             form=0,
                             description='description')
 
+        Item.objects.create(id=336,
+                            topic=Topic.get_by_id(223),
+                            authors=(CustomUser.get_by_id(1),),
+                            name='Item #4',
+                            form=0,
+                            description='description')
+
+        Item.objects.create(id=337,
+                            topic=Topic.get_by_id(223),
+                            authors=(CustomUser.get_by_id(1),),
+                            name='Item #4',
+                            form=0,
+                            description='description',
+                            superiors=[335, 336])
+
         Assignment.objects.create(id=444,
-                                  user=CustomUser.get_by_id(1),
+                                  user=CustomUser.get_by_id(2),
                                   item=Item.get_by_id(333))
 
         Assignment.objects.create(id=445,
-                                  user=CustomUser.get_by_id(1),
+                                  user=CustomUser.get_by_id(2),
                                   item=Item.get_by_id(334))
+
+        Assignment.objects.create(id=446,
+                                  user=CustomUser.get_by_id(2),
+                                  item=Item.get_by_id(335))
+
+        MentorStudent.objects.create(id=555,
+                                     student=CustomUser.get_by_id(2),
+                                     topic=Topic.get_by_id(222),
+                                     mentor=Item.get_by_id(1))
 
     def test_success_get_by_id(self):
         """Method that tests the successful get request for the Assignment with the certain id"""
@@ -161,6 +186,13 @@ class TestAssignmentApp(TestCase):
         response = self.client.put(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
 
+    def test_student_view_put_success_status_done_form_theoretic_with_break(self):
+        """ """
+        url = reverse('assignment:AssignmentStudentDetail', args=[446])
+        data = {'status': 2}
+        response = self.client.put(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
     def test_student_view_put_fail_status_done_form_practice(self):
         """ """
         url = reverse('assignment:AssignmentStudentDetail', args=[445])
@@ -174,6 +206,36 @@ class TestAssignmentApp(TestCase):
         data = {'status': 2, 'statement': "some_statement"}
         response = self.client.put(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 200)
+
+    def test_create_assignment_for_new_item_no_superiors(self):
+        """ """
+        url = reverse('curriculums:topics:items:index', args=[111, 222])
+        data = {'name': "test name",
+                'form': 0}
+        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+
+    def test_break_in_create_assignment_for_new_item_with_superiors(self):
+        """ """
+        url = reverse('curriculums:topics:items:index', args=[111, 222])
+        data = {'name': "test name",
+                'form': 0,
+                'superiors': [333]}
+        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+
+    def test_success_create_assignment_for_new_item_with_superiors(self):
+        """ """
+        assignment = Assignment.get_by_id(444)
+        assignment.update(**{'status': 2,
+                             'grade': True,
+                             'user': CustomUser.get_by_id(2)})
+        url = reverse('curriculums:topics:items:index', args=[111, 222])
+        data = {'name': "test name",
+                'form': 0,
+                'superiors': [333]}
+        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
 
 
 class AssignmentFunctionViewTestCase(TestCase):

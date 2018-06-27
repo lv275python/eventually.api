@@ -157,7 +157,7 @@ class Assignment(AbstractModel):
         :type statement: str
 
         :param grade: assignment's grade
-        :type grade: float
+        :type grade: boolean
 
         :param item: item that assignment is related to
         :type item: Item obj
@@ -231,7 +231,10 @@ class Assignment(AbstractModel):
         """
 
         if item_id:
-            assignments = Assignment.objects.get(user_id=student_id, item_id=item_id)
+            try:
+                assignments = Assignment.objects.get(user_id=student_id, item_id=item_id)
+            except:
+                assignments = None
         elif topic_id:
             assignments = Assignment.objects.filter(user_id=student_id, item__topic_id=topic_id)
         else:

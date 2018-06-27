@@ -1,6 +1,5 @@
 from django.conf.urls import url
 from . import views
-from assignment.views import send_answer
 
 urlpatterns = [
 
@@ -12,6 +11,6 @@ urlpatterns = [
     url(r'^(?P<curriculum_id>\d+)/topics/$', views.get_topic_list, name='topics'),
     url(r'^list/(?P<topic_id>\d+)$', views.get_assignment_list, name='assignment_list_students'),
     url(r'^list/(?P<topic_id>\d+)/(?P<user_id>\d+)$', views.get_assignment_list, name='assignment_list'),
-    url(r'^mentor/send_answer/$', send_answer, name='SendAnswer'),
+    url(r'^mentor/send_answer/$', views.send_answer, name='SendAnswer'),
     url(r'^answer/$', views.AssignmentAnswerView.as_view(), name='AssignmentAnswer'),
 ]
