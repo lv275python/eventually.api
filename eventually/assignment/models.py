@@ -273,7 +273,7 @@ class Assignment(AbstractModel):
             topic_ids = assignments.values_list('item__topic', flat=True).distinct()
             topics = [Topic.get_by_id(id) for id in topic_ids]
         else:
-            assignments = Assignment.objects.filter(user=student_id).exlude(grade=True)
+            assignments = Assignment.objects.filter(user=student_id).exclude(grade=True)
             topic_ids = assignments.values_list('item__topic', flat=True).distinct()
             topics = [Topic.get_by_id(id) for id in topic_ids]
         return topics

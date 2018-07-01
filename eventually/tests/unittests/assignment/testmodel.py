@@ -200,3 +200,39 @@ class AssignmentModelTestCase(TestCase):
                         "'finished_at': None, 'created_at': 1508044512, "
                         "'updated_at': 1508044512")
         self.assertMultiLineEqual(actual_str, expected_str)
+
+    def test_get_by_id_cache(self):
+        with mock.patch('assignment.models.cache') as mock_cache:
+            with mock.patch('assignment.models.pickle') as mock_pickle:
+                mock_cache.__contains__.return_value = True
+                mock_pickle.loads.return_value = True
+                response = Assignment.get_by_id(101)
+                self.assertTrue(response)
+
+    def test_get_assignments_by_student_item_positive(self):
+        assignment = Assignment.get_assignments_by_student_topic_item_ids(student_id=101, item_id=101)
+        self.assertEqual(assignment.id, 101)
+
+    def test_get_assignments_by_student_item_negative(self):
+        assignment = Assignment.get_assignments_by_student_topic_item_ids(student_id=101, item_id=666)
+        self.assertIsNone(assignment)
+
+    def test_get_assignments_by_student_topic_positive(self):
+        assignment = Assignment.get_assignments_by_student_topic_item_ids(student_id=101, topic_id=101)[0]
+        self.assertEqual(assignment.id, 101)
+
+    def test_get_assignments_by_student_positive(self):
+        assignment = Assignment.get_assignments_by_student_topic_item_ids(student_id=101)[0]
+        self.assertEqual(assignment.id, 101)
+
+    def test_get_curriculums_positive(self):
+        curriculum = Assignment.get_curriculums(101)[0]
+        self.assertEqual(curriculum.id, 101)
+
+    def test_get_topics_curriculum_id(self):
+        topic = Assignment.get_topics(101, 101)[0]
+        self.assertEqual(topic.id, 101)
+
+    def test_get_topics_student_id(self):
+        topic = Assignment.get_topics(101)[0]
+        self.assertEqual(topic.id, 101)
