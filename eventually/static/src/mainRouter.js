@@ -34,7 +34,6 @@ export default class MainRouter extends React.Component {
                     <Route path='/events/:eventId' component={EventDetails}/>
                     <Route path='/events' component={EventList}/>
                     <Route path='/suggestedtopics' component={SuggestedTopics}/>
-                    <Route path='/mentorboard' component={MentorBoard}/>
                     <Redirect path='*' to='/home' />
                 </Switch>
             </main>
