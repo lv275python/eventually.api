@@ -8,6 +8,7 @@ import {FileUpload} from 'src/containers';
 import {getImageUrl} from 'src/helper';
 import {putProfileService, putProfileServicePhoto} from './ProfileService';
 import {sendFile} from '../fileUpload/FileUploadService';
+import ChangePassword from './ChangePassword';
 
 const styleCard = {
     display: 'flex',
@@ -112,11 +113,11 @@ export default class ProfileEdit extends React.Component {
 
     showLinearProgress = () => {
         this.setState({linearProgressVisibility: 'visible'});
-    }
+    };
 
     hideLinearProgress = () => {
         this.setState({linearProgressVisibility: 'hidden'});
-    }
+    };
 
     handleSave = () => {
         this.showLinearProgress();
@@ -171,6 +172,16 @@ export default class ProfileEdit extends React.Component {
                         title="Edit profile"
                         titleStyle={styleTitle}
                     />
+                    <div style={styleContainer}>
+                        <img src={this.state.imageUrl}
+                            alt=""
+                            style={imageStyle}
+                        />
+                    </div>
+                    <FileUpload
+                        fetchData={this.fetchData}
+                        handleSavePhoto={this.handleSavePhoto}
+                    />
                     <div style={styleName}>
                         <TextField
                             floatingLabelText="First Name:"
@@ -211,17 +222,8 @@ export default class ProfileEdit extends React.Component {
                             onChange={this.handleBirthdayChange}
                             value={this.state.birthday}
                         />
+                        <ChangePassword />
                     </div>
-                    <div style={styleContainer}>
-                        <img src={this.state.imageUrl}
-                            alt=""
-                            style={imageStyle}
-                        />
-                    </div>
-                    <FileUpload
-                        fetchData={this.fetchData}
-                        handleSavePhoto={this.handleSavePhoto}
-                    />
                     <div style={styleButtons}>
                         <RaisedButton
                             label="Cancel"

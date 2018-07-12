@@ -132,8 +132,9 @@ class TestItemView(TestCase):
                                    ]}
         url = reverse('curriculums:topics:items:index', args=[111, 212])
         response = self.client.get(url)
+        response_date = json.loads(response.content.decode('utf-8'))
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content.decode('utf-8'), json.dumps(expected_data))
+        self.assertDictEqual(response_date, expected_data)
 
     def test_error_get_by_wrong_topic_id(self):
         """Method that tests the unsuccessful get request with wrong topic id"""

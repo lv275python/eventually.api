@@ -5,6 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import {putNewPasswordService} from './registrationService';
 import {orange500} from 'material-ui/styles/colors';
 import FlatButton from 'material-ui/FlatButton';
+import {validatePassword} from 'src/helper';
 
 const style = {
     margin: 12,
@@ -32,8 +33,7 @@ class SetNewPassword extends React.Component {
     }
 
     handlePassword = event => {
-        const regexp = /^(?=.*[0-9])(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
-        regexp.test(event.target.value) === true ? this.setState({
+        validatePassword(event.target.value) === true ? this.setState({
             messagePassword: '', password: event.target.value}):
             this.setState({messagePassword: `Password must contain at least 6 characters: uppercase characters (A-Z);
                                              lowercase characters (a-z); digits (0-9)`

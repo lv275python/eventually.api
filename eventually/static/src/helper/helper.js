@@ -21,3 +21,8 @@ export const getUserId = () => {
 };
 
 export const apiUrl = '/api/v1/';
+
+export const validatePassword = (password) => {
+    const regexp = /^(?=.*[0-9])(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+    return regexp.test(password);
+};

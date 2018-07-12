@@ -253,6 +253,7 @@ class ForgetPassword(View):
                     return RESPONSE_200_OK
         return RESPONSE_400_INVALID_DATA
 
+
 def get_all_users(request):
     """
     returns JSON response with all users querysets
@@ -261,4 +262,22 @@ def get_all_users(request):
         users = CustomUser.get_all()
         data = {'users': [user.to_dict() for user in users]}
         return JsonResponse(data, status=200)
+    return RESPONSE_400_INVALID_HTTP_METHOD
+
+
+def change_password(request, user_id):
+    """change_password CustomUser"""
+    if request.method == 'PUT':
+        user = CustomUser.get_by_id(user_id)
+        if not user:
+            return RESPONSE_404_OBJECT_NOT_FOUND
+        if not user == request.user:
+            return RESPONSE_403_ACCESS_DENIED
+        data = request.body
+        if user.check_password(data["oldPassword"]):
+            if password_validator(data["newPassword"]):
+                user.set_password(data["newPassword"])
+                user.save()
+                return RESPONSE_200_OK
+            return RESPONSE_400_INVALID_DATA
     return RESPONSE_400_INVALID_HTTP_METHOD

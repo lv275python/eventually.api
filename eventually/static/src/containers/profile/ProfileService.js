@@ -4,7 +4,7 @@ import {apiUrl} from 'src/helper';
 
 export const appPath = apiUrl + 'user/';
 
-export const putProfileService = (id, first_name, middle_name, last_name, hobby,birthday) => {
+export const putProfileService = (id, first_name, middle_name, last_name, hobby, birthday) => {
     const url = appPath + id + '/profile/';
     return axios.put(url, {
         first_name,
@@ -25,4 +25,12 @@ export const putProfileServicePhoto = (id, photo) => {
 export const getProfileService = id => {
     const profileUrl = `${appPath}${id}/profile/`;
     return axios.get(profileUrl);
+};
+
+export const changePasswordService = (id, oldPassword, newPassword) => {
+    const url = appPath + id + '/change_password/';
+    return axios.put(url, {
+        oldPassword,
+        newPassword
+    });
 };
