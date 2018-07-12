@@ -1,1 +1,1 @@
-export {getImageUrl, s3Root, isLogged, getUserId, apiUrl} from './helper';
+export {getImageUrl, s3Root, isLogged, getUserId, apiUrl, validatePassword} from './helper';

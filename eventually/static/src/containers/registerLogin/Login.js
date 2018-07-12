@@ -5,7 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import {orange500} from 'material-ui/styles/colors';
 
 import {loginService} from './registrationService';
-
+import {validatePassword} from 'src/helper';
 const style = {
     margin: 12,
 };
@@ -37,8 +37,7 @@ class Login extends React.Component {
     };
 
      handlePassword = event => {
-         const regexp = /^(?=.*[0-9])(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
-         if(regexp.test(event.target.value) === true) {
+         if(validatePassword(event.target.value) === true) {
              this.setState({MessagePassword: '', password: event.target.value});
          }
          else {
@@ -57,7 +56,6 @@ class Login extends React.Component {
             this.setState({messageError: true});
         });
         event.preventDefault();
-
     };
 
     render() {
