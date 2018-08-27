@@ -29,15 +29,22 @@ class SuggestedTopicsViewTest(TestCase):
         self.client = Client()
         self.client.login(username='email@gmail.com', password='123Qwerty')
 
+        custom_user_second = CustomUser.objects.create(id=302, email='emailll@gmail.com', is_active=True)
+        custom_user_second.set_password('12344Qwerty')
+        custom_user_second.save()
+
+        self.client_second = Client()
+        self.client_second.login(username='emailll@gmail.com', password='12344Qwerty')
+
         with mock.patch('django.utils.timezone.now') as mock_time:
             mock_time.return_value = TEST_TIME
 
             interested_users = []
-            owner = custom_user
             name = 'some_name'
             description = 'some_description'
-            suggested_topic_first = SuggestedTopics(101, owner=owner, interested_users=interested_users, name=name, description=description)
+            suggested_topic_first = SuggestedTopics(101, owner=custom_user, interested_users=interested_users, name=name, description=description)
             suggested_topic_first.save()
+
 
     def test_success_get_all(self):
         """Method that tests the successful get request for the SuggestedTopics."""
@@ -128,3 +135,26 @@ class SuggestedTopicsViewTest(TestCase):
         url = reverse('suggested_topic', args=[101])
         response = self.client.put(url, json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
+
+    def test_delete_suggested_topic(self):
+        """Method that tests unsuccessful delete request with invalid user id data"""
+
+        url = reverse('suggested_topic', args=[101])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_error_db_deleting_post(self):
+        """Method that tests unsuccessful delete request when db deleting is failed."""
+
+        with mock.patch('suggestedtopics.models.SuggestedTopics.delete_by_id') as suggested_topic_delete:
+            suggested_topic_delete.return_value = None
+            url = reverse('suggested_topic', args=[101])
+            response = self.client.delete(url)
+            self.assertEqual(response.status_code, 400)
+
+    def test_error_invalid_owner_id_delete(self):
+        """Method that tests unsuccessful delete request with invalid owner id. User in not owner"""
+
+        url = reverse('suggested_topic', args=[101])
+        response = self.client_second.delete(url)
+        self.assertEqual(response.status_code, 403)

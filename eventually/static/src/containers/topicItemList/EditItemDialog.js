@@ -86,7 +86,7 @@ export default class EditTopicDialog extends React.Component {
     handleEstimation = event => {
         const regex = /^\d+$/;
         if(regex.test(event.target.value) === true ) {
-            this.setState({estimation: event.target.value});
+            this.setState({estimation: +event.target.value});
         } else {
             this.setState({
                 messageEstimation: 'Required an integer value',

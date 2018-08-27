@@ -3,9 +3,14 @@ import axios from 'axios';
 
 
 const appPath = apiUrl + 'suggestedtopics/';
+const topicAllTitlePath = apiUrl + 'topic/all_title/';
 
 const getSuggestedTopicsService = () => {
     return axios.get(appPath);
+};
+
+const getTopicAllTitleService = () => {
+    return axios.get(topicAllTitlePath);
 };
 
 const putSuggestedTopicsItem = (id, name, description, interestedUser, removeInterest) => {
@@ -23,4 +28,12 @@ const postSuggestedTopicsItem = data => {
     return axios.post(url, data);
 };
 
-export {getSuggestedTopicsService, putSuggestedTopicsItem, postSuggestedTopicsItem};
+const deleteSuggestedTopicsItem = (id, name, description) => {
+    const data = {
+        name,
+        description
+    };
+    return axios.delete(appPath + id + '/', data);
+};
+
+export {getSuggestedTopicsService, getTopicAllTitleService, putSuggestedTopicsItem, postSuggestedTopicsItem, deleteSuggestedTopicsItem};

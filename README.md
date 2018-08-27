@@ -1,4 +1,4 @@
-# eventually.api [![Build Status](https://travis-ci.org/lv275python/eventually.api.svg?branch=dev)](https://travis-ci.org/lv275python/eventually.api) [![Coverage Status](https://coveralls.io/repos/github/lv275python/eventually.api/badge.svg)](https://coveralls.io/github/lv275python/eventually.api)
+# eventually.api [![Build Status](https://travis-ci.org/lv275python/eventually.api.svg?branch=dev)](https://travis-ci.org/lv275python/eventually.api) [![Coverage Status](https://coveralls.io/repos/github/lv275python/eventually.api/badge.svg?branch=dev)](https://coveralls.io/github/lv275python/eventually.api?branch=dev)
 
 ## Description
 This is the source code of the service which is called "eventually". This app provides flexible and effective event management. "Eventually" helps to manage events, group people into the teams, share responsibilities, and remind about future events.

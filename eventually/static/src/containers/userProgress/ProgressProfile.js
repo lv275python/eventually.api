@@ -1,5 +1,5 @@
 import React from 'react';
-import {ItemsList, MessagesBar, ProgressGraph, GraphProgress, TeamList} from 'src/containers';
+import {ItemsList, MessagesBar, ProgressGraph, GraphProgress, TeamList, CurriculumList} from 'src/containers';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
@@ -8,6 +8,7 @@ import Group from 'material-ui/svg-icons/social/group';
 import List from 'material-ui/svg-icons/action/list';
 import Divider from 'material-ui/Divider';
 import {lightBlueA700} from 'material-ui/styles/colors';
+import AssignmentCurriculumList from 'src/containers/assignment/AssignmentCurriculumList';
 
 const userProgressStyle = {
     display: 'flex',
@@ -81,9 +82,8 @@ export default class ProgressProfile extends React.Component {
                         <Divider/>
                         <MenuItem primaryText="Assignments" leftIcon={<List color={lightBlueA700}/>}
                             onClick={() => this.setState({
-                                currentPage: <ItemsList
-                                    items={this.state.items}
-                                    style={itemsGraphStyle}/>})}
+                                currentPage: <AssignmentCurriculumList
+                                />})}
                         />
                     </Menu>
                 </Paper>

@@ -13,6 +13,7 @@ import EventDetails from './containers/event/EventDetails';
 import Task from './containers/taskItem/Task';
 import VoteBox from './containers/voting/VoteBox';
 import SuggestedTopics from './containers/suggestedtopics/SuggestedTopics';
+import MentorBoard from './containers/MentorBoard/MentorBoard';
 
 
 export default class MainRouter extends React.Component {

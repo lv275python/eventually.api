@@ -15,7 +15,6 @@ from mentor.models import MentorStudent
 from team.models import Team
 from django.core.urlresolvers import reverse
 
-
 TEST_TIME = datetime.datetime(2017, 10, 15, 8, 15, 12)
 
 
@@ -55,17 +54,25 @@ class MentorStudentViewTestCase(TestCase):
             custom_user_third.set_password('Pas3')
             custom_user_third.save()
 
+            custom_user_four = CustomUser(id=104,
+                                          first_name='fedor',
+                                          last_name='bogon',
+                                          middle_name='petro',
+                                          email='email4@gmail.com',
+                                          is_active=True)
+            custom_user_four.set_password('Pas4')
+            custom_user_four.save()
+
             team = Team(id=400,
                         owner=custom_user_first,
                         name='Coldplay')
             team.save()
-            team.members.add(custom_user_first, custom_user_second, custom_user_third)
+            team.members.add(custom_user_first, custom_user_second, custom_user_third, custom_user_four)
 
             curriculum = Curriculum.objects.create(id=300,
                                                    name="testcurriculum",
                                                    goals=["goal1", "goal2"],
-                                                   description="test_descr",
-                                                   team=team)
+                                                   description="test_descr")
             curriculum.save()
 
             topic_python = Topic(id=200,
@@ -88,13 +95,20 @@ class MentorStudentViewTestCase(TestCase):
                              author=custom_user_first,
                              title='JS',
                              description='My awesome topic',
-                             mentors=(custom_user_first, ))
+                             mentors=(custom_user_first, custom_user_third))
             topic_js.save()
 
             mentor = MentorStudent(id=500,
                                    mentor=custom_user_first,
                                    student=custom_user_second,
                                    topic=topic_python,
+                                   is_done=0)
+            mentor.save()
+
+            mentor = MentorStudent(id=501,
+                                   mentor=custom_user_third,
+                                   student=custom_user_four,
+                                   topic=topic_js,
                                    is_done=0)
             mentor.save()
 
@@ -110,17 +124,22 @@ class MentorStudentViewTestCase(TestCase):
     def test_success_get_all(self):
         """Method that tests the successful get request for the certain mentors."""
 
-        expected_data = {'my_students': [{'student_id': 102,
-                                          'first_name': 'anton',
-                                          'last_name': 'shulga',
-                                          'topic_title':'Python',
-                                          'topic_id': 200}],
-                         'assigned_students': [],
-                         'available_students': [{'student_id': 103,
-                                                 'first_name': 'fedir',
-                                                 'last_name': 'bogolubov',
-                                                 'topic_title': 'JS',
-                                                 'topic_id': 202}]}
+        expected_data = {"my_students": [{"student_id": 102,
+                                          "first_name": "anton",
+                                          "last_name": "shulga",
+                                          "topic_title": "Python",
+                                          "topic_id": 200,
+                                          "email": "email2@gmail.com"}],
+                         "assigned_students": [{"student_id": 104,
+                                                "first_name": "fedor",
+                                                "last_name": "bogon",
+                                                "topic_title": "JS",
+                                                "topic_id": 202}],
+                         "available_students": [{"student_id": 103,
+                                                 "first_name": "fedir",
+                                                 'last_name': "bogolubov",
+                                                 "topic_title": "JS",
+                                                 "topic_id": 202}]}
 
         url = reverse('mentor:index')
         response = self.client.get(url)

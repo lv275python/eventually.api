@@ -59,8 +59,7 @@ class ItemModelTestCase(TestCase):
             curriculum = Curriculum.objects.create(id=101,
                                                    name="testcurriculum",
                                                    goals=["goal1", "goal2"],
-                                                   description="test_descr",
-                                                   team=team)
+                                                   description="test_descr")
             curriculum.save()
 
             topic_python = Topic(id=101,
@@ -195,16 +194,22 @@ class ItemModelTestCase(TestCase):
 
         estimation = datetime.timedelta(seconds=104000)
         actual_item = Item.objects.get(id=101)
+        superior_first = Item.objects.get(id=102)
+        superior_second = Item.objects.get(id=103)
+        superiors = [superior_first, superior_second]
         actual_item.update(name='listen book',
                            form=2,
                            description='updated description',
-                           estimation=estimation)
+                           estimation=estimation,
+                           superiors=superiors)
         expected_item = Item.objects.get(id=101)
         self.assertEqual(actual_item, expected_item)
         self.assertEqual(actual_item.name, 'listen book')
         self.assertEqual(actual_item.form, 2)
         self.assertEqual(actual_item.description, 'updated description')
         self.assertEqual(actual_item.estimation, estimation)
+        #
+        self.assertListEqual(list(actual_item.superiors.all()), superiors)
 
 
     def test_item_add_authors(self):

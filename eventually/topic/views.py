@@ -174,8 +174,6 @@ def mentors_topics(request):
     :return: JsonResponse object with topics, that belongs to the certain mentor
     """
     mentor = request.user
-    if not mentor:
-        return RESPONSE_404_OBJECT_NOT_FOUND
 
     topics = find_mentors_topics(mentor.id)
     data = {'topics': [topic.to_dict() for topic in topics]}
@@ -200,3 +198,17 @@ def is_topic_mentor(request, curriculum_id, topic_id):   # pylint: disable=unuse
     if user in topic.mentors.all():
         is_mentor = True
     return JsonResponse({'is_mentor': is_mentor}, status=200)
+
+
+def get_all_topics_title(request): # pylint: disable=unused-argument
+    """
+    Method that get all topics where mentor is a certain user.
+
+    :param request: the accepted HTTP request.
+    :type request: `HttpRequest object`
+
+    :return: JsonResponse object with topics, that belongs to the certain mentor
+    """
+    topics = Topic.get_all()
+    data = {'topics_name': [topic.title for topic in topics]}
+    return JsonResponse(data, status=200)

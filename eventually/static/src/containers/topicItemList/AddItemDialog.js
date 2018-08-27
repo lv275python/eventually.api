@@ -110,8 +110,8 @@ export default class TaskDialog extends React.Component {
     }
 
     handleEstimation = event => {
-        this.setState({estimation: event.target.value});
-    }
+        this.setState({estimation: +event.target.value});
+    };
 
     handleSubmit = () => {
         if(this.state.nameIsValid && this.state.descriptionIsValid){

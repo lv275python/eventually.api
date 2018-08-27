@@ -6,9 +6,9 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import {FileUpload} from 'src/containers';
 import {getImageUrl} from 'src/helper';
-import {putProfileService} from './ProfileService';
-import {deleteFile} from '../fileUpload/FileUploadService';
+import {putProfileService, putProfileServicePhoto} from './ProfileService';
 import {sendFile} from '../fileUpload/FileUploadService';
+import ChangePassword from './ChangePassword';
 
 const styleCard = {
     display: 'flex',
@@ -113,37 +113,41 @@ export default class ProfileEdit extends React.Component {
 
     showLinearProgress = () => {
         this.setState({linearProgressVisibility: 'visible'});
-    }
+    };
 
     hideLinearProgress = () => {
         this.setState({linearProgressVisibility: 'hidden'});
-    }
+    };
 
     handleSave = () => {
         this.showLinearProgress();
 
-        const oldImageName = this.state.imageName;
-        sendFile(this.state.imageData).then(response => {
-            if (response.status == 200) {
-                this.setState({
-                    imageName: response.data['image_key']
-                });
-                this.hideLinearProgress();
+        putProfileService(
+            this.state.id,
+            this.state.firstName,
+            this.state.middleName,
+            this.state.lastName,
+            this.state.hobby,
+            this.getBirthday()
+        ).then(() => {
+            this.props.onCloseClick();
+        });
+    };
 
-                putProfileService(
-                    this.state.id,
-                    this.state.firstName,
-                    this.state.middleName,
-                    this.state.lastName,
-                    this.state.hobby,
-                    response.data['image_key'],
-                    this.getBirthday()
-                ).then(response => {
-                    this.props.onCloseClick();
-                });
+    handleSavePhoto = () => {
+        this.showLinearProgress();
 
-                deleteFile(oldImageName);
-            }
+        sendFile(this.state.imageData, 'img').then(response => {
+            this.setState({
+                imageName: response.data['image_key']
+            });
+        }).then( () => {
+            putProfileServicePhoto(this.state.id,
+                this.state.imageName
+            ).then(response => {
+                this.props.onCloseClick();
+            });
+            this.hideLinearProgress();
         }).catch(error => {
             this.hideLinearProgress();
         });
@@ -153,7 +157,7 @@ export default class ProfileEdit extends React.Component {
         this.setState({
             imageData: imageData,
             imageUrl: imageUrl
-        });
+        }, () => { this.handleSavePhoto(); });
     };
 
     render() {
@@ -167,6 +171,16 @@ export default class ProfileEdit extends React.Component {
                     <CardHeader style = {styleHeader}
                         title="Edit profile"
                         titleStyle={styleTitle}
+                    />
+                    <div style={styleContainer}>
+                        <img src={this.state.imageUrl}
+                            alt=""
+                            style={imageStyle}
+                        />
+                    </div>
+                    <FileUpload
+                        fetchData={this.fetchData}
+                        handleSavePhoto={this.handleSavePhoto}
                     />
                     <div style={styleName}>
                         <TextField
@@ -208,16 +222,8 @@ export default class ProfileEdit extends React.Component {
                             onChange={this.handleBirthdayChange}
                             value={this.state.birthday}
                         />
+                        <ChangePassword />
                     </div>
-                    <div style={styleContainer}>
-                        <img src={this.state.imageUrl}
-                            alt=""
-                            style={imageStyle}
-                        />
-                    </div>
-                    <FileUpload
-                        fetchData={this.fetchData}
-                    />
                     <div style={styleButtons}>
                         <RaisedButton
                             label="Cancel"

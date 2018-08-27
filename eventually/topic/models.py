@@ -15,7 +15,7 @@ from utils.abstractmodel import AbstractModel
 from utils.utils import LOGGER
 
 CACHE_TTL = settings.CACHE_TTL
-
+REDIS_KEY_ALL_TOPICS = "all_topics"
 class Topic(AbstractModel):
     """
      Describing of topic entity.
@@ -112,6 +112,8 @@ class Topic(AbstractModel):
         try:
             topic.save()
             topic.mentors.add(author, *mentors)
+            if REDIS_KEY_ALL_TOPICS in cache:
+                cache.delete(REDIS_KEY_ALL_TOPICS)
             return topic
         except (ValueError, IntegrityError):
             LOGGER.error('Inappropriate value or relational integrity fail')
@@ -155,6 +157,22 @@ class Topic(AbstractModel):
             redis_key = 'topic_by_id_{0}'.format(self.id)
             if redis_key in cache:
                 cache.delete(redis_key)
+
+    @staticmethod
+    def get_all():
+        """
+        returns querysets of all topics
+        """
+
+        if REDIS_KEY_ALL_TOPICS in cache:
+            all_topics = cache.get(REDIS_KEY_ALL_TOPICS)
+            all_topics = pickle.loads(all_topics)
+            return all_topics
+        all_topics = Topic.objects.all()
+        cached_topics = pickle.dumps(all_topics)
+        cache.set(REDIS_KEY_ALL_TOPICS, cached_topics, CACHE_TTL)
+
+        return all_topics
 
     @staticmethod
     def get_by_id(topic_id):

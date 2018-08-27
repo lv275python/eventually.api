@@ -1,7 +1,9 @@
-export const s3Root='https://s3.eu-west-2.amazonaws.com/eventually-photos/';
+export const s3Root='https://s3.eu-central-1.amazonaws.com/';
 
-export function getImageUrl(imageName){
-    return s3Root + imageName;
+export function getImageUrl(imageName) {
+    if (imageName) {
+        return s3Root + 'eventually-img/' + imageName;
+    }
 }
 
 export const isLogged = () => document.cookie.indexOf('sessionid') !== -1;
@@ -19,3 +21,8 @@ export const getUserId = () => {
 };
 
 export const apiUrl = '/api/v1/';
+
+export const validatePassword = (password) => {
+    const regexp = /^(?=.*[0-9])(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+    return regexp.test(password);
+};

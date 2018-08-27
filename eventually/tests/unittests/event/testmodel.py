@@ -6,6 +6,7 @@ This module provides complete testing for all Event's model functions.
 """
 
 import datetime
+import pickle
 from unittest import mock
 from django.test import TestCase
 from event.models import Event
@@ -112,10 +113,14 @@ class EventModelTestCase(TestCase):
     def test_event_success_get_by_id(self):
         """Method that tests succeeded `get_by_id` method of Event class object."""
 
-        actual_event = Event.get_by_id(101)
-        expected_event = Event.objects.get(id=101)
+        with mock.patch('event.models.cache') as mock_cache:
+            mock_cache.__contains__.return_value = True
+            mock_cache.get.return_value = pickle.dumps(Event.objects.get(id=101))
 
-        self.assertEqual(actual_event, expected_event)
+            actual_event = Event.get_by_id(101)
+            expected_event = Event.objects.get(id=101)
+
+            self.assertEqual(actual_event, expected_event)
 
     def test_event_none_get_by_id(self):
         """Method that tests unsucceeded `get_by_id` method of Event class object."""
@@ -151,13 +156,15 @@ class EventModelTestCase(TestCase):
 
         Test for updating only a few attributes.
         """
+        with mock.patch('event.models.cache') as mock_cache:
+            mock_cache.__contains__.return_value = True
 
-        actual_event = Event.objects.get(id=101)
+            actual_event = Event.objects.get(id=101)
 
-        actual_event.update(name='box', description='updated description')
-        expected_event = Event.objects.get(id=101)
+            actual_event.update(name='box', description='updated description')
+            expected_event = Event.objects.get(id=101)
 
-        self.assertEqual(actual_event, expected_event)
+            self.assertEqual(actual_event, expected_event)
 
     def test_event_all_update(self):
         """

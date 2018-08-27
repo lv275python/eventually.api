@@ -38,7 +38,6 @@ class MentorView(View):
 
         mentor = CustomUser.get_by_id(request.user.id)
         mentors_topics_ids = [topic.id for topic in find_mentors_topics(mentor.id)]
-
         filters = {}
         if request.GET.get('topic', None):
             filters['topic_id'] = request.GET.get('topic')
@@ -79,7 +78,8 @@ class MentorView(View):
                                             'first_name': student.first_name,
                                             'last_name': student.last_name,
                                             'topic_title': topic.title,
-                                            'topic_id': topic.id})
+                                            'topic_id': topic.id,
+                                            'email': student.email})
 
         for record in available_students:
             student = CustomUser.get_by_id(record.student_id)

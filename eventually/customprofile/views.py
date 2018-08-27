@@ -9,6 +9,7 @@ from django.contrib.auth import logout
 from django.views.generic.base import View
 from django.http import JsonResponse
 from authentication.models import CustomUser
+from utils import awss3_helper
 from utils.responsehelper import (RESPONSE_400_INVALID_DATA,
                                   RESPONSE_200_UPDATED,
                                   RESPONSE_200_DELETED,
@@ -79,6 +80,8 @@ class CustomProfileView(View):
                      'last_name': data.get('last_name')}
 
         profile = user.customprofile
+        if profile.photo:
+            awss3_helper.delete_by_image_key(profile.photo)
 
         user.update(**data_user)
         profile.update(**data_profile)

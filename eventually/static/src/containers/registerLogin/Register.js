@@ -21,6 +21,7 @@ class Register extends React.Component {
             password: '',
             MessageEmail: '',
             MessagePassword: '',
+            errorRegister: false,
         };
     }
 
@@ -48,14 +49,24 @@ class Register extends React.Component {
     handleSubmit = event => {
         const email = this.state.email;
         const password = this.state.password;
-        registerService(email, password)
-            .then((response) => {
-                this.props.history.push('/login');
-            });
+        registerService(email, password).then((response) => {
+            this.setState({errorRegister: false});
+            this.props.history.push('/login');
+        }).catch((error) => {
+            this.setState({errorRegister: true});
+        });
         event.preventDefault();
     };
 
     render() {
+        let errorRegister;
+        if (this.state.errorRegister === true) {
+            errorRegister = (
+                <div>
+                    <p style={errorStyle}>This mail is already registered</p>
+                </div>
+            );
+        }
         return (
             <div style={style}>
                 <h2>Email</h2>
@@ -79,7 +90,10 @@ class Register extends React.Component {
                     label='Register'
                     primary={true}
                     onClick={this.handleSubmit}
+                    disabled={(this.state.email === '' || this.state.MessageEmail !== '' || this.state.password === ''
+                        || this.state.MessagePassword !== '')}
                 />
+                {errorRegister}
             </div>
         );
     }

@@ -58,8 +58,7 @@ class MentorModelTestCase(TestCase):
             curriculum = Curriculum.objects.create(id=300,
                                                    name="testcurriculum",
                                                    goals=["goal1", "goal2"],
-                                                   description="test_descr",
-                                                   team=team)
+                                                   description="test_descr")
             curriculum.save()
 
             topic_python = Topic(id=200,
@@ -143,6 +142,14 @@ class MentorModelTestCase(TestCase):
 
         self.assertEqual(actual_mentor, expected_mentor)
 
+    def test_mentor_get_all(self):
+        """Method that tests "get_all" method of MentorStudent class object."""
+        get_all = MentorStudent().get_all([200])
+        result = [mentor for mentor in get_all]
+        expected_result = [MentorStudent(id=500), MentorStudent(id=501), MentorStudent(id=502)]
+
+        self.assertEqual(result,expected_result)
+
     def test_mentor_get_my_students(self):
         """Method that tests "get_my_students" method of MentorStudent class object."""
 
@@ -158,6 +165,7 @@ class MentorModelTestCase(TestCase):
         get_my_mentors = MentorStudent().get_my_mentors(102)
         result = [mentor for mentor in get_my_mentors]
         expected_result = [MentorStudent(id=500)]
+
         self.assertEqual(result, expected_result)
 
     def test_mentor_get_all_students(self):

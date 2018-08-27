@@ -5,6 +5,7 @@ This module provides complete testing for all Topic's model functions.
 """
 
 import datetime
+import pickle
 from unittest import mock
 from django.test import TestCase
 from topic.models import Topic
@@ -48,8 +49,7 @@ class TopicModelTestCase(TestCase):
             test_curriculum = Curriculum.objects.create(id=111,
                                                         name="testcurriculum",
                                                         goals=["goal1", "goal2"],
-                                                        description="t_descr",
-                                                        team=team)
+                                                        description="t_descr")
 
 
             topic = Topic(id=11,
@@ -82,10 +82,14 @@ class TopicModelTestCase(TestCase):
     def test_topic_success_get_by_id(self):
         """Method that tests succeeded `get_by_id` method of Topic class object."""
 
-        actual_topic = Topic.get_by_id(11)
-        expected_topic = Topic.objects.get(id=11)
+        with mock.patch('topic.models.cache') as mock_cache:
+            mock_cache.__contains__.return_value = True
+            mock_cache.get.return_value = pickle._dumps(Topic.objects.get(id=11))
 
-        self.assertEqual(actual_topic, expected_topic)
+            actual_topic = Topic.get_by_id(11)
+            expected_topic = Topic.objects.get(id=11)
+
+            self.assertEqual(actual_topic, expected_topic)
 
     def test_topic_none_get_by_id(self):
         """Method that tests unsucceeded `get_by_id` method of Topic class object."""
@@ -122,14 +126,17 @@ class TopicModelTestCase(TestCase):
         Test for updating all attributes.
         """
 
-        actual_topic = Topic.objects.get(id=11)
-        title = 'Some new title'
-        description = 'hello, it`s me'
-        actual_topic.update(title=title,
-                            description=description)
+        with mock.patch('topic.models.cache') as mock_cache:
+            mock_cache.__contains__.return_value = True
 
-        self.assertEqual(actual_topic.title, title)
-        self.assertEqual(actual_topic.description, description)
+            actual_topic = Topic.objects.get(id=11)
+            title = 'Some new title'
+            description = 'hello, it`s me'
+            actual_topic.update(title=title,
+                                description=description)
+
+            self.assertEqual(actual_topic.title, title)
+            self.assertEqual(actual_topic.description, description)
 
     def test_topic_success_delete(self):
         """Method that tests succeeded `delete_by_id` method of Topic class object."""
@@ -173,13 +180,16 @@ class TopicModelTestCase(TestCase):
         Test for adding authors.
         """
 
-        actual_topic = Topic.objects.get(id=11)
-        user_first = CustomUser.objects.get(id=11)
-        user_second = CustomUser.objects.get(id=12)
-        users = [user_first, user_second]
-        actual_topic.add_mentors(mentors_list=users)
-        expected_topic = Topic.objects.get(id=11)
-        self.assertListEqual(list(actual_topic.mentors.all()), list(expected_topic.mentors.all()))
+        with mock.patch('topic.models.cache') as mock_cache:
+            mock_cache.__contains__.return_value = True
+
+            actual_topic = Topic.objects.get(id=11)
+            user_first = CustomUser.objects.get(id=11)
+            user_second = CustomUser.objects.get(id=12)
+            users = [user_first, user_second]
+            actual_topic.add_mentors(mentors_list=users)
+            expected_topic = Topic.objects.get(id=11)
+            self.assertListEqual(list(actual_topic.mentors.all()), list(expected_topic.mentors.all()))
 
     def test_topic_remove_mentors(self):
         """
@@ -187,10 +197,30 @@ class TopicModelTestCase(TestCase):
         Test for removing authors.
         """
 
-        actual_topic = Topic.objects.get(id=11)
-        user_first = CustomUser.objects.get(id=12)
-        user_second = CustomUser.objects.get(id=11)
-        users = [user_first, user_second]
-        actual_topic.remove_mentors(mentors_list=users)
-        expected_topic = Topic.objects.get(id=11)
-        self.assertListEqual(list(actual_topic.mentors.all()), list(expected_topic.mentors.all()))
+        with mock.patch('topic.models.cache') as mock_cache:
+            mock_cache.__contains__.return_value = True
+            actual_topic = Topic.objects.get(id=11)
+            user_first = CustomUser.objects.get(id=12)
+            user_second = CustomUser.objects.get(id=11)
+            users = [user_first, user_second]
+            actual_topic.remove_mentors(mentors_list=users)
+            expected_topic = Topic.objects.get(id=11)
+            self.assertListEqual(list(actual_topic.mentors.all()), list(expected_topic.mentors.all()))
+
+    def test_get_all(self):
+        """ Test of the Topic.get_all() method """
+
+        expected_value = Topic.objects.all()
+        current_value = Topic.get_all()
+        self.assertEqual(list(current_value), list(expected_value))
+
+    def test_get_all_with_pickle(self):
+        """ Test of the Topic.get_all() method """
+
+        with mock.patch('topic.models.cache') as mock_cache:
+            with mock.patch('pickle.loads') as mock_pickle:
+                mock_cache.__contains__.return_value = True
+                mock_pickle.return_value = Topic.objects.all()
+                expected_value = Topic.objects.all()
+                current_value = Topic.get_all()
+                self.assertEqual(list(current_value), list(expected_value))

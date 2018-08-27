@@ -7,20 +7,23 @@ This module provides complete testing for all Task's model functions.
 import datetime
 from unittest import mock
 from django.test import TestCase
+from suggestedtopics.models import cache as tested_cache
 from task.models import Task
 from event.models import Event
 from authentication.models import CustomUser
 from team.models import Team
+from django.core.cache import cache
 
 
 TEST_TIME = datetime.datetime(2017, 2, 2, 12, 00, 12)
-
 
 class TaskModelTestCase(TestCase):
     """TestCase for providing Task model testing"""
 
     def setUp(self):
         """Method that provides preparation before testing Task model's features."""
+
+        cache.clear()
 
         with mock.patch('django.utils.timezone.now') as mock_time:
             mock_time.return_value = TEST_TIME
@@ -39,7 +42,6 @@ class TaskModelTestCase(TestCase):
                                             email='Jack.Nicholson@gmail.com',
                                             password='CuckoosNest75')
             custom_user_second.save()
-
 
             team = Team(id=11,
                         owner=custom_user_first,
@@ -88,7 +90,7 @@ class TaskModelTestCase(TestCase):
             'created_at': 1486029612,
             'updated_at': 1486029612,
             'event': 11,
-            'users': [11, 12]
+            'users': [11,12]
         }
 
         actual_task_dict = task.to_dict()
@@ -97,6 +99,12 @@ class TaskModelTestCase(TestCase):
 
     def test_task_success_get_by_id(self):
         """Method that tests succeeded `get_by_id` method of Task class object."""
+
+        with mock.patch('task.models.cache') as mock_cache:
+            with mock.patch('task.models.pickle') as mock_pickle:
+                mock_cache. __contains__.return_value = True
+                mock_pickle.load.return_value = True
+                Task.get_by_id(11)
 
         actual_task = Task.get_by_id(11)
         expected_task = Task.objects.get(id=11)
@@ -135,21 +143,24 @@ class TaskModelTestCase(TestCase):
 
     def test_task_update(self):
         """
-        Method that tests `update` method of certain Task instance.
+        Method that tests `update` method of certain Task instance
         Test for updating all attributes.
         """
+        with mock.patch('task.models.cache') as mock_cache:
+            mock_cache. __contains__.return_value = True
 
-        actual_task = Task.objects.get(id=12)
-        title = 'Some new title'
-        description='hello, it`s me'
-        status = 1
-        actual_task.update(title=title,
-                           description=description,
-                           status=status)
+            redis_key = 'task_by_id_{0}'.format(self.id)
+            tested_cache.set(redis_key, None)
+            tested_cache.set("task", None)
 
-        self.assertEqual(actual_task.title, title)
-        self.assertEqual(actual_task.description, description)
-        self.assertEqual(actual_task.status, status)
+            actual_task_update = Task.objects.get(id=12)
+            actual_task_update.update(title='Some new title_1',
+                           description='hello, it`s me_1',
+                           status=1)
+
+            self.assertEqual(actual_task_update.title, 'Some new title_1')
+            self.assertEqual(actual_task_update.description, 'hello, it`s me_1')
+            self.assertEqual(actual_task_update.status, 1)
 
     def test_task_success_delete(self):
         """Method that tests succeeded `delete_by_id` method of Task class object."""
@@ -163,6 +174,28 @@ class TaskModelTestCase(TestCase):
 
         is_task_delete = Task.delete_by_id(1423)
         self.assertIsNone(is_task_delete)
+
+    def test_task_add_users(self):
+        """Method that tests `add_users` and "remove_users" method of Task class object."""
+
+        with mock.patch('task.models.cache') as mock_cache:
+            mock_cache.__contains__.return_value = True
+
+            task = Task.objects.get(id=12)
+            first_member = CustomUser.objects.get(id=11)
+            second_member = CustomUser.objects.get(id=12)
+            task.add_users(users_list=[first_member,second_member])
+            task.remove_users(users_list=[first_member])
+
+            redis_key = 'task_by_id_{0}'.format(self.id)
+            tested_cache.set(redis_key, None)
+            tested_cache.set('task', None)
+
+            expected_members = [second_member]
+
+            actual_team_members = list(task.users.all())
+            expected_team_members = list(expected_members)
+            self.assertListEqual(actual_team_members, expected_team_members)
 
     def test_task_repr(self):
         """Method that test `__repr__` magic method of Task instance object."""
@@ -186,4 +219,3 @@ class TaskModelTestCase(TestCase):
                        "'event': 11, " \
                        "'users': [11, 12]"
         self.assertMultiLineEqual(actual_str, expected_str)
-        
