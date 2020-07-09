@@ -44,6 +44,5 @@ snowballstemmer==1.2.1
 Sphinx==1.6.5
 sphinxcontrib-websupport==1.0.1
 urllib3==1.22
-uWSGI==2.0.15
 wcwidth==0.1.7
 wrapt==1.10.11
