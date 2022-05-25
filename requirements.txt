@@ -30,7 +30,7 @@ psycopg2==2.7.3.1
 ptpython==0.41
 pycodestyle==2.3.1
 Pygments==2.2.0
-PyJWT==1.5.3
+PyJWT==2.4.0
 pylint==1.7.4
 pylint-django==0.7.2
 pylint-plugin-utils==0.2.6
