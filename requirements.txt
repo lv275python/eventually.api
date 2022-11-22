@@ -24,7 +24,7 @@ mccabe==0.6.1
 olefile==0.44
 parso==0.1.0
 pep8==1.7.1
-Pillow==4.3.0
+Pillow==9.3.0
 prompt-toolkit==1.0.15
 psycopg2==2.7.3.1
 ptpython==0.41
